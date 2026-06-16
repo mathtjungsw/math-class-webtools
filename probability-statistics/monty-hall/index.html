@@ -214,6 +214,59 @@
         gap: 8px;
       }
 
+      .door-count-controls {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 86px;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .door-count-input {
+        width: 100%;
+        min-height: 42px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0 10px;
+        color: var(--ink);
+        font-weight: 900;
+        text-align: center;
+      }
+
+      .theme-picker {
+        display: grid;
+        gap: 8px;
+      }
+
+      .theme-current-button {
+        display: flex;
+        width: 100%;
+        min-height: 52px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 8px 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface);
+        color: var(--ink);
+        cursor: pointer;
+        font-weight: 900;
+        text-align: left;
+      }
+
+      .current-theme-preview {
+        display: inline-flex;
+        min-width: 0;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .theme-change-label {
+        flex: 0 0 auto;
+        color: var(--blue);
+        font-size: 13px;
+      }
+
       .theme-grid {
         display: grid;
         grid-template-columns: 1fr;
@@ -221,6 +274,10 @@
         max-height: 344px;
         overflow: auto;
         padding-right: 2px;
+      }
+
+      .theme-grid[hidden] {
+        display: none;
       }
 
       .option-button,
@@ -846,15 +903,40 @@
                 <span id="doorCountTitle">문의 개수</span>
                 <span class="count-badge"><span id="doorCountValue">3</span>개</span>
               </div>
-              <input id="doorCountSlider" type="range" min="3" max="100" value="3" />
+              <div class="door-count-controls">
+                <input id="doorCountSlider" type="range" min="3" max="100" value="3" />
+                <input
+                  id="doorCountInput"
+                  class="door-count-input"
+                  type="number"
+                  min="3"
+                  max="100"
+                  step="1"
+                  inputmode="numeric"
+                  value="3"
+                  aria-label="문 개수 직접 입력"
+                />
+              </div>
               <p class="range-note">문이 많아질수록 처음에 맞힐 확률은 작아지고, 바꾸기 전략은 더 강해집니다.</p>
             </section>
 
             <section class="control-group" aria-labelledby="themeTitle">
               <div class="control-label">
-                <span id="themeTitle">테마 선택</span>
+                <span id="themeTitle">테마</span>
               </div>
-              <div id="themeGrid" class="theme-grid"></div>
+              <div class="theme-picker">
+                <button
+                  id="themeToggleButton"
+                  class="theme-current-button"
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="themeGrid"
+                >
+                  <span id="currentThemePreview" class="current-theme-preview"></span>
+                  <span class="theme-change-label">테마 변경</span>
+                </button>
+                <div id="themeGrid" class="theme-grid" hidden></div>
+              </div>
             </section>
 
             <section class="control-group" aria-labelledby="strategyTitle">
@@ -1052,6 +1134,16 @@
     <script>
       const themes = [
         {
+          name: "염소/스포츠카",
+          prizeLabel: "스포츠카",
+          loseLabel: "염소",
+          prizeIcon: "🏎️",
+          loseIcon: "🐐",
+          stayWin: "유지 성공! 처음 선택한 문 뒤에 스포츠카가 있었어요.",
+          switchWin: "변경 성공! 고전 몬티홀처럼 바꾸기가 통했어요.",
+          lose: "이번엔 염소가 나왔어요. 여러 번 누적하면 전략 차이가 보여요."
+        },
+        {
           name: "치킨 쿠폰",
           prizeLabel: "치킨 쿠폰",
           loseLabel: "브로콜리",
@@ -1176,6 +1268,7 @@
       const state = {
         doorCount: 3,
         themeIndex: 0,
+        themeMenuOpen: false,
         autoStrategy: "stay",
         autoCount: 1,
         isAutoRunning: false,
@@ -1191,7 +1284,10 @@
 
       const elements = {
         doorCountSlider: document.querySelector("#doorCountSlider"),
+        doorCountInput: document.querySelector("#doorCountInput"),
         doorCountValue: document.querySelector("#doorCountValue"),
+        themeToggleButton: document.querySelector("#themeToggleButton"),
+        currentThemePreview: document.querySelector("#currentThemePreview"),
         themeGrid: document.querySelector("#themeGrid"),
         strategyButtons: document.querySelector("#strategyButtons"),
         autoCountButtons: document.querySelector("#autoCountButtons"),
@@ -1241,6 +1337,16 @@
         return `${(value * 100).toFixed(1)}%`;
       }
 
+      function subjectParticle(word) {
+        const lastCode = word.charCodeAt(word.length - 1);
+        const hangulStart = 0xac00;
+        const hangulEnd = 0xd7a3;
+        if (lastCode < hangulStart || lastCode > hangulEnd) {
+          return "가";
+        }
+        return (lastCode - hangulStart) % 28 === 0 ? "가" : "이";
+      }
+
       function rate(wins, runs) {
         return runs === 0 ? 0 : wins / runs;
       }
@@ -1258,6 +1364,26 @@
           stay: 1 / doorCount,
           switch: (doorCount - 1) / doorCount
         };
+      }
+
+      function clampDoorCount(value) {
+        const number = Number(value);
+        if (!Number.isFinite(number)) {
+          return state.doorCount;
+        }
+        return Math.min(100, Math.max(3, Math.round(number)));
+      }
+
+      function setDoorCount(value) {
+        const nextDoorCount = clampDoorCount(value);
+        if (nextDoorCount === state.doorCount) {
+          renderAll();
+          return;
+        }
+
+        state.doorCount = nextDoorCount;
+        startNewRound();
+        renderAll();
       }
 
       function statsForDoorCount(doorCount) {
@@ -1425,6 +1551,16 @@
       }
 
       function renderThemeButtons() {
+        const theme = currentTheme();
+        elements.currentThemePreview.innerHTML = `
+          <span class="theme-icon">${theme.prizeIcon}</span>
+          <span class="theme-copy">
+            <strong>${theme.name}</strong>
+            <span class="theme-detail">${theme.prizeLabel} vs ${theme.loseLabel}</span>
+          </span>
+        `;
+        elements.themeToggleButton.setAttribute("aria-expanded", String(state.themeMenuOpen));
+        elements.themeGrid.hidden = !state.themeMenuOpen;
         elements.themeGrid.innerHTML = themes
           .map(
             (theme, index) => `
@@ -1533,7 +1669,7 @@
 
         if (round.phase === "choosing") {
           elements.statusTitle.textContent = "닫힌 문 중 하나를 골라 보세요.";
-          elements.statusText.textContent = `${state.doorCount}개의 문 중 단 하나에 ${theme.prizeLabel}이 있습니다.`;
+          elements.statusText.textContent = `${state.doorCount}개의 문 중 단 하나에 ${theme.prizeLabel}${subjectParticle(theme.prizeLabel)} 있습니다.`;
           elements.resultBanner.innerHTML = "";
           return;
         }
@@ -1662,6 +1798,8 @@
 
       function renderAll() {
         elements.doorCountValue.textContent = state.doorCount;
+        elements.doorCountSlider.value = state.doorCount;
+        elements.doorCountInput.value = state.doorCount;
         renderThemeButtons();
         renderSelectionButtons();
         renderExperiment();
@@ -1791,9 +1929,24 @@
       }
 
       elements.doorCountSlider.addEventListener("input", (event) => {
-        state.doorCount = Number(event.target.value);
-        startNewRound();
-        renderAll();
+        setDoorCount(event.target.value);
+      });
+
+      elements.doorCountInput.addEventListener("input", (event) => {
+        const value = Number(event.target.value);
+        if (event.target.value === "" || !Number.isFinite(value) || value < 3 || value > 100) {
+          return;
+        }
+        setDoorCount(value);
+      });
+
+      elements.doorCountInput.addEventListener("change", (event) => {
+        setDoorCount(event.target.value);
+      });
+
+      elements.themeToggleButton.addEventListener("click", () => {
+        state.themeMenuOpen = !state.themeMenuOpen;
+        renderThemeButtons();
       });
 
       elements.themeGrid.addEventListener("click", (event) => {
@@ -1802,6 +1955,7 @@
           return;
         }
         state.themeIndex = Number(button.dataset.theme);
+        state.themeMenuOpen = false;
         renderAll();
       });
 
