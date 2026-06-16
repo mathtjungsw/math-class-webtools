@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>감성 분석 인공지능 만들기 실습</title>
+    <link rel="stylesheet" href="./sentiment.css" />
+  </head>
+  <body>
+    <header class="tool-topbar">
+      <a class="brand" href="../../" aria-label="수학 수업 웹툴 모음 홈">
+        <span class="brand-mark">AI</span>
+        <span>
+          <strong>감성 분석 인공지능 만들기</strong>
+          <small>인공지능 수학</small>
+        </span>
+      </a>
+      <nav class="top-actions" aria-label="상단 메뉴">
+        <a class="ghost-link" href="../../">전체 웹툴</a>
+        <a class="ghost-link" data-github-link href="#" target="_blank" rel="noreferrer">GitHub</a>
+      </nav>
+    </header>
+
+    <main class="tool-workspace">
+      <section class="intro-band" aria-labelledby="tool-title">
+        <div>
+          <p class="eyebrow">긍정과 부정을 분류하는 교육용 AI</p>
+          <h1 id="tool-title">감성 분석 인공지능 만들기 실습</h1>
+        </div>
+        <div class="metric-strip" aria-label="실습 단계">
+          <span>1. 문장 입력</span>
+          <span>2. 벡터 평균 학습</span>
+          <span>3. 유사도 예측</span>
+        </div>
+      </section>
+
+      <section class="control-band" aria-label="학습 데이터 관리">
+        <div class="control-group">
+          <button class="primary-button" id="trainButton" type="button">학습하기</button>
+          <button class="plain-button" id="saveButton" type="button">JSON 저장</button>
+          <label class="plain-button file-button" for="loadFile">JSON 불러오기</label>
+          <input id="loadFile" type="file" accept="application/json,.json" />
+          <button class="danger-button" id="clearButton" type="button">전체 비우기</button>
+        </div>
+        <p class="status-message" id="statusMessage" role="status" aria-live="polite">
+          긍정 문장과 부정 문장을 각각 10개 이상 입력한 뒤 학습하세요.
+        </p>
+      </section>
+
+      <section class="training-grid" aria-label="학습 데이터 입력">
+        <section class="training-panel positive-panel" aria-labelledby="positiveTitle">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">긍정 데이터</p>
+              <h2 id="positiveTitle">긍정 문장</h2>
+            </div>
+            <strong id="positiveCount">0개</strong>
+          </div>
+          <div class="sentence-list" id="positiveRows"></div>
+          <button class="add-button" type="button" data-add-row="positive">+ 긍정 문장 추가</button>
+        </section>
+
+        <section class="training-panel negative-panel" aria-labelledby="negativeTitle">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow red">부정 데이터</p>
+              <h2 id="negativeTitle">부정 문장</h2>
+            </div>
+            <strong id="negativeCount">0개</strong>
+          </div>
+          <div class="sentence-list" id="negativeRows"></div>
+          <button class="add-button" type="button" data-add-row="negative">+ 부정 문장 추가</button>
+        </section>
+      </section>
+
+      <section class="prediction-panel" aria-labelledby="predictTitle">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">새 문장 예측</p>
+            <h2 id="predictTitle">AI에게 새 문장을 분류시켜 보기</h2>
+          </div>
+          <span class="model-state" id="modelState">학습 전</span>
+        </div>
+
+        <div class="predict-input-row">
+          <label for="testSentence">분석할 문장</label>
+          <textarea
+            id="testSentence"
+            rows="3"
+            placeholder="예: 오늘 수업이 이해가 잘 돼서 뿌듯했다."
+          ></textarea>
+          <button class="primary-button" id="predictButton" type="button" disabled>예측하기</button>
+        </div>
+
+        <div class="result-grid" id="resultArea" hidden>
+          <section class="score-panel" aria-label="감성 점수">
+            <div class="prediction-label">
+              <span>예측 결과</span>
+              <strong id="predictionLabel">-</strong>
+            </div>
+            <div class="score-bars">
+              <div class="score-row">
+                <div class="score-row-head">
+                  <span>긍정 점수</span>
+                  <strong id="positiveScoreText">0%</strong>
+                </div>
+                <div class="bar-track" aria-hidden="true">
+                  <div class="bar-fill positive-fill" id="positiveBar"></div>
+                </div>
+              </div>
+              <div class="score-row">
+                <div class="score-row-head">
+                  <span>부정 점수</span>
+                  <strong id="negativeScoreText">0%</strong>
+                </div>
+                <div class="bar-track" aria-hidden="true">
+                  <div class="bar-fill negative-fill" id="negativeBar"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="reason-panel" aria-labelledby="reasonTitle">
+            <h3 id="reasonTitle">AI가 이렇게 판단한 이유</h3>
+            <p id="reasonText"></p>
+            <div class="highlight-box" id="highlightedSentence" aria-label="새 문장에서 겹친 주요 표현"></div>
+            <div class="expression-list" id="expressionList" aria-label="겹친 주요 표현 목록"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script src="./sentiment.js"></script>
+  </body>
+</html>
