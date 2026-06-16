@@ -1,6 +1,92 @@
 const MANUAL_GITHUB_REPOSITORY_URL = "https://github.com/mathtjungsw/math-class-webtools";
 const MIN_SENTENCE_COUNT = 10;
-const NGRAM_SIZES = [2, 3];
+
+// 단어 기반 모델에서는 감정과 직접 관련이 약한 흔한 말을 제외한다.
+// 예를 들어 "오늘", "수업", "문제"는 긍정/부정 양쪽 문장에 모두 자주 나올 수 있으므로
+// 평균 벡터를 흐리게 만든다. 수업에서는 이것을 "불용어 제거"라고 설명할 수 있다.
+const STOP_WORDS = new Set([
+  "가",
+  "것",
+  "그",
+  "나",
+  "내",
+  "내가",
+  "너무",
+  "더",
+  "되",
+  "된다",
+  "되어",
+  "돼",
+  "들",
+  "들어",
+  "많",
+  "많아",
+  "매우",
+  "만든",
+  "문제",
+  "문장",
+  "받",
+  "받아",
+  "발표",
+  "설명",
+  "새로운",
+  "생겼",
+  "시험",
+  "수학",
+  "수업",
+  "아주",
+  "완전",
+  "내용",
+  "오늘",
+  "우리",
+  "이",
+  "이번",
+  "잘",
+  "정말",
+  "준비",
+  "좀",
+  "조금",
+  "친구",
+  "함께",
+  "하다",
+  "한다",
+  "했다",
+  "하고",
+  "하는",
+  "활동",
+]);
+
+// 한국어 문장은 "좋다", "좋았다", "좋아서"처럼 같은 뜻의 표현이 여러 꼴로 나타난다.
+// 형태소 분석기 없이 브라우저에서만 작동해야 하므로, 수업용으로 자주 쓰는 감성 어근을 간단히 묶는다.
+const SENTIMENT_ROOTS = [
+  ["재미없", /^(재미없|재미없어|재미없었|재미없다)/u],
+  ["재미있", /^(재미있|재밌|재미있어|재미있었|재미있다)/u],
+  ["즐겁", /^(즐겁|즐거|즐겼|즐기)/u],
+  ["행복", /^행복/u],
+  ["뿌듯", /^뿌듯/u],
+  ["만족", /^만족/u],
+  ["흥미", /^흥미/u],
+  ["좋", /^좋/u],
+  ["싫", /^싫/u],
+  ["어렵", /^(어렵|어려)/u],
+  ["힘들", /^(힘들|힘드)/u],
+  ["불안", /^불안/u],
+  ["속상", /^속상/u],
+  ["실망", /^실망/u],
+  ["지루", /^지루/u],
+  ["피곤", /^피곤/u],
+  ["답답", /^답답/u],
+  ["헷갈", /^헷갈/u],
+  ["나쁘", /^(나쁘|나쁜|나빠)/u],
+  ["망치", /^(망치|망쳐|망쳤)/u],
+];
+
+const NEGATION_WORDS = new Set(["안", "못", "않", "별로", "없", "없이"]);
+
+const NEGATION_ROOTS = [
+  ["않", /^(않|않다|않아|않았|않는|않고|않게|않아서|않았다)/u],
+  ["없", /^(없|없다|없어|없었|없는|없고|없어서|없었다)/u],
+];
 
 const state = {
   model: null,
@@ -145,22 +231,80 @@ function normalizeSentence(sentence) {
     .trim();
 }
 
+function stripKoreanEnding(word) {
+  if (word.length <= 2) {
+    return word;
+  }
+
+  // 조사와 어미를 아주 단순하게 걷어낸다.
+  // 예: "계산이" -> "계산", "어려웠다" -> "어려웠"
+  // 완벽한 문법 분석은 아니지만, 학생 실습용으로 같은 단어가 너무 많이 쪼개지는 문제를 줄인다.
+  return word
+    .replace(/(에게서|에게|한테|에서|으로|부터|까지|보다|처럼|으로|하고|이며|이나|라도)$/u, "")
+    .replace(/(은|는|이|가|을|를|에|로|와|과|도|만|랑)$/u, "")
+    .replace(/(했습니다|합니다|했어요|했어|했다|하고|하게|해서|되어서|돼서|어요|아요|였다|았다|었다|웠다|웠어|운|은|는|다|요|서|고)$/u, "");
+}
+
+function normalizeWord(rawWord) {
+  const cleaned = rawWord.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, "");
+
+  if (!cleaned || cleaned.length <= 1) {
+    return "";
+  }
+
+  const negationMatch = NEGATION_ROOTS.find(([, pattern]) => pattern.test(cleaned));
+
+  if (negationMatch) {
+    return negationMatch[0];
+  }
+
+  const rootMatch = SENTIMENT_ROOTS.find(([, pattern]) => pattern.test(cleaned));
+
+  if (rootMatch) {
+    return rootMatch[0];
+  }
+
+  const withoutEnding = stripKoreanEnding(cleaned);
+
+  if (!withoutEnding || withoutEnding.length <= 1 || STOP_WORDS.has(withoutEnding)) {
+    return "";
+  }
+
+  return withoutEnding;
+}
+
+function tokenizeWords(sentence) {
+  const text = normalizeSentence(sentence).replace(/[^\p{L}\p{N}\s]+/gu, " ");
+
+  return text
+    .split(/\s+/)
+    .map(normalizeWord)
+    .filter((word) => word && !STOP_WORDS.has(word));
+}
+
 function extractFeatures(sentence) {
-  const text = normalizeSentence(sentence);
+  const words = tokenizeWords(sentence);
   const features = new Map();
 
-  // 문장을 글자 조각으로 나눈다.
-  // 예를 들어 "좋아요"는 2-gram 기준으로 "좋아", "아요"가 된다.
-  // 한국어는 띄어쓰기나 형태소 분석이 어려울 수 있으므로, 글자 n-gram은 수업용으로 안정적인 특징이 된다.
-  NGRAM_SIZES.forEach((size) => {
-    for (let i = 0; i <= text.length - size; i += 1) {
-      const gram = text.slice(i, i + size);
+  // 문장을 단어 벡터로 바꾼다.
+  // 예를 들어 "수업이 정말 재미있었다"는 불용어를 제거한 뒤 "재미있" 같은 특징으로 남는다.
+  // 각 단어가 몇 번 나왔는지를 세면 문장을 숫자 벡터처럼 비교할 수 있다.
+  words.forEach((word) => {
+    features.set(word, (features.get(word) || 0) + 1);
+  });
 
-      if (!gram.trim() || /\s/.test(gram)) {
-        continue;
-      }
+  // "안 좋다", "좋지 않다"처럼 부정어가 감성 단어와 붙어 있을 때는
+  // 두 단어를 묶은 특징도 조금 강하게 넣어 준다. 그래야 "좋"만 보고 긍정으로 치우치는 일을 줄일 수 있다.
+  words.forEach((word, index) => {
+    const nextWord = words[index + 1];
 
-      features.set(gram, (features.get(gram) || 0) + 1);
+    if (!nextWord) {
+      return;
+    }
+
+    if (NEGATION_WORDS.has(word) || NEGATION_WORDS.has(nextWord)) {
+      const phrase = `${word} ${nextWord}`;
+      features.set(phrase, (features.get(phrase) || 0) + 1.5);
     }
   });
 
@@ -209,7 +353,7 @@ function cosineSimilarity(vectorA, vectorB) {
   }
 
   // 코사인 유사도는 두 벡터가 바라보는 방향이 얼마나 비슷한지 보는 값이다.
-  // 문장 길이가 조금 달라도 방향을 비교하므로, 단순히 겹친 글자 수만 세는 것보다 수업용 모델에 잘 맞는다.
+  // 문장 길이가 조금 달라도 방향을 비교하므로, 단순히 겹친 단어 수만 세는 것보다 수업용 모델에 잘 맞는다.
   return dotProduct(vectorA, vectorB) / magnitude;
 }
 
@@ -325,7 +469,7 @@ function findOverlappingExpressions(vector) {
       text: feature,
       count,
       lean: getFeatureLean(feature),
-      strength: dominance * count * (feature.length / Math.max(...NGRAM_SIZES)),
+      strength: dominance * count * (feature.includes(" ") ? 1.25 : 1),
       positiveWeight,
       negativeWeight,
     });
@@ -356,11 +500,11 @@ function classifyLean(lean) {
 
 function buildReason(result, expressions) {
   if (result.vector.size === 0) {
-    return "입력한 문장에서 비교할 글자 조각을 만들 수 없습니다. 두 글자 이상인 문장을 입력하면 AI가 다시 계산합니다.";
+    return "입력한 문장에서 비교할 단어를 찾지 못했습니다. 감정이 드러나는 단어가 들어간 문장을 입력하면 AI가 다시 계산합니다.";
   }
 
   if (expressions.length === 0) {
-    return "새 문장과 학습 데이터가 공유하는 주요 글자 조각이 거의 없습니다. 그래서 두 평균 벡터와의 유사도가 낮아져 판단이 불안정할 수 있습니다.";
+    return "새 문장과 학습 데이터가 공유하는 주요 단어가 거의 없습니다. 그래서 두 평균 벡터와의 유사도가 낮아져 판단이 불안정할 수 있습니다.";
   }
 
   const topExpressions = expressions
@@ -369,7 +513,7 @@ function buildReason(result, expressions) {
     .join(", ");
   const winningAverage = result.label === "긍정" ? "긍정 평균 벡터" : "부정 평균 벡터";
 
-  return `새 문장을 2글자, 3글자 조각으로 나누어 보니 ${topExpressions} 같은 표현이 학습 데이터와 겹쳤습니다. 이 조각들을 벡터로 계산했을 때 ${winningAverage}와 이루는 각도가 더 작아서 ${result.label}으로 예측했습니다.`;
+  return `새 문장에서 흔한 말을 제외하고 감정 판단에 쓸 단어를 골라 보니 ${topExpressions} 같은 표현이 학습 데이터와 겹쳤습니다. 이 단어들을 벡터로 계산했을 때 ${winningAverage}와 이루는 각도가 더 작아서 ${result.label}으로 예측했습니다.`;
 }
 
 function renderHighlightedSentence(sentence, expressions) {
