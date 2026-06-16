@@ -35,8 +35,14 @@ function wireGithubLinks() {
 
 document.querySelectorAll("[data-subject]").forEach((button) => {
   button.addEventListener("click", () => {
+    const selectedSubject = button.dataset.subject;
+
     document.querySelectorAll("[data-subject]").forEach((item) => {
       item.classList.toggle("is-active", item === button);
+    });
+
+    document.querySelectorAll("[data-subject-panel]").forEach((panel) => {
+      panel.hidden = panel.dataset.subjectPanel !== selectedSubject;
     });
   });
 });

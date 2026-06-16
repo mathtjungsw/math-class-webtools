@@ -221,6 +221,10 @@ h3 {
   font: inherit;
 }
 
+.subject-button + .subject-button {
+  margin-top: 8px;
+}
+
 .subject-button.is-active {
   border-color: rgba(32, 122, 83, 0.25);
   background: var(--surface-strong);

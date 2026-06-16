@@ -1,0 +1,1858 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>몬티홀 딜레마 실험 | 확률과 통계</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f8fb;
+        --surface: #ffffff;
+        --surface-soft: #f1f5f9;
+        --ink: #152033;
+        --muted: #647084;
+        --line: #dbe3ef;
+        --blue: #2563eb;
+        --blue-soft: #dbeafe;
+        --green: #138a5b;
+        --green-soft: #dff7ea;
+        --red: #c2413f;
+        --red-soft: #fee2e2;
+        --yellow: #f59e0b;
+        --yellow-soft: #fff1c7;
+        --violet: #7c3aed;
+        --shadow: 0 14px 30px rgba(28, 42, 68, 0.09);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        background:
+          linear-gradient(135deg, rgba(37, 99, 235, 0.09), transparent 28%),
+          linear-gradient(230deg, rgba(245, 158, 11, 0.1), transparent 30%),
+          var(--bg);
+        color: var(--ink);
+        font-family:
+          "Pretendard",
+          "Noto Sans KR",
+          "Apple SD Gothic Neo",
+          "Malgun Gothic",
+          system-ui,
+          sans-serif;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      button {
+        border: 0;
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+
+      .page {
+        width: min(1480px, 100%);
+        margin: 0 auto;
+        padding: 22px clamp(14px, 3vw, 34px) 34px;
+      }
+
+      .hero {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 18px;
+        padding: 20px 0 8px;
+      }
+
+      .subject {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 0 10px;
+        border: 1px solid rgba(37, 99, 235, 0.18);
+        border-radius: 999px;
+        background: var(--blue-soft);
+        color: #1745a3;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        overflow-wrap: anywhere;
+      }
+
+      h1 {
+        margin: 10px 0 8px;
+        font-size: clamp(30px, 5vw, 54px);
+        line-height: 1.04;
+        letter-spacing: 0;
+      }
+
+      .hero p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.55;
+      }
+
+      .hero-stat {
+        display: grid;
+        min-width: 180px;
+        gap: 4px;
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.78);
+        box-shadow: var(--shadow);
+      }
+
+      .hero-stat strong {
+        font-size: 30px;
+      }
+
+      .hero-stat span {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .app-layout {
+        display: grid;
+        grid-template-columns: minmax(280px, 330px) minmax(0, 1fr) minmax(300px, 390px);
+        gap: 16px;
+        align-items: start;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: var(--shadow);
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 16px 16px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .panel-header h2 {
+        margin: 0;
+        font-size: 18px;
+        line-height: 1.25;
+      }
+
+      .panel-body {
+        padding: 16px;
+      }
+
+      .settings {
+        position: sticky;
+        top: 14px;
+      }
+
+      .control-group + .control-group {
+        margin-top: 18px;
+      }
+
+      .control-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 8px;
+        color: var(--ink);
+        font-weight: 800;
+      }
+
+      .count-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 62px;
+        min-height: 30px;
+        padding: 0 10px;
+        border-radius: 999px;
+        background: var(--yellow-soft);
+        color: #8a5600;
+        font-weight: 900;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--blue);
+      }
+
+      .range-note,
+      .small-note {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .button-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .theme-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+        max-height: 344px;
+        overflow: auto;
+        padding-right: 2px;
+      }
+
+      .option-button,
+      .theme-button,
+      .primary-button,
+      .danger-button,
+      .quiet-button {
+        min-height: 42px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 800;
+        line-height: 1.25;
+        transition:
+          transform 140ms ease,
+          border-color 140ms ease,
+          background 140ms ease,
+          box-shadow 140ms ease;
+      }
+
+      .option-button,
+      .theme-button,
+      .quiet-button {
+        border: 1px solid var(--line);
+        background: var(--surface);
+        color: var(--ink);
+      }
+
+      .option-button:hover,
+      .theme-button:hover,
+      .quiet-button:hover,
+      .primary-button:hover,
+      .danger-button:hover {
+        transform: translateY(-1px);
+      }
+
+      .option-button.is-active,
+      .theme-button.is-active {
+        border-color: rgba(37, 99, 235, 0.55);
+        background: var(--blue-soft);
+        color: #123f95;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+      }
+
+      .theme-button {
+        display: grid;
+        grid-template-columns: 32px minmax(0, 1fr);
+        gap: 9px;
+        align-items: center;
+        padding: 9px 10px;
+        text-align: left;
+      }
+
+      .theme-icon {
+        display: grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: var(--surface-soft);
+        font-size: 20px;
+      }
+
+      .theme-button strong,
+      .theme-copy,
+      .theme-detail {
+        display: block;
+      }
+
+      .theme-detail {
+        margin-top: 2px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .primary-button {
+        width: 100%;
+        min-height: 46px;
+        background: var(--blue);
+        color: white;
+        box-shadow: 0 10px 18px rgba(37, 99, 235, 0.22);
+      }
+
+      .danger-button {
+        width: 100%;
+        min-height: 44px;
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      .quiet-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 0 12px;
+      }
+
+      .prediction-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .prediction-grid label {
+        display: grid;
+        gap: 6px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .prediction-grid input {
+        min-height: 42px;
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0 10px;
+        color: var(--ink);
+      }
+
+      .stage-panel {
+        min-height: 640px;
+      }
+
+      .stage-top {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 14px;
+        align-items: center;
+        padding: 16px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .status-title {
+        margin: 0 0 6px;
+        font-size: 20px;
+        font-weight: 900;
+      }
+
+      .status-text {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .decision-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+
+      .decision-actions .quiet-button {
+        min-width: 112px;
+      }
+
+      .stay-button {
+        border-color: rgba(19, 138, 91, 0.38);
+        background: var(--green-soft);
+        color: #0f6a47;
+      }
+
+      .switch-button {
+        border-color: rgba(124, 58, 237, 0.34);
+        background: #ede9fe;
+        color: #5b21b6;
+      }
+
+      .result-banner {
+        display: none;
+        margin: 16px 16px 0;
+        padding: 16px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: var(--surface-soft);
+      }
+
+      .result-banner.is-visible {
+        display: block;
+      }
+
+      .result-banner.is-win {
+        border-color: rgba(19, 138, 91, 0.28);
+        background: var(--green-soft);
+      }
+
+      .result-banner.is-lose {
+        border-color: rgba(194, 65, 63, 0.28);
+        background: var(--red-soft);
+      }
+
+      .result-banner strong {
+        display: block;
+        font-size: clamp(24px, 4vw, 38px);
+        line-height: 1.1;
+      }
+
+      .result-banner span {
+        display: block;
+        margin-top: 8px;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .door-grid-wrap {
+        padding: 16px;
+      }
+
+      .door-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(var(--door-min, 92px), 1fr));
+        gap: var(--door-gap, 10px);
+        align-items: stretch;
+      }
+
+      .door {
+        position: relative;
+        display: grid;
+        place-items: center;
+        min-height: var(--door-height, 112px);
+        padding: 8px 6px;
+        border: 2px solid #b9c6d8;
+        border-radius: 8px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.2)),
+          #e8eef7;
+        color: var(--ink);
+        cursor: pointer;
+        overflow: hidden;
+        transition:
+          transform 140ms ease,
+          box-shadow 140ms ease,
+          border-color 140ms ease,
+          background 140ms ease;
+      }
+
+      .door:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(31, 46, 75, 0.13);
+      }
+
+      .door-number {
+        position: absolute;
+        top: 6px;
+        left: 7px;
+        color: rgba(21, 32, 51, 0.56);
+        font-size: clamp(10px, 1.7vw, 12px);
+        font-weight: 900;
+      }
+
+      .door-icon {
+        display: block;
+        font-size: var(--door-icon, 30px);
+        line-height: 1;
+      }
+
+      .door-label {
+        width: 100%;
+        margin-top: 7px;
+        color: rgba(21, 32, 51, 0.75);
+        font-size: var(--door-label, 12px);
+        font-weight: 900;
+        line-height: 1.2;
+        text-align: center;
+      }
+
+      .door.is-selected {
+        border-color: var(--blue);
+        background:
+          linear-gradient(180deg, rgba(219, 234, 254, 0.9), rgba(191, 219, 254, 0.5)),
+          #dbeafe;
+        box-shadow: inset 0 0 0 2px rgba(37, 99, 235, 0.18);
+      }
+
+      .door.is-switch-option {
+        border-color: var(--violet);
+        background:
+          linear-gradient(180deg, rgba(237, 233, 254, 0.95), rgba(221, 214, 254, 0.45)),
+          #ede9fe;
+      }
+
+      .door.is-opened {
+        border-style: dashed;
+        border-color: #cbd5e1;
+        background: #f8fafc;
+        color: #738096;
+      }
+
+      .door.is-final {
+        border-color: var(--yellow);
+        box-shadow:
+          inset 0 0 0 2px rgba(245, 158, 11, 0.22),
+          0 10px 24px rgba(245, 158, 11, 0.16);
+      }
+
+      .door.is-prize {
+        border-color: var(--green);
+        background:
+          linear-gradient(180deg, rgba(223, 247, 234, 0.96), rgba(187, 247, 208, 0.48)),
+          #dcfce7;
+      }
+
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 28px;
+        padding: 0 9px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--surface);
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+
+      .dot-blue {
+        background: var(--blue);
+      }
+
+      .dot-purple {
+        background: var(--violet);
+      }
+
+      .dot-yellow {
+        background: var(--yellow);
+      }
+
+      .dot-green {
+        background: var(--green);
+      }
+
+      .stats-column {
+        display: grid;
+        gap: 16px;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .stat-box {
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface);
+      }
+
+      .stat-box strong {
+        display: block;
+        font-size: 23px;
+      }
+
+      .stat-box span {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+        line-height: 1.35;
+      }
+
+      .wide-stat {
+        grid-column: 1 / -1;
+        background: var(--surface-soft);
+      }
+
+      .bar-stack {
+        display: grid;
+        gap: 13px;
+      }
+
+      .bar-row {
+        display: grid;
+        gap: 7px;
+      }
+
+      .bar-row-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .bar-track {
+        position: relative;
+        height: 20px;
+        border-radius: 999px;
+        background: #e5edf7;
+        overflow: hidden;
+      }
+
+      .bar-fill {
+        height: 100%;
+        width: 0%;
+        border-radius: inherit;
+        transition: width 260ms ease;
+      }
+
+      .bar-fill.stay {
+        background: var(--green);
+      }
+
+      .bar-fill.switch {
+        background: var(--violet);
+      }
+
+      .theory-marker {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0%;
+        width: 3px;
+        background: var(--yellow);
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.65);
+      }
+
+      .compare-text {
+        margin: 12px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .theory-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+
+      .theory-table th,
+      .theory-table td {
+        padding: 9px 7px;
+        border-bottom: 1px solid var(--line);
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .theory-table th:first-child,
+      .theory-table td:first-child {
+        text-align: left;
+      }
+
+      .theory-table tr.is-current {
+        background: var(--yellow-soft);
+        font-weight: 900;
+      }
+
+      .history-list {
+        display: grid;
+        gap: 8px;
+        max-height: 360px;
+        overflow: auto;
+      }
+
+      .history-empty {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .history-item {
+        display: grid;
+        gap: 3px;
+        padding: 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface);
+      }
+
+      .history-item strong {
+        font-size: 13px;
+      }
+
+      .history-item span {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .history-item.is-win {
+        border-color: rgba(19, 138, 91, 0.25);
+        background: var(--green-soft);
+      }
+
+      .history-item.is-lose {
+        border-color: rgba(194, 65, 63, 0.2);
+        background: #fff7f7;
+      }
+
+      .explain {
+        display: none;
+        margin-top: 12px;
+        padding: 13px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface-soft);
+        color: #334155;
+        line-height: 1.65;
+      }
+
+      .explain.is-visible {
+        display: block;
+      }
+
+      .explain p {
+        margin: 0 0 10px;
+      }
+
+      .explain p:last-child {
+        margin-bottom: 0;
+      }
+
+      @media (max-width: 1180px) {
+        .app-layout {
+          grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+        }
+
+        .stats-column {
+          grid-column: 1 / -1;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .stats-column > .panel:last-child {
+          grid-column: 1 / -1;
+        }
+      }
+
+      @media (max-width: 820px) {
+        .hero,
+        .stage-top {
+          align-items: stretch;
+          flex-direction: column;
+          grid-template-columns: 1fr;
+        }
+
+        .hero-stat {
+          min-width: 0;
+        }
+
+        .app-layout,
+        .stats-column {
+          grid-template-columns: 1fr;
+        }
+
+        .settings {
+          position: static;
+        }
+
+        .decision-actions {
+          justify-content: stretch;
+        }
+
+        .decision-actions .quiet-button {
+          flex: 1 1 130px;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .page {
+          padding-inline: 10px;
+        }
+
+        .button-grid,
+        .prediction-grid,
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .wide-stat {
+          grid-column: auto;
+        }
+
+        .panel-body,
+        .stage-top,
+        .door-grid-wrap {
+          padding: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <div>
+          <span class="subject">확률과 통계 · 몬티홀 딜레마 실험</span>
+          <h1>몬티홀 실험 시뮬레이터</h1>
+          <p>문을 고르고, 유지할지 바꿀지 선택해 보세요.</p>
+        </div>
+        <div class="hero-stat" aria-live="polite">
+          <strong id="heroTotal">0회</strong>
+          <span>누적 실험 횟수</span>
+        </div>
+      </header>
+
+      <div class="app-layout">
+        <aside class="panel settings" aria-label="실험 설정">
+          <div class="panel-header">
+            <h2>설정</h2>
+          </div>
+          <div class="panel-body">
+            <section class="control-group" aria-labelledby="doorCountTitle">
+              <div class="control-label">
+                <span id="doorCountTitle">문의 개수</span>
+                <span class="count-badge"><span id="doorCountValue">3</span>개</span>
+              </div>
+              <input id="doorCountSlider" type="range" min="3" max="100" value="3" />
+              <p class="range-note">문이 많아질수록 처음에 맞힐 확률은 작아지고, 바꾸기 전략은 더 강해집니다.</p>
+            </section>
+
+            <section class="control-group" aria-labelledby="themeTitle">
+              <div class="control-label">
+                <span id="themeTitle">테마 선택</span>
+              </div>
+              <div id="themeGrid" class="theme-grid"></div>
+            </section>
+
+            <section class="control-group" aria-labelledby="strategyTitle">
+              <div class="control-label">
+                <span id="strategyTitle">자동 실행 전략</span>
+              </div>
+              <div class="button-grid" id="strategyButtons">
+                <button class="option-button is-active" type="button" data-strategy="stay">항상 선택 유지</button>
+                <button class="option-button" type="button" data-strategy="switch">항상 선택 변경</button>
+                <button class="option-button" type="button" data-strategy="random">유지/변경 반반 랜덤</button>
+              </div>
+            </section>
+
+            <section class="control-group" aria-labelledby="autoCountTitle">
+              <div class="control-label">
+                <span id="autoCountTitle">자동 실행 횟수</span>
+              </div>
+              <div class="button-grid" id="autoCountButtons">
+                <button class="option-button is-active" type="button" data-count="1">1회</button>
+                <button class="option-button" type="button" data-count="10">10회</button>
+                <button class="option-button" type="button" data-count="100">100회</button>
+                <button class="option-button" type="button" data-count="1000">1000회</button>
+              </div>
+            </section>
+
+            <section class="control-group">
+              <button id="runAutoButton" class="primary-button" type="button">자동 실행</button>
+            </section>
+
+            <section class="control-group" aria-labelledby="predictionTitle">
+              <div class="control-label">
+                <span id="predictionTitle">예상해보기</span>
+              </div>
+              <div class="prediction-grid">
+                <label>
+                  유지 승률 예상(%)
+                  <input id="stayPrediction" type="number" min="0" max="100" step="0.1" placeholder="예: 33.3" />
+                </label>
+                <label>
+                  변경 승률 예상(%)
+                  <input id="switchPrediction" type="number" min="0" max="100" step="0.1" placeholder="예: 66.7" />
+                </label>
+              </div>
+              <p id="predictionCompare" class="small-note">예상값을 입력하면 실험 결과와 비교해 볼 수 있어요.</p>
+            </section>
+
+            <section class="control-group">
+              <button id="resetButton" class="danger-button" type="button">초기화</button>
+            </section>
+          </div>
+        </aside>
+
+        <section class="panel stage-panel" aria-label="직접 실험">
+          <div class="stage-top">
+            <div>
+              <p id="statusTitle" class="status-title">닫힌 문 중 하나를 골라 보세요.</p>
+              <p id="statusText" class="status-text">진행자는 정답과 내가 고른 문을 제외한 꽝 문을 모두 열어 줍니다.</p>
+            </div>
+            <div class="decision-actions">
+              <button id="stayButton" class="quiet-button stay-button" type="button" hidden>선택 유지</button>
+              <button id="switchButton" class="quiet-button switch-button" type="button" hidden>선택 변경</button>
+              <button id="nextRoundButton" class="quiet-button" type="button" hidden>다음 직접 실험</button>
+            </div>
+          </div>
+
+          <div id="resultBanner" class="result-banner" aria-live="polite"></div>
+
+          <div class="door-grid-wrap">
+            <div id="doorGrid" class="door-grid" aria-label="문 목록"></div>
+            <div class="legend" aria-label="표시 설명">
+              <span><i class="dot dot-blue"></i>처음 선택</span>
+              <span><i class="dot dot-purple"></i>바꿀 수 있는 문</span>
+              <span><i class="dot dot-yellow"></i>최종 선택</span>
+              <span><i class="dot dot-green"></i>당첨 문</span>
+            </div>
+          </div>
+        </section>
+
+        <aside class="stats-column" aria-label="통계와 기록">
+          <section class="panel">
+            <div class="panel-header">
+              <h2>누적 통계</h2>
+              <button id="downloadCsvButton" class="quiet-button" type="button">CSV 다운로드</button>
+            </div>
+            <div class="panel-body">
+              <div class="stats-grid">
+                <div class="stat-box wide-stat">
+                  <strong id="totalRuns">0회</strong>
+                  <span>전체 실험 횟수</span>
+                </div>
+                <div class="stat-box">
+                  <strong id="stayRuns">0회</strong>
+                  <span>선택 유지 횟수</span>
+                </div>
+                <div class="stat-box">
+                  <strong id="stayWins">0회</strong>
+                  <span>선택 유지 성공 횟수</span>
+                </div>
+                <div class="stat-box">
+                  <strong id="stayRate">0.0%</strong>
+                  <span>선택 유지 성공률</span>
+                </div>
+                <div class="stat-box">
+                  <strong id="switchRuns">0회</strong>
+                  <span>선택 변경 횟수</span>
+                </div>
+                <div class="stat-box">
+                  <strong id="switchWins">0회</strong>
+                  <span>선택 변경 성공 횟수</span>
+                </div>
+                <div class="stat-box">
+                  <strong id="switchRate">0.0%</strong>
+                  <span>선택 변경 성공률</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <h2>이론값과 비교하기</h2>
+            </div>
+            <div class="panel-body">
+              <div class="bar-stack">
+                <div class="bar-row">
+                  <div class="bar-row-top">
+                    <span>선택 유지</span>
+                    <span id="stayBarLabel">실험 0.0% · 이론 33.3%</span>
+                  </div>
+                  <div class="bar-track">
+                    <div id="stayBar" class="bar-fill stay"></div>
+                    <div id="stayTheoryMarker" class="theory-marker" title="이론값"></div>
+                  </div>
+                </div>
+                <div class="bar-row">
+                  <div class="bar-row-top">
+                    <span>선택 변경</span>
+                    <span id="switchBarLabel">실험 0.0% · 이론 66.7%</span>
+                  </div>
+                  <div class="bar-track">
+                    <div id="switchBar" class="bar-fill switch"></div>
+                    <div id="switchTheoryMarker" class="theory-marker" title="이론값"></div>
+                  </div>
+                </div>
+              </div>
+              <p id="theoryCompareText" class="compare-text"></p>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <h2>문 개수별 이론 승률 표</h2>
+            </div>
+            <div class="panel-body">
+              <table class="theory-table">
+                <thead>
+                  <tr>
+                    <th>문 개수</th>
+                    <th>유지</th>
+                    <th>변경</th>
+                  </tr>
+                </thead>
+                <tbody id="theoryTableBody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <h2>설명 보기</h2>
+              <button id="toggleExplainButton" class="quiet-button" type="button">열기</button>
+            </div>
+            <div class="panel-body">
+              <div id="explainBox" class="explain">
+                <p>처음 문을 고를 때 정답을 바로 고를 확률은 <strong>1/N</strong>입니다. 그래서 선택 유지 전략은 처음 감이 맞았을 때만 성공합니다.</p>
+                <p>반대로 처음에 틀렸을 확률은 <strong>(N-1)/N</strong>입니다. 진행자가 꽝 문을 모두 열어 주면, 처음 선택하지 않은 남은 문 하나에 그 확률이 모입니다.</p>
+                <p>예를 들어 문이 100개라면 처음부터 맞힐 확률은 1/100이고, 처음에 틀렸을 확률은 99/100입니다. 따라서 바꾸면 99/100의 경우에 성공하므로 선택 변경이 매우 유리합니다.</p>
+              </div>
+              <p class="small-note">닫힌 문이 마지막에 두 개만 남는다는 점을 꼭 관찰해 보세요.</p>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <h2>최근 20회 실험 기록</h2>
+            </div>
+            <div class="panel-body">
+              <div id="historyList" class="history-list"></div>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </main>
+
+    <script>
+      const themes = [
+        {
+          name: "치킨 쿠폰",
+          prizeLabel: "치킨 쿠폰",
+          loseLabel: "브로콜리",
+          prizeIcon: "🍗",
+          loseIcon: "🥦",
+          stayWin: "유지 성공! 처음 감이 바삭하게 맞았어요.",
+          switchWin: "변경 성공! 확률의 힘을 믿은 결과!",
+          lose: "이번엔 실패했지만, 여러 번 누적하면 차이가 보여요."
+        },
+        {
+          name: "전설 아이템",
+          prizeLabel: "전설 아이템",
+          loseLabel: "낡은 나무검",
+          prizeIcon: "🗡️",
+          loseIcon: "🪵",
+          stayWin: "유지 성공! 첫 선택이 전설급이었어요.",
+          switchWin: "변경 성공! 전리품은 확률 쪽에 있었네요.",
+          lose: "이번 선택은 낡은 나무검이었어요. 누적 기록을 더 보죠."
+        },
+        {
+          name: "놀이공원",
+          prizeLabel: "자유이용권",
+          loseLabel: "긴 줄서기권",
+          prizeIcon: "🎢",
+          loseIcon: "⏳",
+          stayWin: "유지 성공! 바로 입장하는 감각이 좋았어요.",
+          switchWin: "변경 성공! 줄을 피해 확률 놀이기구에 탔어요.",
+          lose: "이번엔 줄이 길었어요. 그래도 데이터는 쌓이고 있어요."
+        },
+        {
+          name: "급식 디저트",
+          prizeLabel: "급식 디저트",
+          loseLabel: "빈 식판",
+          prizeIcon: "🍰",
+          loseIcon: "🍽️",
+          stayWin: "유지 성공! 디저트를 한 번에 찾았어요.",
+          switchWin: "변경 성공! 마지막 한 칸에 달콤함이 있었어요.",
+          lose: "빈 식판이지만 괜찮아요. 표본이 늘면 경향이 보여요."
+        },
+        {
+          name: "황금 열쇠",
+          prizeLabel: "황금 열쇠",
+          loseLabel: "먼지 뭉치",
+          prizeIcon: "🔑",
+          loseIcon: "🧹",
+          stayWin: "유지 성공! 처음 문 뒤에 황금 열쇠가 있었어요.",
+          switchWin: "변경 성공! 확률이 열쇠 구멍을 정확히 찾았네요.",
+          lose: "먼지가 나왔어요. 다음 기록과 비교해 봅시다."
+        },
+        {
+          name: "우주여행",
+          prizeLabel: "우주여행 티켓",
+          loseLabel: "외계인 양말",
+          prizeIcon: "🚀",
+          loseIcon: "🧦",
+          stayWin: "유지 성공! 첫 선택으로 발사 준비 완료!",
+          switchWin: "변경 성공! 궤도 수정이 제대로 통했어요.",
+          lose: "양말도 우주적이긴 하지만, 당첨은 아니었어요."
+        },
+        {
+          name: "시험 만점",
+          prizeLabel: "만점 부적",
+          loseLabel: "추가 숙제",
+          prizeIcon: "💯",
+          loseIcon: "📚",
+          stayWin: "유지 성공! 첫 감이 만점 답안이었어요.",
+          switchWin: "변경 성공! 전략을 바꾸니 점수가 올라갔어요.",
+          lose: "추가 숙제 등장. 그래도 확률 공부에는 도움이 됩니다."
+        },
+        {
+          name: "아이스크림",
+          prizeLabel: "교환권",
+          loseLabel: "녹은 아이스크림",
+          prizeIcon: "🍦",
+          loseIcon: "💧",
+          stayWin: "유지 성공! 차갑고 정확한 선택이었어요.",
+          switchWin: "변경 성공! 녹기 전에 좋은 선택을 했어요.",
+          lose: "이번엔 녹았지만, 데이터는 선명하게 남아요."
+        },
+        {
+          name: "보물상자",
+          prizeLabel: "보물상자",
+          loseLabel: "빈 상자",
+          prizeIcon: "💎",
+          loseIcon: "📦",
+          stayWin: "유지 성공! 처음 상자에 보물이 있었어요.",
+          switchWin: "변경 성공! 남은 상자로 옮기길 잘했어요.",
+          lose: "빈 상자였어요. 그래도 확률의 흐름은 계속됩니다."
+        },
+        {
+          name: "영화관",
+          prizeLabel: "프리패스",
+          loseLabel: "광고만 보기",
+          prizeIcon: "🎬",
+          loseIcon: "📺",
+          stayWin: "유지 성공! 첫 선택으로 바로 본편 시작!",
+          switchWin: "변경 성공! 장면 전환이 멋지게 성공했어요.",
+          lose: "광고 시간이 길어졌지만, 실험은 계속할 수 있어요."
+        },
+        {
+          name: "콘서트",
+          prizeLabel: "VIP석",
+          loseLabel: "기둥 뒤 좌석",
+          prizeIcon: "🎤",
+          loseIcon: "🪑",
+          stayWin: "유지 성공! 첫 선택이 무대 정면이었어요.",
+          switchWin: "변경 성공! 자리를 바꾸니 시야가 열렸어요.",
+          lose: "이번엔 시야가 아쉬웠어요. 누적 승률을 확인해 봅시다."
+        },
+        {
+          name: "로봇 친구",
+          prizeLabel: "로봇 친구",
+          loseLabel: "방전 배터리",
+          prizeIcon: "🤖",
+          loseIcon: "🔋",
+          stayWin: "유지 성공! 첫 선택으로 로봇 친구를 만났어요.",
+          switchWin: "변경 성공! 회로가 확률 쪽으로 연결됐네요.",
+          lose: "배터리가 방전됐어요. 다음 실험에서 충전해 봅시다."
+        }
+      ];
+
+      const state = {
+        doorCount: 3,
+        themeIndex: 0,
+        autoStrategy: "stay",
+        autoCount: 1,
+        isAutoRunning: false,
+        stats: {
+          stayRuns: 0,
+          stayWins: 0,
+          switchRuns: 0,
+          switchWins: 0
+        },
+        records: [],
+        currentRound: null
+      };
+
+      const elements = {
+        doorCountSlider: document.querySelector("#doorCountSlider"),
+        doorCountValue: document.querySelector("#doorCountValue"),
+        themeGrid: document.querySelector("#themeGrid"),
+        strategyButtons: document.querySelector("#strategyButtons"),
+        autoCountButtons: document.querySelector("#autoCountButtons"),
+        runAutoButton: document.querySelector("#runAutoButton"),
+        resetButton: document.querySelector("#resetButton"),
+        stayPrediction: document.querySelector("#stayPrediction"),
+        switchPrediction: document.querySelector("#switchPrediction"),
+        predictionCompare: document.querySelector("#predictionCompare"),
+        statusTitle: document.querySelector("#statusTitle"),
+        statusText: document.querySelector("#statusText"),
+        stayButton: document.querySelector("#stayButton"),
+        switchButton: document.querySelector("#switchButton"),
+        nextRoundButton: document.querySelector("#nextRoundButton"),
+        resultBanner: document.querySelector("#resultBanner"),
+        doorGrid: document.querySelector("#doorGrid"),
+        heroTotal: document.querySelector("#heroTotal"),
+        totalRuns: document.querySelector("#totalRuns"),
+        stayRuns: document.querySelector("#stayRuns"),
+        stayWins: document.querySelector("#stayWins"),
+        stayRate: document.querySelector("#stayRate"),
+        switchRuns: document.querySelector("#switchRuns"),
+        switchWins: document.querySelector("#switchWins"),
+        switchRate: document.querySelector("#switchRate"),
+        stayBar: document.querySelector("#stayBar"),
+        switchBar: document.querySelector("#switchBar"),
+        stayTheoryMarker: document.querySelector("#stayTheoryMarker"),
+        switchTheoryMarker: document.querySelector("#switchTheoryMarker"),
+        stayBarLabel: document.querySelector("#stayBarLabel"),
+        switchBarLabel: document.querySelector("#switchBarLabel"),
+        theoryCompareText: document.querySelector("#theoryCompareText"),
+        theoryTableBody: document.querySelector("#theoryTableBody"),
+        historyList: document.querySelector("#historyList"),
+        downloadCsvButton: document.querySelector("#downloadCsvButton"),
+        toggleExplainButton: document.querySelector("#toggleExplainButton"),
+        explainBox: document.querySelector("#explainBox")
+      };
+
+      function randomIndex(max) {
+        return Math.floor(Math.random() * max);
+      }
+
+      function chooseRandomItem(items) {
+        return items[randomIndex(items.length)];
+      }
+
+      function formatPercent(value) {
+        return `${(value * 100).toFixed(1)}%`;
+      }
+
+      function rate(wins, runs) {
+        return runs === 0 ? 0 : wins / runs;
+      }
+
+      function totalRuns() {
+        return state.stats.stayRuns + state.stats.switchRuns;
+      }
+
+      function currentTheme() {
+        return themes[state.themeIndex];
+      }
+
+      function getTheoryRates(doorCount = state.doorCount) {
+        return {
+          stay: 1 / doorCount,
+          switch: (doorCount - 1) / doorCount
+        };
+      }
+
+      function statsForDoorCount(doorCount) {
+        return state.records.reduce(
+          (acc, record) => {
+            if (record.doorCount !== doorCount) {
+              return acc;
+            }
+            if (record.strategy === "stay") {
+              acc.stayRuns += 1;
+              if (record.result === "승리") {
+                acc.stayWins += 1;
+              }
+            } else {
+              acc.switchRuns += 1;
+              if (record.result === "승리") {
+                acc.switchWins += 1;
+              }
+            }
+            return acc;
+          },
+          { stayRuns: 0, stayWins: 0, switchRuns: 0, switchWins: 0 }
+        );
+      }
+
+      // 진행자가 열지 않고 마지막까지 닫아 둘 "바꿀 수 있는 문"을 정한다.
+      function findSwitchDoor(prizeIndex, initialChoice, doorCount) {
+        if (initialChoice !== prizeIndex) {
+          return prizeIndex;
+        }
+
+        const losingDoors = [];
+        for (let i = 0; i < doorCount; i += 1) {
+          if (i !== initialChoice) {
+            losingDoors.push(i);
+          }
+        }
+        return chooseRandomItem(losingDoors);
+      }
+
+      function openedDoorsForRound(prizeIndex, initialChoice, switchDoor, doorCount) {
+        const opened = new Set();
+        for (let i = 0; i < doorCount; i += 1) {
+          if (i !== initialChoice && i !== switchDoor) {
+            opened.add(i);
+          }
+        }
+        return opened;
+      }
+
+      function createRound() {
+        return {
+          prizeIndex: randomIndex(state.doorCount),
+          initialChoice: null,
+          switchDoor: null,
+          openedDoors: new Set(),
+          finalChoice: null,
+          phase: "choosing",
+          strategy: null,
+          didWin: null,
+          isAuto: false
+        };
+      }
+
+      function startNewRound() {
+        state.currentRound = createRound();
+        renderExperiment();
+      }
+
+      function chooseDoor(index) {
+        if (state.isAutoRunning || state.currentRound.phase !== "choosing") {
+          return;
+        }
+
+        const round = state.currentRound;
+        round.initialChoice = index;
+        round.switchDoor = findSwitchDoor(round.prizeIndex, index, state.doorCount);
+        round.openedDoors = openedDoorsForRound(round.prizeIndex, index, round.switchDoor, state.doorCount);
+        round.phase = "decision";
+        renderExperiment();
+      }
+
+      function finishCurrentRound(strategy) {
+        const round = state.currentRound;
+        if (!round || round.phase !== "decision") {
+          return;
+        }
+
+        round.strategy = strategy;
+        round.finalChoice = strategy === "stay" ? round.initialChoice : round.switchDoor;
+        round.didWin = round.finalChoice === round.prizeIndex;
+        round.phase = "result";
+        addResultToStats(round, false, strategy);
+        renderAll();
+      }
+
+      function addResultToStats(round, isAuto, requestedStrategy) {
+        const strategy = round.strategy;
+        if (strategy === "stay") {
+          state.stats.stayRuns += 1;
+          if (round.didWin) {
+            state.stats.stayWins += 1;
+          }
+        } else {
+          state.stats.switchRuns += 1;
+          if (round.didWin) {
+            state.stats.switchWins += 1;
+          }
+        }
+
+        const record = {
+          id: state.records.length + 1,
+          time: new Date().toLocaleTimeString("ko-KR", { hour12: false }),
+          doorCount: state.doorCount,
+          theme: currentTheme().name,
+          requestedStrategy,
+          strategy,
+          result: round.didWin ? "승리" : "패배",
+          prizeDoor: round.prizeIndex + 1,
+          initialChoice: round.initialChoice + 1,
+          finalChoice: round.finalChoice + 1,
+          switchDoor: round.switchDoor + 1,
+          isAuto
+        };
+        state.records.push(record);
+      }
+
+      function simulateOneRound(requestedStrategy) {
+        const round = createRound();
+        const actualStrategy =
+          requestedStrategy === "random" ? (Math.random() < 0.5 ? "stay" : "switch") : requestedStrategy;
+
+        round.initialChoice = randomIndex(state.doorCount);
+        round.switchDoor = findSwitchDoor(round.prizeIndex, round.initialChoice, state.doorCount);
+        round.openedDoors = openedDoorsForRound(
+          round.prizeIndex,
+          round.initialChoice,
+          round.switchDoor,
+          state.doorCount
+        );
+        round.strategy = actualStrategy;
+        round.finalChoice = actualStrategy === "stay" ? round.initialChoice : round.switchDoor;
+        round.didWin = round.finalChoice === round.prizeIndex;
+        round.phase = "result";
+        round.isAuto = true;
+        return round;
+      }
+
+      function strategyLabel(strategy, requestedStrategy = strategy) {
+        if (requestedStrategy === "random") {
+          return strategy === "stay" ? "반반 랜덤(유지)" : "반반 랜덤(변경)";
+        }
+        return strategy === "stay" ? "선택 유지" : "선택 변경";
+      }
+
+      function resultTitle(round) {
+        const theme = currentTheme();
+        if (round.didWin && round.strategy === "stay") {
+          return theme.stayWin;
+        }
+        if (round.didWin && round.strategy === "switch") {
+          return theme.switchWin;
+        }
+        return theme.lose;
+      }
+
+      function renderThemeButtons() {
+        elements.themeGrid.innerHTML = themes
+          .map(
+            (theme, index) => `
+              <button class="theme-button ${index === state.themeIndex ? "is-active" : ""}" type="button" data-theme="${index}">
+                <span class="theme-icon">${theme.prizeIcon}</span>
+                <span class="theme-copy">
+                  <strong>${theme.name}</strong>
+                  <span class="theme-detail">${theme.prizeLabel} vs ${theme.loseLabel}</span>
+                </span>
+              </button>
+            `
+          )
+          .join("");
+      }
+
+      function renderExperiment() {
+        const round = state.currentRound;
+        const theme = currentTheme();
+        const doorCount = state.doorCount;
+        const doorMin = doorCount <= 5 ? 104 : doorCount <= 12 ? 78 : doorCount <= 30 ? 58 : doorCount <= 60 ? 46 : 38;
+        const doorHeight = doorCount <= 5 ? 118 : doorCount <= 12 ? 96 : doorCount <= 30 ? 78 : doorCount <= 60 ? 62 : 52;
+        const doorIcon = doorCount <= 30 ? 30 : doorCount <= 60 ? 22 : 18;
+        const doorLabel = doorCount <= 30 ? 12 : doorCount <= 60 ? 10 : 0;
+
+        elements.doorGrid.style.setProperty("--door-min", `${doorMin}px`);
+        elements.doorGrid.style.setProperty("--door-height", `${doorHeight}px`);
+        elements.doorGrid.style.setProperty("--door-icon", `${doorIcon}px`);
+        elements.doorGrid.style.setProperty("--door-label", `${doorLabel}px`);
+        elements.doorGrid.style.setProperty("--door-gap", doorCount > 60 ? "6px" : "10px");
+
+        const doors = [];
+        for (let i = 0; i < doorCount; i += 1) {
+          const isOpened = round.openedDoors.has(i);
+          const isInitial = round.initialChoice === i;
+          const isSwitch = round.phase !== "choosing" && round.switchDoor === i;
+          const isFinal = round.finalChoice === i;
+          const isPrizeRevealed = round.phase === "result" && round.prizeIndex === i;
+          const canClickDoor = round.phase === "choosing" && !state.isAutoRunning;
+          const label = doorLabel === 0 ? "" : doorLabelForDoor(i, round, theme);
+          const icon = iconForDoor(i, round, theme);
+          const classes = [
+            "door",
+            isOpened ? "is-opened" : "",
+            isInitial ? "is-selected" : "",
+            isSwitch && !isInitial ? "is-switch-option" : "",
+            isFinal ? "is-final" : "",
+            isPrizeRevealed ? "is-prize" : ""
+          ]
+            .filter(Boolean)
+            .join(" ");
+
+          doors.push(`
+            <button class="${classes}" type="button" data-door="${i}" ${canClickDoor ? "" : "disabled"} aria-label="${i + 1}번 문">
+              <span class="door-number">${i + 1}</span>
+              <span class="door-icon">${icon}</span>
+              ${label ? `<span class="door-label">${label}</span>` : ""}
+            </button>
+          `);
+        }
+        elements.doorGrid.innerHTML = doors.join("");
+
+        renderStatus();
+      }
+
+      function doorLabelForDoor(index, round, theme) {
+        if (round.phase === "result") {
+          return index === round.prizeIndex ? theme.prizeLabel : theme.loseLabel;
+        }
+        if (round.openedDoors.has(index)) {
+          return theme.loseLabel;
+        }
+        if (round.initialChoice === index) {
+          return "처음 선택";
+        }
+        if (round.phase === "decision" && round.switchDoor === index) {
+          return "바꿀 수 있음";
+        }
+        return "닫힌 문";
+      }
+
+      function iconForDoor(index, round, theme) {
+        if (round.phase === "result") {
+          return index === round.prizeIndex ? theme.prizeIcon : theme.loseIcon;
+        }
+        if (round.openedDoors.has(index)) {
+          return theme.loseIcon;
+        }
+        return "🚪";
+      }
+
+      function renderStatus() {
+        const round = state.currentRound;
+        const theme = currentTheme();
+        elements.stayButton.hidden = round.phase !== "decision" || state.isAutoRunning;
+        elements.switchButton.hidden = round.phase !== "decision" || state.isAutoRunning;
+        elements.nextRoundButton.hidden = round.phase !== "result" || state.isAutoRunning;
+        elements.resultBanner.classList.toggle("is-visible", round.phase === "result");
+        elements.resultBanner.classList.toggle("is-win", round.didWin === true);
+        elements.resultBanner.classList.toggle("is-lose", round.didWin === false);
+
+        if (state.isAutoRunning) {
+          elements.statusTitle.textContent = "자동 실행 중입니다.";
+          elements.statusText.textContent = "1회와 10회 실행은 문이 열리는 과정을 짧게 보여 줍니다.";
+          return;
+        }
+
+        if (round.phase === "choosing") {
+          elements.statusTitle.textContent = "닫힌 문 중 하나를 골라 보세요.";
+          elements.statusText.textContent = `${state.doorCount}개의 문 중 단 하나에 ${theme.prizeLabel}이 있습니다.`;
+          elements.resultBanner.innerHTML = "";
+          return;
+        }
+
+        if (round.phase === "decision") {
+          elements.statusTitle.textContent = "진행자가 꽝 문을 열었습니다.";
+          elements.statusText.textContent = `처음 고른 ${round.initialChoice + 1}번 문을 유지하거나, 닫혀 있는 ${round.switchDoor + 1}번 문으로 바꿀 수 있어요.`;
+          elements.resultBanner.innerHTML = "";
+          return;
+        }
+
+        const finalText = round.strategy === "stay" ? "처음 선택을 유지했습니다." : "남은 닫힌 문으로 변경했습니다.";
+        elements.statusTitle.textContent = round.didWin ? "승리!" : "패배";
+        elements.statusText.textContent = `${finalText} 당첨 문은 ${round.prizeIndex + 1}번, 최종 선택은 ${round.finalChoice + 1}번입니다.`;
+        elements.resultBanner.innerHTML = `
+          <strong>${resultTitle(round)}</strong>
+          <span>${strategyLabel(round.strategy)} 전략 · 당첨: ${round.prizeIndex + 1}번 · 처음 선택: ${round.initialChoice + 1}번 · 최종 선택: ${round.finalChoice + 1}번</span>
+        `;
+      }
+
+      function renderStats() {
+        const stayRate = rate(state.stats.stayWins, state.stats.stayRuns);
+        const switchRate = rate(state.stats.switchWins, state.stats.switchRuns);
+        const total = totalRuns();
+
+        elements.heroTotal.textContent = `${total.toLocaleString("ko-KR")}회`;
+        elements.totalRuns.textContent = `${total.toLocaleString("ko-KR")}회`;
+        elements.stayRuns.textContent = `${state.stats.stayRuns.toLocaleString("ko-KR")}회`;
+        elements.stayWins.textContent = `${state.stats.stayWins.toLocaleString("ko-KR")}회`;
+        elements.stayRate.textContent = formatPercent(stayRate);
+        elements.switchRuns.textContent = `${state.stats.switchRuns.toLocaleString("ko-KR")}회`;
+        elements.switchWins.textContent = `${state.stats.switchWins.toLocaleString("ko-KR")}회`;
+        elements.switchRate.textContent = formatPercent(switchRate);
+      }
+
+      function renderTheory() {
+        const theory = getTheoryRates();
+        const scopedStats = statsForDoorCount(state.doorCount);
+        const stayActual = rate(scopedStats.stayWins, scopedStats.stayRuns);
+        const switchActual = rate(scopedStats.switchWins, scopedStats.switchRuns);
+
+        elements.stayBar.style.width = `${stayActual * 100}%`;
+        elements.switchBar.style.width = `${switchActual * 100}%`;
+        elements.stayTheoryMarker.style.left = `${theory.stay * 100}%`;
+        elements.switchTheoryMarker.style.left = `${theory.switch * 100}%`;
+        elements.stayBarLabel.textContent = `실험 ${formatPercent(stayActual)} · 이론 ${formatPercent(theory.stay)}`;
+        elements.switchBarLabel.textContent = `실험 ${formatPercent(switchActual)} · 이론 ${formatPercent(theory.switch)}`;
+        elements.theoryCompareText.textContent = `현재 문 ${state.doorCount}개에서는 선택 유지의 이론 승률이 ${formatPercent(theory.stay)}, 선택 변경의 이론 승률이 ${formatPercent(theory.switch)}입니다. 그래프의 실험 막대는 현재 문 개수로 진행한 기록만 사용합니다.`;
+      }
+
+      function renderTheoryTable() {
+        const counts = [state.doorCount, 3, 10, 50, 100]
+          .filter((value, index, array) => array.indexOf(value) === index)
+          .sort((a, b) => a - b);
+
+        elements.theoryTableBody.innerHTML = counts
+          .map((count) => {
+            const theory = getTheoryRates(count);
+            return `
+              <tr class="${count === state.doorCount ? "is-current" : ""}">
+                <td>${count}개${count === state.doorCount ? " (현재)" : ""}</td>
+                <td>${formatPercent(theory.stay)}</td>
+                <td>${formatPercent(theory.switch)}</td>
+              </tr>
+            `;
+          })
+          .join("");
+      }
+
+      function renderPredictionCompare() {
+        const parts = [];
+        const scopedStats = statsForDoorCount(state.doorCount);
+        const stayPrediction = Number(elements.stayPrediction.value);
+        const switchPrediction = Number(elements.switchPrediction.value);
+        const stayActual = rate(scopedStats.stayWins, scopedStats.stayRuns) * 100;
+        const switchActual = rate(scopedStats.switchWins, scopedStats.switchRuns) * 100;
+
+        if (!Number.isNaN(stayPrediction) && elements.stayPrediction.value !== "") {
+          if (scopedStats.stayRuns === 0) {
+            parts.push(`유지 예상 ${stayPrediction.toFixed(1)}%: 현재 문 개수의 유지 실험이 아직 없습니다.`);
+          } else {
+            parts.push(`유지 예상 ${stayPrediction.toFixed(1)}%, 실제 ${stayActual.toFixed(1)}%, 차이 ${Math.abs(stayPrediction - stayActual).toFixed(1)}%p`);
+          }
+        }
+
+        if (!Number.isNaN(switchPrediction) && elements.switchPrediction.value !== "") {
+          if (scopedStats.switchRuns === 0) {
+            parts.push(`변경 예상 ${switchPrediction.toFixed(1)}%: 현재 문 개수의 변경 실험이 아직 없습니다.`);
+          } else {
+            parts.push(`변경 예상 ${switchPrediction.toFixed(1)}%, 실제 ${switchActual.toFixed(1)}%, 차이 ${Math.abs(switchPrediction - switchActual).toFixed(1)}%p`);
+          }
+        }
+
+        elements.predictionCompare.textContent =
+          parts.length === 0 ? "예상값을 입력하면 실험 결과와 비교해 볼 수 있어요." : parts.join(" · ");
+      }
+
+      function renderHistory() {
+        const recent = state.records.slice(-20).reverse();
+        if (recent.length === 0) {
+          elements.historyList.innerHTML = `<p class="history-empty">아직 기록이 없습니다. 직접 문을 고르거나 자동 실행을 눌러 보세요.</p>`;
+          return;
+        }
+
+        elements.historyList.innerHTML = recent
+          .map(
+            (record) => `
+              <article class="history-item ${record.result === "승리" ? "is-win" : "is-lose"}">
+                <strong>#${record.id} · ${record.result} · ${strategyLabel(record.strategy, record.requestedStrategy)}</strong>
+                <span>문 ${record.doorCount}개 · 당첨 ${record.prizeDoor}번 · 처음 ${record.initialChoice}번 · 최종 ${record.finalChoice}번</span>
+                <span>${record.theme} · ${record.isAuto ? "자동 실행" : "직접 실험"} · ${record.time}</span>
+              </article>
+            `
+          )
+          .join("");
+      }
+
+      function renderSelectionButtons() {
+        document.querySelectorAll("[data-strategy]").forEach((button) => {
+          button.classList.toggle("is-active", button.dataset.strategy === state.autoStrategy);
+        });
+        document.querySelectorAll("[data-count]").forEach((button) => {
+          button.classList.toggle("is-active", Number(button.dataset.count) === state.autoCount);
+        });
+      }
+
+      function renderAll() {
+        elements.doorCountValue.textContent = state.doorCount;
+        renderThemeButtons();
+        renderSelectionButtons();
+        renderExperiment();
+        renderStats();
+        renderTheory();
+        renderTheoryTable();
+        renderPredictionCompare();
+        renderHistory();
+      }
+
+      function resetStats() {
+        state.stats = {
+          stayRuns: 0,
+          stayWins: 0,
+          switchRuns: 0,
+          switchWins: 0
+        };
+        state.records = [];
+        startNewRound();
+        renderAll();
+      }
+
+      function sleep(ms) {
+        return new Promise((resolve) => window.setTimeout(resolve, ms));
+      }
+
+      async function runAutoSimulation() {
+        if (state.isAutoRunning) {
+          return;
+        }
+
+        state.isAutoRunning = true;
+        elements.runAutoButton.disabled = true;
+        elements.runAutoButton.textContent = "자동 실행 중...";
+
+        if (state.autoCount <= 10) {
+          for (let i = 0; i < state.autoCount; i += 1) {
+            const round = simulateOneRound(state.autoStrategy);
+            round.phase = "decision";
+            state.currentRound = round;
+            renderExperiment();
+            await sleep(state.autoCount === 1 ? 520 : 170);
+
+            round.phase = "result";
+            addResultToStats(round, true, state.autoStrategy);
+            renderAll();
+            await sleep(state.autoCount === 1 ? 620 : 150);
+          }
+        } else {
+          for (let i = 0; i < state.autoCount; i += 1) {
+            const round = simulateOneRound(state.autoStrategy);
+            addResultToStats(round, true, state.autoStrategy);
+          }
+          startNewRound();
+        }
+
+        state.isAutoRunning = false;
+        elements.runAutoButton.disabled = false;
+        elements.runAutoButton.textContent = "자동 실행";
+
+        if (state.autoCount > 10) {
+          elements.statusTitle.textContent = `자동 실행 ${state.autoCount.toLocaleString("ko-KR")}회 완료`;
+          elements.statusText.textContent = "빠른 시뮬레이션 결과가 누적 통계와 기록에 반영되었습니다.";
+        } else {
+          elements.statusTitle.textContent = `자동 실행 ${state.autoCount}회 완료`;
+          elements.statusText.textContent = "마지막 자동 실험 결과가 문 위에 남아 있습니다.";
+        }
+        renderStats();
+        renderTheory();
+        renderPredictionCompare();
+        renderHistory();
+      }
+
+      function downloadCsv() {
+        if (state.records.length === 0) {
+          window.alert("다운로드할 실험 기록이 아직 없습니다.");
+          return;
+        }
+
+        const headers = [
+          "번호",
+          "시간",
+          "문 개수",
+          "테마",
+          "요청 전략",
+          "실제 전략",
+          "결과",
+          "당첨 위치",
+          "처음 선택",
+          "바꿀 문",
+          "최종 선택",
+          "실행 방식"
+        ];
+        const rows = state.records.map((record) => [
+          record.id,
+          record.time,
+          record.doorCount,
+          record.theme,
+          record.requestedStrategy === "random" ? "유지/변경 반반 랜덤" : strategyLabel(record.requestedStrategy),
+          strategyLabel(record.strategy),
+          record.result,
+          record.prizeDoor,
+          record.initialChoice,
+          record.switchDoor,
+          record.finalChoice,
+          record.isAuto ? "자동 실행" : "직접 실험"
+        ]);
+
+        const csv = [headers, ...rows].map((row) => row.map(escapeCsvValue).join(",")).join("\n");
+        const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `monty-hall-${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.append(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function escapeCsvValue(value) {
+        const text = String(value);
+        if (/[",\n]/.test(text)) {
+          return `"${text.replaceAll('"', '""')}"`;
+        }
+        return text;
+      }
+
+      elements.doorCountSlider.addEventListener("input", (event) => {
+        state.doorCount = Number(event.target.value);
+        startNewRound();
+        renderAll();
+      });
+
+      elements.themeGrid.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-theme]");
+        if (!button) {
+          return;
+        }
+        state.themeIndex = Number(button.dataset.theme);
+        renderAll();
+      });
+
+      elements.strategyButtons.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-strategy]");
+        if (!button) {
+          return;
+        }
+        state.autoStrategy = button.dataset.strategy;
+        renderSelectionButtons();
+      });
+
+      elements.autoCountButtons.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-count]");
+        if (!button) {
+          return;
+        }
+        state.autoCount = Number(button.dataset.count);
+        renderSelectionButtons();
+      });
+
+      elements.doorGrid.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-door]");
+        if (!button) {
+          return;
+        }
+        chooseDoor(Number(button.dataset.door));
+      });
+
+      elements.stayButton.addEventListener("click", () => finishCurrentRound("stay"));
+      elements.switchButton.addEventListener("click", () => finishCurrentRound("switch"));
+      elements.nextRoundButton.addEventListener("click", startNewRound);
+      elements.runAutoButton.addEventListener("click", runAutoSimulation);
+      elements.downloadCsvButton.addEventListener("click", downloadCsv);
+      elements.stayPrediction.addEventListener("input", renderPredictionCompare);
+      elements.switchPrediction.addEventListener("input", renderPredictionCompare);
+
+      elements.resetButton.addEventListener("click", () => {
+        if (window.confirm("누적 통계와 실험 기록을 모두 초기화할까요?")) {
+          resetStats();
+        }
+      });
+
+      elements.toggleExplainButton.addEventListener("click", () => {
+        const willShow = !elements.explainBox.classList.contains("is-visible");
+        elements.explainBox.classList.toggle("is-visible", willShow);
+        elements.toggleExplainButton.textContent = willShow ? "닫기" : "열기";
+      });
+
+      startNewRound();
+      renderAll();
+    </script>
+  </body>
+</html>
