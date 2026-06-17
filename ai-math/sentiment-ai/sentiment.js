@@ -1,5 +1,6 @@
 const MANUAL_GITHUB_REPOSITORY_URL = "https://github.com/mathtjungsw/math-class-webtools";
 const MIN_SENTENCE_COUNT = 10;
+const MIN_PDF_BUSY_MS = 600;
 
 // 단어 기반 모델에서는 감정과 직접 관련이 약한 흔한 말을 제외한다.
 // 예를 들어 "오늘", "수업", "문제"는 긍정/부정 양쪽 문장에 모두 자주 나올 수 있으므로
@@ -90,6 +91,7 @@ const NEGATION_ROOTS = [
 
 const state = {
   model: null,
+  predictionHistory: [],
 };
 
 const els = {
@@ -114,6 +116,18 @@ const els = {
   reasonText: document.querySelector("#reasonText"),
   highlightedSentence: document.querySelector("#highlightedSentence"),
   expressionList: document.querySelector("#expressionList"),
+  clearHistoryButton: document.querySelector("#clearHistoryButton"),
+  predictionHistoryList: document.querySelector("#predictionHistoryList"),
+  openReportButton: document.querySelector("#openReportButton"),
+  reportBuilder: document.querySelector("#reportBuilder"),
+  reportTrainingSummary: document.querySelector("#reportTrainingSummary"),
+  reportPredictionSummary: document.querySelector("#reportPredictionSummary"),
+  activitySummary: document.querySelector("#activitySummary"),
+  learnedPoint: document.querySelector("#learnedPoint"),
+  futureQuestion: document.querySelector("#futureQuestion"),
+  pdfProgress: document.querySelector("#pdfProgress"),
+  refreshReportButton: document.querySelector("#refreshReportButton"),
+  generatePdfButton: document.querySelector("#generatePdfButton"),
 };
 
 function inferGithubRepositoryUrl() {
@@ -211,6 +225,27 @@ function updateCounts() {
   els.negativeCount.textContent = `${negativeCount}개`;
 }
 
+function formatPercent(value) {
+  return `${Math.round(value)}%`;
+}
+
+function formatDateTime(date) {
+  return new Intl.DateTimeFormat("ko-KR", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
+}
+
+function clearPredictionHistory(showMessage = true) {
+  state.predictionHistory = [];
+  renderPredictionHistory();
+  refreshReportSummary();
+
+  if (showMessage) {
+    showStatus("예측 기록을 비웠습니다.");
+  }
+}
+
 function markModelStale() {
   if (!state.model) {
     return;
@@ -221,6 +256,7 @@ function markModelStale() {
   els.modelState.textContent = "다시 학습 필요";
   els.modelState.classList.remove("is-ready");
   els.resultArea.hidden = true;
+  clearPredictionHistory(false);
 }
 
 function normalizeSentence(sentence) {
@@ -406,6 +442,7 @@ function trainModel() {
     `학습 완료: 긍정 ${trainingData.positiveSentences.length}개, 부정 ${trainingData.negativeSentences.length}개 문장으로 평균 벡터를 만들었습니다.`,
     "success",
   );
+  refreshReportSummary();
 
   if (els.testSentence.value.trim()) {
     renderPrediction();
@@ -584,17 +621,128 @@ function renderExpressionList(expressions) {
   });
 }
 
-function renderPrediction() {
+function renderPredictionHistory() {
+  els.predictionHistoryList.replaceChildren();
+
+  if (state.predictionHistory.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "empty-message";
+    empty.textContent = "아직 예측 기록이 없습니다.";
+    els.predictionHistoryList.append(empty);
+    return;
+  }
+
+  state.predictionHistory.forEach((item, index) => {
+    const article = document.createElement("article");
+    article.className = "history-item";
+
+    const body = document.createElement("div");
+    const title = document.createElement("strong");
+    const sentence = document.createElement("p");
+
+    title.textContent = `${index + 1}. ${item.label} 예측`;
+    sentence.textContent = item.sentence;
+    body.append(title, sentence);
+
+    const scores = document.createElement("div");
+    scores.className = "history-scores";
+
+    const positive = document.createElement("span");
+    positive.className = "history-pill positive";
+    positive.textContent = `긍정 ${formatPercent(item.positivePercent)}`;
+
+    const negative = document.createElement("span");
+    negative.className = "history-pill negative";
+    negative.textContent = `부정 ${formatPercent(item.negativePercent)}`;
+
+    scores.append(positive, negative);
+    article.append(body, scores);
+    els.predictionHistoryList.append(article);
+  });
+}
+
+function addPredictionHistory(prediction) {
+  state.predictionHistory.push({
+    ...prediction,
+    createdAt: new Date().toISOString(),
+  });
+  renderPredictionHistory();
+  refreshReportSummary();
+  showStatus(`예측 기록에 ${state.predictionHistory.length}번째 결과를 추가했습니다.`, "success");
+}
+
+function appendSummaryP(container, text) {
+  const paragraph = document.createElement("p");
+  paragraph.textContent = text;
+  container.append(paragraph);
+}
+
+function appendSummaryPill(container, text, className) {
+  const pill = document.createElement("span");
+  pill.className = `summary-pill ${className}`;
+  pill.textContent = text;
+  container.append(pill);
+}
+
+function refreshReportSummary() {
+  if (!els.reportTrainingSummary || !els.reportPredictionSummary) {
+    return;
+  }
+
+  const positiveSentences = getSentences("positive");
+  const negativeSentences = getSentences("negative");
+  const positiveHistory = state.predictionHistory.filter((item) => item.label === "긍정").length;
+  const negativeHistory = state.predictionHistory.filter((item) => item.label === "부정").length;
+
+  els.reportTrainingSummary.replaceChildren();
+  appendSummaryP(
+    els.reportTrainingSummary,
+    `긍정 데이터 ${positiveSentences.length}개, 부정 데이터 ${negativeSentences.length}개가 입력되어 있습니다.`,
+  );
+  appendSummaryP(
+    els.reportTrainingSummary,
+    state.model
+      ? "현재 평균 벡터 모델은 학습 완료 상태입니다."
+      : "아직 학습 전이거나 학습 데이터를 수정해 다시 학습이 필요합니다.",
+  );
+
+  els.reportPredictionSummary.replaceChildren();
+
+  if (state.predictionHistory.length === 0) {
+    appendSummaryP(els.reportPredictionSummary, "아직 누적된 예측 결과가 없습니다.");
+    return;
+  }
+
+  const pillRow = document.createElement("div");
+  pillRow.className = "history-scores";
+  appendSummaryPill(pillRow, `전체 ${state.predictionHistory.length}개`, "neutral");
+  appendSummaryPill(pillRow, `긍정 ${positiveHistory}개`, "positive");
+  appendSummaryPill(pillRow, `부정 ${negativeHistory}개`, "negative");
+  els.reportPredictionSummary.append(pillRow);
+
+  const list = document.createElement("ol");
+  list.className = "summary-list";
+
+  state.predictionHistory.slice(-5).forEach((item) => {
+    const row = document.createElement("li");
+    row.textContent = `${item.label}: ${item.sentence} (긍정 ${formatPercent(item.positivePercent)}, 부정 ${formatPercent(item.negativePercent)})`;
+    list.append(row);
+  });
+
+  els.reportPredictionSummary.append(list);
+}
+
+function renderPrediction(options = {}) {
   if (!state.model) {
     showStatus("먼저 학습하기 버튼을 눌러 평균 벡터를 만들어 주세요.", "warning");
-    return;
+    return null;
   }
 
   const sentence = els.testSentence.value.trim();
 
   if (!sentence) {
     els.resultArea.hidden = true;
-    return;
+    return null;
   }
 
   const result = scoreSentence(sentence);
@@ -613,6 +761,24 @@ function renderPrediction() {
 
   renderHighlightedSentence(sentence, expressions);
   renderExpressionList(expressions);
+
+  const prediction = {
+    sentence,
+    label: result.label,
+    positivePercent,
+    negativePercent,
+    reason: els.reasonText.textContent,
+    expressions: expressions.map((item) => ({
+      text: item.text,
+      lean: item.lean,
+    })),
+  };
+
+  if (options.record) {
+    addPredictionHistory(prediction);
+  }
+
+  return prediction;
 }
 
 function saveTrainingData() {
@@ -696,6 +862,417 @@ function loadTrainingData(file) {
   reader.readAsText(file, "utf-8");
 }
 
+function getReportData() {
+  return {
+    generatedAt: new Date(),
+    positiveSentences: getSentences("positive"),
+    negativeSentences: getSentences("negative"),
+    predictionHistory: [...state.predictionHistory],
+    modelReady: Boolean(state.model),
+    reflections: {
+      activitySummary: els.activitySummary.value.trim(),
+      learnedPoint: els.learnedPoint.value.trim(),
+      futureQuestion: els.futureQuestion.value.trim(),
+    },
+  };
+}
+
+function splitTextByWidth(ctx, text, maxWidth) {
+  const paragraphs = String(text || "").split("\n");
+  const lines = [];
+
+  paragraphs.forEach((paragraph) => {
+    let current = "";
+
+    if (!paragraph) {
+      lines.push("");
+      return;
+    }
+
+    [...paragraph].forEach((char) => {
+      const next = current + char;
+
+      if (ctx.measureText(next).width > maxWidth && current) {
+        lines.push(current);
+        current = char.trimStart();
+        return;
+      }
+
+      current = next;
+    });
+
+    if (current) {
+      lines.push(current);
+    }
+  });
+
+  return lines;
+}
+
+function createReportCanvases(reportData) {
+  const width = 1240;
+  const height = 1754;
+  const margin = 92;
+  const contentWidth = width - margin * 2;
+  const pages = [];
+  let canvas;
+  let ctx;
+  let y;
+  let pageNumber = 0;
+
+  function newPage() {
+    canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#fffdf8";
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = "#20241f";
+    ctx.textBaseline = "top";
+    y = margin;
+    pageNumber += 1;
+    pages.push(canvas);
+
+    if (pageNumber > 1) {
+      drawSmallText(`감성 분석 인공지능 만들기 실습 보고서 · ${pageNumber}쪽`, "#687168");
+      y += 16;
+    }
+  }
+
+  function ensureSpace(space) {
+    if (y + space <= height - margin) {
+      return;
+    }
+
+    drawFooter();
+    newPage();
+  }
+
+  function drawFooter() {
+    ctx.font = '24px "Malgun Gothic", "Apple SD Gothic Neo", sans-serif';
+    ctx.fillStyle = "#8b8578";
+    ctx.textAlign = "center";
+    ctx.fillText(`${pageNumber}`, width / 2, height - 58);
+    ctx.textAlign = "left";
+  }
+
+  function drawText(text, options = {}) {
+    const fontSize = options.fontSize || 30;
+    const lineHeight = options.lineHeight || Math.round(fontSize * 1.55);
+    const weight = options.weight || "400";
+    const color = options.color || "#20241f";
+    const gap = options.gap ?? 12;
+
+    ctx.font = `${weight} ${fontSize}px "Malgun Gothic", "Apple SD Gothic Neo", sans-serif`;
+    ctx.fillStyle = color;
+
+    const lines = splitTextByWidth(ctx, text, contentWidth);
+
+    lines.forEach((line) => {
+      ensureSpace(lineHeight + gap);
+      ctx.fillText(line, margin, y);
+      y += lineHeight;
+    });
+
+    y += gap;
+  }
+
+  function drawSmallText(text, color = "#20241f") {
+    drawText(text, {
+      fontSize: 24,
+      lineHeight: 34,
+      color,
+      gap: 4,
+    });
+  }
+
+  function drawSectionTitle(title) {
+    ensureSpace(78);
+    y += 12;
+    ctx.fillStyle = "#d9e1db";
+    ctx.fillRect(margin, y, contentWidth, 2);
+    y += 22;
+    drawText(title, {
+      fontSize: 34,
+      lineHeight: 46,
+      weight: "700",
+      color: "#237c55",
+      gap: 8,
+    });
+  }
+
+  function drawList(items, emptyText) {
+    if (items.length === 0) {
+      drawSmallText(emptyText, "#687168");
+      return;
+    }
+
+    items.forEach((item, index) => {
+      drawSmallText(`${index + 1}. ${item}`);
+    });
+  }
+
+  function drawPredictionList(items) {
+    if (items.length === 0) {
+      drawSmallText("아직 누적된 예측 결과가 없습니다.", "#687168");
+      return;
+    }
+
+    items.forEach((item, index) => {
+      drawText(`${index + 1}. ${item.label} 예측`, {
+        fontSize: 28,
+        lineHeight: 40,
+        weight: "700",
+        gap: 0,
+      });
+      drawSmallText(`문장: ${item.sentence}`);
+      drawSmallText(`점수: 긍정 ${formatPercent(item.positivePercent)}, 부정 ${formatPercent(item.negativePercent)}`);
+      drawSmallText(`이유: ${item.reason}`, "#687168");
+      y += 6;
+    });
+  }
+
+  newPage();
+
+  drawText("감성 분석 인공지능 만들기 실습 보고서", {
+    fontSize: 48,
+    lineHeight: 64,
+    weight: "700",
+    color: "#20241f",
+    gap: 8,
+  });
+  drawSmallText(`생성일: ${formatDateTime(reportData.generatedAt)}`, "#687168");
+  drawSmallText(
+    reportData.modelReady
+      ? "모델 상태: 학습 완료"
+      : "모델 상태: 학습 전 또는 다시 학습 필요",
+    reportData.modelReady ? "#237c55" : "#8a5300",
+  );
+
+  drawSectionTitle("1. 학습 데이터 정리");
+  drawSmallText(`긍정 데이터: ${reportData.positiveSentences.length}개`);
+  drawList(reportData.positiveSentences, "입력된 긍정 데이터가 없습니다.");
+  y += 8;
+  drawSmallText(`부정 데이터: ${reportData.negativeSentences.length}개`);
+  drawList(reportData.negativeSentences, "입력된 부정 데이터가 없습니다.");
+
+  drawSectionTitle("2. 예측 결과 정리");
+  drawSmallText(`누적 예측 결과: ${reportData.predictionHistory.length}개`);
+  drawPredictionList(reportData.predictionHistory);
+
+  drawSectionTitle("3. 소감문");
+  drawText("활동 요약", {
+    fontSize: 30,
+    lineHeight: 42,
+    weight: "700",
+    gap: 2,
+  });
+  drawSmallText(reportData.reflections.activitySummary || "작성하지 않음", "#687168");
+  drawText("배운 점", {
+    fontSize: 30,
+    lineHeight: 42,
+    weight: "700",
+    gap: 2,
+  });
+  drawSmallText(reportData.reflections.learnedPoint || "작성하지 않음", "#687168");
+  drawText("더 알고 싶은 점", {
+    fontSize: 30,
+    lineHeight: 42,
+    weight: "700",
+    gap: 2,
+  });
+  drawSmallText(reportData.reflections.futureQuestion || "작성하지 않음", "#687168");
+
+  drawFooter();
+  return pages;
+}
+
+function base64ToBytes(base64) {
+  const binary = window.atob(base64);
+  const bytes = new Uint8Array(binary.length);
+
+  for (let i = 0; i < binary.length; i += 1) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  return bytes;
+}
+
+function encodeAscii(text) {
+  return new TextEncoder().encode(text);
+}
+
+function concatBytes(parts) {
+  const length = parts.reduce((total, part) => total + part.length, 0);
+  const output = new Uint8Array(length);
+  let offset = 0;
+
+  parts.forEach((part) => {
+    output.set(part, offset);
+    offset += part.length;
+  });
+
+  return output;
+}
+
+function makePdfObject(id, bodyParts) {
+  return concatBytes([
+    encodeAscii(`${id} 0 obj\n`),
+    ...bodyParts,
+    encodeAscii("\nendobj\n"),
+  ]);
+}
+
+function buildPdfFromCanvases(canvases) {
+  const width = canvases[0].width;
+  const height = canvases[0].height;
+  const pageCount = canvases.length;
+  const objectCount = 2 + pageCount * 3;
+  const parts = [encodeAscii("%PDF-1.4\n% Canvas report\n")];
+  const offsets = [0];
+
+  function pushObject(bytes) {
+    offsets.push(parts.reduce((total, part) => total + part.length, 0));
+    parts.push(bytes);
+  }
+
+  const pageObjectIds = canvases.map((_, index) => 3 + index * 3);
+  pushObject(makePdfObject(1, [encodeAscii("<< /Type /Catalog /Pages 2 0 R >>")]));
+  pushObject(
+    makePdfObject(2, [
+      encodeAscii(
+        `<< /Type /Pages /Kids [${pageObjectIds.map((id) => `${id} 0 R`).join(" ")}] /Count ${pageCount} >>`,
+      ),
+    ]),
+  );
+
+  canvases.forEach((pageCanvas, index) => {
+    const pageId = 3 + index * 3;
+    const contentId = pageId + 1;
+    const imageId = pageId + 2;
+    const imageName = `Im${index + 1}`;
+    const jpegBytes = base64ToBytes(pageCanvas.toDataURL("image/jpeg", 0.92).split(",")[1]);
+    const content = encodeAscii(`q\n${width} 0 0 ${height} 0 0 cm\n/${imageName} Do\nQ\n`);
+
+    pushObject(
+      makePdfObject(pageId, [
+        encodeAscii(
+          `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${width} ${height}] /Resources << /XObject << /${imageName} ${imageId} 0 R >> >> /Contents ${contentId} 0 R >>`,
+        ),
+      ]),
+    );
+
+    pushObject(
+      makePdfObject(contentId, [
+        encodeAscii(`<< /Length ${content.length} >>\nstream\n`),
+        content,
+        encodeAscii("endstream"),
+      ]),
+    );
+
+    pushObject(
+      makePdfObject(imageId, [
+        encodeAscii(
+          `<< /Type /XObject /Subtype /Image /Width ${width} /Height ${height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>\nstream\n`,
+        ),
+        jpegBytes,
+        encodeAscii("\nendstream"),
+      ]),
+    );
+  });
+
+  const xrefOffset = parts.reduce((total, part) => total + part.length, 0);
+  const xrefRows = offsets
+    .map((offset, index) => {
+      if (index === 0) {
+        return "0000000000 65535 f \n";
+      }
+
+      return `${String(offset).padStart(10, "0")} 00000 n \n`;
+    })
+    .join("");
+
+  parts.push(
+    encodeAscii(
+      `xref\n0 ${objectCount + 1}\n${xrefRows}trailer\n<< /Size ${objectCount + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`,
+    ),
+  );
+
+  return new Blob(parts, { type: "application/pdf" });
+}
+
+function downloadBlob(blob, fileName) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = fileName;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function setPdfBusy(isBusy) {
+  els.generatePdfButton.disabled = isBusy;
+  els.refreshReportButton.disabled = isBusy;
+  els.generatePdfButton.textContent = isBusy ? "생성 중..." : "보고서 PDF 생성";
+  els.pdfProgress.hidden = !isBusy;
+  els.reportBuilder.setAttribute("aria-busy", String(isBusy));
+}
+
+function waitForPdfStatusPaint() {
+  return new Promise((resolve) => {
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(resolve);
+    });
+  });
+}
+
+async function generateReportPdf() {
+  if (els.generatePdfButton.disabled) {
+    return;
+  }
+
+  refreshReportSummary();
+
+  if (state.predictionHistory.length === 0) {
+    const shouldContinue = window.confirm(
+      "예측 기록이 아직 없습니다. 예측 결과 없이 보고서를 생성할까요?",
+    );
+
+    if (!shouldContinue) {
+      return;
+    }
+  }
+
+  setPdfBusy(true);
+  const busyStartedAt = Date.now();
+
+  try {
+    // PDF 생성은 캔버스와 이미지 변환을 사용해 시간이 걸릴 수 있다.
+    // 상태 문구와 시계 애니메이션이 먼저 화면에 그려진 뒤 무거운 작업을 시작하도록 두 프레임을 기다린다.
+    await waitForPdfStatusPaint();
+
+    const reportData = getReportData();
+    const canvases = createReportCanvases(reportData);
+    const pdfBlob = buildPdfFromCanvases(canvases);
+    const dateText = new Date().toISOString().slice(0, 10);
+
+    downloadBlob(pdfBlob, `sentiment-ai-report-${dateText}.pdf`);
+    showStatus("보고서 PDF를 생성했습니다.", "success");
+  } catch (error) {
+    console.error(error);
+    window.alert("PDF를 생성하는 중 문제가 생겼습니다. 입력 내용을 줄인 뒤 다시 시도해 주세요.");
+  } finally {
+    const remainingBusyMs = MIN_PDF_BUSY_MS - (Date.now() - busyStartedAt);
+
+    if (remainingBusyMs > 0) {
+      await new Promise((resolve) => window.setTimeout(resolve, remainingBusyMs));
+    }
+
+    setPdfBusy(false);
+  }
+}
+
 function clearAll() {
   const shouldClear = window.confirm("입력한 모든 문장을 비울까요?");
 
@@ -707,6 +1284,8 @@ function clearAll() {
   setSentences("negative", []);
   updateCounts();
   markModelStale();
+  clearPredictionHistory(false);
+  refreshReportSummary();
   showStatus("입력 칸을 모두 비웠습니다. 새 학습 데이터를 입력해 주세요.");
 }
 
@@ -721,7 +1300,21 @@ els.trainButton.addEventListener("click", trainModel);
 els.saveButton.addEventListener("click", saveTrainingData);
 els.loadFile.addEventListener("change", () => loadTrainingData(els.loadFile.files[0]));
 els.clearButton.addEventListener("click", clearAll);
-els.predictButton.addEventListener("click", renderPrediction);
+els.clearHistoryButton.addEventListener("click", () => clearPredictionHistory());
+els.predictButton.addEventListener("click", () => renderPrediction({ record: true }));
+els.openReportButton.addEventListener("click", () => {
+  els.reportBuilder.hidden = !els.reportBuilder.hidden;
+  refreshReportSummary();
+
+  if (!els.reportBuilder.hidden) {
+    els.reportBuilder.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+});
+els.refreshReportButton.addEventListener("click", () => {
+  refreshReportSummary();
+  showStatus("보고서에 들어갈 내용을 새로고침했습니다.", "success");
+});
+els.generatePdfButton.addEventListener("click", generateReportPdf);
 els.testSentence.addEventListener("input", () => {
   if (state.model) {
     renderPrediction();
@@ -730,4 +1323,6 @@ els.testSentence.addEventListener("input", () => {
 
 fillInitialRows();
 updateCounts();
+renderPredictionHistory();
+refreshReportSummary();
 wireGithubLinks();

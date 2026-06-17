@@ -127,6 +127,71 @@
             <div class="expression-list" id="expressionList" aria-label="겹친 주요 표현 목록"></div>
           </section>
         </div>
+
+        <section class="history-panel" aria-labelledby="historyTitle">
+          <div class="history-heading">
+            <div>
+              <h3 id="historyTitle">예측 기록</h3>
+              <p>예측하기 버튼을 누를 때마다 결과가 아래에 누적됩니다.</p>
+            </div>
+            <button class="plain-button compact-button" id="clearHistoryButton" type="button">
+              기록 비우기
+            </button>
+          </div>
+          <div class="history-list" id="predictionHistoryList">
+            <p class="empty-message">아직 예측 기록이 없습니다.</p>
+          </div>
+        </section>
+      </section>
+
+      <section class="report-panel" aria-labelledby="reportTitle">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">활동 보고서</p>
+            <h2 id="reportTitle">감성 분석 실습 보고서 작성</h2>
+          </div>
+          <button class="primary-button" id="openReportButton" type="button">보고서 작성</button>
+        </div>
+
+        <div class="report-builder" id="reportBuilder" hidden>
+          <div class="report-summary-grid" aria-label="보고서에 포함될 내용">
+            <section>
+              <h3>학습 데이터 요약</h3>
+              <div class="summary-box" id="reportTrainingSummary"></div>
+            </section>
+            <section>
+              <h3>예측 결과 요약</h3>
+              <div class="summary-box" id="reportPredictionSummary"></div>
+            </section>
+          </div>
+
+          <section class="reflection-panel" aria-labelledby="reflectionTitle">
+            <h3 id="reflectionTitle">소감문 작성</h3>
+            <div class="reflection-grid">
+              <label>
+                활동 요약
+                <textarea id="activitySummary" rows="4" placeholder="이번 활동에서 내가 한 일을 정리해 보세요."></textarea>
+              </label>
+              <label>
+                배운 점
+                <textarea id="learnedPoint" rows="4" placeholder="벡터, 평균, 유사도, 데이터에 대해 배운 점을 적어 보세요."></textarea>
+              </label>
+              <label>
+                더 알고 싶은 점
+                <textarea id="futureQuestion" rows="4" placeholder="더 실험해 보고 싶은 점이나 궁금한 점을 적어 보세요."></textarea>
+              </label>
+            </div>
+          </section>
+
+          <div class="report-actions">
+            <div class="pdf-progress" id="pdfProgress" role="status" aria-live="polite" hidden>
+              <span class="pdf-clock" aria-hidden="true"></span>
+              <span>보고서 PDF를 생성 중입니다. 잠시만 기다려 주세요.</span>
+            </div>
+            <button class="plain-button" id="refreshReportButton" type="button">보고서 내용 새로고침</button>
+            <button class="primary-button" id="generatePdfButton" type="button">보고서 PDF 생성</button>
+          </div>
+        </div>
       </section>
     </main>
 
