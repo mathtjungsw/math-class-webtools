@@ -101,6 +101,10 @@ function formatPercent(value) {
   return `${Math.round(value * 100)}%`;
 }
 
+function formatProbability(value) {
+  return Number.isFinite(value) ? formatPercent(value) : "0%";
+}
+
 function formatDateTime(dateInput) {
   const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
 
@@ -413,13 +417,13 @@ function renderHistory() {
     const titleText = document.createElement("div");
     const strong = document.createElement("strong");
     const meta = document.createElement("p");
-    strong.textContent = `${item.number}. ${item.topClass}`;
+    strong.textContent = `${item.number}. ${item.topClass} · ${formatProbability(item.topProbability)}`;
     meta.textContent = `${formatDateTime(item.createdAt)} · ${item.method}`;
     titleText.append(strong, meta);
 
     const topProbability = document.createElement("span");
     topProbability.className = "history-pill is-top";
-    topProbability.textContent = `${formatPercent(item.probabilities[0].probability)}`;
+    topProbability.textContent = `${formatProbability(item.topProbability ?? item.probabilities[0]?.probability)}`;
 
     title.append(titleText, topProbability);
 
@@ -428,7 +432,7 @@ function renderHistory() {
     item.probabilities.forEach((probability, index) => {
       const pill = document.createElement("span");
       pill.className = `history-pill${index === 0 ? " is-top" : ""}`;
-      pill.textContent = `${probability.className} ${formatPercent(probability.probability)}`;
+      pill.textContent = `${probability.className} ${formatProbability(probability.probability)}`;
       pillRow.append(pill);
     });
 
@@ -807,7 +811,60 @@ function validatePredictionReady() {
     return false;
   }
 
+  const classNames = getPredictionClassNames();
+
+  if (classNames.length === 0) {
+    showStatus("예측에 사용할 클래스 이름이 없습니다. 클래스를 확인한 뒤 모델을 다시 학습해 주세요.", "warning");
+    return false;
+  }
+
   return true;
+}
+
+function getPredictionClassNames() {
+  const trainedNames = state.trainingInfo?.classStats
+    ?.map((classItem) => String(classItem.name || "").trim())
+    .filter(Boolean);
+
+  if (trainedNames?.length) {
+    return trainedNames;
+  }
+
+  return state.classes.map(getClassName).filter(Boolean);
+}
+
+function buildPredictionRows(probabilities, classNames) {
+  const probabilityValues = [...probabilities];
+
+  if (probabilityValues.length === 0) {
+    throw new Error("예측 확률 배열이 비어 있습니다. 모델을 다시 학습해 주세요.");
+  }
+
+  if (probabilityValues.length !== classNames.length) {
+    throw new Error(
+      `예측 확률 개수(${probabilityValues.length})와 클래스 이름 개수(${classNames.length})가 다릅니다. 모델을 다시 학습해 주세요.`,
+    );
+  }
+
+  const invalidProbability = probabilityValues.some((probability) => !Number.isFinite(probability));
+
+  if (invalidProbability) {
+    throw new Error("예측 확률에 유효하지 않은 값이 포함되어 있습니다. 학습 데이터를 확인한 뒤 다시 학습해 주세요.");
+  }
+
+  const rowsInClassOrder = probabilityValues.map((probability, index) => ({
+    index,
+    className: classNames[index],
+    probability,
+  }));
+
+  const rowsByProbability = [...rowsInClassOrder].sort((a, b) => b.probability - a.probability);
+
+  return {
+    rowsInClassOrder,
+    rowsByProbability,
+    top: rowsByProbability[0],
+  };
 }
 
 async function predictImage(dataUrl, method) {
@@ -815,36 +872,44 @@ async function predictImage(dataUrl, method) {
     return;
   }
 
+  els.predictWebcamButton.disabled = true;
+  els.predictFileButton.disabled = true;
+  let embedding = null;
+  let prediction = null;
+
   try {
     await ensureLibrariesReady();
-    const embedding = await extractEmbedding(dataUrl);
+
+    if (!state.featureExtractor) {
+      throw new Error("이미지 특징 추출 모델이 준비되지 않았습니다. 잠시 뒤 다시 시도해 주세요.");
+    }
+
+    const classNames = getPredictionClassNames();
+    embedding = await extractEmbedding(dataUrl);
     const actualFeatureDim = embedding.shape[1];
 
     if (state.trainingInfo.featureDim && actualFeatureDim !== state.trainingInfo.featureDim) {
-      embedding.dispose();
       throw new Error(
         `예측 이미지의 특징 벡터 차원(${actualFeatureDim})이 학습된 모델의 입력 차원(${state.trainingInfo.featureDim})과 다릅니다. 모델을 다시 학습해 주세요.`,
       );
     }
 
-    const prediction = state.classifier.predict(embedding);
+    prediction = state.classifier.predict(embedding);
     const probabilities = await prediction.data();
-    embedding.dispose();
-    prediction.dispose();
+    const predictionRows = buildPredictionRows(probabilities, classNames);
 
-    const rows = state.classes
-      .map((classItem, index) => ({
-        className: getClassName(classItem),
-        probability: probabilities[index],
-      }))
-      .sort((a, b) => b.probability - a.probability);
+    console.log("prediction", prediction);
+    console.log("probabilities", [...probabilities]);
+    console.log("classNames", classNames);
 
     const record = {
       number: state.predictionHistory.length + 1,
       createdAt: new Date().toISOString(),
       imageDataUrl: dataUrl,
-      topClass: rows[0].className,
-      probabilities: rows,
+      topClass: predictionRows.top.className,
+      topProbability: predictionRows.top.probability,
+      probabilities: predictionRows.rowsByProbability,
+      probabilitiesByClass: predictionRows.rowsInClassOrder,
       method,
     };
 
@@ -856,14 +921,27 @@ async function predictImage(dataUrl, method) {
   } catch (error) {
     console.error(error);
     showStatus(error.message || "예측 중 오류가 생겼습니다.", "error");
+  } finally {
+    embedding?.dispose();
+    prediction?.dispose();
+    els.predictWebcamButton.disabled = false;
+    els.predictFileButton.disabled = false;
   }
 }
 
 function renderPredictionResult(record) {
   els.predictionPreviewImage.src = record.imageDataUrl;
   els.predictionPreviewImage.parentElement.classList.add("has-image");
-  els.topPredictionLabel.textContent = record.topClass;
+  els.topPredictionLabel.textContent = `${record.topClass} · ${formatProbability(record.topProbability)}`;
   els.probabilityList.replaceChildren();
+
+  if (!record.probabilities.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-message";
+    empty.textContent = "표시할 클래스별 확률이 없습니다.";
+    els.probabilityList.append(empty);
+    return;
+  }
 
   record.probabilities.forEach((item, index) => {
     const row = document.createElement("div");
@@ -876,14 +954,14 @@ function renderPredictionResult(record) {
     name.textContent = item.className;
 
     const percent = document.createElement("strong");
-    percent.textContent = formatPercent(item.probability);
+    percent.textContent = formatProbability(item.probability);
 
     const track = document.createElement("div");
     track.className = "bar-track";
 
     const fill = document.createElement("div");
     fill.className = "bar-fill";
-    fill.style.width = formatPercent(item.probability);
+    fill.style.width = formatProbability(item.probability);
 
     head.append(name, percent);
     track.append(fill);
@@ -1056,7 +1134,7 @@ function makePdfReportElement() {
   const historyRows = state.predictionHistory
     .map((item) => {
       const probabilityText = item.probabilities
-        .map((probability) => `${escapeHtml(probability.className)} ${formatPercent(probability.probability)}`)
+        .map((probability) => `${escapeHtml(probability.className)} ${formatProbability(probability.probability)}`)
         .join("<br />");
 
       return `
