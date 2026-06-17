@@ -2,6 +2,7 @@ const MANUAL_GITHUB_REPOSITORY_URL = "https://github.com/mathtjungsw/math-class-
 const MIN_IMAGES_PER_CLASS = 5;
 const CAPTURE_SIZE = 224;
 const MAX_PDF_THUMBNAILS_PER_CLASS = 5;
+const MOBILENET_CONFIG = { version: 2, alpha: 1.0 };
 
 // 앱 전체 상태는 브라우저 메모리에만 보관한다.
 // 이미지와 예측 기록을 서버로 보내지 않기 때문에 수업 중 학생 기기 안에서 활동이 끝난다.
@@ -599,7 +600,7 @@ async function ensureLibrariesReady() {
 
   if (!state.featureExtractor) {
     showStatus("MobileNet 이미지 특징 추출 모델을 불러오는 중입니다.", "warning");
-    state.featureExtractor = await mobilenet.load({ version: 2, alpha: 1.0 });
+    state.featureExtractor = await mobilenet.load(MOBILENET_CONFIG);
   }
 }
 
@@ -617,15 +618,16 @@ async function extractEmbedding(dataUrl) {
 
   // MobileNet의 마지막 분류층 대신 중간 특징 벡터를 사용한다.
   // 학생들이 모은 작은 데이터셋으로도 새 분류기를 빠르게 학습할 수 있는 전이학습 방식이다.
+  // 학습과 예측 모두 이 함수만 사용하므로 같은 MobileNet 버전, 같은 레이어, 같은 전처리를 거친다.
   return tf.tidy(() => state.featureExtractor.infer(image, true));
 }
 
-function createClassifier(classCount) {
+function createClassifier(classCount, featureDim) {
   const model = tf.sequential();
 
   model.add(
     tf.layers.dense({
-      inputShape: [1024],
+      inputShape: [featureDim],
       units: 128,
       activation: "relu",
       kernelRegularizer: tf.regularizers.l2({ l2: 0.0001 }),
@@ -676,11 +678,36 @@ async function trainModel() {
   els.progressPercent.textContent = "0%";
   els.trainingProgressBar.style.width = "0%";
   els.trainingLog.replaceChildren();
+  els.modelState.textContent = "학습 준비";
+  els.modelState.classList.remove("is-ready");
+
+  if (state.classifier) {
+    state.classifier.dispose();
+    state.classifier = null;
+    state.trainingInfo = null;
+  }
+
+  const embeddings = [];
+  let xs = null;
+  let ys = null;
+  let labelsTensor = null;
+  let tensorsDisposed = false;
+
+  function disposeTrainingTensors() {
+    if (tensorsDisposed) {
+      return;
+    }
+
+    embeddings.forEach((tensor) => tensor.dispose());
+    xs?.dispose();
+    ys?.dispose();
+    labelsTensor?.dispose();
+    tensorsDisposed = true;
+  }
 
   try {
     await ensureLibrariesReady();
 
-    const embeddings = [];
     const labelIndices = [];
 
     for (let classIndex = 0; classIndex < state.classes.length; classIndex += 1) {
@@ -695,21 +722,31 @@ async function trainModel() {
       }
     }
 
-    const xs = tf.concat(embeddings);
-    embeddings.forEach((tensor) => tensor.dispose());
+    const featureDim = embeddings[0]?.shape?.[1];
 
-    const labelsTensor = tf.tensor1d(labelIndices, "int32");
-    const ys = tf.oneHot(labelsTensor, state.classes.length);
-    labelsTensor.dispose();
-
-    if (state.classifier) {
-      state.classifier.dispose();
+    if (!featureDim) {
+      throw new Error("이미지 특징 벡터의 차원을 확인하지 못했습니다. 이미지를 다시 추가한 뒤 학습해 주세요.");
     }
 
-    state.classifier = createClassifier(state.classes.length);
+    const hasMismatchedFeature = embeddings.some((embedding) => embedding.shape[1] !== featureDim);
+
+    if (hasMismatchedFeature) {
+      throw new Error("학습 이미지의 특징 벡터 차원이 서로 다릅니다. 같은 MobileNet 설정으로 다시 학습해 주세요.");
+    }
+
+    xs = tf.concat(embeddings);
+    embeddings.forEach((tensor) => tensor.dispose());
+    embeddings.length = 0;
+
+    labelsTensor = tf.tensor1d(labelIndices, "int32");
+    ys = tf.oneHot(labelsTensor, state.classes.length);
+    labelsTensor.dispose();
+    labelsTensor = null;
+
+    state.classifier = createClassifier(state.classes.length, featureDim);
     els.modelState.textContent = "학습 중";
     els.modelState.classList.remove("is-ready");
-    showStatus("수집한 이미지로 새 분류기를 학습하는 중입니다.", "warning");
+    showStatus(`수집한 이미지로 ${featureDim}차원 특징 벡터 분류기를 학습하는 중입니다.`, "warning");
 
     await state.classifier.fit(xs, ys, {
       epochs,
@@ -723,13 +760,14 @@ async function trainModel() {
       },
     });
 
-    xs.dispose();
-    ys.dispose();
+    disposeTrainingTensors();
 
     state.trainingInfo = {
       trainedAt: new Date().toISOString(),
       epochs,
       batchSize,
+      featureDim,
+      mobileNet: { ...MOBILENET_CONFIG },
       classCount: state.classes.length,
       totalImages: getTotalImageCount(),
       classStats: state.classes.map((classItem) => ({
@@ -748,8 +786,15 @@ async function trainModel() {
     renderTrainingSummary();
   } catch (error) {
     console.error(error);
+    if (state.classifier && !state.trainingInfo) {
+      state.classifier.dispose();
+      state.classifier = null;
+      els.modelState.textContent = "학습 실패";
+      els.modelState.classList.remove("is-ready");
+    }
     showStatus(error.message || "모델 학습 중 오류가 생겼습니다.", "error");
   } finally {
+    disposeTrainingTensors();
     els.trainModelButton.disabled = false;
   }
 }
@@ -773,6 +818,15 @@ async function predictImage(dataUrl, method) {
   try {
     await ensureLibrariesReady();
     const embedding = await extractEmbedding(dataUrl);
+    const actualFeatureDim = embedding.shape[1];
+
+    if (state.trainingInfo.featureDim && actualFeatureDim !== state.trainingInfo.featureDim) {
+      embedding.dispose();
+      throw new Error(
+        `예측 이미지의 특징 벡터 차원(${actualFeatureDim})이 학습된 모델의 입력 차원(${state.trainingInfo.featureDim})과 다릅니다. 모델을 다시 학습해 주세요.`,
+      );
+    }
+
     const prediction = state.classifier.predict(embedding);
     const probabilities = await prediction.data();
     embedding.dispose();
