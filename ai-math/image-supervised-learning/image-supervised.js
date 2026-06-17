@@ -15,6 +15,7 @@ const state = {
   trainingInfo: null,
   predictionHistory: [],
   pendingPredictionImage: null,
+  pendingPredictionRead: null,
 };
 
 const els = {
@@ -525,10 +526,18 @@ async function startWebcam() {
     }
   }
 
-  [els.collectionVideo, els.predictionVideo].forEach((video) => {
-    video.srcObject = state.webcamStream;
+  [els.collectionVideo, els.predictionVideo].forEach(async (video) => {
+    if (video.srcObject !== state.webcamStream) {
+      video.srcObject = state.webcamStream;
+    }
+
     video.parentElement.classList.add("has-stream");
-    video.play();
+
+    try {
+      await video.play();
+    } catch (error) {
+      console.warn("webcam video play failed", error);
+    }
   });
 
   els.webcamState.textContent = "켜짐";
@@ -556,6 +565,35 @@ function captureFromVideo(video) {
 
   ctx.drawImage(video, sx, sy, sourceSize, sourceSize, 0, 0, CAPTURE_SIZE, CAPTURE_SIZE);
   return canvas.toDataURL("image/jpeg", 0.92);
+}
+
+function waitForVideoFrame(video, timeoutMs = 3000) {
+  if (video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) {
+    return Promise.resolve(true);
+  }
+
+  return new Promise((resolve) => {
+    let settled = false;
+
+    function finish(isReady) {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      video.removeEventListener("loadeddata", handleReady);
+      video.removeEventListener("canplay", handleReady);
+      resolve(isReady);
+    }
+
+    function handleReady() {
+      finish(video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0);
+    }
+
+    video.addEventListener("loadeddata", handleReady);
+    video.addEventListener("canplay", handleReady);
+    window.setTimeout(() => finish(false), timeoutMs);
+  });
 }
 
 function captureTrainingImage() {
@@ -867,11 +905,47 @@ function buildPredictionRows(probabilities, classNames) {
   };
 }
 
+function showPredictionPreview(dataUrl) {
+  if (!dataUrl) {
+    return;
+  }
+
+  els.predictionPreviewImage.src = dataUrl;
+  els.predictionPreviewImage.parentElement.classList.add("has-image");
+}
+
+function renderPredictionError(message) {
+  els.topPredictionLabel.textContent = "예측 실패";
+  els.probabilityList.replaceChildren();
+
+  const errorMessage = document.createElement("p");
+  errorMessage.className = "empty-message";
+  errorMessage.textContent = message;
+  els.probabilityList.append(errorMessage);
+}
+
+function disposePredictionTensor(prediction) {
+  if (Array.isArray(prediction)) {
+    prediction.forEach((tensor) => tensor?.dispose?.());
+    return;
+  }
+
+  prediction?.dispose?.();
+}
+
 async function predictImage(dataUrl, method) {
   if (!validatePredictionReady()) {
     return;
   }
 
+  if (!dataUrl) {
+    const message = "예측할 이미지가 준비되지 않았습니다. 웹캠 화면이나 업로드 이미지를 확인해 주세요.";
+    showStatus(message, "warning");
+    renderPredictionError(message);
+    return;
+  }
+
+  showPredictionPreview(dataUrl);
   els.predictWebcamButton.disabled = true;
   els.predictFileButton.disabled = true;
   let embedding = null;
@@ -895,7 +969,13 @@ async function predictImage(dataUrl, method) {
     }
 
     prediction = state.classifier.predict(embedding);
-    const probabilities = await prediction.data();
+    const predictionTensor = Array.isArray(prediction) ? prediction[0] : prediction;
+
+    if (!predictionTensor?.data) {
+      throw new Error("모델 예측 결과를 읽지 못했습니다. 모델을 다시 학습해 주세요.");
+    }
+
+    const probabilities = await predictionTensor.data();
     const predictionRows = buildPredictionRows(probabilities, classNames);
 
     console.log("prediction", prediction);
@@ -920,18 +1000,19 @@ async function predictImage(dataUrl, method) {
     showStatus(`${record.number}번째 예측 결과를 기록했습니다.`, "success");
   } catch (error) {
     console.error(error);
-    showStatus(error.message || "예측 중 오류가 생겼습니다.", "error");
+    const message = error.message || "예측 중 오류가 생겼습니다.";
+    showStatus(message, "error");
+    renderPredictionError(message);
   } finally {
     embedding?.dispose();
-    prediction?.dispose();
+    disposePredictionTensor(prediction);
     els.predictWebcamButton.disabled = false;
     els.predictFileButton.disabled = false;
   }
 }
 
 function renderPredictionResult(record) {
-  els.predictionPreviewImage.src = record.imageDataUrl;
-  els.predictionPreviewImage.parentElement.classList.add("has-image");
+  showPredictionPreview(record.imageDataUrl);
   els.topPredictionLabel.textContent = `${record.topClass} · ${formatProbability(record.topProbability)}`;
   els.probabilityList.replaceChildren();
 
@@ -975,9 +1056,20 @@ async function predictFromWebcam() {
     return;
   }
 
+  console.log("predictFromWebcam clicked");
+  showStatus("웹캠 화면을 예측 이미지로 캡처하는 중입니다.", "warning");
   const started = await startWebcam();
 
   if (!started) {
+    return;
+  }
+
+  const isFrameReady = await waitForVideoFrame(els.predictionVideo);
+
+  if (!isFrameReady) {
+    const message = "웹캠 화면이 아직 준비되지 않았습니다. 화면이 보인 뒤 다시 예측해 주세요.";
+    showStatus(message, "warning");
+    renderPredictionError(message);
     return;
   }
 
@@ -985,29 +1077,48 @@ async function predictFromWebcam() {
 
   if (dataUrl) {
     await predictImage(dataUrl, "웹캠");
+    return;
   }
+
+  renderPredictionError("웹캠 이미지를 캡처하지 못했습니다. 웹캠 권한과 화면 상태를 확인해 주세요.");
 }
 
 async function handlePredictionFile(file) {
   if (!file) {
     state.pendingPredictionImage = null;
+    state.pendingPredictionRead = null;
     return;
   }
 
   if (!isImageFile(file)) {
     showStatus("이미지 파일 형식이 아닙니다. JPG, PNG, WebP 파일을 선택해 주세요.", "warning");
     state.pendingPredictionImage = null;
+    state.pendingPredictionRead = null;
     return;
   }
 
-  const dataUrl = await readFileAsDataUrl(file);
-  state.pendingPredictionImage = {
-    dataUrl,
-    method: "이미지 업로드",
-  };
-  els.predictionPreviewImage.src = dataUrl;
-  els.predictionPreviewImage.parentElement.classList.add("has-image");
-  showStatus("예측할 이미지가 준비되었습니다. 업로드 이미지 예측하기 버튼을 눌러 주세요.", "success");
+  state.pendingPredictionImage = null;
+  state.pendingPredictionRead = readFileAsDataUrl(file)
+    .then((dataUrl) => {
+      state.pendingPredictionImage = {
+        dataUrl,
+        method: "이미지 업로드",
+      };
+      showPredictionPreview(dataUrl);
+      showStatus("예측할 이미지가 준비되었습니다. 업로드 이미지 예측하기 버튼을 눌러 주세요.", "success");
+      return state.pendingPredictionImage;
+    })
+    .catch((error) => {
+      state.pendingPredictionImage = null;
+      showStatus(error.message || "이미지 파일을 읽지 못했습니다.", "error");
+      renderPredictionError(error.message || "이미지 파일을 읽지 못했습니다.");
+      return null;
+    })
+    .finally(() => {
+      state.pendingPredictionRead = null;
+    });
+
+  await state.pendingPredictionRead;
 }
 
 async function predictFromUploadedFile() {
@@ -1015,8 +1126,16 @@ async function predictFromUploadedFile() {
     return;
   }
 
+  console.log("predictFromUploadedFile clicked");
+
+  if (state.pendingPredictionRead) {
+    showStatus("업로드 이미지를 읽는 중입니다. 잠시만 기다려 주세요.", "warning");
+    await state.pendingPredictionRead;
+  }
+
   if (!state.pendingPredictionImage) {
     showStatus("먼저 예측할 이미지 파일을 선택해 주세요.", "warning");
+    renderPredictionError("먼저 예측할 이미지 파일을 선택해 주세요.");
     return;
   }
 
@@ -1039,6 +1158,7 @@ function resetTrainingData() {
   state.classifier = null;
   state.trainingInfo = null;
   state.pendingPredictionImage = null;
+  state.pendingPredictionRead = null;
   els.modelState.textContent = "학습 전";
   els.modelState.classList.remove("is-ready");
   els.progressText.textContent = "아직 학습을 시작하지 않았습니다.";
