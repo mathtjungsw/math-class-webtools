@@ -67,6 +67,8 @@ function routeRequest_(parameters) {
       return getPlayerState(parameters.spreadsheetId, parameters.teamCode);
     case "submitNumber":
       return submitNumber(parameters.spreadsheetId, parameters.teamCode, Number(parameters.round), Number(parameters.number));
+    case "adminSubmitNumber":
+      return adminSubmitNumber(parameters.spreadsheetId, Number(parameters.teamId), Number(parameters.round), Number(parameters.number));
     case "revealSubmission":
       return revealSubmission(parameters.spreadsheetId, Number(parameters.round), Number(parameters.teamId));
     case "revealAllCurrentRound":
@@ -218,13 +220,30 @@ function submitNumber(spreadsheetId, teamCode, round, number) {
     const id = resolveSpreadsheetId_(spreadsheetId);
     const sheet = getGameSheet_(id);
     const validation = validateSubmission_(sheet, teamCode, round, number);
-    const submittedAt = new Date().toISOString();
-    appendSubmission_(sheet, [round, validation.team.teamId, validation.team.teamName, number, submittedAt, false, "", ""]);
-    validation.team.usedNumbers.push(number);
-    writeTeam_(sheet, validation.team);
-    touchUpdatedAt_(sheet);
+    saveSubmission_(sheet, validation.team, round, number, "");
     return getPlayerState_(id, teamCode);
   });
+}
+
+function adminSubmitNumber(spreadsheetId, teamId, round, number) {
+  return withGameLock_(function () {
+    const id = resolveSpreadsheetId_(spreadsheetId);
+    const sheet = getGameSheet_(id);
+    const settings = normalizeSettings_(readSettings_(sheet));
+    const team = readTeams_(sheet).find(function (item) { return Number(item.teamId) === Number(teamId); });
+    if (!team) throw new Error("해당 팀을 찾을 수 없습니다.");
+    validateTeamSubmission_(sheet, team, round, number, settings);
+    saveSubmission_(sheet, team, round, number, "관리자 직접 입력");
+    return getGameState_(id);
+  });
+}
+
+function saveSubmission_(sheet, team, round, number, memo) {
+  const normalizedNumber = Number(number);
+  appendSubmission_(sheet, [Number(round), team.teamId, team.teamName, normalizedNumber, new Date().toISOString(), false, "", memo || ""]);
+  team.usedNumbers.push(normalizedNumber);
+  writeTeam_(sheet, team);
+  touchUpdatedAt_(sheet);
 }
 
 function revealSubmission(spreadsheetId, round, teamId) {
@@ -376,6 +395,11 @@ function validateSubmission(spreadsheetId, teamCode, round, number) {
 
 function validateSubmission_(sheet, teamCode, round, number) {
   const settings = normalizeSettings_(readSettings_(sheet));
+  const team = findTeamByCode_(readTeams_(sheet), teamCode);
+  return validateTeamSubmission_(sheet, team, round, number, settings);
+}
+
+function validateTeamSubmission_(sheet, team, round, number, settings) {
   if (settings.status === "created") throw new Error("아직 게임이 시작되지 않았습니다.");
   if (settings.status === "finished") throw new Error("이미 종료된 게임입니다.");
   if (settings.status !== "playing") throw new Error("게임 상태를 확인해 주세요.");
@@ -383,8 +407,6 @@ function validateSubmission_(sheet, teamCode, round, number) {
   if (!Number.isInteger(Number(number)) || Number(number) < 1 || Number(number) > settings.roundCount) {
     throw new Error("1부터 " + settings.roundCount + "까지의 숫자만 제출할 수 있습니다.");
   }
-  const teams = readTeams_(sheet);
-  const team = findTeamByCode_(teams, teamCode);
   if (team.usedNumbers.includes(Number(number))) throw new Error("이미 사용한 숫자입니다. 남은 숫자 중에서 골라 주세요.");
   const alreadySubmitted = readSubmissions_(sheet).some(function (item) {
     return Number(item.round) === Number(round) && Number(item.teamId) === Number(team.teamId);

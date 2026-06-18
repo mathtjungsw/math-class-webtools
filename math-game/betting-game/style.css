@@ -221,12 +221,15 @@ h1, h2, h3, p { overflow-wrap: anywhere; }
 .game-board tr.past-round { color: #80908b; }
 .cell-button { width: 100%; min-height: 46px; padding: 4px; border: 0; border-radius: 10px; background: transparent; font-size: 12px; font-weight: 800; }
 .cell-button.submitted { background: var(--yellow-soft); color: #81600c; cursor: pointer; }
+.cell-button.admin-entry { border: 1px dashed #7fbbaa; background: #edf8f3; color: var(--green-700); cursor: pointer; }
+.cell-button.admin-entry:hover { border-style: solid; background: var(--green-100); }
 .cell-button.revealed { background: var(--blue-soft); color: var(--blue); font-size: 22px; }
 .cell-button.winner { background: var(--yellow); color: #604500; box-shadow: inset 0 0 0 2px #e0ad31; }
 .cell-button.pending { color: #9daba7; }
 .legend { display: flex; flex-wrap: wrap; gap: 16px; padding: 12px 4px 4px; color: var(--muted); font-size: 11px; font-weight: 700; }
 .legend span { display: flex; align-items: center; gap: 5px; }
 .legend-dot { width: 9px; height: 9px; border-radius: 3px; background: #eef2f0; }
+.legend-dot.admin-entry { border: 1px dashed #5ba38e; background: #edf8f3; }
 .legend-dot.submitted { background: var(--yellow-soft); border: 1px solid #e7ca6d; }
 .legend-dot.revealed { background: var(--blue-soft); border: 1px solid #8ebdd6; }
 .legend-dot.scored { background: var(--yellow); }

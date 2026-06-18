@@ -418,6 +418,52 @@ async function revealCell(round, teamId) {
   }
 }
 
+async function adminSubmitNumber(round, teamId) {
+  if (!appState.admin || appState.busy) return;
+  const { settings, teams = [], submissions = [] } = appState.admin;
+  if (settings.status !== "playing" || Number(round) !== Number(settings.currentRound)) {
+    showMessage("현재 진행 중인 라운드에만 대신 제출할 수 있습니다.", "info");
+    return;
+  }
+  const team = teams.find((item) => Number(item.teamId) === Number(teamId));
+  if (!team) {
+    showMessage("팀 정보를 찾을 수 없습니다. 동기화 후 다시 시도해 주세요.", "error");
+    return;
+  }
+  const alreadySubmitted = submissions.some((item) => Number(item.round) === Number(round) && Number(item.teamId) === Number(teamId));
+  if (alreadySubmitted) {
+    showMessage(`${team.teamName}은 이미 이번 라운드에 제출했습니다.`, "info");
+    return;
+  }
+  const remainingNumbers = (team.remainingNumbers || createNumberRange(settings.roundCount).filter((number) => !(team.usedNumbers || []).map(Number).includes(number))).map(Number);
+  if (!remainingNumbers.length) {
+    showMessage(`${team.teamName}에 남은 숫자가 없습니다.`, "error");
+    return;
+  }
+  const input = window.prompt(`${team.teamName} 대신 제출할 숫자를 입력하세요.\n사용 가능: ${remainingNumbers.join(", ")}`, "");
+  if (input === null) return;
+  const number = Number(String(input).trim());
+  if (!Number.isInteger(number) || !remainingNumbers.includes(number)) {
+    showMessage(`사용 가능한 숫자 중에서 입력해 주세요: ${remainingNumbers.join(", ")}`, "error");
+    return;
+  }
+  if (!window.confirm(`${team.teamName} 대신 ${number}을(를) 제출할까요? 제출 후에는 바꿀 수 없습니다.`)) return;
+
+  try {
+    const connection = getAdminConnection();
+    assertConnection(connection);
+    setLoading(true, `${team.teamName} 대신 ${number}을(를) 제출하고 있습니다…`);
+    const state = await requestJsonp(connection.apiUrl, "adminSubmitNumber", { spreadsheetId: connection.spreadsheetId, teamId, round, number });
+    appState.admin = state;
+    renderAdminBoard(state);
+    showMessage(`${team.teamName} 대신 ${number}을(를) 제출했습니다.`, "success");
+  } catch (error) {
+    showMessage(error.message, "error");
+  } finally {
+    setLoading(false);
+  }
+}
+
 async function revealAllCurrentRound() {
   if (!appState.admin) return;
   const { settings, submissions } = appState.admin;
@@ -506,7 +552,12 @@ function renderAdminBoard(state) {
     const rowClass = round === Number(settings.currentRound) && !isFinished ? "current-round" : round < Number(settings.currentRound) || isFinished ? "past-round" : "";
     const cells = teams.map((team) => {
       const submission = submissions.find((item) => Number(item.round) === round && Number(item.teamId) === Number(team.teamId));
-      if (!submission) return `<td><button class="cell-button pending" type="button" disabled>미제출</button></td>`;
+      if (!submission) {
+        const canEnterForTeam = !isFinished && round === Number(settings.currentRound);
+        return canEnterForTeam
+          ? `<td><button class="cell-button admin-entry" type="button" onclick="adminSubmitNumber(${round}, ${team.teamId})" title="${escapeHtml(team.teamName)} 대신 숫자 제출">직접 입력</button></td>`
+          : `<td><button class="cell-button pending" type="button" disabled>미제출</button></td>`;
+      }
       if (!submission.isRevealed) return `<td><button class="cell-button submitted" type="button" onclick="revealCell(${round}, ${team.teamId})">제출 완료</button></td>`;
       const won = result && Number(result.winnerTeamId) === Number(team.teamId);
       return `<td><button class="cell-button revealed ${won ? "winner" : ""}" type="button" disabled>${escapeHtml(submission.submittedNumber)}${won ? " ★" : ""}</button></td>`;
@@ -517,7 +568,7 @@ function renderAdminBoard(state) {
   const currentSubmissions = submissions.filter((item) => Number(item.round) === Number(settings.currentRound));
   const currentResult = roundResults.find((item) => Number(item.round) === Number(settings.currentRound));
   $("#submissionCount").textContent = `${currentSubmissions.length} / ${settings.teamCount}팀 제출`;
-  $("#roundHint").textContent = isFinished ? "모든 라운드가 끝났습니다." : currentResult ? "결과 계산이 끝났습니다. 다음 라운드로 이동하세요." : currentSubmissions.length === settings.teamCount ? "모든 팀이 제출했습니다. 숫자를 공개하세요." : "각 팀의 제출을 기다리고 있습니다.";
+  $("#roundHint").textContent = isFinished ? "모든 라운드가 끝났습니다." : currentResult ? "결과 계산이 끝났습니다. 다음 라운드로 이동하세요." : currentSubmissions.length === settings.teamCount ? "모든 팀이 제출했습니다. 숫자를 공개하세요." : "미제출 팀은 게임판에서 직접 입력할 수 있습니다.";
   $("#revealAllButton").disabled = isFinished || Boolean(currentResult) || currentSubmissions.length < settings.teamCount;
   $("#nextRoundButton").disabled = isFinished;
   $("#nextRoundButton").textContent = Number(settings.currentRound) === Number(settings.roundCount) ? "최종 결과 보기 →" : "다음 라운드 →";
