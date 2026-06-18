@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#155d52" />
+    <title>배팅 게임 | 수학 수업 웹툴 모음</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="back-link" href="../../index.html" aria-label="웹툴 모음으로 돌아가기">← 웹툴 모음</a>
+      <div class="brand">
+        <span class="brand-dice" aria-hidden="true">6</span>
+        <span><strong>배팅 게임</strong><small>중복을 피하고, 가장 큰 수를 노려라!</small></span>
+      </div>
+      <span class="connection-pill" id="connectionPill">연결 전</span>
+    </header>
+
+    <main class="app-shell">
+      <section id="modeSelection" class="screen mode-screen">
+        <div class="hero-copy">
+          <p class="eyebrow">수학 게임 · 모둠 전략 활동</p>
+          <h1>서로의 선택을 읽는<br /><span>단 한 번의 숫자 승부</span></h1>
+          <p class="hero-description">
+            5개 팀이 매 라운드 1부터 6 중 하나를 냅니다. 같은 수는 모두 무효!
+            겹치지 않은 가장 큰 수를 낸 팀이 그 숫자만큼 점수를 얻습니다.
+          </p>
+          <div class="game-facts" aria-label="게임 기본 정보">
+            <span><b>5</b>개 팀</span><span><b>6</b>라운드</span><span><b>1–6</b> 한 번씩</span>
+          </div>
+        </div>
+
+        <div class="mode-grid" aria-label="접속 모드 선택">
+          <button class="mode-card admin-card" type="button" onclick="switchMode('admin')">
+            <span class="mode-icon" aria-hidden="true">교</span>
+            <span><small>빔프로젝터용</small><strong>관리자 모드</strong><em>게임을 만들고 라운드를 진행해요</em></span>
+            <span class="mode-arrow" aria-hidden="true">→</span>
+          </button>
+          <button class="mode-card player-card" type="button" onclick="switchMode('player')">
+            <span class="mode-icon" aria-hidden="true">팀</span>
+            <span><small>학생·모바일용</small><strong>참여자 모드</strong><em>팀 코드로 접속해 숫자를 제출해요</em></span>
+            <span class="mode-arrow" aria-hidden="true">→</span>
+          </button>
+        </div>
+
+        <div class="rule-strip">
+          <div><span class="rule-number duplicated">6</span><span class="rule-number duplicated">6</span><small>중복은 무효</small></div>
+          <span class="rule-chevron">→</span>
+          <div><span class="rule-number winner">5</span><span class="rule-number">3</span><span class="rule-number">2</span><small>가장 큰 유효수 5점</small></div>
+        </div>
+      </section>
+
+      <section id="adminScreen" class="screen workspace" hidden>
+        <div class="workspace-heading">
+          <div><button class="text-button" type="button" onclick="switchMode('home')">← 모드 선택</button><p class="eyebrow">교사용 게임 컨트롤</p><h1>관리자 모드</h1></div>
+          <div class="round-badge" id="adminRoundBadge"><small>현재 라운드</small><strong>준비 중</strong></div>
+        </div>
+
+        <section class="panel setup-panel" aria-labelledby="adminSetupTitle">
+          <div class="panel-heading"><div><p class="step-label">STEP 1</p><h2 id="adminSetupTitle">게임 연결 및 생성</h2></div><span class="status-chip" id="adminSetupStatus">설정 필요</span></div>
+          <div class="field-grid">
+            <label class="field"><span>Apps Script 웹앱 URL</span><input id="adminApiUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="url" /></label>
+            <label class="field"><span>구글 스프레드시트 주소</span><input id="adminSpreadsheet" type="text" placeholder="https://docs.google.com/spreadsheets/d/.../edit" /></label>
+          </div>
+          <div class="button-row">
+            <button id="createGameButton" class="button primary" type="button" onclick="createGame()">게임 생성</button>
+            <button class="button secondary" type="button" onclick="loadAdminState()">기존 게임 불러오기</button>
+          </div>
+          <p class="helper-text">게임 생성 시 스프레드시트의 ‘시트1’ 게임 영역이 새로 만들어집니다.</p>
+        </section>
+
+        <section id="teamCodesPanel" class="panel" hidden>
+          <div class="panel-heading"><div><p class="step-label">STEP 2</p><h2>팀별 참여 코드</h2></div><button class="button compact primary" id="startGameButton" type="button" onclick="startGame()">게임 시작</button></div>
+          <p class="panel-description">각 팀에 자기 코드만 알려주세요. 참여 코드는 이 게임에서만 사용합니다.</p>
+          <div class="game-id-line"><span>참여자용 게임 ID</span><code id="gameIdDisplay">-</code><small>스프레드시트 주소 대신 입력할 수 있어요.</small></div>
+          <div class="team-code-grid" id="teamCodeGrid"></div>
+        </section>
+
+        <section id="adminGamePanel" class="panel board-panel" hidden>
+          <div class="panel-heading board-heading">
+            <div><p class="step-label">LIVE BOARD</p><h2>라운드 게임판</h2></div>
+            <div class="button-row compact-row"><button class="button secondary compact" type="button" onclick="loadAdminState()">↻ 동기화</button><button class="button danger-ghost compact" type="button" onclick="resetGame()">게임 초기화</button></div>
+          </div>
+          <div class="progress-track" id="roundProgress" aria-label="라운드 진행 상황"></div>
+          <div class="table-scroll"><table class="game-board"><thead id="adminBoardHead"></thead><tbody id="adminBoardBody"></tbody></table></div>
+          <div class="legend"><span><i class="legend-dot pending"></i>미제출</span><span><i class="legend-dot submitted"></i>제출 완료</span><span><i class="legend-dot revealed"></i>공개 완료</span><span><i class="legend-dot scored"></i>점수 획득</span></div>
+          <div class="action-bar">
+            <div><strong id="submissionCount">0 / 5팀 제출</strong><small id="roundHint">각 팀의 제출을 기다리고 있습니다.</small></div>
+            <div class="button-row"><button id="revealAllButton" class="button accent" type="button" onclick="revealAllCurrentRound()">현재 라운드 전체 공개</button><button id="nextRoundButton" class="button primary" type="button" onclick="nextRound()">다음 라운드 →</button></div>
+          </div>
+        </section>
+
+        <section id="adminSummaryPanel" class="dashboard-grid" hidden>
+          <div class="panel"><div class="panel-heading"><h2>팀 현황</h2><span class="status-chip">실시간</span></div><div class="team-status-list" id="teamStatusList"></div></div>
+          <div class="panel"><div class="panel-heading"><h2>라운드 결과</h2></div><div class="result-list" id="roundResultList"><p class="empty-state">공개가 끝난 라운드의 결과가 여기에 나타납니다.</p></div></div>
+        </section>
+
+        <section id="adminFinalPanel" class="panel final-panel" hidden><div id="adminFinalRanking"></div></section>
+
+        <details class="panel manual-panel">
+          <summary><span><small>처음 사용하시나요?</small><strong>관리자 사용 설명서</strong></span><span>펼쳐보기</span></summary>
+          <div class="manual-content">
+            <article><b>1</b><div><h3>스프레드시트 준비</h3><p>새 구글 스프레드시트를 만들고 시트 이름을 <strong>시트1</strong>로 둡니다. 표는 직접 만들지 않아도 됩니다.</p></div></article>
+            <article><b>2</b><div><h3>Apps Script 붙여넣기</h3><p>스프레드시트에서 <strong>확장 프로그램 → Apps Script</strong>를 열고, 이 도구 폴더의 <code>Code.gs</code> 전체를 붙여넣어 저장합니다.</p></div></article>
+            <article><b>3</b><div><h3>웹앱 배포</h3><p><strong>배포 → 새 배포 → 웹 앱</strong>을 선택합니다. 실행 사용자는 ‘나’, 액세스 사용자는 수업 환경에 맞게 설정한 뒤 생성된 <code>/exec</code> URL을 복사합니다.</p></div></article>
+            <article><b>4</b><div><h3>게임 생성</h3><p>웹앱 URL과 스프레드시트 주소를 위 입력칸에 넣고 게임을 생성합니다. 나타난 4자리 코드를 팀별로 전달한 뒤 게임을 시작합니다.</p></div></article>
+            <article><b>5</b><div><h3>라운드 운영</h3><p>5개 팀이 모두 제출하면 전체 공개가 활성화됩니다. 숫자를 공개해 결과를 계산하고, 결과 확인 후 다음 라운드로 이동합니다.</p></div></article>
+            <article><b>6</b><div><h3>문제 해결</h3><p>상태가 바뀌지 않으면 동기화를 누릅니다. 권한 오류는 웹앱 배포의 액세스 권한을, 연결 오류는 URL 끝이 <code>/exec</code>인지 확인합니다.</p></div></article>
+          </div>
+        </details>
+      </section>
+
+      <section id="playerScreen" class="screen workspace player-workspace" hidden>
+        <div class="workspace-heading">
+          <div><button class="text-button" type="button" onclick="switchMode('home')">← 모드 선택</button><p class="eyebrow">팀 숫자 제출</p><h1>참여자 모드</h1></div>
+          <div class="round-badge player-round" id="playerRoundBadge"><small>현재 라운드</small><strong>접속 전</strong></div>
+        </div>
+
+        <section id="playerJoinPanel" class="panel setup-panel">
+          <div class="panel-heading"><div><p class="step-label">TEAM LOGIN</p><h2>우리 팀으로 접속</h2></div></div>
+          <div class="player-fields">
+            <label class="field"><span>Apps Script 웹앱 URL</span><input id="playerApiUrl" type="url" placeholder="선생님이 알려준 웹앱 URL" autocomplete="url" /></label>
+            <label class="field"><span>스프레드시트 주소 또는 게임 ID</span><input id="playerSpreadsheet" type="text" placeholder="선생님이 알려준 주소 또는 ID" /></label>
+            <label class="field code-field"><span>4자리 참여 코드</span><input id="playerTeamCode" type="text" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="0000" autocomplete="one-time-code" /></label>
+          </div>
+          <button id="joinGameButton" class="button primary full-button" type="button" onclick="joinGame()">팀으로 접속하기</button>
+        </section>
+
+        <section id="playerGamePanel" hidden>
+          <div class="player-identity"><div><small>접속한 팀</small><strong id="playerTeamName">-</strong></div><button class="text-button" type="button" onclick="leavePlayerGame()">다른 게임 접속</button></div>
+          <section class="panel number-panel">
+            <div class="player-status" id="playerStatusMessage"><span class="pulse-dot"></span><strong>게임 상태를 확인하고 있습니다.</strong></div>
+            <div class="number-heading"><div><p class="step-label">YOUR CHOICE</p><h2>이번 라운드의 숫자를 고르세요</h2></div><div class="selected-display"><small>선택한 숫자</small><strong id="selectedNumberDisplay">–</strong></div></div>
+            <div class="number-grid" id="numberGrid" aria-label="제출할 숫자 선택"></div>
+            <button id="submitNumberButton" class="button primary submit-button" type="button" onclick="submitNumber()" disabled>이 숫자로 제출</button>
+            <p class="privacy-note">🔒 다른 팀은 내 선택을 볼 수 없으며, 한 번 제출한 숫자는 바꿀 수 없습니다.</p>
+          </section>
+          <section class="panel remaining-panel"><div class="panel-heading"><h2>내 숫자 현황</h2><span class="status-chip" id="playerScoreChip">현재 0점</span></div><div id="remainingNumbers"></div></section>
+          <section id="playerFinalPanel" class="panel final-panel" hidden><div id="playerFinalRanking"></div></section>
+        </section>
+      </section>
+    </main>
+
+    <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
+    <div class="loading-overlay" id="loadingOverlay" hidden><div class="spinner"></div><strong id="loadingText">처리 중입니다…</strong></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
