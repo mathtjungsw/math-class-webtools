@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>데이터의 경향성을 파악하여 예측하기</title>
+    <link rel="stylesheet" href="./trendline.css" />
+  </head>
+  <body>
+    <header class="tool-topbar">
+      <a class="brand" href="../../" aria-label="수학 수업 웹툴 모음 홈">
+        <span class="brand-mark">AI</span>
+        <span>
+          <strong>데이터의 경향성 파악하여 예측하기</strong>
+          <small>인공지능 수학</small>
+        </span>
+      </a>
+      <nav class="top-actions" aria-label="상단 메뉴">
+        <a class="ghost-link" href="../../">전체 웹툴</a>
+        <a class="ghost-link" data-github-link href="#" target="_blank" rel="noreferrer">GitHub</a>
+      </nav>
+    </header>
+
+    <main class="tool-workspace">
+      <section class="intro-band" aria-labelledby="toolTitle">
+        <div>
+          <p class="eyebrow">선형 회귀로 만나는 데이터 예측</p>
+          <h1 id="toolTitle">데이터의 경향성을 파악하여 예측하기</h1>
+          <p class="intro-copy">
+            직선 추세선으로 데이터의 경향을 분석하고, 새로운 x에 대한 y를 예측해 보세요.
+          </p>
+        </div>
+        <div class="step-strip" aria-label="활동 순서">
+          <span><b>1</b> 데이터 입력</span>
+          <span><b>2</b> 추세선 분석</span>
+          <span><b>3</b> 값 예측</span>
+          <span><b>4</b> 보고서 완성</span>
+        </div>
+      </section>
+
+      <div class="status-message" id="statusMessage" role="status" aria-live="polite">
+        직접 값을 입력하거나 예시 데이터를 불러와 시작하세요.
+      </div>
+
+      <section class="workspace-grid" aria-label="데이터 입력과 그래프">
+        <section class="card data-card" aria-labelledby="dataTitle">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">01 · 데이터 입력</p>
+              <h2 id="dataTitle">분석할 자료 준비하기</h2>
+            </div>
+            <span class="count-badge" id="validCount">유효 데이터 0개</span>
+          </div>
+
+          <div class="axis-name-grid">
+            <label>
+              x축 이름
+              <input id="xAxisName" type="text" value="공부 시간" maxlength="30" />
+            </label>
+            <label>
+              y축 이름
+              <input id="yAxisName" type="text" value="시험 점수" maxlength="30" />
+            </label>
+          </div>
+
+          <div class="sample-row">
+            <label for="sampleSelect">예시 데이터</label>
+            <select id="sampleSelect">
+              <option value="study">공부 시간과 시험 점수</option>
+              <option value="yearTemperature">연도와 평균 기온</option>
+              <option value="exercise">운동 시간과 체력 점수</option>
+              <option value="advertising">광고비와 판매량</option>
+              <option value="smartphone">스마트폰 사용 시간과 수면 시간</option>
+            </select>
+            <button class="plain-button" id="loadSampleButton" type="button">불러오기</button>
+          </div>
+
+          <div class="table-wrap data-table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th scope="col">번호</th>
+                  <th scope="col" id="xTableHeading">공부 시간</th>
+                  <th scope="col" id="yTableHeading">시험 점수</th>
+                  <th scope="col">삭제</th>
+                </tr>
+              </thead>
+              <tbody id="dataRows"></tbody>
+            </table>
+          </div>
+
+          <div class="button-row">
+            <button class="plain-button" id="addRowButton" type="button">+ 행 추가</button>
+            <button class="danger-button" id="clearDataButton" type="button">전체 삭제</button>
+          </div>
+
+          <details class="paste-box">
+            <summary>엑셀·스프레드시트 자료 붙여넣기</summary>
+            <p>두 숫자를 탭, 쉼표 또는 공백으로 구분해 한 줄에 한 쌍씩 붙여넣으세요.</p>
+            <textarea id="pasteInput" rows="5" placeholder="1&#9;3&#10;2&#9;5&#10;3&#9;7&#10;4&#9;9"></textarea>
+            <button class="plain-button" id="applyPasteButton" type="button">붙여넣은 자료를 표에 반영</button>
+          </details>
+        </section>
+
+        <section class="card graph-card" aria-labelledby="graphTitle">
+          <div class="section-heading graph-heading">
+            <div>
+              <p class="eyebrow blue">02 · 그래프</p>
+              <h2 id="graphTitle">데이터의 모양 관찰하기</h2>
+            </div>
+            <label class="switch-control">
+              <input id="trendToggle" type="checkbox" disabled />
+              <span>추세선 표시</span>
+            </label>
+          </div>
+          <div class="chart-shell" id="chartShell">
+            <canvas id="dataChart" aria-label="입력 데이터의 산점도와 추세선"></canvas>
+            <div class="chart-tooltip" id="chartTooltip" hidden></div>
+          </div>
+          <p class="chart-caption" id="chartCaption">유효한 x, y 값을 입력하면 점이 표시됩니다.</p>
+        </section>
+      </section>
+
+      <section class="card analysis-card" aria-labelledby="analysisTitle">
+        <div class="section-heading analysis-heading">
+          <div>
+            <p class="eyebrow">03 · 추세선 분석</p>
+            <h2 id="analysisTitle">데이터를 가장 잘 설명하는 직선 찾기</h2>
+          </div>
+          <button class="primary-button" id="calculateButton" type="button">추세선 만들기</button>
+        </div>
+
+        <div class="empty-analysis" id="analysisEmpty">
+          <span aria-hidden="true">y = ax + b</span>
+          <p>2개 이상의 데이터를 준비하고 추세선을 만들어 보세요.</p>
+        </div>
+
+        <div class="analysis-result" id="analysisResult" hidden>
+          <div class="equation-box">
+            <span>계산된 추세선</span>
+            <strong id="equationText">y = 0x + 0</strong>
+          </div>
+          <div class="metric-grid">
+            <article><span>기울기 a</span><strong id="slopeValue">-</strong></article>
+            <article><span>y절편 b</span><strong id="interceptValue">-</strong></article>
+            <article><span>데이터 수 n</span><strong id="dataCountValue">-</strong></article>
+            <article><span>결정계수 R²</span><strong id="rSquaredValue">-</strong></article>
+          </div>
+          <div class="interpretation-box">
+            <h3>결과 해석</h3>
+            <p id="interpretationText"></p>
+            <ul class="help-list">
+              <li><b>기울기</b>는 x가 1 증가할 때 y가 얼마나 변하는지를 나타냅니다.</li>
+              <li><b>y절편</b>은 x가 0일 때 예상되는 y값입니다.</li>
+              <li><b>R²</b>는 직선이 데이터를 설명하는 정도이며 1에 가까울수록 설명력이 높습니다.</li>
+              <li>추세선은 경향을 보여 줄 뿐, 항상 정확한 미래 값을 보장하지는 않습니다.</li>
+            </ul>
+          </div>
+          <div class="question-grid" aria-label="학습 질문">
+            <article><b>생각 1</b><p>추세선의 기울기가 양수 또는 음수라는 것은 무슨 뜻인가요?</p></article>
+            <article><b>생각 2</b><p>추세선에서 멀리 벗어난 점은 왜 생겼을까요?</p></article>
+            <article><b>생각 3</b><p>이 직선으로 아주 먼 미래를 예측해도 괜찮을까요?</p></article>
+            <article><b>생각 4</b><p>더 정확한 예측을 위해 어떤 자료가 필요할까요?</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="workspace-grid lower-grid" aria-label="예측과 예측 기록">
+        <section class="card prediction-card" aria-labelledby="predictionTitle">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow blue">04 · 값 예측</p>
+              <h2 id="predictionTitle">새로운 x로 y 예측하기</h2>
+            </div>
+          </div>
+          <label class="prediction-input">
+            <span id="predictionInputLabel">예측할 공부 시간</span>
+            <input id="predictionX" type="number" step="any" placeholder="예: 10" />
+          </label>
+          <button class="primary-button full-button" id="predictButton" type="button">예측하기</button>
+          <div class="prediction-output" id="predictionOutput" aria-live="polite">
+            추세선을 만든 뒤 예측할 수 있습니다.
+          </div>
+        </section>
+
+        <section class="card history-card" aria-labelledby="historyTitle">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">05 · 예측 기록</p>
+              <h2 id="historyTitle">예측 결과 모아 보기</h2>
+            </div>
+            <button class="plain-button compact-button" id="clearHistoryButton" type="button">전체 삭제</button>
+          </div>
+          <div class="table-wrap">
+            <table class="history-table">
+              <thead>
+                <tr><th>번호</th><th>예측 x</th><th>예측 y</th><th>사용한 식</th><th>시간</th><th>삭제</th></tr>
+              </thead>
+              <tbody id="historyRows"></tbody>
+            </table>
+          </div>
+          <p class="empty-message" id="historyEmpty">아직 예측 기록이 없습니다.</p>
+        </section>
+      </section>
+
+      <section class="card report-card" aria-labelledby="reportTitle">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">06 · 활동 보고서</p>
+            <h2 id="reportTitle">나의 탐구를 한 장의 보고서로 정리하기</h2>
+          </div>
+          <button class="primary-button" id="openReportButton" type="button" aria-expanded="false">보고서 작성</button>
+        </div>
+
+        <div class="report-builder" id="reportBuilder" hidden>
+          <div class="report-form-grid">
+            <label>주제<input id="reportTopic" type="text" value="데이터의 경향성을 이용한 예측 탐구" /></label>
+            <label class="wide-field">탐구 목적<textarea id="reportPurpose" rows="3" placeholder="이 자료를 분석하려는 목적을 적어 보세요."></textarea></label>
+            <label class="wide-field">자료 설명<textarea id="reportDataDescription" rows="3" placeholder="자료의 출처와 각 값의 의미를 적어 보세요."></textarea></label>
+            <label class="wide-field">
+              <span class="label-with-action">추세선 해석 <button type="button" class="text-button" id="fillInterpretationButton">자동 초안</button></span>
+              <textarea id="reportInterpretation" rows="4" placeholder="기울기와 R²를 중심으로 해석해 보세요."></textarea>
+            </label>
+            <label class="wide-field">
+              <span class="label-with-action">예측 결과 정리 <button type="button" class="text-button" id="fillPredictionSummaryButton">자동 초안</button></span>
+              <textarea id="reportPredictionSummary" rows="4" placeholder="예측한 값과 그 의미를 정리해 보세요."></textarea>
+            </label>
+            <label>배운 점<textarea id="reportLearned" rows="4" placeholder="이번 탐구에서 배운 점을 적어 보세요."></textarea></label>
+            <label>더 알고 싶은 점<textarea id="reportQuestion" rows="4" placeholder="더 탐구하고 싶은 질문을 적어 보세요."></textarea></label>
+          </div>
+          <div class="report-actions">
+            <div class="pdf-progress" id="pdfProgress" role="status" aria-live="polite" hidden>
+              보고서 PDF를 생성하고 있습니다…
+            </div>
+            <button class="plain-button" id="buildReportButton" type="button">보고서 미리보기</button>
+            <button class="primary-button" id="downloadPdfButton" type="button">PDF로 다운로드</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="report-preview-shell" id="reportPreviewShell" hidden aria-labelledby="previewTitle">
+        <div class="preview-toolbar">
+          <h2 id="previewTitle">보고서 미리보기</h2>
+          <span>A4 형식</span>
+        </div>
+        <article class="report-document" id="reportDocument"></article>
+      </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="./trendline.js"></script>
+  </body>
+</html>
