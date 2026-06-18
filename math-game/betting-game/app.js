@@ -187,6 +187,53 @@ function loadLocalGameInfo(mode) {
   return readStorage(STORAGE_KEYS[mode]);
 }
 
+async function copyTextToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.select();
+  const copied = document.execCommand("copy");
+  textarea.remove();
+  if (!copied) throw new Error("클립보드 복사를 허용하지 않는 브라우저입니다.");
+}
+
+async function copyAppsScriptCode() {
+  const button = $("#copyAppsScriptButton");
+  const originalText = "코드 전체 복사";
+  try {
+    button.disabled = true;
+    button.textContent = "코드 불러오는 중…";
+    const response = await fetch(`./Code.gs?v=${Date.now()}`, { cache: "no-store" });
+    if (!response.ok) throw new Error("Apps Script 코드 파일을 불러오지 못했습니다.");
+    const code = await response.text();
+    if (!code.includes("function doGet") || !code.includes("function createGame")) {
+      throw new Error("코드 파일의 내용을 확인할 수 없습니다.");
+    }
+    await copyTextToClipboard(code);
+    button.textContent = "복사 완료 ✓";
+    button.classList.add("copied");
+    showMessage("Apps Script 전체 코드를 복사했습니다. 편집기에 그대로 붙여넣으세요.", "success");
+    window.setTimeout(() => {
+      button.textContent = originalText;
+      button.classList.remove("copied");
+    }, 3500);
+  } catch (error) {
+    button.textContent = originalText;
+    button.classList.remove("copied");
+    showMessage(error.message, "error");
+  } finally {
+    button.disabled = false;
+  }
+}
+
 async function createGame() {
   try {
     const connection = getAdminConnection();

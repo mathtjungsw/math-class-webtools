@@ -152,8 +152,16 @@ h1, h2, h3, p { overflow-wrap: anywhere; }
 .panel-heading h2 { margin: 0; font-size: clamp(20px, 3vw, 25px); line-height: 1.25; }
 .panel-description, .helper-text { margin: -8px 0 18px; color: var(--muted); font-size: 13px; line-height: 1.65; }
 .helper-text { margin: 12px 0 0; }
+.helper-text code { padding: 2px 5px; border-radius: 5px; background: #edf4f0; color: var(--green-700); font-weight: 800; }
 .status-chip { display: inline-flex; min-height: 29px; align-items: center; padding: 0 10px; border-radius: 999px; background: #edf2ef; color: var(--muted); font-size: 11px; font-weight: 900; white-space: nowrap; }
 .status-chip.ready { background: var(--green-100); color: var(--green-700); }
+
+.script-copy-card { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; margin-bottom: 18px; padding: 15px 16px; border: 1px solid #b9dace; border-radius: 14px; background: linear-gradient(135deg, #f0faf6, #f8fbf8); }
+.script-copy-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 11px; background: var(--green-100); color: var(--green-700); font-size: 12px; font-weight: 900; }
+.script-copy-copy strong { display: block; font-size: 14px; }
+.script-copy-copy p { margin: 4px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.button.copy-button { min-height: 40px; padding: 0 15px; background: var(--green-700); color: white; font-size: 12px; white-space: nowrap; }
+.button.copy-button.copied { background: #315f7a; }
 
 .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .player-fields { display: grid; grid-template-columns: 1.1fr 1fr .48fr; gap: 12px; }
@@ -341,6 +349,8 @@ h1, h2, h3, p { overflow-wrap: anywhere; }
   .panel-heading { align-items: flex-start; }
   .team-code-grid { grid-template-columns: repeat(2, 1fr); }
   .game-id-line small { width: 100%; margin-left: 0; }
+  .script-copy-card { grid-template-columns: auto 1fr; }
+  .script-copy-card .copy-button { grid-column: 1 / -1; width: 100%; }
   .board-heading { flex-direction: column; }
   .action-bar { align-items: stretch; flex-direction: column; margin-right: -18px; margin-left: -18px; }
   .action-bar .button-row { display: grid; grid-template-columns: 1fr 1fr; }

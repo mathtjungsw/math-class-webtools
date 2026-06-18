@@ -59,6 +59,14 @@
 
         <section class="panel setup-panel" aria-labelledby="adminSetupTitle">
           <div class="panel-heading"><div><p class="step-label">STEP 1</p><h2 id="adminSetupTitle">게임 연결 및 생성</h2></div><span class="status-chip" id="adminSetupStatus">설정 필요</span></div>
+          <div class="script-copy-card">
+            <div class="script-copy-icon" aria-hidden="true">&lt;/&gt;</div>
+            <div class="script-copy-copy">
+              <strong>먼저 Apps Script 코드를 준비하세요</strong>
+              <p>아래 버튼으로 전체 코드를 복사한 뒤 Apps Script 편집기에 그대로 붙여넣으면 됩니다.</p>
+            </div>
+            <button id="copyAppsScriptButton" class="button copy-button" type="button" onclick="copyAppsScriptCode()">코드 전체 복사</button>
+          </div>
           <div class="field-grid">
             <label class="field"><span>Apps Script 웹앱 URL</span><input id="adminApiUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="url" /></label>
             <label class="field"><span>구글 스프레드시트 주소</span><input id="adminSpreadsheet" type="text" placeholder="https://docs.google.com/spreadsheets/d/.../edit" /></label>
@@ -67,7 +75,7 @@
             <button id="createGameButton" class="button primary" type="button" onclick="createGame()">게임 생성</button>
             <button class="button secondary" type="button" onclick="loadAdminState()">기존 게임 불러오기</button>
           </div>
-          <p class="helper-text">게임 생성 시 스프레드시트의 ‘시트1’ 게임 영역이 새로 만들어집니다.</p>
+          <p class="helper-text">복사한 코드를 저장·웹 앱으로 배포한 뒤 생성된 <code>/exec</code> URL을 입력하세요. 게임 생성 시 ‘시트1’ 게임 영역이 새로 만들어집니다.</p>
         </section>
 
         <section id="teamCodesPanel" class="panel" hidden>
