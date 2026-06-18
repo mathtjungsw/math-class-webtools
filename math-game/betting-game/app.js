@@ -3,11 +3,15 @@ const STORAGE_KEYS = {
   player: "bettingGame.player.v1",
 };
 
+const MIN_GAME_SIZE = 2;
+const MAX_GAME_SIZE = 20;
+
 const appState = {
   mode: "home",
   admin: null,
   player: null,
   selectedNumber: null,
+  commonJoinUrl: "",
   pollTimer: null,
   busy: false,
 };
@@ -60,6 +64,33 @@ function getAdminConnection() {
   const apiUrl = $("#adminApiUrl").value.trim();
   const spreadsheet = $("#adminSpreadsheet").value.trim();
   return { apiUrl, spreadsheet, spreadsheetId: extractSpreadsheetId(spreadsheet) };
+}
+
+function getAdminGameSize() {
+  const teamCount = Number($("#adminTeamCount").value);
+  const roundCount = Number($("#adminRoundCount").value);
+  if (!Number.isInteger(teamCount) || teamCount < MIN_GAME_SIZE || teamCount > MAX_GAME_SIZE) {
+    throw new Error(`팀 수는 ${MIN_GAME_SIZE}부터 ${MAX_GAME_SIZE} 사이의 정수로 입력해 주세요.`);
+  }
+  if (!Number.isInteger(roundCount) || roundCount < MIN_GAME_SIZE || roundCount > MAX_GAME_SIZE) {
+    throw new Error(`라운드 수는 ${MIN_GAME_SIZE}부터 ${MAX_GAME_SIZE} 사이의 정수로 입력해 주세요.`);
+  }
+  return { teamCount, roundCount };
+}
+
+function syncAdminGameSize(settings, force = false) {
+  const teamInput = $("#adminTeamCount");
+  const roundInput = $("#adminRoundCount");
+  if (force || teamInput.dataset.dirty !== "true") teamInput.value = settings.teamCount;
+  if (force || roundInput.dataset.dirty !== "true") roundInput.value = settings.roundCount;
+  if (force) {
+    teamInput.dataset.dirty = "false";
+    roundInput.dataset.dirty = "false";
+  }
+}
+
+function createNumberRange(count) {
+  return Array.from({ length: Number(count) }, (_, index) => index + 1);
 }
 
 function getPlayerConnection() {
@@ -187,6 +218,82 @@ function loadLocalGameInfo(mode) {
   return readStorage(STORAGE_KEYS[mode]);
 }
 
+function buildCommonJoinUrl(apiUrl, spreadsheetId) {
+  const url = new URL(window.location.href);
+  url.search = "";
+  url.hash = "";
+  url.searchParams.set("mode", "player");
+  url.searchParams.set("api", apiUrl);
+  url.searchParams.set("game", spreadsheetId);
+  return url.toString();
+}
+
+function renderCommonJoinQr(settings) {
+  const panel = $("#commonQrPanel");
+  const container = $("#commonQrCode");
+  const connection = getAdminConnection();
+  if (!validateApiUrl(connection.apiUrl) || !settings.spreadsheetId) {
+    panel.hidden = true;
+    appState.commonJoinUrl = "";
+    return;
+  }
+
+  const joinUrl = buildCommonJoinUrl(connection.apiUrl, settings.spreadsheetId);
+  appState.commonJoinUrl = joinUrl;
+  panel.hidden = false;
+  if (container.dataset.joinUrl === joinUrl) return;
+  container.dataset.joinUrl = joinUrl;
+  container.innerHTML = "";
+
+  if (typeof QRCode !== "function") {
+    container.innerHTML = '<p class="empty-state">QR 생성기를 불러오지 못했습니다.<br />접속 링크 복사를 이용하세요.</p>';
+    return;
+  }
+  new QRCode(container, {
+    text: joinUrl,
+    width: 188,
+    height: 188,
+    colorDark: "#17322e",
+    colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.M,
+  });
+}
+
+async function copyCommonJoinLink() {
+  if (!appState.commonJoinUrl) {
+    showMessage("게임을 먼저 생성하거나 불러와 주세요.", "info");
+    return;
+  }
+  try {
+    await copyTextToClipboard(appState.commonJoinUrl);
+    showMessage("공통 접속 링크를 복사했습니다.", "success");
+  } catch (error) {
+    showMessage(error.message, "error");
+  }
+}
+
+function applySharedJoinParameters() {
+  const parameters = new URLSearchParams(window.location.search);
+  if (parameters.get("mode") !== "player") return false;
+  const apiUrl = parameters.get("api") || "";
+  const game = parameters.get("game") || "";
+  if (!validateApiUrl(apiUrl) || !game) return false;
+  $("#playerApiUrl").value = apiUrl;
+  $("#playerSpreadsheet").value = game;
+  $("#playerTeamCode").value = "";
+  $("#playerConnectionFields").hidden = true;
+  $("#qrJoinNotice").hidden = false;
+  switchMode("player");
+  window.setTimeout(() => $("#playerTeamCode").focus(), 0);
+  return true;
+}
+
+function showManualConnectionFields() {
+  $("#playerConnectionFields").hidden = false;
+  $("#qrJoinNotice").hidden = true;
+  $("#playerApiUrl").focus();
+}
+
 async function copyTextToClipboard(text) {
   if (navigator.clipboard && window.isSecureContext) {
     await navigator.clipboard.writeText(text);
@@ -237,16 +344,18 @@ async function copyAppsScriptCode() {
 async function createGame() {
   try {
     const connection = getAdminConnection();
+    const gameSize = getAdminGameSize();
     assertConnection(connection);
-    if (!window.confirm("‘시트1’의 기존 게임 영역을 새 게임으로 바꿉니다. 계속할까요?")) return;
+    if (!window.confirm(`‘시트1’의 기존 게임 영역을 ${gameSize.teamCount}팀 · ${gameSize.roundCount}라운드의 새 게임으로 바꿉니다. 계속할까요?`)) return;
     setLoading(true, "게임과 참여 코드를 만들고 있습니다…");
-    const state = await requestJsonp(connection.apiUrl, "createGame", { spreadsheetUrl: connection.spreadsheet });
+    const state = await requestJsonp(connection.apiUrl, "createGame", { spreadsheetUrl: connection.spreadsheet, ...gameSize });
     appState.admin = state;
     saveLocalGameInfo("admin", connection, { spreadsheetId: state.settings.spreadsheetId });
+    syncAdminGameSize(state.settings, true);
     renderAdminBoard(state);
     updateConnectionPill(true);
     startPolling("admin");
-    showMessage("새 게임과 5개 팀의 참여 코드를 만들었습니다.", "success");
+    showMessage(`${state.settings.teamCount}팀 · ${state.settings.roundCount}라운드 게임과 참여 코드를 만들었습니다.`, "success");
   } catch (error) {
     showMessage(error.message, "error");
   } finally {
@@ -281,6 +390,7 @@ async function loadAdminState(options = {}) {
     const state = await requestJsonp(connection.apiUrl, "getGameState", { spreadsheetId: connection.spreadsheetId });
     appState.admin = state;
     saveLocalGameInfo("admin", connection, { spreadsheetId: state.settings.spreadsheetId });
+    if (!options.silent) syncAdminGameSize(state.settings, true);
     renderAdminBoard(state);
     updateConnectionPill(true);
     startPolling("admin");
@@ -375,10 +485,13 @@ function renderAdminBoard(state) {
   $("#adminFinalPanel").hidden = !isFinished;
   $("#startGameButton").hidden = !isCreated;
   $("#gameIdDisplay").textContent = settings.gameId;
+  syncAdminGameSize(settings);
+  renderCommonJoinQr(settings);
 
   $("#teamCodeGrid").innerHTML = teams.map((team) => `<article class="team-code-card"><small>${escapeHtml(team.teamName)}</small><strong>${escapeHtml(team.teamCode)}</strong></article>`).join("");
   if (isCreated) return;
 
+  $("#roundProgress").style.setProperty("--round-columns", Math.min(settings.roundCount, 10));
   $("#roundProgress").innerHTML = Array.from({ length: settings.roundCount }, (_, index) => {
     const round = index + 1;
     const klass = round < settings.currentRound || isFinished ? "done" : round === settings.currentRound ? "current" : "";
@@ -386,6 +499,7 @@ function renderAdminBoard(state) {
   }).join("");
 
   $("#adminBoardHead").innerHTML = `<tr><th scope="col">라운드</th>${teams.map((team) => `<th scope="col">${escapeHtml(team.teamName)}</th>`).join("")}</tr>`;
+  $(".game-board").style.minWidth = `${Math.max(760, 100 + teams.length * 104)}px`;
   $("#adminBoardBody").innerHTML = Array.from({ length: settings.roundCount }, (_, index) => {
     const round = index + 1;
     const result = roundResults.find((item) => Number(item.round) === round);
@@ -502,9 +616,9 @@ function renderPlayerBoard(state) {
   status.className = `player-status ${isCreated || ownSubmission ? "waiting" : isFinished ? "finished" : ""}`;
   status.innerHTML = `<span class="pulse-dot"></span><strong>${isCreated ? "선생님이 게임을 시작할 때까지 기다려 주세요." : isFinished ? "모든 라운드가 끝났습니다. 최종 결과를 확인하세요!" : ownSubmission ? `${settings.currentRound}라운드 제출 완료 · 다음 안내를 기다려 주세요.` : `${settings.currentRound}라운드 · 사용할 숫자를 하나 골라 주세요.`}</strong>`;
 
-  renderRemainingNumbers(team);
+  renderRemainingNumbers(team, settings.roundCount);
   const used = new Set(team.usedNumbers.map(Number));
-  $("#numberGrid").innerHTML = [1, 2, 3, 4, 5, 6].map((number) => {
+  $("#numberGrid").innerHTML = createNumberRange(settings.roundCount).map((number) => {
     const isUsed = used.has(number);
     const selected = appState.selectedNumber === number;
     const disabled = isUsed || Boolean(ownSubmission) || settings.status !== "playing";
@@ -517,9 +631,9 @@ function renderPlayerBoard(state) {
   if (isFinished) renderFinalRanking(ranking, "#playerFinalRanking");
 }
 
-function renderRemainingNumbers(team) {
+function renderRemainingNumbers(team, roundCount) {
   const used = new Set((team.usedNumbers || []).map(Number));
-  $("#remainingNumbers").innerHTML = `<div class="remaining-overview">${[1, 2, 3, 4, 5, 6].map((number) => `<span class="remaining-token ${used.has(number) ? "used" : ""}" title="${used.has(number) ? "사용 완료" : "사용 가능"}">${number}</span>`).join("")}</div>`;
+  $("#remainingNumbers").innerHTML = `<div class="remaining-overview">${createNumberRange(roundCount).map((number) => `<span class="remaining-token ${used.has(number) ? "used" : ""}" title="${used.has(number) ? "사용 완료" : "사용 가능"}">${number}</span>`).join("")}</div>`;
 }
 
 function renderFinalRanking(ranking, targetSelector) {
@@ -555,6 +669,12 @@ function leavePlayerGame() {
   $("#playerApiUrl").value = "";
   $("#playerSpreadsheet").value = "";
   $("#playerTeamCode").value = "";
+  $("#playerConnectionFields").hidden = false;
+  $("#qrJoinNotice").hidden = true;
+  const cleanUrl = new URL(window.location.href);
+  cleanUrl.search = "";
+  cleanUrl.hash = "";
+  window.history.replaceState({}, "", cleanUrl);
   $("#playerRoundBadge").innerHTML = "<small>현재 라운드</small><strong>접속 전</strong>";
   updateConnectionPill(false);
 }
@@ -567,5 +687,9 @@ document.addEventListener("DOMContentLoaded", () => {
   $("#playerApiUrl").value = player.apiUrl || "";
   $("#playerSpreadsheet").value = player.spreadsheet || player.spreadsheetId || "";
   $("#playerTeamCode").value = player.teamCode || "";
+  [$("#adminTeamCount"), $("#adminRoundCount")].forEach((input) => {
+    input.addEventListener("input", () => { input.dataset.dirty = "true"; });
+  });
   $("#playerTeamCode").addEventListener("input", (event) => { event.target.value = event.target.value.replace(/\D/g, "").slice(0, 4); });
+  applySharedJoinParameters();
 });

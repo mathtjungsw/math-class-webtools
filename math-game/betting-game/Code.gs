@@ -4,8 +4,21 @@
  */
 
 const SHEET_NAME = "시트1";
-const TEAM_COUNT = 5;
-const ROUND_COUNT = 6;
+const DEFAULT_TEAM_COUNT = 5;
+const MIN_TEAM_COUNT = 2;
+const MAX_TEAM_COUNT = 20;
+const DEFAULT_ROUND_COUNT = 6;
+const MIN_ROUND_COUNT = 2;
+const MAX_ROUND_COUNT = 20;
+const CURRENT_LAYOUT_VERSION = 3;
+const TEAM_DATA_ROW = 14;
+const SUBMISSION_TITLE_ROW = 36;
+const SUBMISSION_HEADER_ROW = 37;
+const SUBMISSION_DATA_ROW = 38;
+const MAX_SUBMISSION_ROWS = MAX_TEAM_COUNT * MAX_ROUND_COUNT;
+const RESULT_TITLE_ROW = 440;
+const RESULT_HEADER_ROW = 441;
+const RESULT_DATA_ROW = 442;
 const SETTINGS_KEYS = [
   "spreadsheetId",
   "gameId",
@@ -15,6 +28,7 @@ const SETTINGS_KEYS = [
   "roundCount",
   "createdAt",
   "updatedAt",
+  "layoutVersion",
 ];
 
 function doGet(e) {
@@ -42,7 +56,7 @@ function routeRequest_(parameters) {
   const action = String(parameters.action || "");
   switch (action) {
     case "createGame":
-      return createGame(parameters.spreadsheetUrl);
+      return createGame(parameters.spreadsheetUrl, parameters.teamCount, parameters.roundCount);
     case "startGame":
       return startGame(parameters.spreadsheetId);
     case "getGameState":
@@ -94,7 +108,7 @@ function withGameLock_(work) {
   }
 }
 
-function createGame(spreadsheetUrl) {
+function createGame(spreadsheetUrl, teamCount, roundCount) {
   return withGameLock_(function () {
     const spreadsheetId = extractSpreadsheetId(spreadsheetUrl);
     let spreadsheet;
@@ -103,7 +117,11 @@ function createGame(spreadsheetUrl) {
     } catch (error) {
       throw new Error("구글 스프레드시트 주소가 잘못되었거나 접근 권한이 없습니다.");
     }
-    initializeGameSheet_(spreadsheet);
+    initializeGameSheet_(
+      spreadsheet,
+      normalizeGameSize_(teamCount, DEFAULT_TEAM_COUNT, MIN_TEAM_COUNT, MAX_TEAM_COUNT, "팀 수"),
+      normalizeGameSize_(roundCount, DEFAULT_ROUND_COUNT, MIN_ROUND_COUNT, MAX_ROUND_COUNT, "라운드 수")
+    );
     return getGameState_(spreadsheetId);
   });
 }
@@ -130,7 +148,7 @@ function getGameState_(spreadsheetId) {
   const sheet = getGameSheet_(spreadsheetId);
   const settings = normalizeSettings_(readSettings_(sheet));
   const teams = readTeams_(sheet).map(function (team) {
-    team.remainingNumbers = getRemainingNumbers(team);
+    team.remainingNumbers = getRemainingNumbers(team, settings.roundCount);
     return team;
   });
   const submissions = readSubmissions_(sheet);
@@ -177,7 +195,7 @@ function getPlayerState_(spreadsheetId, teamCode) {
     teamId: team.teamId,
     teamName: team.teamName,
     usedNumbers: team.usedNumbers,
-    remainingNumbers: getRemainingNumbers(team),
+    remainingNumbers: getRemainingNumbers(team, settings.roundCount),
     scoreTotal: team.scoreTotal,
     earnedScores: team.earnedScores,
     earnedRounds: team.earnedRounds,
@@ -232,7 +250,7 @@ function revealAllCurrentRound(spreadsheetId) {
     const settings = normalizeSettings_(readSettings_(sheet));
     if (settings.status !== "playing") throw new Error("진행 중인 게임에서만 전체 공개할 수 있습니다.");
     const submissions = readSubmissions_(sheet).filter(function (item) { return Number(item.round) === Number(settings.currentRound); });
-    if (submissions.length !== TEAM_COUNT) throw new Error("5개 팀이 모두 제출해야 전체 공개할 수 있습니다.");
+    if (submissions.length !== settings.teamCount) throw new Error(settings.teamCount + "개 팀이 모두 제출해야 전체 공개할 수 있습니다.");
     submissions.forEach(function (submission) {
       if (!submission.isRevealed) {
         const row = findSubmissionRow_(sheet, settings.currentRound, submission.teamId);
@@ -260,7 +278,7 @@ function calculateRoundResult_(sheet, round) {
   const existing = readRoundResults_(sheet).find(function (item) { return Number(item.round) === Number(round); });
   if (existing) return existing;
   const submissions = readSubmissions_(sheet).filter(function (item) { return Number(item.round) === Number(round); });
-  if (submissions.length !== TEAM_COUNT) throw new Error("모든 팀이 제출한 뒤 점수를 계산할 수 있습니다.");
+  if (submissions.length !== settings.teamCount) throw new Error("모든 팀이 제출한 뒤 점수를 계산할 수 있습니다.");
   if (submissions.some(function (item) { return !item.isRevealed; })) throw new Error("모든 제출 숫자를 공개한 뒤 점수를 계산할 수 있습니다.");
 
   const counts = {};
@@ -294,7 +312,7 @@ function calculateRoundResult_(sheet, round) {
   };
   writeRoundResult_(sheet, result);
   touchUpdatedAt_(sheet);
-  if (Number(round) === ROUND_COUNT) finishGame_(sheet);
+  if (Number(round) === settings.roundCount) finishGame_(sheet);
   return result;
 }
 
@@ -306,11 +324,11 @@ function nextRound(spreadsheetId) {
     if (settings.status === "finished") throw new Error("이미 모든 라운드가 종료되었습니다.");
     if (settings.status !== "playing") throw new Error("먼저 게임을 시작해 주세요.");
     const submissions = readSubmissions_(sheet).filter(function (item) { return Number(item.round) === Number(settings.currentRound); });
-    if (submissions.length !== TEAM_COUNT) throw new Error("현재 라운드에 아직 제출하지 않은 팀이 있습니다.");
+    if (submissions.length !== settings.teamCount) throw new Error("현재 라운드에 아직 제출하지 않은 팀이 있습니다.");
     if (submissions.some(function (item) { return !item.isRevealed; })) throw new Error("현재 라운드의 모든 숫자를 먼저 공개해 주세요.");
     const result = readRoundResults_(sheet).find(function (item) { return Number(item.round) === Number(settings.currentRound); });
     if (!result) throw new Error("현재 라운드의 점수 계산이 아직 끝나지 않았습니다.");
-    if (Number(settings.currentRound) >= ROUND_COUNT) {
+    if (Number(settings.currentRound) >= settings.roundCount) {
       finishGame_(sheet);
     } else {
       updateGameSetting_(sheet, "currentRound", Number(settings.currentRound) + 1);
@@ -331,8 +349,8 @@ function finishGame(spreadsheetId) {
 
 function finishGame_(sheet) {
   const settings = normalizeSettings_(readSettings_(sheet));
-  const finalResult = readRoundResults_(sheet).find(function (item) { return Number(item.round) === ROUND_COUNT; });
-  if (!finalResult) throw new Error("6라운드 결과가 계산된 뒤 게임을 종료할 수 있습니다.");
+  const finalResult = readRoundResults_(sheet).find(function (item) { return Number(item.round) === settings.roundCount; });
+  if (!finalResult) throw new Error(settings.roundCount + "라운드 결과가 계산된 뒤 게임을 종료할 수 있습니다.");
   updateGameSetting_(sheet, "status", "finished");
   touchUpdatedAt_(sheet);
 }
@@ -341,7 +359,12 @@ function resetGame(spreadsheetId) {
   return withGameLock_(function () {
     const id = resolveSpreadsheetId_(spreadsheetId);
     const spreadsheet = SpreadsheetApp.openById(id);
-    initializeGameSheet_(spreadsheet);
+    const previousSettings = readSettings_(getGameSheet_(id));
+    initializeGameSheet_(
+      spreadsheet,
+      Number(previousSettings.teamCount || DEFAULT_TEAM_COUNT),
+      Number(previousSettings.roundCount || DEFAULT_ROUND_COUNT)
+    );
     return getGameState_(id);
   });
 }
@@ -357,7 +380,9 @@ function validateSubmission_(sheet, teamCode, round, number) {
   if (settings.status === "finished") throw new Error("이미 종료된 게임입니다.");
   if (settings.status !== "playing") throw new Error("게임 상태를 확인해 주세요.");
   if (Number(round) !== Number(settings.currentRound)) throw new Error("현재 라운드에만 제출할 수 있습니다.");
-  if (![1, 2, 3, 4, 5, 6].includes(Number(number))) throw new Error("1부터 6까지의 숫자만 제출할 수 있습니다.");
+  if (!Number.isInteger(Number(number)) || Number(number) < 1 || Number(number) > settings.roundCount) {
+    throw new Error("1부터 " + settings.roundCount + "까지의 숫자만 제출할 수 있습니다.");
+  }
   const teams = readTeams_(sheet);
   const team = findTeamByCode_(teams, teamCode);
   if (team.usedNumbers.includes(Number(number))) throw new Error("이미 사용한 숫자입니다. 남은 숫자 중에서 골라 주세요.");
@@ -368,9 +393,14 @@ function validateSubmission_(sheet, teamCode, round, number) {
   return { valid: true, team: team, settings: settings };
 }
 
-function getRemainingNumbers(team) {
+function createNumberRange_(roundCount) {
+  return Array.from({ length: Number(roundCount) }, function (_, index) { return index + 1; });
+}
+
+function getRemainingNumbers(team, roundCount) {
   const used = (team.usedNumbers || []).map(Number);
-  return [1, 2, 3, 4, 5, 6].filter(function (number) { return !used.includes(number); });
+  const count = normalizeGameSize_(roundCount, DEFAULT_ROUND_COUNT, MIN_ROUND_COUNT, MAX_ROUND_COUNT, "라운드 수");
+  return createNumberRange_(count).filter(function (number) { return !used.includes(number); });
 }
 
 function extractSpreadsheetId(url) {
@@ -400,9 +430,10 @@ function resolveSpreadsheetId_(locator) {
   }
 }
 
-function generateTeamCodes() {
+function generateTeamCodes(teamCount) {
   const codes = [];
-  while (codes.length < TEAM_COUNT) {
+  const count = normalizeGameSize_(teamCount, DEFAULT_TEAM_COUNT, MIN_TEAM_COUNT, MAX_TEAM_COUNT, "팀 수");
+  while (codes.length < count) {
     const code = String(Math.floor(Math.random() * 9000) + 1000);
     if (!codes.includes(code)) codes.push(code);
   }
@@ -454,10 +485,21 @@ function buildFinalRanking_(teams) {
   });
 }
 
-function initializeGameSheet_(spreadsheet) {
+function normalizeGameSize_(value, fallback, minimum, maximum, label) {
+  const parsed = value === undefined || value === null || value === "" ? fallback : Number(value);
+  if (!Number.isInteger(parsed) || parsed < minimum || parsed > maximum) {
+    throw new Error(label + "는 " + minimum + "부터 " + maximum + " 사이의 정수여야 합니다.");
+  }
+  return parsed;
+}
+
+function initializeGameSheet_(spreadsheet, requestedTeamCount, requestedRoundCount) {
   let sheet = spreadsheet.getSheetByName(SHEET_NAME);
   if (!sheet) sheet = spreadsheet.insertSheet(SHEET_NAME);
-  sheet.getRange("A1:H80").breakApart().clear({ contentsOnly: false });
+  const teamCount = normalizeGameSize_(requestedTeamCount, DEFAULT_TEAM_COUNT, MIN_TEAM_COUNT, MAX_TEAM_COUNT, "팀 수");
+  const roundCount = normalizeGameSize_(requestedRoundCount, DEFAULT_ROUND_COUNT, MIN_ROUND_COUNT, MAX_ROUND_COUNT, "라운드 수");
+  if (sheet.getMaxRows() < 470) sheet.insertRowsAfter(sheet.getMaxRows(), 470 - sheet.getMaxRows());
+  sheet.getRange("A1:H470").breakApart().clear({ contentsOnly: false });
   const now = new Date().toISOString();
   const gameId = "BG-" + Utilities.getUuid().replace(/-/g, "").slice(0, 6).toUpperCase();
   const settings = {
@@ -465,10 +507,11 @@ function initializeGameSheet_(spreadsheet) {
     gameId: gameId,
     status: "created",
     currentRound: 1,
-    teamCount: TEAM_COUNT,
-    roundCount: ROUND_COUNT,
+    teamCount: teamCount,
+    roundCount: roundCount,
     createdAt: now,
     updatedAt: now,
+    layoutVersion: CURRENT_LAYOUT_VERSION,
   };
   const descriptions = {
     spreadsheetId: "연결된 스프레드시트 ID",
@@ -479,6 +522,7 @@ function initializeGameSheet_(spreadsheet) {
     roundCount: "전체 라운드 수",
     createdAt: "게임 생성 시각",
     updatedAt: "마지막 변경 시각",
+    layoutVersion: "데이터 구조 버전",
   };
 
   sheet.getRange("A1:H1").merge().setValue("배팅 게임 · 게임 설정");
@@ -486,17 +530,17 @@ function initializeGameSheet_(spreadsheet) {
   sheet.getRange(3, 1, SETTINGS_KEYS.length, 3).setValues(SETTINGS_KEYS.map(function (key) { return [key, settings[key], descriptions[key]]; }));
   sheet.getRange("A12:H12").merge().setValue("팀 정보");
   sheet.getRange("A13:H13").setValues([["teamId", "teamName", "teamCode", "usedNumbers", "scoreTotal", "earnedScores", "earnedRounds", "joinedAt"]]);
-  const codes = generateTeamCodes();
-  sheet.getRange(14, 1, TEAM_COUNT, 8).setValues(codes.map(function (code, index) { return [index + 1, index + 1 + "팀", code, "[]", 0, "[]", "[]", ""]; }));
-  sheet.getRange("A22:H22").merge().setValue("제출 정보");
-  sheet.getRange("A23:H23").setValues([["round", "teamId", "teamName", "submittedNumber", "submittedAt", "isRevealed", "revealedAt", "memo"]]);
-  sheet.getRange("A62:H62").merge().setValue("라운드 결과");
-  sheet.getRange("A63:H63").setValues([["round", "winnerTeamId", "winnerTeamName", "winningNumber", "duplicatedNumbers", "validNumbers", "resultText", "calculatedAt"]]);
+  const codes = generateTeamCodes(teamCount);
+  sheet.getRange(TEAM_DATA_ROW, 1, teamCount, 8).setValues(codes.map(function (code, index) { return [index + 1, index + 1 + "팀", code, "[]", 0, "[]", "[]", ""]; }));
+  sheet.getRange(SUBMISSION_TITLE_ROW, 1, 1, 8).merge().setValue("제출 정보");
+  sheet.getRange(SUBMISSION_HEADER_ROW, 1, 1, 8).setValues([["round", "teamId", "teamName", "submittedNumber", "submittedAt", "isRevealed", "revealedAt", "memo"]]);
+  sheet.getRange(RESULT_TITLE_ROW, 1, 1, 8).merge().setValue("라운드 결과");
+  sheet.getRange(RESULT_HEADER_ROW, 1, 1, 8).setValues([["round", "winnerTeamId", "winnerTeamName", "winningNumber", "duplicatedNumbers", "validNumbers", "resultText", "calculatedAt"]]);
 
-  ["A1:H1", "A12:H12", "A22:H22", "A62:H62"].forEach(function (range) {
+  ["A1:H1", "A12:H12", "A36:H36", "A440:H440"].forEach(function (range) {
     sheet.getRange(range).setBackground("#17695d").setFontColor("#ffffff").setFontWeight("bold");
   });
-  ["A2:C2", "A13:H13", "A23:H23", "A63:H63"].forEach(function (range) {
+  ["A2:C2", "A13:H13", "A37:H37", "A441:H441"].forEach(function (range) {
     sheet.getRange(range).setBackground("#dff3eb").setFontColor("#124e46").setFontWeight("bold");
   });
   sheet.setFrozenRows(2);
@@ -527,15 +571,20 @@ function readSettings_(sheet) {
 }
 
 function normalizeSettings_(settings) {
+  const layoutVersion = Number(settings.layoutVersion || 0);
+  if (layoutVersion !== CURRENT_LAYOUT_VERSION) {
+    throw new Error("게임 데이터 형식이 업데이트되었습니다. 관리자 모드에서 게임을 새로 생성해 주세요.");
+  }
   return {
     spreadsheetId: String(settings.spreadsheetId || ""),
     gameId: String(settings.gameId || ""),
     status: String(settings.status || "created"),
     currentRound: Number(settings.currentRound || 1),
-    teamCount: Number(settings.teamCount || TEAM_COUNT),
-    roundCount: Number(settings.roundCount || ROUND_COUNT),
+    teamCount: normalizeGameSize_(settings.teamCount, DEFAULT_TEAM_COUNT, MIN_TEAM_COUNT, MAX_TEAM_COUNT, "팀 수"),
+    roundCount: normalizeGameSize_(settings.roundCount, DEFAULT_ROUND_COUNT, MIN_ROUND_COUNT, MAX_ROUND_COUNT, "라운드 수"),
     createdAt: dateString_(settings.createdAt),
     updatedAt: dateString_(settings.updatedAt),
+    layoutVersion: layoutVersion,
   };
 }
 
@@ -562,7 +611,7 @@ function touchUpdatedAt_(sheet) {
 }
 
 function readTeams_(sheet) {
-  return sheet.getRange(14, 1, TEAM_COUNT, 8).getValues().filter(function (row) { return row[0] !== ""; }).map(function (row) {
+  return sheet.getRange(TEAM_DATA_ROW, 1, MAX_TEAM_COUNT, 8).getValues().filter(function (row) { return row[0] !== ""; }).map(function (row) {
     return {
       teamId: Number(row[0]),
       teamName: String(row[1]),
@@ -577,7 +626,7 @@ function readTeams_(sheet) {
 }
 
 function writeTeam_(sheet, team) {
-  const row = 13 + Number(team.teamId);
+  const row = TEAM_DATA_ROW - 1 + Number(team.teamId);
   sheet.getRange(row, 1, 1, 8).setValues([[
     team.teamId,
     team.teamName,
@@ -591,7 +640,7 @@ function writeTeam_(sheet, team) {
 }
 
 function readSubmissions_(sheet) {
-  return sheet.getRange(24, 1, 30, 8).getValues().filter(function (row) { return row[0] !== ""; }).map(function (row) {
+  return sheet.getRange(SUBMISSION_DATA_ROW, 1, MAX_SUBMISSION_ROWS, 8).getValues().filter(function (row) { return row[0] !== ""; }).map(function (row) {
     return {
       round: Number(row[0]),
       teamId: Number(row[1]),
@@ -606,20 +655,20 @@ function readSubmissions_(sheet) {
 }
 
 function appendSubmission_(sheet, values) {
-  const firstColumn = sheet.getRange(24, 1, 30, 1).getValues();
+  const firstColumn = sheet.getRange(SUBMISSION_DATA_ROW, 1, MAX_SUBMISSION_ROWS, 1).getValues();
   const emptyIndex = firstColumn.findIndex(function (row) { return row[0] === ""; });
   if (emptyIndex < 0) throw new Error("제출 저장 공간이 가득 찼습니다.");
-  sheet.getRange(24 + emptyIndex, 1, 1, 8).setValues([values]);
+  sheet.getRange(SUBMISSION_DATA_ROW + emptyIndex, 1, 1, 8).setValues([values]);
 }
 
 function findSubmissionRow_(sheet, round, teamId) {
-  const values = sheet.getRange(24, 1, 30, 2).getValues();
+  const values = sheet.getRange(SUBMISSION_DATA_ROW, 1, MAX_SUBMISSION_ROWS, 2).getValues();
   const index = values.findIndex(function (row) { return Number(row[0]) === Number(round) && Number(row[1]) === Number(teamId); });
-  return index < 0 ? 0 : 24 + index;
+  return index < 0 ? 0 : SUBMISSION_DATA_ROW + index;
 }
 
 function readRoundResults_(sheet) {
-  return sheet.getRange(64, 1, ROUND_COUNT, 8).getValues().filter(function (row) { return row[0] !== ""; }).map(function (row) {
+  return sheet.getRange(RESULT_DATA_ROW, 1, MAX_ROUND_COUNT, 8).getValues().filter(function (row) { return row[0] !== ""; }).map(function (row) {
     return {
       round: Number(row[0]),
       winnerTeamId: row[1] === "" ? "" : Number(row[1]),
@@ -634,7 +683,7 @@ function readRoundResults_(sheet) {
 }
 
 function writeRoundResult_(sheet, result) {
-  const row = 63 + Number(result.round);
+  const row = RESULT_DATA_ROW - 1 + Number(result.round);
   sheet.getRange(row, 1, 1, 8).setValues([[
     result.round,
     result.winnerTeamId,
@@ -648,8 +697,9 @@ function writeRoundResult_(sheet, result) {
 }
 
 function calculateIfReady_(sheet, round) {
+  const settings = normalizeSettings_(readSettings_(sheet));
   const submissions = readSubmissions_(sheet).filter(function (item) { return Number(item.round) === Number(round); });
-  if (submissions.length === TEAM_COUNT && submissions.every(function (item) { return item.isRevealed; })) {
+  if (submissions.length === settings.teamCount && submissions.every(function (item) { return item.isRevealed; })) {
     calculateRoundResult_(sheet, round);
   }
 }
