@@ -519,7 +519,8 @@ async function resetGame() {
 }
 
 function renderAdminBoard(state) {
-  const { settings, teams = [], submissions = [], roundResults = [], ranking = [] } = state;
+  const { settings, teams: receivedTeams = [], submissions = [], roundResults = [], ranking = [] } = state;
+  const teams = receivedTeams.slice(0, Number(settings.teamCount) || receivedTeams.length);
   const isCreated = settings.status === "created";
   const isFinished = settings.status === "finished";
   $("#adminSetupStatus").textContent = isCreated ? "게임 생성됨" : isFinished ? "게임 종료" : "진행 중";

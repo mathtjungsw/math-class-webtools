@@ -10,7 +10,7 @@ const MAX_TEAM_COUNT = 20;
 const DEFAULT_ROUND_COUNT = 6;
 const MIN_ROUND_COUNT = 2;
 const MAX_ROUND_COUNT = 20;
-const CURRENT_LAYOUT_VERSION = 3;
+const CURRENT_LAYOUT_VERSION = 4;
 const TEAM_DATA_ROW = 14;
 const SUBMISSION_TITLE_ROW = 36;
 const SUBMISSION_HEADER_ROW = 37;
@@ -149,7 +149,7 @@ function getGameState(spreadsheetId) {
 function getGameState_(spreadsheetId) {
   const sheet = getGameSheet_(spreadsheetId);
   const settings = normalizeSettings_(readSettings_(sheet));
-  const teams = readTeams_(sheet).map(function (team) {
+  const teams = readTeams_(sheet, settings.teamCount).map(function (team) {
     team.remainingNumbers = getRemainingNumbers(team, settings.roundCount);
     return team;
   });
@@ -169,7 +169,8 @@ function joinGame(spreadsheetId, teamCode) {
   return withGameLock_(function () {
     const id = resolveSpreadsheetId_(spreadsheetId);
     const sheet = getGameSheet_(id);
-    const teams = readTeams_(sheet);
+    const settings = normalizeSettings_(readSettings_(sheet));
+    const teams = readTeams_(sheet, settings.teamCount);
     const team = findTeamByCode_(teams, teamCode);
     if (!team.joinedAt) {
       team.joinedAt = new Date().toISOString();
@@ -187,7 +188,7 @@ function getPlayerState(spreadsheetId, teamCode) {
 function getPlayerState_(spreadsheetId, teamCode) {
   const sheet = getGameSheet_(spreadsheetId);
   const settings = normalizeSettings_(readSettings_(sheet));
-  const teams = readTeams_(sheet);
+  const teams = readTeams_(sheet, settings.teamCount);
   const team = findTeamByCode_(teams, teamCode);
   const submissions = readSubmissions_(sheet);
   const ownSubmission = submissions.find(function (item) {
@@ -230,7 +231,7 @@ function adminSubmitNumber(spreadsheetId, teamId, round, number) {
     const id = resolveSpreadsheetId_(spreadsheetId);
     const sheet = getGameSheet_(id);
     const settings = normalizeSettings_(readSettings_(sheet));
-    const team = readTeams_(sheet).find(function (item) { return Number(item.teamId) === Number(teamId); });
+    const team = readTeams_(sheet, settings.teamCount).find(function (item) { return Number(item.teamId) === Number(teamId); });
     if (!team) throw new Error("해당 팀을 찾을 수 없습니다.");
     validateTeamSubmission_(sheet, team, round, number, settings);
     saveSubmission_(sheet, team, round, number, "관리자 직접 입력");
@@ -311,7 +312,7 @@ function calculateRoundResult_(sheet, round) {
     : "모든 제출 숫자가 중복되어 점수 획득 팀이 없습니다.";
 
   if (winner) {
-    const teams = readTeams_(sheet);
+    const teams = readTeams_(sheet, settings.teamCount);
     const winningTeam = teams.find(function (team) { return Number(team.teamId) === Number(winner.teamId); });
     winningTeam.scoreTotal += Number(winner.submittedNumber);
     winningTeam.earnedScores.push(Number(winner.submittedNumber));
@@ -395,7 +396,7 @@ function validateSubmission(spreadsheetId, teamCode, round, number) {
 
 function validateSubmission_(sheet, teamCode, round, number) {
   const settings = normalizeSettings_(readSettings_(sheet));
-  const team = findTeamByCode_(readTeams_(sheet), teamCode);
+  const team = findTeamByCode_(readTeams_(sheet, settings.teamCount), teamCode);
   return validateTeamSubmission_(sheet, team, round, number, settings);
 }
 
@@ -632,8 +633,9 @@ function touchUpdatedAt_(sheet) {
   SpreadsheetApp.flush();
 }
 
-function readTeams_(sheet) {
-  return sheet.getRange(TEAM_DATA_ROW, 1, MAX_TEAM_COUNT, 8).getValues().filter(function (row) { return row[0] !== ""; }).map(function (row) {
+function readTeams_(sheet, teamCount) {
+  const count = normalizeGameSize_(teamCount, DEFAULT_TEAM_COUNT, MIN_TEAM_COUNT, MAX_TEAM_COUNT, "팀 수");
+  return sheet.getRange(TEAM_DATA_ROW, 1, count, 8).getValues().filter(function (row) { return row[0] !== ""; }).map(function (row) {
     return {
       teamId: Number(row[0]),
       teamName: String(row[1]),
