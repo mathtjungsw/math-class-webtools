@@ -69,6 +69,8 @@ function routeRequest_(parameters) {
       return submitNumber(parameters.spreadsheetId, parameters.teamCode, Number(parameters.round), Number(parameters.number));
     case "adminSubmitNumber":
       return adminSubmitNumber(parameters.spreadsheetId, Number(parameters.teamId), Number(parameters.round), Number(parameters.number));
+    case "autoSubmitFinalRound":
+      return autoSubmitFinalRound(parameters.spreadsheetId);
     case "revealSubmission":
       return revealSubmission(parameters.spreadsheetId, Number(parameters.round), Number(parameters.teamId));
     case "revealAllCurrentRound":
@@ -235,6 +237,41 @@ function adminSubmitNumber(spreadsheetId, teamId, round, number) {
     if (!team) throw new Error("해당 팀을 찾을 수 없습니다.");
     validateTeamSubmission_(sheet, team, round, number, settings);
     saveSubmission_(sheet, team, round, number, "관리자 직접 입력");
+    return getGameState_(id);
+  });
+}
+
+function autoSubmitFinalRound(spreadsheetId) {
+  return withGameLock_(function () {
+    const id = resolveSpreadsheetId_(spreadsheetId);
+    const sheet = getGameSheet_(id);
+    const settings = normalizeSettings_(readSettings_(sheet));
+    if (settings.status !== "playing") throw new Error("진행 중인 게임에서만 마지막 숫자를 자동 제출할 수 있습니다.");
+    if (Number(settings.currentRound) !== Number(settings.roundCount)) throw new Error("마지막 라운드에서만 자동 제출할 수 있습니다.");
+
+    const teams = readTeams_(sheet, settings.teamCount);
+    const currentSubmissions = readSubmissions_(sheet).filter(function (item) {
+      return Number(item.round) === Number(settings.currentRound);
+    });
+    const submittedTeamIds = currentSubmissions.map(function (item) { return Number(item.teamId); });
+    const pendingTeams = teams.filter(function (team) { return !submittedTeamIds.includes(Number(team.teamId)); });
+    if (!pendingTeams.length) throw new Error("모든 팀이 이미 마지막 라운드 숫자를 제출했습니다.");
+
+    const plannedSubmissions = pendingTeams.map(function (team) {
+      const remainingNumbers = getRemainingNumbers(team, settings.roundCount);
+      if (remainingNumbers.length !== 1) {
+        throw new Error(team.teamName + "의 남은 숫자를 하나로 확정할 수 없습니다. 사용 기록을 확인해 주세요.");
+      }
+      return { team: team, number: remainingNumbers[0] };
+    });
+
+    const submittedAt = new Date().toISOString();
+    plannedSubmissions.forEach(function (planned) {
+      appendSubmission_(sheet, [settings.currentRound, planned.team.teamId, planned.team.teamName, planned.number, submittedAt, false, "", "마지막 라운드 자동 제출"]);
+      planned.team.usedNumbers.push(planned.number);
+      writeTeam_(sheet, planned.team);
+    });
+    touchUpdatedAt_(sheet);
     return getGameState_(id);
   });
 }

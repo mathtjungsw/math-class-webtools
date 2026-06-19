@@ -182,6 +182,7 @@ h1, h2, h3, p { overflow-wrap: anywhere; }
 .button.primary { background: var(--green-700); color: white; }
 .button.secondary { border-color: var(--line); background: white; color: var(--green-700); }
 .button.accent { background: var(--yellow); color: #644800; }
+.button.final-auto { border-color: #7fbbaa; background: var(--green-100); color: var(--green-700); }
 .button.danger-ghost { border-color: #f0c9c1; background: var(--coral-soft); color: #a8493a; }
 .button.compact { min-height: 38px; padding: 0 14px; border-radius: 10px; font-size: 12px; }
 .full-button { width: 100%; margin-top: 18px; }

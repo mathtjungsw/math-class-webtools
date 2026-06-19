@@ -466,6 +466,44 @@ async function adminSubmitNumber(round, teamId) {
   }
 }
 
+async function autoSubmitFinalRound() {
+  if (!appState.admin || appState.busy) return;
+  const { settings, teams: receivedTeams = [], submissions = [] } = appState.admin;
+  const teams = receivedTeams.slice(0, Number(settings.teamCount) || receivedTeams.length);
+  if (settings.status !== "playing" || Number(settings.currentRound) !== Number(settings.roundCount)) {
+    showMessage("마지막 라운드에서만 자동 제출할 수 있습니다.", "info");
+    return;
+  }
+  const submittedTeamIds = new Set(submissions.filter((item) => Number(item.round) === Number(settings.currentRound)).map((item) => Number(item.teamId)));
+  const pendingTeams = teams.filter((team) => !submittedTeamIds.has(Number(team.teamId)));
+  if (!pendingTeams.length) {
+    showMessage("모든 팀이 이미 마지막 숫자를 제출했습니다.", "info");
+    return;
+  }
+  const planned = pendingTeams.map((team) => ({ team, remaining: (team.remainingNumbers || []).map(Number) }));
+  const invalidTeam = planned.find((item) => item.remaining.length !== 1);
+  if (invalidTeam) {
+    showMessage(`${invalidTeam.team.teamName}의 남은 숫자를 하나로 확정할 수 없습니다. 동기화 후 다시 확인해 주세요.`, "error");
+    return;
+  }
+  const preview = planned.map((item) => `${item.team.teamName}: ${item.remaining[0]}`).join("\n");
+  if (!window.confirm(`미제출 팀의 마지막 숫자를 자동으로 제출할까요?\n\n${preview}\n\n제출 후에는 바꿀 수 없습니다.`)) return;
+
+  try {
+    const connection = getAdminConnection();
+    assertConnection(connection);
+    setLoading(true, "마지막 라운드 숫자를 자동 제출하고 있습니다…");
+    const state = await requestJsonp(connection.apiUrl, "autoSubmitFinalRound", { spreadsheetId: connection.spreadsheetId });
+    appState.admin = state;
+    renderAdminBoard(state);
+    showMessage(`${planned.length}개 팀의 마지막 숫자를 자동 제출했습니다.`, "success");
+  } catch (error) {
+    showMessage(error.message, "error");
+  } finally {
+    setLoading(false);
+  }
+}
+
 async function revealAllCurrentRound() {
   if (!appState.admin) return;
   const { settings, submissions } = appState.admin;
@@ -580,8 +618,11 @@ function renderAdminBoard(state) {
 
   const currentSubmissions = submissions.filter((item) => Number(item.round) === Number(settings.currentRound));
   const currentResult = roundResults.find((item) => Number(item.round) === Number(settings.currentRound));
+  const isFinalRound = Number(settings.currentRound) === Number(settings.roundCount);
+  $("#autoSubmitFinalRoundButton").hidden = !isFinalRound || isFinished;
+  $("#autoSubmitFinalRoundButton").disabled = isFinished || Boolean(currentResult) || currentSubmissions.length >= settings.teamCount;
   $("#submissionCount").textContent = `${currentSubmissions.length} / ${settings.teamCount}팀 제출`;
-  $("#roundHint").textContent = isFinished ? "모든 라운드가 끝났습니다." : currentResult ? "결과 계산이 끝났습니다. 다음 라운드로 이동하세요." : currentSubmissions.length === settings.teamCount ? "모든 팀이 제출했습니다. 숫자를 공개하세요." : "미제출 팀은 게임판에서 직접 입력할 수 있습니다.";
+  $("#roundHint").textContent = isFinished ? "모든 라운드가 끝났습니다." : currentResult ? "결과 계산이 끝났습니다. 다음 라운드로 이동하세요." : currentSubmissions.length === settings.teamCount ? "모든 팀이 제출했습니다. 숫자를 공개하세요." : isFinalRound ? "자동 제출 버튼으로 각 팀의 마지막 숫자를 입력할 수 있습니다." : "미제출 팀은 게임판에서 직접 입력할 수 있습니다.";
   $("#revealAllButton").disabled = isFinished || Boolean(currentResult) || currentSubmissions.length < settings.teamCount;
   $("#nextRoundButton").disabled = isFinished;
   $("#nextRoundButton").textContent = Number(settings.currentRound) === Number(settings.roundCount) ? "최종 결과 보기 →" : "다음 라운드 →";
