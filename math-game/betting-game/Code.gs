@@ -522,7 +522,12 @@ function initializeGameSheet_(spreadsheet, requestedTeamCount, requestedRoundCou
   const teamCount = normalizeGameSize_(requestedTeamCount, DEFAULT_TEAM_COUNT, MIN_TEAM_COUNT, MAX_TEAM_COUNT, "팀 수");
   const roundCount = normalizeGameSize_(requestedRoundCount, DEFAULT_ROUND_COUNT, MIN_ROUND_COUNT, MAX_ROUND_COUNT, "라운드 수");
   if (sheet.getMaxRows() < 470) sheet.insertRowsAfter(sheet.getMaxRows(), 470 - sheet.getMaxRows());
-  sheet.getRange("A1:H470").breakApart().clear({ contentsOnly: false });
+  const filter = sheet.getFilter();
+  if (filter) filter.remove();
+  sheet.getRange(1, 1, sheet.getMaxRows(), sheet.getMaxColumns()).breakApart();
+  sheet.clear();
+  sheet.setFrozenRows(0);
+  sheet.setFrozenColumns(0);
   const now = new Date().toISOString();
   const gameId = "BG-" + Utilities.getUuid().replace(/-/g, "").slice(0, 6).toUpperCase();
   const settings = {

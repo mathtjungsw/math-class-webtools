@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#155d52" />
     <title>배팅 게임 | 수학 수업 웹툴 모음</title>
-    <link rel="stylesheet" href="./style.css?v=4" />
+    <link rel="stylesheet" href="./style.css?v=5" />
   </head>
   <body>
     <header class="topbar">
@@ -118,16 +118,14 @@
           <div class="panel"><div class="panel-heading"><h2>라운드 결과</h2></div><div class="result-list" id="roundResultList"><p class="empty-state">공개가 끝난 라운드의 결과가 여기에 나타납니다.</p></div></div>
         </section>
 
-        <section id="adminFinalPanel" class="panel final-panel" hidden><div id="adminFinalRanking"></div></section>
-
         <details class="panel manual-panel">
           <summary><span><small>처음 사용하시나요?</small><strong>관리자 사용 설명서</strong></span><span>펼쳐보기</span></summary>
           <div class="manual-content">
             <article><b>1</b><div><h3>스프레드시트 준비</h3><p>새 구글 스프레드시트를 만들고 시트 이름을 <strong>시트1</strong>로 둡니다. 표는 직접 만들지 않아도 됩니다.</p></div></article>
             <article><b>2</b><div><h3>Apps Script 붙여넣기</h3><p>스프레드시트에서 <strong>확장 프로그램 → Apps Script</strong>를 열고, 이 도구 폴더의 <code>Code.gs</code> 전체를 붙여넣어 저장합니다.</p></div></article>
             <article><b>3</b><div><h3>웹앱 배포</h3><p><strong>배포 → 새 배포 → 웹 앱</strong>을 선택합니다. 실행 사용자는 ‘나’, 액세스 사용자는 수업 환경에 맞게 설정한 뒤 생성된 <code>/exec</code> URL을 복사합니다.</p></div></article>
-            <article><b>4</b><div><h3>게임 생성</h3><p>웹앱 URL과 스프레드시트 주소를 넣고 팀 수·라운드 수를 2~20 사이에서 정한 뒤 게임을 생성합니다. 나타난 4자리 코드를 팀별로 전달하고 게임을 시작합니다.</p></div></article>
-            <article><b>5</b><div><h3>라운드 운영</h3><p>접속이 어려운 팀은 현재 라운드의 <strong>직접 입력</strong>을 눌러 대신 제출할 수 있습니다. 모든 팀이 제출하면 숫자를 공개하고 다음 라운드로 이동합니다.</p></div></article>
+            <article><b>4</b><div><h3>게임 생성</h3><p><strong>게임 생성</strong>은 이전 제출·점수·참여 코드를 모두 지우고 처음부터 시작합니다. 기존 진행 상태를 이어갈 때만 <strong>기존 게임 불러오기</strong>를 사용합니다.</p></div></article>
+            <article><b>5</b><div><h3>라운드 운영</h3><p>접속이 어려운 팀은 현재 라운드의 <strong>직접 입력</strong>을 눌러 대신 제출할 수 있습니다. 게임판 맨 아래의 점수 합계와 최종 순위를 확인합니다.</p></div></article>
             <article><b>6</b><div><h3>문제 해결</h3><p>상태가 바뀌지 않으면 동기화를 누릅니다. 권한 오류는 웹앱 배포의 액세스 권한을, 연결 오류는 URL 끝이 <code>/exec</code>인지 확인합니다.</p></div></article>
           </div>
         </details>
@@ -171,6 +169,6 @@
     <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
     <div class="loading-overlay" id="loadingOverlay" hidden><div class="spinner"></div><strong id="loadingText">처리 중입니다…</strong></div>
     <script src="./vendor/qrcode.min.js"></script>
-    <script src="./app.js?v=5"></script>
+    <script src="./app.js?v=6"></script>
   </body>
 </html>

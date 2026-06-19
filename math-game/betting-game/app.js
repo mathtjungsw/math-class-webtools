@@ -346,8 +346,9 @@ async function createGame() {
     const connection = getAdminConnection();
     const gameSize = getAdminGameSize();
     assertConnection(connection);
-    if (!window.confirm(`‘시트1’의 기존 게임 영역을 ${gameSize.teamCount}팀 · ${gameSize.roundCount}라운드의 새 게임으로 바꿉니다. 계속할까요?`)) return;
-    setLoading(true, "게임과 참여 코드를 만들고 있습니다…");
+    if (!window.confirm(`새 게임을 생성하면 ‘시트1’의 이전 제출·점수·참여 코드가 모두 삭제됩니다.\n\n${gameSize.teamCount}팀 · ${gameSize.roundCount}라운드로 처음부터 시작할까요?`)) return;
+    stopPolling();
+    setLoading(true, "이전 기록을 지우고 새 게임을 만들고 있습니다…");
     const state = await requestJsonp(connection.apiUrl, "createGame", { spreadsheetUrl: connection.spreadsheet, ...gameSize });
     appState.admin = state;
     saveLocalGameInfo("admin", connection, { spreadsheetId: state.settings.spreadsheetId });
@@ -358,6 +359,7 @@ async function createGame() {
     showMessage(`${state.settings.teamCount}팀 · ${state.settings.roundCount}라운드 게임과 참여 코드를 만들었습니다.`, "success");
   } catch (error) {
     showMessage(error.message, "error");
+    if (appState.admin) startPolling("admin");
   } finally {
     setLoading(false);
   }
@@ -529,7 +531,6 @@ function renderAdminBoard(state) {
   $("#teamCodesPanel").hidden = false;
   $("#adminGamePanel").hidden = isCreated;
   $("#adminSummaryPanel").hidden = isCreated;
-  $("#adminFinalPanel").hidden = !isFinished;
   $("#startGameButton").hidden = !isCreated;
   $("#gameIdDisplay").textContent = settings.gameId;
   syncAdminGameSize(settings);
@@ -547,7 +548,7 @@ function renderAdminBoard(state) {
 
   $("#adminBoardHead").innerHTML = `<tr><th scope="col">라운드</th>${teams.map((team) => `<th scope="col">${escapeHtml(team.teamName)}</th>`).join("")}</tr>`;
   $(".game-board").style.minWidth = `${Math.max(760, 100 + teams.length * 104)}px`;
-  $("#adminBoardBody").innerHTML = Array.from({ length: settings.roundCount }, (_, index) => {
+  const roundRows = Array.from({ length: settings.roundCount }, (_, index) => {
     const round = index + 1;
     const result = roundResults.find((item) => Number(item.round) === round);
     const rowClass = round === Number(settings.currentRound) && !isFinished ? "current-round" : round < Number(settings.currentRound) || isFinished ? "past-round" : "";
@@ -565,6 +566,17 @@ function renderAdminBoard(state) {
     }).join("");
     return `<tr class="${rowClass}"><th class="round-label" scope="row"><strong>${round}R</strong><small>${result ? "계산 완료" : round === settings.currentRound && !isFinished ? "진행 중" : ""}</small></th>${cells}</tr>`;
   }).join("");
+  const firstPlaceCount = ranking.filter((item) => Number(item.rank) === 1).length;
+  const scoreCells = teams.map((team) => {
+    const rankItem = ranking.find((item) => Number(item.teamId) === Number(team.teamId));
+    const isWinner = isFinished && Number(rankItem?.rank) === 1;
+    const rankLabel = isFinished && rankItem
+      ? isWinner && firstPlaceCount > 1 ? "공동 1위" : `${rankItem.rank}위`
+      : "";
+    return `<td class="score-total-cell ${isWinner ? "winner" : ""}"><strong>${team.scoreTotal}점</strong>${rankLabel ? `<small>${isWinner ? "🏆 " : ""}${escapeHtml(rankLabel)}</small>` : ""}</td>`;
+  }).join("");
+  const scoreRow = `<tr class="score-total-row"><th scope="row"><strong>점수 합계</strong><small>${isFinished ? "최종 결과" : "실시간"}</small></th>${scoreCells}</tr>`;
+  $("#adminBoardBody").innerHTML = roundRows + scoreRow;
 
   const currentSubmissions = submissions.filter((item) => Number(item.round) === Number(settings.currentRound));
   const currentResult = roundResults.find((item) => Number(item.round) === Number(settings.currentRound));
@@ -576,7 +588,6 @@ function renderAdminBoard(state) {
 
   $("#teamStatusList").innerHTML = teams.map((team) => `<div class="team-status-item"><strong>${escapeHtml(team.teamName)}</strong><div class="mini-numbers">${team.remainingNumbers.map((number) => `<span class="mini-number">${number}</span>`).join("") || '<span class="empty-state">모두 사용</span>'}</div><div class="score-box"><strong>${team.scoreTotal}</strong><small>점</small></div></div>`).join("");
   renderRoundResult(roundResults);
-  if (isFinished) renderFinalRanking(ranking, "#adminFinalRanking");
 }
 
 function renderRoundResult(results = []) {

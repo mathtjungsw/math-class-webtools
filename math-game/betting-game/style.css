@@ -226,6 +226,14 @@ h1, h2, h3, p { overflow-wrap: anywhere; }
 .cell-button.revealed { background: var(--blue-soft); color: var(--blue); font-size: 22px; }
 .cell-button.winner { background: var(--yellow); color: #604500; box-shadow: inset 0 0 0 2px #e0ad31; }
 .cell-button.pending { color: #9daba7; }
+.score-total-row > * { height: 82px; border-top: 3px solid #9bcdbd !important; background: #edf8f3 !important; }
+.score-total-row th { color: var(--green-700); }
+.score-total-row th strong, .score-total-row th small, .score-total-cell strong, .score-total-cell small { display: block; }
+.score-total-row th small { margin-top: 4px; color: var(--muted); font-size: 10px; }
+.score-total-cell strong { color: var(--green-900); font-size: 18px; }
+.score-total-cell small { margin-top: 5px; color: var(--muted); font-size: 11px; font-weight: 900; }
+.score-total-cell.winner { background: #fff2be !important; box-shadow: inset 0 0 0 2px #e0ad31; }
+.score-total-cell.winner strong, .score-total-cell.winner small { color: #765400; }
 .legend { display: flex; flex-wrap: wrap; gap: 16px; padding: 12px 4px 4px; color: var(--muted); font-size: 11px; font-weight: 700; }
 .legend span { display: flex; align-items: center; gap: 5px; }
 .legend-dot { width: 9px; height: 9px; border-radius: 3px; background: #eef2f0; }
