@@ -5,6 +5,7 @@ const tabs: Array<{ id: TabId; label: string; icon: string }> = [
   { id: "cards", label: "선수 카드", icon: "◫" },
   { id: "compare", label: "확률 비교", icon: "⇄" },
   { id: "experiment", label: "확률 실험", icon: "⚾" },
+  { id: "game", label: "모의 경기", icon: "◆" },
   { id: "missions", label: "미션 활동", icon: "✓" },
   { id: "report", label: "탐구 보고서", icon: "▤" },
 ];

@@ -11,7 +11,7 @@ type Props = {
   onReset: () => void;
 };
 
-const sourceLabel: Record<DataSource, string> = { sample: "샘플 데이터 사용 중", csv: "CSV 데이터 사용 중", live: "실제 데이터 사용 중" };
+const sourceLabel: Record<DataSource, string> = { sample: "2025 KBO 데이터 사용 중", csv: "CSV 데이터 사용 중", live: "실제 데이터 사용 중" };
 
 export function DataTab({ batters, dataSource, season, onSeasonChange, onImport, onReset }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
@@ -61,7 +61,7 @@ export function DataTab({ batters, dataSource, season, onSeasonChange, onImport,
   return (
     <section className="tab-page">
       <div className="section-heading">
-        <div><p className="overline dark">STEP 01 · DATA DUGOUT</p><h2>수업에 쓸 데이터를 준비하세요</h2><p>인터넷이 없어도 10개 구단, 30명의 샘플 데이터로 모든 활동을 할 수 있습니다.</p></div>
+        <div><p className="overline dark">STEP 01 · DATA DUGOUT</p><h2>수업에 쓸 데이터를 준비하세요</h2><p>인터넷이 없어도 제공된 2025 KBO 타자 데이터로 모든 활동과 모의 경기를 진행할 수 있습니다.</p></div>
         <div className={`status-pill ${dataSource}`}><i />{sourceLabel[dataSource]}</div>
       </div>
 
@@ -72,11 +72,11 @@ export function DataTab({ batters, dataSource, season, onSeasonChange, onImport,
       </div>
 
       <div className="data-actions card-panel">
-        <label className="field"><span>시즌</span><select value={season} onChange={(event) => onSeasonChange(event.target.value)}>{[2026, 2025, 2024, 2023].map((year) => <option key={year}>{year}</option>)}</select></label>
+        <label className="field"><span>시즌</span><select value={season} onChange={(event) => onSeasonChange(event.target.value)}>{[2025, 2024, 2023].map((year) => <option key={year}>{year}</option>)}</select></label>
         <label className="field"><span>구단 필터</span><select value={teamFilter} onChange={(event) => setTeamFilter(event.target.value)}><option>전체</option>{teams.map((team) => <option key={team}>{team}</option>)}</select></label>
         <input ref={fileRef} hidden type="file" accept=".csv,text/csv" onChange={(event) => readCsv(event.target.files?.[0])} />
         <button className="button primary" onClick={() => fileRef.current?.click()}>CSV 업로드</button>
-        <button className="button" onClick={() => { onReset(); setMessage("샘플 데이터로 초기화했습니다."); }}>샘플 데이터로 초기화</button>
+        <button className="button" onClick={() => { onReset(); setMessage("기본 2025 KBO 데이터로 초기화했습니다."); }}>2025 기본 데이터로 초기화</button>
         <button className="button dark" disabled={loading} onClick={tryLiveData}>{loading ? "불러오는 중…" : "실제 KBO 데이터 불러오기"}</button>
       </div>
       {message && <div className="notice" role="status">{message}</div>}
@@ -86,7 +86,7 @@ export function DataTab({ batters, dataSource, season, onSeasonChange, onImport,
         <article className="card-panel chart-panel"><div className="card-title"><h3>전체 타율 분포</h3><span>P(안타)</span></div><div className="histogram">{histogram.map((bin) => <div key={bin.label}><span>{bin.count}</span><i style={{ height: `${Math.max(7, bin.count / Math.max(...histogram.map((item) => item.count), 1) * 130)}px` }} /><small>{bin.label}</small></div>)}</div></article>
       </div>
 
-      <div className="csv-guide"><strong>CSV 컬럼 안내</strong><code>name, team, imageUrl, overallAvg, basesEmptyAvg, runner1Avg, runner2Avg, runner3Avg, runner12Avg, runner13Avg, runner23Avg, basesLoadedAvg</code><p>한국어 컬럼명(선수명, 구단, 사진, 전체타율, 주자없음, 1루…만루)도 지원합니다.</p></div>
+      <div className="csv-guide"><strong>CSV 컬럼 안내</strong><code>name, team, imageUrl, position, overallAvg, basesEmptyAvg, runner1Avg, runner2Avg, runner3Avg, runner12Avg, runner13Avg, runner23Avg, basesLoadedAvg</code><p>한국어 컬럼명(선수명, 구단, 사진, 포지션, 전체타율, 주자없음, 1루…만루)도 지원합니다. 포지션이 없으면 모의 경기용 포지션 그룹을 자동 배정합니다.</p></div>
     </section>
   );
 }

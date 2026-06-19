@@ -7,6 +7,7 @@ import { DataTab } from "./components/DataTab";
 import { BatterCardTab } from "./components/BatterCardTab";
 import { CompareTab } from "./components/CompareTab";
 import { ExperimentTab } from "./components/ExperimentTab";
+import { GameSimulationTab } from "./components/GameSimulationTab";
 import { MissionTab } from "./components/MissionTab";
 import { ReportTab } from "./components/ReportTab";
 
@@ -24,7 +25,7 @@ export default function App() {
   const [comparisonAnswer, setComparisonAnswer] = useState("");
   const [dataSource, setDataSource] = useState<DataSource>("sample");
   const [batters, setBatters] = useState<Batter[]>(SAMPLE_BATTERS);
-  const [season, setSeason] = useState("2026");
+  const [season, setSeason] = useState("2025");
   const [classMode, setClassMode] = useState(false);
   const [reportData, setReportData] = useState<ReportData>({
     studentName: "", studentNumber: "", team: "전체", batterId: SAMPLE_BATTERS[0].id,
@@ -46,10 +47,11 @@ export default function App() {
         {activeTab === "cards" && <BatterCardTab batters={batters} selectedTeam={selectedTeam} situation={selectedRunnerSituation} sortOption={sortOption} searchKeyword={searchKeyword} onTeamChange={setSelectedTeam} onSituationChange={setSelectedRunnerSituation} onSortChange={setSortOption} onSearchChange={setSearchKeyword} onSelectBatter={(batter) => setSelectedBatterId(batter.id)} />}
         {activeTab === "compare" && <CompareTab batters={batters} batterAId={selectedBatterA} batterBId={selectedBatterB} situation={selectedRunnerSituation} answer={comparisonAnswer} onBatterAChange={setSelectedBatterA} onBatterBChange={setSelectedBatterB} onSituationChange={setSelectedRunnerSituation} onAnswerChange={setComparisonAnswer} />}
         {activeTab === "experiment" && <ExperimentTab batters={batters} batterId={selectedBatter?.id ?? ""} situation={selectedRunnerSituation} results={experimentResults} onBatterChange={setSelectedBatterId} onSituationChange={setSelectedRunnerSituation} onResultsChange={setExperimentResults} />}
+        {activeTab === "game" && <GameSimulationTab batters={batters} />}
         {activeTab === "missions" && <MissionTab batters={batters} answers={missionAnswers} onAnswersChange={setMissionAnswers} onApplyMission={(situation, sort) => { setSelectedRunnerSituation(situation); setSortOption(sort); setActiveTab("cards"); }} />}
         {activeTab === "report" && <ReportTab batters={batters} data={reportData} results={experimentResults} onChange={setReportData} />}
       </div>
     </main>
-    <footer><p>현재 표시된 샘플 데이터는 수업용 예시 데이터이며 실제 KBO 기록이 아닙니다. 실제 기록은 CSV 업로드 기능을 사용하세요.</p><span>전체 타율 = P(안타) · 주자 상황별 타율 = P(안타 | 주자 상황)</span></footer>
+    <footer><p>기본 자료는 사용자가 제공한 2025 KBO 타자 주자 상황별 기록입니다. 수업 전 원자료와 공식 기록의 최신값을 함께 확인하세요.</p><span>전체 타율 = P(안타) · 주자 상황별 타율 = P(안타 | 주자 상황)</span></footer>
   </div>;
 }

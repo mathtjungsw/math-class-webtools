@@ -12,13 +12,15 @@ export type RunnerSituation =
 
 export type SortOption = "overall" | "situation" | "rise" | "fall" | "name" | "team";
 export type DataSource = "sample" | "csv" | "live";
-export type TabId = "data" | "cards" | "compare" | "experiment" | "missions" | "report";
+export type TabId = "data" | "cards" | "compare" | "experiment" | "game" | "missions" | "report";
+export type PositionGroup = "C" | "IF" | "OF" | "DH";
 
 export type Batter = {
   id: string;
   name: string;
   team: string;
   imageUrl?: string;
+  positionGroup?: PositionGroup;
   overallAvg: number;
   basesEmptyAvg: number;
   runner1Avg: number;
@@ -28,6 +30,27 @@ export type Batter = {
   runner13Avg: number;
   runner23Avg: number;
   basesLoadedAvg: number;
+};
+
+export type LineupEntry = {
+  batterId: string;
+  position: PositionGroup;
+};
+
+export type PlateAppearanceOutcome = "아웃" | "1루타" | "2루타" | "3루타" | "홈런";
+
+export type GamePlay = {
+  id: string;
+  inning: number;
+  half: "top" | "bottom";
+  batterName: string;
+  team: string;
+  situation: RunnerSituation;
+  probability: number;
+  randomValue: number;
+  outcome: PlateAppearanceOutcome;
+  runs: number;
+  score: [number, number];
 };
 
 export type SingleTrial = {
