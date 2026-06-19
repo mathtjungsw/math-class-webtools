@@ -1,0 +1,25 @@
+import { useState } from "react";
+import type { Batter, ExperimentResult, ReportData, RunnerSituation } from "../types";
+import { formatAvg, formatDifference, getDifference, getSituationAvg, getSituationFormula, getSituationLabel } from "../utils/batterUtils";
+import { BatterSelect, SituationSelect } from "./Controls";
+
+type Props = { batters: Batter[]; data: ReportData; results: ExperimentResult[]; onChange: (data: ReportData) => void };
+
+export function ReportTab({ batters, data, results, onChange }: Props) {
+  const [generated, setGenerated] = useState(false);
+  const [error, setError] = useState("");
+  const selectableBatters = batters.filter((item) => data.team === "전체" || item.team === data.team);
+  const batter = selectableBatters.find((item) => item.id === data.batterId) ?? selectableBatters[0] ?? batters[0];
+  const latest = results[0];
+  if (!batter) return <div className="empty-state">보고서를 작성할 선수 데이터가 없습니다.</div>;
+  const update = (patch: Partial<ReportData>) => { onChange({ ...data, ...patch }); setGenerated(false); };
+  const generate = () => {
+    if (!data.studentName.trim() || !data.studentNumber.trim() || !data.learned.trim() || !data.whyNeeded.trim()) { setError("이름, 학번, 알게 된 점, 조건부 확률이 필요한 이유를 모두 입력해 주세요."); return; }
+    setError(""); setGenerated(true);
+  };
+  return <section className="tab-page report-tab"><div className="section-heading"><div><p className="overline dark">STEP 06 · SCOUTING REPORT</p><h2>나의 조건부 확률 탐구 보고서</h2><p>활동에서 얻은 판단과 실험 결과를 한 장의 보고서로 정리하세요.</p></div></div>
+    <div className="report-layout"><form className="card-panel report-form" onSubmit={(event) => { event.preventDefault(); generate(); }}><div className="form-grid"><label className="field"><span>이름 *</span><input value={data.studentName} onChange={(event) => update({ studentName: event.target.value })} /></label><label className="field"><span>학번 *</span><input value={data.studentNumber} onChange={(event) => update({ studentNumber: event.target.value })} /></label><label className="field"><span>선택 구단</span><select value={data.team} onChange={(event) => { const team = event.target.value; const first = batters.find((item) => team === "전체" || item.team === team); update({ team, batterId: first?.id ?? "" }); }}><option>전체</option>{[...new Set(batters.map((item) => item.team))].map((team) => <option key={team}>{team}</option>)}</select></label><BatterSelect label="선택 선수" batters={selectableBatters} value={batter.id} onChange={(batterId) => update({ batterId })} /><SituationSelect value={data.situation} onChange={(situation) => update({ situation })} /></div><label className="field"><span>알게 된 점 *</span><textarea value={data.learned} onChange={(event) => update({ learned: event.target.value })} placeholder="전체 확률과 조건부 확률을 비교하며 알게 된 점" /></label><label className="field"><span>조건부 확률이 필요한 이유 *</span><textarea value={data.whyNeeded} onChange={(event) => update({ whyNeeded: event.target.value })} placeholder="의사결정에서 조건을 고려해야 하는 이유" /></label><label className="field"><span>더 탐구해 보고 싶은 점</span><textarea value={data.nextQuestion} onChange={(event) => update({ nextQuestion: event.target.value })} /></label>{error && <div className="notice error">{error}</div>}<button className="button action" type="submit">보고서 생성</button></form>
+      <aside className="report-preview-hint"><span>REPORT PREVIEW</span><p>필수 항목을 채우고 보고서를 생성하면 이곳에 완성본이 나타납니다.</p></aside></div>
+    {generated && <article className="generated-report"><div className="report-cover"><div><span>KBO · CONDITIONAL PROBABILITY</span><h2>타자 카드 탐구 보고서</h2></div><div><b>{data.studentName}</b><span>{data.studentNumber}</span></div></div><div className="report-body"><div className="report-player"><span>{batter.team}</span><h3>{batter.name}</h3><p>선택한 주자 상황 · <b>{getSituationLabel(data.situation)}</b></p></div><div className="report-numbers"><div><span>전체 타율<br />P(안타)</span><strong>{formatAvg(batter.overallAvg)}</strong></div><div><span>조건부 타율<br />{getSituationFormula(data.situation)}</span><strong>{formatAvg(getSituationAvg(batter, data.situation))}</strong></div><div><span>두 확률의 차이</span><strong>{formatDifference(getDifference(batter, data.situation))}</strong></div></div>{latest && <div className="report-experiment"><span>최근 확률 실험</span><p>{latest.batterName} · {latest.trials}회 중 {latest.hits}안타 · 상대도수 <b>{formatAvg(latest.relativeFrequency)}</b></p></div>}<div className="report-writing"><section><h4>01 · 알게 된 점</h4><p>{data.learned}</p></section><section><h4>02 · 조건부 확률이 필요한 이유</h4><p>{data.whyNeeded}</p></section><section><h4>03 · 더 탐구해 보고 싶은 점</h4><p>{data.nextQuestion || "—"}</p></section></div><p className="report-conclusion">{getSituationFormula(data.situation)} {getDifference(batter, data.situation) >= 0 ? ">" : "<"} P(안타)이므로, {getSituationLabel(data.situation)}이라는 조건에서 전체 평균보다 안타 확률이 {getDifference(batter, data.situation) >= 0 ? "높습니다" : "낮습니다"}.</p></div><button className="button dark print-button" onClick={() => window.print()}>인쇄 · PDF로 저장</button></article>}
+  </section>;
+}

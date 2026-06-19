@@ -12,6 +12,7 @@
   - 데이터의 경향성을 파악하여 예측하기
 - 수학 게임
   - 배팅 게임
+  - 야구 게임 시뮬레이션: KBO 조건부 확률 타자 카드 실험실
 
 ## 실행 방법
 
@@ -26,3 +27,16 @@
 GitHub 저장소에 올린 뒤 저장소의 `Settings > Pages`에서 배포 브랜치를 선택하면 정적 사이트로 사용할 수 있습니다.
 
 GitHub Pages 주소에서 실행할 때는 화면의 `GitHub` 링크가 저장소 주소를 자동으로 추정합니다. 로컬에서 직접 열거나 다른 호스팅을 사용할 경우 `assets/app.js`, `ai-math/sentiment-ai/sentiment.js`, `ai-math/image-supervised-learning/image-supervised.js`, `ai-math/trendline-prediction/trendline.js`의 `MANUAL_GITHUB_REPOSITORY_URL` 값을 저장소 주소로 바꾸면 됩니다.
+
+## KBO 조건부 확률 실험실 개발
+
+실행용 빌드 파일은 `math-game/kbo-conditional-probability`에 있으며, React·TypeScript 원본은
+`math-game/kbo-conditional-probability-src`에 있습니다.
+
+```bash
+cd math-game/kbo-conditional-probability-src
+npm install
+npm run dev
+```
+
+`npm run build`를 실행하면 실제 웹툴 폴더가 갱신됩니다.
