@@ -11,6 +11,7 @@ import {
   lineupErrors,
   POSITION_LABEL,
   situationFromBases,
+  swapLineupEntries,
   type Bases,
 } from "../utils/gameUtils";
 import { PlayerAvatar } from "./Controls";
@@ -57,7 +58,8 @@ export function GameSimulationTab({ batters, savedLineups, onOpenLineupBuilder }
   const [message, setMessage] = useState("");
   const [retiredIds, setRetiredIds] = useState<[string[], string[]]>([[], []]);
   const [substitutions, setSubstitutions] = useState<SubstitutionRecord[]>([]);
-  const [substitutionTeamIndex, setSubstitutionTeamIndex] = useState<TeamIndex>(0);
+  const [offenseSubOpen, setOffenseSubOpen] = useState(false);
+  const [offenseIncomingId, setOffenseIncomingId] = useState("");
 
   useEffect(() => {
     if (!teams.includes(awayTeam) || !teams.includes(homeTeam) || awayTeam === homeTeam) {
@@ -76,12 +78,19 @@ export function GameSimulationTab({ batters, savedLineups, onOpenLineupBuilder }
   const defenseIndex: TeamIndex = activeIndex === 0 ? 1 : 0;
   const activeLineup = lineups[activeIndex];
   const activeTeam = gameTeams[activeIndex];
-  const currentEntry = activeLineup[battingIndexes[activeIndex] % 9];
+  const currentSlotIndex = battingIndexes[activeIndex] % 9;
+  const currentEntry = activeLineup[currentSlotIndex];
   const currentBatter = batters.find((batter) => batter.id === currentEntry?.batterId);
   const situation = situationFromBases(bases);
   const baseProbability = currentBatter ? getSituationAvg(currentBatter, situation) : 0;
   const adjustedProbability = Math.min(0.95, baseProbability * multiplier);
   const defenseErrors = status === "playing" ? lineupErrors(gameTeams[defenseIndex], lineups[defenseIndex], batters) : [];
+  const activeIds = new Set(activeLineup.map((entry) => entry.batterId));
+  const offenseCandidates = batters.filter((batter) => batter.team === activeTeam
+    && !activeIds.has(batter.id)
+    && !retiredIds[activeIndex].includes(batter.id)
+    && batter.positionGroup
+    && batter.positionGroup !== "DH");
 
   const resetGame = () => {
     setStatus("setup");
@@ -96,7 +105,8 @@ export function GameSimulationTab({ batters, savedLineups, onOpenLineupBuilder }
     setLastPlay(null);
     setRetiredIds([[], []]);
     setSubstitutions([]);
-    setSubstitutionTeamIndex(0);
+    setOffenseSubOpen(false);
+    setOffenseIncomingId("");
     setMessage("");
   };
 
@@ -116,10 +126,11 @@ export function GameSimulationTab({ batters, savedLineups, onOpenLineupBuilder }
   const playAtBat = () => {
     if (status !== "playing" || !currentBatter) return;
     if (defenseErrors.length) {
-      setSubstitutionTeamIndex(defenseIndex);
       setMessage(`${gameTeams[defenseIndex]}의 수비 포지션을 먼저 맞춰 주세요.`);
       return;
     }
+    setOffenseSubOpen(false);
+    setOffenseIncomingId("");
 
     const randomValue = Math.random();
     const outcome = randomValue <= adjustedProbability ? hitOutcome() : "아웃";
@@ -173,7 +184,6 @@ export function GameSimulationTab({ batters, savedLineups, onOpenLineupBuilder }
         setMessage(`${homeTeam} 승리! 9회말 공격 없이 경기가 종료되었습니다.`);
       } else {
         setHalf("bottom");
-        setSubstitutionTeamIndex(0);
         setMessage(`${inning}회초 종료 · ${homeTeam} 공격으로 교대합니다.`);
       }
     } else if (inning === 9) {
@@ -182,7 +192,6 @@ export function GameSimulationTab({ batters, savedLineups, onOpenLineupBuilder }
     } else {
       setInning((value) => value + 1);
       setHalf("top");
-      setSubstitutionTeamIndex(1);
       setMessage(`${inning}회 종료 · ${inning + 1}회초로 이동합니다.`);
     }
   };
@@ -210,15 +219,15 @@ export function GameSimulationTab({ batters, savedLineups, onOpenLineupBuilder }
     setMessage("저장된 홈·원정 라인업을 다시 불러왔습니다.");
   };
 
-  const substitutePlayer = (teamIndex: TeamIndex, slotIndex: number, incomingId: string) => {
-    if (status !== "playing") return;
+  const substitutePlayer = (teamIndex: TeamIndex, slotIndex: number, incomingId: string): boolean => {
+    if (status !== "playing") return false;
     const lineup = lineups[teamIndex];
     const isBatting = teamIndex === activeIndex;
     const result = applyLineupSubstitution({
       team: gameTeams[teamIndex], lineup, retiredIds: retiredIds[teamIndex], slotIndex,
       incomingId, batters, isBatting, bases,
     });
-    if (!result.ok) { setMessage(result.error); return; }
+    if (!result.ok) { setMessage(result.error); return false; }
     if (teamIndex === 0) setAwayLineup(result.lineup);
     else setHomeLineup(result.lineup);
     setBases(result.bases);
@@ -233,6 +242,7 @@ export function GameSimulationTab({ batters, savedLineups, onOpenLineupBuilder }
       phase: isBatting ? "공격" : "수비",
     }, ...items]);
     setMessage(`${gameTeams[teamIndex]} 선수 교체: ${result.outgoing.name} OUT → ${result.incoming.name} IN`);
+    return true;
   };
 
   const winner = status === "finished"
@@ -276,7 +286,6 @@ export function GameSimulationTab({ batters, savedLineups, onOpenLineupBuilder }
       </div>
     </> : <>
       <Scoreboard awayTeam={awayTeam} homeTeam={homeTeam} scores={scores} inningRuns={inningRuns} inning={inning} half={half} />
-      {defenseErrors.length > 0 && <div className="defense-warning"><strong>수비 정렬 필요 · {gameTeams[defenseIndex]}</strong><span>{defenseErrors[0]}</span><button onClick={() => setSubstitutionTeamIndex(defenseIndex)}>교체 화면 열기</button></div>}
       <div className="game-live-grid">
         <GameField bases={bases} batters={batters} outs={outs} lastPlay={lastPlay} />
         <article className="at-bat-panel card-panel">
@@ -287,24 +296,31 @@ export function GameSimulationTab({ batters, savedLineups, onOpenLineupBuilder }
             <div className="probability-meter"><i style={{ width: `${adjustedProbability * 100}%` }} /><span>{Math.round(adjustedProbability * 100)}%</span></div>
           </>}
           {lastPlay && <div className={`last-result ${lastPlay.outcome === "아웃" ? "out" : "hit"}`}><strong>{lastPlay.outcome}</strong><span>난수 {lastPlay.randomValue.toFixed(3)} {lastPlay.outcome === "아웃" ? ">" : "≤"} {formatAvg(lastPlay.probability)}</span></div>}
+          <div className="at-bat-substitution">
+            <button className="button batter-sub-button" disabled={status !== "playing" || currentEntry?.position === "DH" || offenseCandidates.length === 0} onClick={() => { setOffenseSubOpen((open) => !open); setOffenseIncomingId(""); }}>
+              {currentEntry?.position === "DH" ? "지명타자는 교체할 수 없음" : "현재 타자 교체"}
+            </button>
+            {offenseSubOpen && <div className="at-bat-sub-picker">
+              <label><span>{currentBatter?.name} 대신 출전</span><select aria-label="현재 타자 교체 선수" value={offenseIncomingId} onChange={(event) => setOffenseIncomingId(event.target.value)}><option value="">교체 선수 선택</option>{offenseCandidates.map((batter) => <option value={batter.id} key={batter.id}>{batter.name} · {POSITION_LABEL[batter.positionGroup ?? "DH"]} · {formatAvg(batter.overallAvg)}</option>)}</select></label>
+              <button className="button small primary" disabled={!offenseIncomingId} onClick={() => { if (substitutePlayer(activeIndex, currentSlotIndex, offenseIncomingId)) { setOffenseSubOpen(false); setOffenseIncomingId(""); } }}>교체 확정</button>
+            </div>}
+          </div>
           <button className="button action plate-button" disabled={status === "finished" || defenseErrors.length > 0} onClick={playAtBat}>한 타석 진행</button>
           <button className="button" onClick={resetGame}>새 경기 준비</button>
         </article>
+        <GameLineupRail team={activeTeam} lineup={activeLineup} batters={batters} currentIndex={currentSlotIndex} />
       </div>
       <div className={`game-message ${status}`}>{status === "finished" && <strong>{winner === "무승부" ? "DRAW" : `${winner} WIN`}</strong>}<span>{message}</span></div>
-      {status === "playing" && <SubstitutionPanel
-        teamIndex={substitutionTeamIndex}
-        onTeamIndexChange={setSubstitutionTeamIndex}
-        teams={gameTeams}
-        activeIndex={activeIndex}
-        lineup={lineups[substitutionTeamIndex]}
-        batters={batters}
-        retiredIds={retiredIds[substitutionTeamIndex]}
-        isBatting={substitutionTeamIndex === activeIndex}
-        onSubstitute={(slotIndex, incomingId) => substitutePlayer(substitutionTeamIndex, slotIndex, incomingId)}
-      />}
       <SubstitutionLog records={substitutions} />
       <GameLog plays={plays} />
+      {defenseErrors.length > 0 && <DefenseSubstitutionModal
+        team={gameTeams[defenseIndex]}
+        lineup={lineups[defenseIndex]}
+        batters={batters}
+        retiredIds={retiredIds[defenseIndex]}
+        error={defenseErrors[0]}
+        onSubstitute={(slotIndex, incomingId) => substitutePlayer(defenseIndex, slotIndex, incomingId)}
+      />}
     </>}
   </section>;
 }
@@ -323,12 +339,17 @@ function LineupBuilder({ title, team, lineup, batters, onChange }: {
     [next[index], next[target]] = [next[target], next[index]];
     onChange(next);
   };
+  const drop = (event: React.DragEvent<HTMLDivElement>, toIndex: number) => {
+    event.preventDefault();
+    const fromIndex = Number(event.dataTransfer.getData("application/x-game-lineup-index"));
+    if (Number.isInteger(fromIndex)) onChange(swapLineupEntries(lineup, fromIndex, toIndex));
+  };
   return <article className="lineup-card card-panel">
     <div className="card-title"><h3>{title}</h3><span>BATTING ORDER</span></div>
     {lineup.map((entry, index) => {
       const selectedElsewhere = new Set(lineup.filter((_, itemIndex) => itemIndex !== index).map((item) => item.batterId));
       const eligible = batters.filter((batter) => batter.team === team && (entry.position === "DH" || batter.positionGroup === entry.position));
-      return <div className="lineup-row" key={`${entry.position}-${index}`}>
+      return <div className="lineup-row draggable" draggable onDragStart={(event) => { event.dataTransfer.effectAllowed = "move"; event.dataTransfer.setData("application/x-game-lineup-index", String(index)); }} onDragOver={(event) => { event.preventDefault(); event.dataTransfer.dropEffect = "move"; }} onDrop={(event) => drop(event, index)} title="끌어서 타순 바꾸기" key={`${entry.position}-${index}`}>
         <b>{index + 1}</b>
         <span className={`position-badge ${entry.position.toLowerCase()}`}>{entry.position}</span>
         <select aria-label={`${title} ${index + 1}번 타자`} value={entry.batterId} onChange={(event) => onChange(lineup.map((item, itemIndex) => itemIndex === index ? { ...item, batterId: event.target.value } : item))}>
@@ -341,48 +362,53 @@ function LineupBuilder({ title, team, lineup, batters, onChange }: {
   </article>;
 }
 
-function SubstitutionPanel({ teamIndex, onTeamIndexChange, teams, activeIndex, lineup, batters, retiredIds, isBatting, onSubstitute }: {
-  teamIndex: TeamIndex;
-  onTeamIndexChange: (index: TeamIndex) => void;
-  teams: [string, string];
-  activeIndex: TeamIndex;
+function GameLineupRail({ team, lineup, batters, currentIndex }: {
+  team: string;
+  lineup: LineupEntry[];
+  batters: Batter[];
+  currentIndex: number;
+}) {
+  return <aside className="game-lineup-rail card-panel">
+    <div className="game-lineup-heading"><span>NOW BATTING</span><h3>{team} 타순</h3></div>
+    <div className="game-lineup-list">{lineup.map((entry, index) => {
+      const batter = batters.find((item) => item.id === entry.batterId);
+      return <div className={`game-lineup-row ${index === currentIndex ? "current" : ""}`} key={`${entry.batterId}-${index}`}><b>{index + 1}</b><strong>{batter?.name ?? "—"}</strong><span>{formatAvg(batter?.overallAvg ?? 0)}</span></div>;
+    })}</div>
+    <p>다음 타자는 주황색으로 표시됩니다.</p>
+  </aside>;
+}
+
+function DefenseSubstitutionModal({ team, lineup, batters, retiredIds, error, onSubstitute }: {
+  team: string;
   lineup: LineupEntry[];
   batters: Batter[];
   retiredIds: string[];
-  isBatting: boolean;
-  onSubstitute: (slotIndex: number, incomingId: string) => void;
+  error: string;
+  onSubstitute: (slotIndex: number, incomingId: string) => boolean;
 }) {
   const [selections, setSelections] = useState<Record<number, string>>({});
-  useEffect(() => setSelections({}), [teamIndex]);
   const currentIds = new Set(lineup.map((entry) => entry.batterId));
   const counts = countLineupPositions(lineup);
-  const validDefense = counts.C === 1 && counts.IF === 4 && counts.OF === 3 && counts.DH === 1;
-  const roster = batters.filter((batter) => batter.team === teams[teamIndex] && !currentIds.has(batter.id) && !retiredIds.includes(batter.id) && batter.positionGroup && batter.positionGroup !== "DH");
+  const roster = batters.filter((batter) => batter.team === team && !currentIds.has(batter.id) && !retiredIds.includes(batter.id) && batter.positionGroup && batter.positionGroup !== "DH");
 
-  const candidatesFor = (entry: LineupEntry, slotIndex: number) => {
-    if (entry.position === "DH") return [];
-    if (isBatting) return roster;
-    if (validDefense) return roster.filter((batter) => batter.positionGroup === entry.position);
-    return roster.filter((batter) => canUseDefensiveSubstitution(lineup, slotIndex, batter.positionGroup ?? "DH"));
-  };
-
-  return <article className="substitution-panel card-panel">
-    <div className="substitution-heading">
-      <div><p className="overline dark">ROSTER MOVE</p><h3>경기 중 선수 교체</h3><span>{isBatting ? "공격 중: 포지션과 관계없이 교체 가능" : validDefense ? "수비 중: 같은 포지션 선수로만 교체 가능" : "수비 전환: 부족한 포지션을 먼저 복구"}</span></div>
-      <div className="team-switch">{teams.map((team, index) => <button className={teamIndex === index ? "active" : ""} onClick={() => onTeamIndexChange(index as TeamIndex)} key={team}>{team}<small>{index === activeIndex ? "공격" : "수비"}</small></button>)}</div>
-    </div>
-    <div className="substitution-rule"><b>퇴장 선수 재출전 금지</b><span>지명타자 교체 불가</span><em>교체되어 나온 선수 {retiredIds.length}명</em></div>
-    <div className="substitution-list">{lineup.map((entry, index) => {
+  return <div className="defense-modal-backdrop" role="presentation">
+    <article className="defense-modal" role="dialog" aria-modal="true" aria-labelledby="defense-modal-title">
+      <div className="defense-modal-heading"><div><p className="overline dark">DEFENSE CHECK</p><h3 id="defense-modal-title">수비 포지션을 맞춰 주세요</h3><span>{team}이 수비를 시작하기 전에 교체를 완료해야 합니다.</span></div><strong>경기 일시 정지</strong></div>
+      <div className="defense-modal-alert">⚠ {error}</div>
+      <div className="defense-position-counts">{(["C", "IF", "OF", "DH"] as const).map((position) => <span className={counts[position] === ({ C: 1, IF: 4, OF: 3, DH: 1 })[position] ? "valid" : "invalid"} key={position}>{POSITION_LABEL[position]} <b>{counts[position]}</b> / {({ C: 1, IF: 4, OF: 3, DH: 1 })[position]}</span>)}</div>
+      <div className="defense-modal-list">{lineup.map((entry, index) => {
       const current = batters.find((batter) => batter.id === entry.batterId);
-      const candidates = candidatesFor(entry, index);
+      const candidates = entry.position === "DH" ? [] : roster.filter((batter) => canUseDefensiveSubstitution(lineup, index, batter.positionGroup ?? "DH"));
       const locked = entry.position === "DH";
-      return <div className={`substitution-row ${locked ? "locked" : ""}`} key={`${entry.batterId}-${index}`}>
+      return <div className={`defense-modal-row ${locked ? "locked" : ""} ${candidates.length ? "actionable" : ""}`} key={`${entry.batterId}-${index}`}>
         <b>{index + 1}</b><span className={`position-badge ${entry.position.toLowerCase()}`}>{entry.position}</span>
         <div className="current-player"><strong>{current?.name ?? "—"}</strong><small>{current?.positionGroup ? POSITION_LABEL[current.positionGroup] : "포지션 없음"}</small></div>
-        {locked ? <div className="dh-lock">🔒 지명타자 교체 불가</div> : <><select aria-label={`${teams[teamIndex]} ${index + 1}번 교체 선수`} value={selections[index] ?? ""} onChange={(event) => setSelections((values) => ({ ...values, [index]: event.target.value }))}><option value="">교체 선수 선택</option>{candidates.map((batter) => <option value={batter.id} key={batter.id}>{batter.name} · {POSITION_LABEL[batter.positionGroup ?? "DH"]} · {formatAvg(batter.overallAvg)}</option>)}</select><button className="button small" disabled={!selections[index]} onClick={() => { onSubstitute(index, selections[index]); setSelections((values) => ({ ...values, [index]: "" })); }}>교체</button></>}
+        {locked ? <div className="defense-row-status">지명타자 고정</div> : candidates.length ? <><select aria-label={`${team} ${index + 1}번 수비 교체 선수`} value={selections[index] ?? ""} onChange={(event) => setSelections((values) => ({ ...values, [index]: event.target.value }))}><option value="">부족 포지션 선수 선택</option>{candidates.map((batter) => <option value={batter.id} key={batter.id}>{batter.name} · {POSITION_LABEL[batter.positionGroup ?? "DH"]} · {formatAvg(batter.overallAvg)}</option>)}</select><button className="button small action" disabled={!selections[index]} onClick={() => { if (onSubstitute(index, selections[index])) setSelections((values) => ({ ...values, [index]: "" })); }}>교체</button></> : <div className="defense-row-status">유지</div>}
       </div>;
     })}</div>
-  </article>;
+      <div className="defense-modal-footer"><span>퇴장 선수는 재출전할 수 없습니다.</span><strong>인원이 맞으면 자동으로 경기 화면으로 돌아갑니다.</strong></div>
+    </article>
+  </div>;
 }
 
 function Scoreboard({ awayTeam, homeTeam, scores, inningRuns, inning, half }: { awayTeam: string; homeTeam: string; scores: [number, number]; inningRuns: [number[], number[]]; inning: number; half: Half }) {
