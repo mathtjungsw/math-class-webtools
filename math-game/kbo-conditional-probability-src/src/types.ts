@@ -12,7 +12,7 @@ export type RunnerSituation =
 
 export type SortOption = "overall" | "situation" | "rise" | "fall" | "name" | "team";
 export type DataSource = "sample" | "csv" | "live";
-export type TabId = "data" | "cards" | "compare" | "experiment" | "game" | "missions" | "report";
+export type TabId = "data" | "cards" | "compare" | "experiment" | "lineup" | "game" | "missions" | "report";
 export type PositionGroup = "C" | "IF" | "OF" | "DH";
 
 export type Batter = {
@@ -35,6 +35,17 @@ export type Batter = {
 export type LineupEntry = {
   batterId: string;
   position: PositionGroup;
+};
+
+export type SavedLineup = {
+  team: string;
+  entries: LineupEntry[];
+  savedAt: string;
+};
+
+export type SavedLineups = {
+  away?: SavedLineup;
+  home?: SavedLineup;
 };
 
 export type PlateAppearanceOutcome = "아웃" | "1루타" | "2루타" | "3루타" | "홈런";
