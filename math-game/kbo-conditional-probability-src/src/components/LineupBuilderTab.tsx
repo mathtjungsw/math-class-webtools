@@ -21,9 +21,15 @@ type Props = {
 };
 
 const SIDE_LABEL: Record<Side, string> = { away: "원정", home: "홈" };
+const PRINT_PAGE_SIZE = 9;
+const PRINT_POSITION_ORDER: Record<string, number> = { C: 0, IF: 1, OF: 2 };
 
 function cloneEntries(entries: LineupEntry[]): LineupEntry[] {
   return entries.map((entry) => ({ ...entry }));
+}
+
+function chunkBatters(batters: Batter[], size: number): Batter[][] {
+  return Array.from({ length: Math.ceil(batters.length / size) }, (_, index) => batters.slice(index * size, (index + 1) * size));
 }
 
 export function LineupBuilderTab({ batters, savedLineups, onSave, onOpenGame }: Props) {
@@ -46,6 +52,11 @@ export function LineupBuilderTab({ batters, savedLineups, onSave, onOpenGame }: 
   const setActiveLineup = (lineup: LineupEntry[]) => activeSide === "away" ? setAwayLineup(lineup) : setHomeLineup(lineup);
   const usedIds = new Set(activeLineup.map((entry) => entry.batterId).filter(Boolean));
   const counts = countLineupPositions(activeLineup.filter((entry) => Boolean(entry.batterId)));
+  const printRoster = useMemo(() => batters
+    .filter((batter) => batter.team === activeTeam)
+    .sort((a, b) => (PRINT_POSITION_ORDER[String(a.positionGroup)] ?? 9) - (PRINT_POSITION_ORDER[String(b.positionGroup)] ?? 9)
+      || b.overallAvg - a.overallAvg
+      || a.name.localeCompare(b.name, "ko")), [batters, activeTeam]);
 
   const roster = useMemo(() => batters
     .filter((batter) => batter.team === activeTeam)
@@ -114,7 +125,7 @@ export function LineupBuilderTab({ batters, savedLineups, onSave, onOpenGame }: 
   return <section className="tab-page lineup-prep-tab">
     <div className="section-heading">
       <div><p className="overline dark">STEP 05 · LINEUP ROOM</p><h2>드래그로 만드는 나만의 라인업</h2><p>선수의 사진과 모든 주자 상황별 타율을 비교하고, 카드를 타순 슬롯에 끌어 놓으세요. 모바일에서는 카드를 선택한 뒤 슬롯을 누르면 됩니다.</p></div>
-      <div className="lineup-ready-count"><strong>{usedIds.size}</strong><span>/ 9명 배치</span></div>
+      <div className="lineup-heading-actions"><div className="lineup-ready-count"><strong>{usedIds.size}</strong><span>/ 9명 배치</span></div><button className="button action lineup-print-button" onClick={() => window.print()}>🖨 {activeTeam} 선수 카드 출력</button></div>
     </div>
 
     <div className="saved-matchup-strip">
@@ -157,6 +168,7 @@ export function LineupBuilderTab({ batters, savedLineups, onSave, onOpenGame }: 
         <p className="drag-tip">⋮⋮ 채워진 타순 행을 다른 행으로 드래그해 순서를 바꿀 수도 있습니다.</p>
       </aside>
     </div>
+    <PrintRosterSheets team={activeTeam} batters={printRoster} />
   </section>;
 }
 
@@ -170,4 +182,22 @@ function LineupPlayerCard({ batter, used, selected, onSelect }: { batter: Batter
 
 function SavedLineupSummary({ side, saved, onRestore }: { side: Side; saved?: SavedLineup; onRestore: () => void }) {
   return <div className={`saved-lineup-summary ${saved ? "saved" : ""}`}><span>{SIDE_LABEL[side]} 라인업</span>{saved ? <><strong>{saved.team}</strong><small>9명 저장 완료</small><button onClick={onRestore}>저장본 보기</button></> : <><strong>미저장</strong><small>라인업을 완성해 저장하세요</small></>}</div>;
+}
+
+function PrintRosterSheets({ team, batters }: { team: string; batters: Batter[] }) {
+  const pages = chunkBatters(batters, PRINT_PAGE_SIZE);
+  return <div className="print-roster-sheets" aria-hidden="true">{pages.map((page, pageIndex) => <section className="print-card-page" key={`${team}-${pageIndex}`}>
+    <header className="print-card-page-header"><div><span>KBO CONDITIONAL PROBABILITY · PLAYER CARDS</span><h1>{team} 선수 카드</h1></div><div><strong>{pageIndex + 1} / {pages.length}</strong><small>카드를 잘라 모둠별 라인업을 구성하세요.</small></div></header>
+    <div className="print-player-card-grid">{page.map((batter) => <PrintPlayerCard batter={batter} key={batter.id} />)}</div>
+  </section>)}</div>;
+}
+
+function PrintPlayerCard({ batter }: { batter: Batter }) {
+  return <article className="print-player-card">
+    <div className="print-card-order">타순 ______</div>
+    <div className="print-player-profile"><PlayerAvatar batter={batter} size="large" /><div><span>{batter.team} · {batter.positionGroup ? POSITION_LABEL[batter.positionGroup] : "포지션 없음"}</span><h2>{batter.name}</h2><p>기본 타율 <strong>{formatAvg(batter.overallAvg)}</strong></p></div></div>
+    <div className="print-situation-title">현재 주자상황에 따른 확률 · P(안타 | 주자 상황)</div>
+    <div className="print-situation-grid">{SITUATIONS.map((situation) => <div key={situation}><span>{getSituationLabel(situation)}</span><strong>{formatAvg(getSituationAvg(batter, situation))}</strong></div>)}</div>
+    <footer><span>{POSITION_LABEL[batter.positionGroup ?? "DH"]}</span><b>LINEUP CARD</b></footer>
+  </article>;
 }

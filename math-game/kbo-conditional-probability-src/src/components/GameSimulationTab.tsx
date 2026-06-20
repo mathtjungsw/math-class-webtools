@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import type { Batter, GamePlay, LineupEntry, SavedLineup, SavedLineups } from "../types";
+import type { Batter, GamePlay, LineupEntry, RunnerSituation, SavedLineup, SavedLineups } from "../types";
 import { formatAvg, getSituationAvg, getSituationFormula, getSituationLabel } from "../utils/batterUtils";
 import {
   advanceRunners,
@@ -32,6 +32,10 @@ type SubstitutionRecord = {
 
 function validSavedLineup(saved: SavedLineup | undefined, batters: Batter[], teams: string[]): saved is SavedLineup {
   return Boolean(saved && teams.includes(saved.team) && lineupErrors(saved.team, saved.entries, batters).length === 0);
+}
+
+function gameHitProbability(batter: Batter, situation: RunnerSituation, multiplier: number): number {
+  return Math.min(0.95, getSituationAvg(batter, situation) * multiplier);
 }
 
 export function GameSimulationTab({ batters, savedLineups, onOpenLineupBuilder }: Props) {
@@ -83,7 +87,7 @@ export function GameSimulationTab({ batters, savedLineups, onOpenLineupBuilder }
   const currentBatter = batters.find((batter) => batter.id === currentEntry?.batterId);
   const situation = situationFromBases(bases);
   const baseProbability = currentBatter ? getSituationAvg(currentBatter, situation) : 0;
-  const adjustedProbability = Math.min(0.95, baseProbability * multiplier);
+  const adjustedProbability = currentBatter ? gameHitProbability(currentBatter, situation, multiplier) : 0;
   const defenseErrors = status === "playing" ? lineupErrors(gameTeams[defenseIndex], lineups[defenseIndex], batters) : [];
   const activeIds = new Set(activeLineup.map((entry) => entry.batterId));
   const offenseCandidates = batters.filter((batter) => batter.team === activeTeam
@@ -91,6 +95,7 @@ export function GameSimulationTab({ batters, savedLineups, onOpenLineupBuilder }
     && !retiredIds[activeIndex].includes(batter.id)
     && batter.positionGroup
     && batter.positionGroup !== "DH");
+  const selectedOffenseCandidate = offenseCandidates.find((batter) => batter.id === offenseIncomingId);
 
   const resetGame = () => {
     setStatus("setup");
@@ -292,7 +297,7 @@ export function GameSimulationTab({ batters, savedLineups, onOpenLineupBuilder }
           {currentBatter && <>
             <div className="at-bat-label">NOW BATTING · {activeTeam}</div>
             <div className="game-batter"><PlayerAvatar batter={currentBatter} size="large" /><div><span>{currentEntry.position} · {POSITION_LABEL[currentEntry.position]}</span><h3>{currentBatter.name}</h3><small>{getSituationLabel(situation)} 상황</small></div></div>
-            <div className="game-probability"><div><span>원 타율</span><strong>{formatAvg(baseProbability)}</strong></div><b>× {multiplier.toFixed(1)}</b><div className="adjusted"><span>{getSituationFormula(situation)}</span><strong>{formatAvg(adjustedProbability)}</strong></div></div>
+            <div className="game-probability"><div><span>현재 주자상황에 따른 확률</span><strong>{formatAvg(baseProbability)}</strong></div><b>× {multiplier.toFixed(1)}</b><div className="adjusted"><span>배율 적용 · {getSituationFormula(situation)}</span><strong>{formatAvg(adjustedProbability)}</strong></div></div>
             <div className="probability-meter"><i style={{ width: `${adjustedProbability * 100}%` }} /><span>{Math.round(adjustedProbability * 100)}%</span></div>
           </>}
           {lastPlay && <div className={`last-result ${lastPlay.outcome === "아웃" ? "out" : "hit"}`}><strong>{lastPlay.outcome}</strong><span>난수 {lastPlay.randomValue.toFixed(3)} {lastPlay.outcome === "아웃" ? ">" : "≤"} {formatAvg(lastPlay.probability)}</span></div>}
@@ -301,7 +306,8 @@ export function GameSimulationTab({ batters, savedLineups, onOpenLineupBuilder }
               {currentEntry?.position === "DH" ? "지명타자는 교체할 수 없음" : "현재 타자 교체"}
             </button>
             {offenseSubOpen && <div className="at-bat-sub-picker">
-              <label><span>{currentBatter?.name} 대신 출전</span><select aria-label="현재 타자 교체 선수" value={offenseIncomingId} onChange={(event) => setOffenseIncomingId(event.target.value)}><option value="">교체 선수 선택</option>{offenseCandidates.map((batter) => <option value={batter.id} key={batter.id}>{batter.name} · {POSITION_LABEL[batter.positionGroup ?? "DH"]} · {formatAvg(batter.overallAvg)}</option>)}</select></label>
+              <label><span>현재 주자상황에 따른 확률 · {getSituationLabel(situation)}</span><small>{currentBatter?.name} 대신 출전할 선수를 고르세요.</small><select aria-label="현재 타자 교체 선수" value={offenseIncomingId} onChange={(event) => setOffenseIncomingId(event.target.value)}><option value="">교체 선수 선택 · 조건부 확률 비교</option>{offenseCandidates.map((batter) => <option value={batter.id} key={batter.id}>{batter.name} · {POSITION_LABEL[batter.positionGroup ?? "DH"]} · 현재 {formatAvg(getSituationAvg(batter, situation))} · 경기 {formatAvg(gameHitProbability(batter, situation, multiplier))}</option>)}</select></label>
+              {selectedOffenseCandidate && <div className="sub-candidate-probability"><div><span>현재 주자상황에 따른 확률</span><small>{getSituationLabel(situation)}</small><strong>{formatAvg(getSituationAvg(selectedOffenseCandidate, situation))}</strong></div><i>× {multiplier.toFixed(1)}</i><div><span>배율 적용 경기 확률</span><small>최대 0.950</small><strong>{formatAvg(gameHitProbability(selectedOffenseCandidate, situation, multiplier))}</strong></div></div>}
               <button className="button small primary" disabled={!offenseIncomingId} onClick={() => { if (substitutePlayer(activeIndex, currentSlotIndex, offenseIncomingId)) { setOffenseSubOpen(false); setOffenseIncomingId(""); } }}>교체 확정</button>
             </div>}
           </div>
@@ -319,6 +325,8 @@ export function GameSimulationTab({ batters, savedLineups, onOpenLineupBuilder }
         batters={batters}
         retiredIds={retiredIds[defenseIndex]}
         error={defenseErrors[0]}
+        situation={situation}
+        multiplier={multiplier}
         onSubstitute={(slotIndex, incomingId) => substitutePlayer(defenseIndex, slotIndex, incomingId)}
       />}
     </>}
@@ -378,12 +386,14 @@ function GameLineupRail({ team, lineup, batters, currentIndex }: {
   </aside>;
 }
 
-function DefenseSubstitutionModal({ team, lineup, batters, retiredIds, error, onSubstitute }: {
+function DefenseSubstitutionModal({ team, lineup, batters, retiredIds, error, situation, multiplier, onSubstitute }: {
   team: string;
   lineup: LineupEntry[];
   batters: Batter[];
   retiredIds: string[];
   error: string;
+  situation: RunnerSituation;
+  multiplier: number;
   onSubstitute: (slotIndex: number, incomingId: string) => boolean;
 }) {
   const [selections, setSelections] = useState<Record<number, string>>({});
@@ -395,6 +405,7 @@ function DefenseSubstitutionModal({ team, lineup, batters, retiredIds, error, on
     <article className="defense-modal" role="dialog" aria-modal="true" aria-labelledby="defense-modal-title">
       <div className="defense-modal-heading"><div><p className="overline dark">DEFENSE CHECK</p><h3 id="defense-modal-title">수비 포지션을 맞춰 주세요</h3><span>{team}이 수비를 시작하기 전에 교체를 완료해야 합니다.</span></div><strong>경기 일시 정지</strong></div>
       <div className="defense-modal-alert">⚠ {error}</div>
+      <div className="defense-probability-note"><strong>현재 주자상황에 따른 확률</strong><span>{getSituationLabel(situation)} 기준 · 목록의 ‘현재’는 조건부 타율, ‘경기’는 {multiplier.toFixed(1)}배 적용 확률입니다.</span></div>
       <div className="defense-position-counts">{(["C", "IF", "OF", "DH"] as const).map((position) => <span className={counts[position] === ({ C: 1, IF: 4, OF: 3, DH: 1 })[position] ? "valid" : "invalid"} key={position}>{POSITION_LABEL[position]} <b>{counts[position]}</b> / {({ C: 1, IF: 4, OF: 3, DH: 1 })[position]}</span>)}</div>
       <div className="defense-modal-list">{lineup.map((entry, index) => {
       const current = batters.find((batter) => batter.id === entry.batterId);
@@ -403,7 +414,7 @@ function DefenseSubstitutionModal({ team, lineup, batters, retiredIds, error, on
       return <div className={`defense-modal-row ${locked ? "locked" : ""} ${candidates.length ? "actionable" : ""}`} key={`${entry.batterId}-${index}`}>
         <b>{index + 1}</b><span className={`position-badge ${entry.position.toLowerCase()}`}>{entry.position}</span>
         <div className="current-player"><strong>{current?.name ?? "—"}</strong><small>{current?.positionGroup ? POSITION_LABEL[current.positionGroup] : "포지션 없음"}</small></div>
-        {locked ? <div className="defense-row-status">지명타자 고정</div> : candidates.length ? <><select aria-label={`${team} ${index + 1}번 수비 교체 선수`} value={selections[index] ?? ""} onChange={(event) => setSelections((values) => ({ ...values, [index]: event.target.value }))}><option value="">부족 포지션 선수 선택</option>{candidates.map((batter) => <option value={batter.id} key={batter.id}>{batter.name} · {POSITION_LABEL[batter.positionGroup ?? "DH"]} · {formatAvg(batter.overallAvg)}</option>)}</select><button className="button small action" disabled={!selections[index]} onClick={() => { if (onSubstitute(index, selections[index])) setSelections((values) => ({ ...values, [index]: "" })); }}>교체</button></> : <div className="defense-row-status">유지</div>}
+        {locked ? <div className="defense-row-status">지명타자 고정</div> : candidates.length ? <><select aria-label={`${team} ${index + 1}번 수비 교체 선수`} value={selections[index] ?? ""} onChange={(event) => setSelections((values) => ({ ...values, [index]: event.target.value }))}><option value="">부족 포지션 선수 선택 · 확률 비교</option>{candidates.map((batter) => <option value={batter.id} key={batter.id}>{batter.name} · {POSITION_LABEL[batter.positionGroup ?? "DH"]} · 현재 {formatAvg(getSituationAvg(batter, situation))} · 경기 {formatAvg(gameHitProbability(batter, situation, multiplier))}</option>)}</select><button className="button small action" disabled={!selections[index]} onClick={() => { if (onSubstitute(index, selections[index])) setSelections((values) => ({ ...values, [index]: "" })); }}>교체</button></> : <div className="defense-row-status">유지</div>}
       </div>;
     })}</div>
       <div className="defense-modal-footer"><span>퇴장 선수는 재출전할 수 없습니다.</span><strong>인원이 맞으면 자동으로 경기 화면으로 돌아갑니다.</strong></div>
