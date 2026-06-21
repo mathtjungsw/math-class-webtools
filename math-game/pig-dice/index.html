@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#fff8ef" />
+    <title>돼지 주사위 게임(Pig Dice)</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="game-header">
+      <a class="back-link" href="../../index.html#math-game" aria-label="수학 게임 목록으로 돌아가기">
+        <span aria-hidden="true">←</span>
+        <span>수학 게임</span>
+      </a>
+      <div class="header-actions">
+        <button class="text-button" id="rulesButton" type="button">게임 방법</button>
+        <button class="text-button danger" id="newGameButton" type="button">새 게임</button>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="hero" aria-labelledby="pageTitle">
+        <div class="hero-copy">
+          <p class="eyebrow">확률과 의사결정</p>
+          <h1 id="pageTitle">돼지 주사위 게임<span>(Pig Dice)</span></h1>
+          <p>
+            더 굴릴까, 멈출까? 한 번의 선택이 점수를 키우기도 하고 전부 날리기도 합니다.
+          </p>
+        </div>
+        <div class="hero-pig" aria-hidden="true">
+          <span class="pig-ear left"></span>
+          <span class="pig-ear right"></span>
+          <span class="pig-eye left"></span>
+          <span class="pig-eye right"></span>
+          <span class="pig-snout"><i></i><i></i></span>
+        </div>
+      </section>
+
+      <nav class="mode-tabs" aria-label="돼지 주사위 활동 선택">
+        <button class="mode-tab is-active" type="button" data-mode="game" aria-selected="true">
+          <span aria-hidden="true">⚄</span>
+          <span><strong>게임하기</strong><small>직접 굴리고 점수 모으기</small></span>
+        </button>
+        <button class="mode-tab" type="button" data-mode="learn" aria-selected="false">
+          <span aria-hidden="true">∑</span>
+          <span><strong>배워보기</strong><small>확률·기대값·전략 탐구</small></span>
+        </button>
+        <button class="mode-tab" type="button" data-mode="variant" aria-selected="false">
+          <span aria-hidden="true">⚄⚄</span>
+          <span><strong>규칙 변형 게임하기</strong><small>규칙을 바꿔 직접 플레이</small></span>
+        </button>
+      </nav>
+
+      <section class="setup-card" id="setupPanel" aria-labelledby="setupTitle">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">게임 준비</p>
+            <h2 id="setupTitle">플레이어를 정해 주세요</h2>
+          </div>
+          <span class="step-chip">목표 점수에 먼저 도달하면 승리</span>
+        </div>
+
+        <div class="setup-grid">
+          <label class="field-card">
+            <span>플레이어 수</span>
+            <select id="playerCount">
+              <option value="2">2명</option>
+              <option value="3">3명</option>
+              <option value="4" selected>4명</option>
+              <option value="5">5명</option>
+              <option value="6">6명</option>
+              <option value="7">7명</option>
+              <option value="8">8명</option>
+              <option value="9">9명</option>
+              <option value="10">10명</option>
+            </select>
+          </label>
+          <label class="field-card">
+            <span>목표 점수</span>
+            <div class="number-field">
+              <input id="targetScore" type="number" min="20" max="500" step="10" value="100" inputmode="numeric" />
+              <span>점</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="name-section">
+          <div class="name-heading">
+            <h3>이름</h3>
+            <button class="shuffle-button" id="shuffleNamesButton" type="button">이름 섞기</button>
+          </div>
+          <div class="name-grid" id="playerNameFields"></div>
+        </div>
+
+        <button class="primary-action start-button" id="startButton" type="button">
+          <span>게임 시작</span>
+          <span aria-hidden="true">→</span>
+        </button>
+      </section>
+
+      <section class="game-area" id="gamePanel" hidden aria-label="돼지 주사위 게임판">
+        <section class="score-section" aria-labelledby="scoreTitle">
+          <div class="score-heading">
+            <div>
+              <p class="eyebrow">점수판</p>
+              <h2 id="scoreTitle">먼저 <strong id="targetScoreDisplay">100점</strong>에 도전!</h2>
+            </div>
+            <div class="round-badge"><span>차례</span><strong id="turnNumber">1</strong></div>
+          </div>
+          <div class="scoreboard" id="scoreboard"></div>
+        </section>
+
+        <div class="game-layout">
+          <section class="play-card" aria-labelledby="turnTitle">
+            <div class="turn-banner">
+              <div>
+                <p>지금은</p>
+                <h2 id="turnTitle"><span id="currentPlayerName">플레이어 1</span> 차례</h2>
+              </div>
+              <span class="turn-dot" aria-hidden="true"></span>
+            </div>
+
+            <div class="dice-stage">
+              <div class="dice-shadow" aria-hidden="true"></div>
+              <div class="die" id="die" data-value="1" aria-label="주사위 눈 1" role="img">
+                <span class="dot dot-1"></span>
+                <span class="dot dot-2"></span>
+                <span class="dot dot-3"></span>
+                <span class="dot dot-4"></span>
+                <span class="dot dot-5"></span>
+                <span class="dot dot-6"></span>
+                <span class="dot dot-7"></span>
+              </div>
+              <p class="status-message" id="statusMessage" aria-live="polite">
+                주사위를 던져 이번 턴의 점수를 모으세요.
+              </p>
+            </div>
+
+            <div class="turn-score-card">
+              <span>이번 턴 점수</span>
+              <strong><span id="turnScore">0</span>점</strong>
+              <small>1이 나오면 이번 턴 점수는 사라져요.</small>
+            </div>
+
+            <div class="play-actions">
+              <button class="primary-action roll-button" id="rollButton" type="button">
+                <span class="button-icon" aria-hidden="true">⚄</span>
+                <span>주사위 던지기</span>
+                <kbd>Space</kbd>
+              </button>
+              <button class="hold-button" id="holdButton" type="button">
+                <span aria-hidden="true">✋</span>
+                <span>멈추고 저장</span>
+                <kbd>Enter</kbd>
+              </button>
+            </div>
+          </section>
+
+          <aside class="insight-column">
+            <section class="insight-card math-card" aria-labelledby="mathTitle">
+              <div class="card-heading">
+                <span class="card-icon" aria-hidden="true">∑</span>
+                <div>
+                  <p>수학 한 스푼</p>
+                  <h2 id="mathTitle">한 번 더 굴린다면?</h2>
+                </div>
+              </div>
+              <div class="probability-row">
+                <div><span>점수 유지</span><strong>5/6</strong><small>약 83.3%</small></div>
+                <div><span>이번 턴 잃기</span><strong>1/6</strong><small>약 16.7%</small></div>
+              </div>
+              <div class="expectation-box">
+                <span>한 번 던지고 바로 멈출 때 기대 변화</span>
+                <strong id="expectedChange">+3.33점</strong>
+                <small id="expectationHint">현재는 평균적으로 점수가 늘어나는 구간이에요.</small>
+              </div>
+              <details>
+                <summary>어떻게 계산하나요?</summary>
+                <p>
+                  2~6이 나오면 그 눈만큼 얻고, 1이면 이번 턴 점수를 잃는다고 보아
+                  <code>(20 − 이번 턴 점수) ÷ 6</code>으로 계산합니다.
+                </p>
+              </details>
+            </section>
+
+            <section class="insight-card stats-card" aria-labelledby="statsTitle">
+              <div class="card-heading compact">
+                <span class="card-icon" aria-hidden="true">%</span>
+                <h2 id="statsTitle">이번 게임 기록</h2>
+              </div>
+              <dl class="stats-grid">
+                <div><dt>던진 횟수</dt><dd id="rollCount">0</dd></div>
+                <div><dt>1이 나온 횟수</dt><dd id="oneCount">0</dd></div>
+                <div><dt>실험 확률</dt><dd id="oneRate">—</dd></div>
+              </dl>
+            </section>
+
+            <section class="insight-card history-card" aria-labelledby="historyTitle">
+              <div class="card-heading compact">
+                <span class="card-icon" aria-hidden="true">↺</span>
+                <h2 id="historyTitle">최근 기록</h2>
+              </div>
+              <ol class="history-list" id="historyList">
+                <li class="empty-history">아직 기록이 없습니다.</li>
+              </ol>
+            </section>
+          </aside>
+        </div>
+      </section>
+
+      <section class="learn-area" id="learnPanel" hidden aria-labelledby="learnTitle">
+        <div class="learn-heading">
+          <div>
+            <p class="eyebrow">확률 전략 탐구</p>
+            <h2 id="learnTitle">더 던질까, 멈출까?</h2>
+            <p>주사위 결과의 순이익을 비교하고 기대값을 계산해 나만의 HOLD 기준을 만들어 봅니다.</p>
+          </div>
+          <button class="print-button" id="printWorksheetButton" type="button">
+            <span aria-hidden="true">▣</span>
+            학습지 인쇄
+          </button>
+        </div>
+
+        <div class="learn-intro-grid">
+          <article class="learn-card story-card">
+            <span class="learn-step">01 · 게임 이해</span>
+            <h3>위험을 감수할수록 보상도 커져요</h3>
+            <p>
+              돼지 게임은 1945년에 처음 인쇄된 간단한 주사위 게임입니다. 1이 나오기 전까지 점수를
+              늘릴 수 있지만, 계속 던질수록 이번 턴에 모은 점수를 모두 잃을 위험도 함께 커집니다.
+            </p>
+            <div class="rule-flow" aria-label="돼지 주사위 기본 규칙">
+              <div><strong>2~6</strong><span>눈만큼 턴 점수 추가</span></div>
+              <span aria-hidden="true">→</span>
+              <div><strong>HOLD</strong><span>턴 점수를 총점에 저장</span></div>
+              <span aria-hidden="true">/</span>
+              <div class="danger-rule"><strong>1</strong><span>턴 점수 0, 차례 종료</span></div>
+            </div>
+          </article>
+          <article class="learn-card goal-card">
+            <span class="learn-step">오늘의 질문</span>
+            <blockquote>“이번 턴에 이미 <em>x</em>점을 모았다면, 한 번 더 던지는 것이 유리할까?”</blockquote>
+            <ul>
+              <li>각 주사위 눈이 만들 점수 변화를 나타낸다.</li>
+              <li>확률변수의 기대값을 계산한다.</li>
+              <li>게임 규칙이 바뀌면 위험 확률이 어떻게 변하는지 비교한다.</li>
+            </ul>
+          </article>
+        </div>
+
+        <article class="learn-card ev-lab" aria-labelledby="evLabTitle">
+          <div class="lab-heading">
+            <div>
+              <span class="learn-step">02 · 기대값 실험실</span>
+              <h3 id="evLabTitle">현재 턴 점수 <strong><span id="riskScoreValue">10</span>점</strong></h3>
+            </div>
+            <div class="decision-chip roll" id="decisionChip"><small>기대값 기준</small><strong>ROLL</strong></div>
+          </div>
+
+          <label class="range-control" for="riskScoreSlider">
+            <span>현재 턴 점수 <em>x</em>를 움직여 보세요.</span>
+            <input id="riskScoreSlider" type="range" min="0" max="40" step="1" value="10" />
+            <span class="range-labels"><small>0점</small><small>20점: 경계</small><small>40점</small></span>
+          </label>
+
+          <div class="outcome-grid" id="outcomeGrid" aria-label="주사위 눈별 확률과 점수 변화"></div>
+
+          <div class="formula-panel">
+            <div>
+              <span>한 번 더 던질 때 기대 변화</span>
+              <p>E(변화) = <strong>(20 − <span id="formulaScore">10</span>) ÷ 6</strong></p>
+            </div>
+            <div class="formula-result">
+              <span>=</span>
+              <strong id="formulaResult">+1.67점</strong>
+            </div>
+          </div>
+          <p class="lab-explanation" id="labExplanation">
+            기대 변화가 양수이므로 한 번 더 던지는 선택이 평균적으로 유리합니다.
+          </p>
+        </article>
+
+        <article class="learn-card variant-lab" aria-labelledby="variantTitle">
+          <div class="lab-heading">
+            <div>
+              <span class="learn-step">03 · 규칙 바꾸기</span>
+              <h3 id="variantTitle">어떤 규칙이 더 위험할까?</h3>
+            </div>
+            <div class="lab-actions">
+              <button class="simulate-button" id="simulateVariantButton" type="button">100번 모의실험</button>
+              <button class="play-variant-button" id="playSelectedVariantButton" type="button">이 규칙으로 게임하기 →</button>
+            </div>
+          </div>
+
+          <div class="variant-controls">
+            <label>
+              <span>게임 변형</span>
+              <select id="variantSelect">
+                <option value="one">주사위 1개 · 1이면 실패</option>
+                <option value="two-one">주사위 2개 · 하나라도 1이면 실패</option>
+                <option value="two-one-double">주사위 2개 · 1이면 실패, 같은 눈은 점수 2배</option>
+                <option value="two-six">주사위 2개 · 하나라도 6이면 실패</option>
+                <option value="two-double">주사위 2개 · 같은 눈이면 실패</option>
+                <option value="n-one">주사위 n개 · 하나라도 1이면 실패</option>
+              </select>
+            </label>
+            <label class="dice-count-control" id="diceCountControl" hidden>
+              <span>주사위 개수: <strong id="diceCountValue">3개</strong></span>
+              <input id="diceCountSlider" type="range" min="1" max="6" step="1" value="3" />
+            </label>
+          </div>
+
+          <p class="variant-description" id="variantDescription">주사위 한 개에서 1이 나오면 이번 턴 점수를 잃습니다.</p>
+          <div class="risk-comparison">
+            <div><span>실패 확률</span><strong id="bustProbability">1/6</strong><small id="bustPercent">16.7%</small></div>
+            <div><span>안전 확률</span><strong id="safeProbability">5/6</strong><small id="safePercent">83.3%</small></div>
+            <div class="experiment-result">
+              <span>100번 실험 결과</span>
+              <strong id="experimentCount">—</strong>
+              <small id="experimentRate">버튼을 눌러 확인</small>
+            </div>
+          </div>
+          <div class="risk-meter" aria-label="실패 확률 막대">
+            <span id="riskMeterFill" style="width: 16.7%"></span>
+          </div>
+        </article>
+
+        <article class="learn-card quiz-card" aria-labelledby="quizTitle">
+          <div class="lab-heading">
+            <div>
+              <span class="learn-step">04 · 빠른 확인</span>
+              <h3 id="quizTitle">전략 체크 3문제</h3>
+            </div>
+            <button class="quiz-check-button" id="checkQuizButton" type="button">정답 확인</button>
+          </div>
+          <div class="quiz-grid">
+            <fieldset data-answer="roll">
+              <legend><span>1</span> 턴 점수가 12점일 때 기대값 기준 선택은?</legend>
+              <label><input type="radio" name="quiz1" value="roll" /> ROLL</label>
+              <label><input type="radio" name="quiz1" value="hold" /> HOLD</label>
+              <p class="quiz-feedback"></p>
+            </fieldset>
+            <fieldset data-answer="20">
+              <legend><span>2</span> 기대 변화가 0이 되는 턴 점수는?</legend>
+              <label><input type="radio" name="quiz2" value="10" /> 10점</label>
+              <label><input type="radio" name="quiz2" value="20" /> 20점</label>
+              <label><input type="radio" name="quiz2" value="30" /> 30점</label>
+              <p class="quiz-feedback"></p>
+            </fieldset>
+            <fieldset data-answer="11/36">
+              <legend><span>3</span> 주사위 2개 중 하나라도 1일 확률은?</legend>
+              <label><input type="radio" name="quiz3" value="1/6" /> 1/6</label>
+              <label><input type="radio" name="quiz3" value="11/36" /> 11/36</label>
+              <label><input type="radio" name="quiz3" value="1/3" /> 1/3</label>
+              <p class="quiz-feedback"></p>
+            </fieldset>
+          </div>
+          <div class="quiz-summary" id="quizSummary" aria-live="polite">답을 고른 뒤 정답을 확인해 보세요.</div>
+        </article>
+
+        <section class="worksheet-preview" aria-labelledby="worksheetPreviewTitle">
+          <div class="worksheet-preview-heading">
+            <div>
+              <span class="learn-step">인쇄 자료</span>
+              <h3 id="worksheetPreviewTitle">돼지 주사위 전략 탐구 학습지</h3>
+              <p>A4 두 쪽으로 인쇄됩니다. 브라우저 인쇄 설정에서 배율 100%를 권장합니다.</p>
+            </div>
+            <button class="print-button" id="printWorksheetButtonBottom" type="button">학습지 인쇄</button>
+          </div>
+
+          <div id="printWorksheet">
+            <article class="worksheet-page">
+              <header class="worksheet-header">
+                <div><span>확률과 의사결정</span><h2>돼지 주사위 전략 탐구</h2><p>더 던질까, 멈출까?</p></div>
+                <div class="student-info"><span>반</span><i></i><span>번호</span><i></i><span>이름</span><i class="wide"></i></div>
+              </header>
+              <section class="worksheet-section">
+                <h3><b>1</b> 기본 규칙 정리</h3>
+                <p class="fill-sentence">주사위 눈이 <i></i>이면 이번 턴 점수를 모두 잃고, <i class="wide"></i>을 선택하면 이번 턴 점수를 총점에 저장한다.</p>
+              </section>
+              <section class="worksheet-section">
+                <h3><b>2</b> 한 번 더 던질 때의 점수 변화</h3>
+                <p>현재 턴 점수를 <em>x</em>점이라고 하자. 빈칸을 채우고 기대 변화를 계산해 보자.</p>
+                <table class="worksheet-table outcome-table">
+                  <thead><tr><th>주사위 눈</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr></thead>
+                  <tbody>
+                    <tr><th>확률</th><td>1/6</td><td>1/6</td><td>1/6</td><td>1/6</td><td>1/6</td><td>1/6</td></tr>
+                    <tr><th>점수 변화</th><td>−x</td><td>+2</td><td>+3</td><td>+4</td><td>+5</td><td>+6</td></tr>
+                  </tbody>
+                </table>
+                <div class="calculation-space">
+                  <p>E(변화) = </p><span></span><p>= (20 − x) ÷ 6</p>
+                </div>
+              </section>
+              <section class="worksheet-section">
+                <h3><b>3</b> ROLL 또는 HOLD?</h3>
+                <table class="worksheet-table decision-table">
+                  <thead><tr><th>현재 턴 점수 x</th><th>E(변화)</th><th>나의 선택</th><th>이유</th></tr></thead>
+                  <tbody>
+                    <tr><td>6점</td><td></td><td><span class="choice-box">ROLL</span><span class="choice-box">HOLD</span></td><td></td></tr>
+                    <tr><td>15점</td><td></td><td><span class="choice-box">ROLL</span><span class="choice-box">HOLD</span></td><td></td></tr>
+                    <tr><td>20점</td><td></td><td><span class="choice-box">ROLL</span><span class="choice-box">HOLD</span></td><td></td></tr>
+                    <tr><td>26점</td><td></td><td><span class="choice-box">ROLL</span><span class="choice-box">HOLD</span></td><td></td></tr>
+                  </tbody>
+                </table>
+              </section>
+              <section class="worksheet-section reflection-box">
+                <h3><b>4</b> 나의 전략</h3>
+                <p>나는 이번 턴 점수가 <i></i>점 이상이면 HOLD하겠다. 기대값 기준과 다르다면 그 이유는?</p>
+                <div class="answer-lines"><span></span><span></span></div>
+              </section>
+              <footer>돼지 주사위 게임(Pig Dice) · 전략 탐구 학습지 1/2</footer>
+            </article>
+
+            <article class="worksheet-page">
+              <header class="worksheet-header compact-header">
+                <div><span>확률과 의사결정</span><h2>규칙을 바꾸면 위험도 바뀔까?</h2></div>
+                <div class="student-info"><span>이름</span><i class="wide"></i></div>
+              </header>
+              <section class="worksheet-section">
+                <h3><b>5</b> 게임 변형의 실패 확률</h3>
+                <table class="worksheet-table variant-table">
+                  <thead><tr><th>게임 규칙</th><th>실패 사건</th><th>실패 확률</th><th>안전 확률</th></tr></thead>
+                  <tbody>
+                    <tr><td>주사위 1개</td><td>1이 나온다</td><td>1/6</td><td>5/6</td></tr>
+                    <tr><td>주사위 2개</td><td>하나라도 1이 나온다</td><td></td><td></td></tr>
+                    <tr><td>주사위 2개</td><td>두 눈이 같다</td><td></td><td></td></tr>
+                    <tr><td>주사위 n개</td><td>하나라도 1이 나온다</td><td>1 − (5/6)<sup>n</sup></td><td></td></tr>
+                  </tbody>
+                </table>
+                <div class="prompt-box">주사위가 많아질수록 실패 확률은 어떻게 변하는가? 이유와 함께 설명해 보자.</div>
+                <div class="answer-lines three"><span></span><span></span><span></span></div>
+              </section>
+              <section class="worksheet-section">
+                <h3><b>6</b> 게임 실험 기록</h3>
+                <p>게임을 하며 중요한 선택 장면을 기록한다.</p>
+                <table class="worksheet-table log-table">
+                  <thead><tr><th>차례</th><th>저장 전 총점</th><th>턴 점수</th><th>선택</th><th>결과</th><th>선택을 돌아보면</th></tr></thead>
+                  <tbody>
+                    <tr><td>1</td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>2</td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>3</td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>4</td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>5</td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>6</td><td></td><td></td><td></td><td></td><td></td></tr>
+                  </tbody>
+                </table>
+              </section>
+              <section class="worksheet-section reflection-box">
+                <h3><b>7</b> 마지막 생각</h3>
+                <p>기대값만으로 항상 최선의 선택을 정할 수 있을까? 상대 점수와 목표까지 남은 점수를 고려해 서술하자.</p>
+                <div class="answer-lines four"><span></span><span></span><span></span><span></span></div>
+              </section>
+              <footer>돼지 주사위 게임(Pig Dice) · 전략 탐구 학습지 2/2</footer>
+            </article>
+          </div>
+        </section>
+      </section>
+
+      <section class="variant-game-area" id="variantGamePanel" hidden aria-labelledby="variantGameTitle">
+        <div class="variant-game-heading">
+          <div>
+            <p class="eyebrow">규칙을 바꾸면 전략도 바뀔까?</p>
+            <h2 id="variantGameTitle">규칙 변형 게임하기</h2>
+            <p>여섯 가지 변형 중 하나를 골라 실제로 플레이하고, 기본 규칙과 위험도를 비교해 보세요.</p>
+          </div>
+          <span class="variant-heading-badge">VARIANT PIG</span>
+        </div>
+
+        <section class="variant-setup-card" id="variantSetupPanel" aria-labelledby="variantSetupTitle">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">변형 게임 준비</p>
+              <h2 id="variantSetupTitle">어떤 규칙으로 놀까요?</h2>
+            </div>
+            <span class="step-chip">배워보기에서 고른 규칙도 이어집니다</span>
+          </div>
+
+          <div class="variant-rule-picker">
+            <label class="field-card wide-field">
+              <span>게임 규칙</span>
+              <select id="variantGameRule">
+                <option value="one">주사위 1개 · 1이면 실패</option>
+                <option value="two-one">주사위 2개 · 하나라도 1이면 실패</option>
+                <option value="two-one-double">주사위 2개 · 1이면 실패, 같은 눈은 점수 2배</option>
+                <option value="two-six">주사위 2개 · 하나라도 6이면 실패</option>
+                <option value="two-double">주사위 2개 · 같은 눈이면 실패</option>
+                <option value="n-one">주사위 n개 · 하나라도 1이면 실패</option>
+              </select>
+            </label>
+            <label class="field-card" id="variantGameDiceCountField" hidden>
+              <span>주사위 수</span>
+              <select id="variantGameDiceCount">
+                <option value="1">1개</option>
+                <option value="2">2개</option>
+                <option value="3" selected>3개</option>
+                <option value="4">4개</option>
+                <option value="5">5개</option>
+                <option value="6">6개</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="selected-rule-preview">
+            <div><span>실패 확률</span><strong id="variantSetupBustRate">1/6 · 16.7%</strong></div>
+            <p id="variantSetupDescription">주사위 한 개에서 1이 나오면 이번 턴 점수를 잃습니다.</p>
+          </div>
+
+          <div class="setup-grid variant-basic-settings">
+            <label class="field-card">
+              <span>플레이어 수</span>
+              <select id="variantPlayerCount">
+                <option value="2">2명</option>
+                <option value="3" selected>3명</option>
+                <option value="4">4명</option>
+                <option value="5">5명</option>
+                <option value="6">6명</option>
+                <option value="7">7명</option>
+                <option value="8">8명</option>
+              </select>
+            </label>
+            <label class="field-card">
+              <span>목표 점수</span>
+              <div class="number-field">
+                <input id="variantTargetScore" type="number" min="20" max="300" step="10" value="50" inputmode="numeric" />
+                <span>점</span>
+              </div>
+            </label>
+          </div>
+
+          <div class="name-section">
+            <div class="name-heading"><h3>이름</h3><small>수업 모둠이나 개인 이름을 입력하세요.</small></div>
+            <div class="name-grid" id="variantPlayerNameFields"></div>
+          </div>
+
+          <button class="primary-action start-button" id="startVariantGameButton" type="button">
+            <span>이 규칙으로 게임 시작</span><span aria-hidden="true">→</span>
+          </button>
+        </section>
+
+        <section class="variant-play-panel" id="variantPlayPanel" hidden aria-label="규칙 변형 돼지 주사위 게임판">
+          <div class="variant-rule-bar">
+            <div>
+              <span>현재 적용 규칙</span>
+              <strong id="activeVariantRuleName">주사위 1개 · 1이면 실패</strong>
+              <small id="activeVariantRuleDescription">1이 나오면 이번 턴 점수를 잃습니다.</small>
+            </div>
+            <button class="text-button" id="changeVariantSettingsButton" type="button">규칙 다시 고르기</button>
+          </div>
+
+          <section class="score-section variant-score-section" aria-labelledby="variantScoreTitle">
+            <div class="score-heading">
+              <div><p class="eyebrow">변형 게임 점수판</p><h2 id="variantScoreTitle">먼저 <strong id="variantTargetDisplay">50점</strong>에 도전!</h2></div>
+              <div class="round-badge"><span>차례</span><strong id="variantTurnNumber">1</strong></div>
+            </div>
+            <div class="scoreboard" id="variantScoreboard"></div>
+          </section>
+
+          <div class="variant-play-layout">
+            <section class="variant-dice-card" aria-labelledby="variantTurnTitle">
+              <div class="turn-banner">
+                <div><p>지금은</p><h2 id="variantTurnTitle"><span id="variantCurrentPlayer">플레이어 1</span> 차례</h2></div>
+                <span class="turn-dot" aria-hidden="true"></span>
+              </div>
+              <div class="variant-dice-stage">
+                <div class="variant-dice-row" id="variantDiceRow" aria-label="변형 게임 주사위 결과"></div>
+                <p class="status-message" id="variantStatusMessage" aria-live="polite">주사위를 던져 변형 규칙을 체험하세요.</p>
+              </div>
+              <div class="turn-score-card variant-turn-score">
+                <span>이번 턴 점수</span><strong><span id="variantTurnScore">0</span>점</strong>
+                <small id="variantScoreHint">실패 조건이 나오면 이번 턴 점수는 사라집니다.</small>
+              </div>
+              <div class="play-actions">
+                <button class="primary-action roll-button" id="variantRollButton" type="button"><span aria-hidden="true">⚄</span><span>주사위 던지기</span></button>
+                <button class="hold-button" id="variantHoldButton" type="button"><span aria-hidden="true">✋</span><span>멈추고 저장</span></button>
+              </div>
+            </section>
+
+            <aside class="variant-side-column">
+              <section class="variant-info-card">
+                <span class="card-icon" aria-hidden="true">!</span>
+                <div><small>이 규칙의 실패 확률</small><strong id="activeVariantBustRate">16.7%</strong><p id="activeVariantSafeRate">안전 확률 83.3%</p></div>
+              </section>
+              <section class="variant-info-card">
+                <span class="card-icon" aria-hidden="true">%</span>
+                <div><small>이번 게임 실제 실패율</small><strong id="variantActualBustRate">—</strong><p><span id="variantBustCount">0</span>회 실패 / <span id="variantRollCount">0</span>회 던짐</p></div>
+              </section>
+              <section class="insight-card history-card variant-history-card" aria-labelledby="variantHistoryTitle">
+                <div class="card-heading compact"><span class="card-icon" aria-hidden="true">↺</span><h2 id="variantHistoryTitle">최근 기록</h2></div>
+                <ol class="history-list" id="variantHistoryList"><li class="empty-history">아직 기록이 없습니다.</li></ol>
+              </section>
+            </aside>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <dialog class="rules-dialog" id="rulesDialog">
+      <form method="dialog">
+        <button class="close-button" value="close" aria-label="게임 방법 닫기">×</button>
+        <p class="eyebrow">게임 방법</p>
+        <h2>욕심과 안전 사이에서 선택하세요</h2>
+        <ol>
+          <li><strong>주사위를 던집니다.</strong> 2~6이면 이번 턴 점수에 더합니다.</li>
+          <li><strong>1이 나오면 꽝!</strong> 이번 턴에 모은 점수를 잃고 다음 사람에게 넘어갑니다.</li>
+          <li><strong>원할 때 멈춥니다.</strong> 이번 턴 점수를 내 총점에 저장하고 차례를 넘깁니다.</li>
+          <li><strong>목표 점수에 먼저 도달한 플레이어가 승리합니다.</strong></li>
+        </ol>
+        <div class="rule-tip"><span aria-hidden="true">💡</span> 점수가 커질수록 한 번 더 던질 때 감수하는 위험도 커집니다.</div>
+        <button class="primary-action" value="close">알겠어요</button>
+      </form>
+    </dialog>
+
+    <dialog class="winner-dialog" id="winnerDialog">
+      <div class="winner-content">
+        <div class="winner-pig" aria-hidden="true">🐷</div>
+        <p class="eyebrow">게임 종료</p>
+        <h2><span id="winnerName">플레이어</span> 승리!</h2>
+        <p id="winnerSummary">목표 점수에 도달했습니다.</p>
+        <div class="winner-actions">
+          <button class="primary-action" id="rematchButton" type="button">같은 설정으로 다시</button>
+          <button class="hold-button" id="changeSettingsButton" type="button">설정 바꾸기</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="winner-dialog" id="variantWinnerDialog">
+      <div class="winner-content">
+        <div class="winner-pig" aria-hidden="true">🎲🐷</div>
+        <p class="eyebrow">변형 게임 종료</p>
+        <h2><span id="variantWinnerName">플레이어</span> 승리!</h2>
+        <p id="variantWinnerSummary">목표 점수에 도달했습니다.</p>
+        <div class="winner-actions">
+          <button class="primary-action" id="variantRematchButton" type="button">같은 규칙으로 다시</button>
+          <button class="hold-button" id="variantChangeSettingsButton" type="button">규칙 바꾸기</button>
+        </div>
+      </div>
+    </dialog>
+
+    <script src="./variant-engine.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

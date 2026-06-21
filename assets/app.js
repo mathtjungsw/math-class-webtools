@@ -33,18 +33,25 @@ function wireGithubLinks() {
   });
 }
 
-document.querySelectorAll("[data-subject]").forEach((button) => {
-  button.addEventListener("click", () => {
-    const selectedSubject = button.dataset.subject;
+function selectSubject(selectedSubject, updateHash = false) {
+  const selectedButton = document.querySelector(`[data-subject="${selectedSubject}"]`);
+  if (!selectedButton) return;
 
-    document.querySelectorAll("[data-subject]").forEach((item) => {
-      item.classList.toggle("is-active", item === button);
-    });
-
-    document.querySelectorAll("[data-subject-panel]").forEach((panel) => {
-      panel.hidden = panel.dataset.subjectPanel !== selectedSubject;
-    });
+  document.querySelectorAll("[data-subject]").forEach((item) => {
+    item.classList.toggle("is-active", item === selectedButton);
   });
+
+  document.querySelectorAll("[data-subject-panel]").forEach((panel) => {
+    panel.hidden = panel.dataset.subjectPanel !== selectedSubject;
+  });
+
+  if (updateHash) window.history.replaceState({}, "", `#${selectedSubject}`);
+}
+
+document.querySelectorAll("[data-subject]").forEach((button) => {
+  button.addEventListener("click", () => selectSubject(button.dataset.subject, true));
 });
+
+selectSubject(window.location.hash.slice(1) || "probability-statistics");
 
 wireGithubLinks();
