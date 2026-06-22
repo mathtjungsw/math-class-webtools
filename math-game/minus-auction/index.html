@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#fff8ec" />
+    <title>마이너스 경매</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="game-header">
+      <a class="back-link" href="../../index.html#math-game" aria-label="수학 게임 목록으로 돌아가기">
+        <span aria-hidden="true">←</span>
+        <span>수학 게임</span>
+      </a>
+      <div class="header-actions">
+        <button class="text-button" id="rulesButton" type="button">게임 방법</button>
+        <button class="text-button" id="fullscreenButton" type="button">전체 화면</button>
+        <button class="text-button danger" id="newGameButton" type="button">새 게임</button>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="hero" aria-labelledby="pageTitle">
+        <div>
+          <p class="eyebrow">정수의 덧셈 · 전략과 의사결정</p>
+          <h1 id="pageTitle">마이너스 경매</h1>
+          <p class="hero-description">
+            칩을 내고 피할까, 숫자를 낙찰받을까? 음수와 칩을 함께 계산해 가장 높은 총점을 만드세요.
+          </p>
+        </div>
+        <div class="hero-mark" aria-hidden="true">
+          <span>−</span>
+          <small>AUCTION</small>
+        </div>
+      </section>
+
+      <section class="setup-card" id="setupPanel" aria-labelledby="setupTitle">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">게임 준비</p>
+            <h2 id="setupTitle">참가할 조를 정해 주세요</h2>
+          </div>
+          <span class="rule-chip">기본값은 원본 엑셀과 같은 6조 · 30칩</span>
+        </div>
+
+        <div class="setup-options">
+          <label class="field-card">
+            <span>조 수</span>
+            <select id="teamCount">
+              <option value="2">2조</option>
+              <option value="3">3조</option>
+              <option value="4">4조</option>
+              <option value="5">5조</option>
+              <option value="6" selected>6조</option>
+              <option value="7">7조</option>
+              <option value="8">8조</option>
+              <option value="9">9조</option>
+              <option value="10">10조</option>
+            </select>
+          </label>
+          <label class="field-card">
+            <span>시작 칩</span>
+            <div class="number-field">
+              <input id="startingChips" type="number" min="1" max="99" value="30" inputmode="numeric" />
+              <span>개</span>
+            </div>
+          </label>
+          <div class="field-card fixed-rule">
+            <span>경매 숫자</span>
+            <strong>−3 ~ −35</strong>
+            <small>총 33라운드</small>
+          </div>
+        </div>
+
+        <div class="name-section">
+          <div class="name-heading">
+            <h3>조 이름</h3>
+            <button class="small-button" id="resetNamesButton" type="button">기본 이름</button>
+          </div>
+          <div class="name-grid" id="teamNameFields"></div>
+        </div>
+
+        <button class="primary-action start-button" id="startButton" type="button">
+          <span>게임 시작</span>
+          <span aria-hidden="true">→</span>
+        </button>
+      </section>
+
+      <section class="game-panel" id="gamePanel" hidden aria-label="마이너스 경매 게임판">
+        <div class="game-stats" aria-label="게임 현황">
+          <div><span>라운드</span><strong id="roundDisplay">0 / 33</strong></div>
+          <div><span>남은 숫자</span><strong id="remainingDisplay">33개</strong></div>
+          <div class="pot-stat"><span>쌓인 칩</span><strong><i id="potDisplay">0</i>개</strong></div>
+          <div class="turn-stat"><span>현재 차례</span><strong id="turnDisplay">1조</strong></div>
+        </div>
+
+        <div class="board-layout">
+          <section class="auction-stage" aria-labelledby="auctionTitle">
+            <div class="stage-heading">
+              <div>
+                <p class="eyebrow">이번 경매</p>
+                <h2 id="auctionTitle"><span id="activeTeamName">1조</span>의 선택</h2>
+              </div>
+              <span class="turn-order" id="turnOrderDisplay">차례 1</span>
+            </div>
+
+            <div class="number-stage" id="numberStage">
+              <div class="number-card is-ready" id="numberCard" aria-live="polite">
+                <span class="minus-sign" aria-hidden="true">−</span>
+                <strong id="currentNumber">준비</strong>
+                <small id="numberCaption">숫자를 제시해 주세요</small>
+              </div>
+              <div class="pot-pile" aria-label="현재 숫자에 쌓인 칩">
+                <span class="chip-stack" aria-hidden="true"><i></i><i></i><i></i></span>
+                <div><span>이 숫자와 함께 받는 칩</span><strong><b id="potLarge">0</b>개</strong></div>
+              </div>
+            </div>
+
+            <p class="status-message" id="statusMessage" aria-live="polite">
+              첫 숫자를 제시하면 경매가 시작됩니다.
+            </p>
+
+            <div class="main-actions">
+              <button class="pass-button" id="passButton" type="button" disabled>
+                <span class="button-symbol" aria-hidden="true">−1</span>
+                <span><strong>낙찰 거부</strong><small>칩 1개를 내고 다음 조로</small></span>
+                <kbd>P</kbd>
+              </button>
+              <button class="take-button" id="takeButton" type="button" disabled>
+                <span class="button-symbol" aria-hidden="true">✓</span>
+                <span><strong>낙찰</strong><small>숫자와 쌓인 칩 받기</small></span>
+                <kbd>Enter</kbd>
+              </button>
+            </div>
+
+            <div class="utility-actions">
+              <button class="reveal-button" id="revealButton" type="button">
+                <span aria-hidden="true">✦</span>
+                <span>첫 숫자 제시</span>
+                <kbd>Space</kbd>
+              </button>
+              <button class="undo-button" id="undoButton" type="button" disabled>
+                <span aria-hidden="true">↶</span>
+                <span id="undoLabel">되돌리기</span>
+                <kbd>Ctrl Z</kbd>
+              </button>
+            </div>
+          </section>
+
+          <section class="team-section in-board" aria-labelledby="teamBoardTitle">
+            <div class="team-section-heading">
+              <div>
+                <p class="eyebrow">조별 현황</p>
+                <h2 id="teamBoardTitle">칩과 낙찰 숫자</h2>
+              </div>
+              <button class="score-button team-score-button" id="scoreButton" type="button">
+                <span>총점 공개</span>
+                <span aria-hidden="true">∑</span>
+              </button>
+            </div>
+            <p class="team-score-hint" id="scoreHint">총점은 공개 버튼을 누를 때까지 가려집니다.</p>
+            <div class="team-grid" id="teamGrid"></div>
+          </section>
+        </div>
+
+        <div class="below-board">
+          <section class="score-control-card">
+            <div>
+              <p class="eyebrow">점수 계산법</p>
+              <h2>연속 숫자는 첫 숫자만 계산해요</h2>
+            </div>
+            <p>
+              보유 칩에 낙찰 숫자를 더합니다. 연속된 숫자는 절댓값이 가장 작은 첫 숫자만 계산합니다.
+            </p>
+            <div class="score-formula" aria-label="보유 칩 더하기 계산 숫자는 총점">
+              <span>보유 칩</span><b>+</b><span>계산 숫자</span><b>=</b><strong>총점</strong>
+            </div>
+          </section>
+
+          <section class="log-card" aria-labelledby="logTitle">
+            <div class="log-heading">
+              <h2 id="logTitle">최근 기록</h2>
+              <span id="actionCount">0회</span>
+            </div>
+            <ol id="activityLog">
+              <li class="empty-log">아직 기록이 없습니다.</li>
+            </ol>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <dialog class="modal" id="rulesDialog">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">게임 방법</p>
+          <h2>칩을 아낄지, 음수를 받을지 선택하세요</h2>
+        </div>
+        <button class="close-button" type="button" data-close-dialog aria-label="닫기">×</button>
+      </div>
+      <ol class="rule-list">
+        <li><strong>숫자 제시</strong><span>−3부터 −35까지의 숫자가 무작위로 한 장씩 나옵니다.</span></li>
+        <li><strong>낙찰 거부</strong><span>자기 칩 1개를 숫자 위에 놓고 다음 조로 차례를 넘깁니다.</span></li>
+        <li><strong>낙찰</strong><span>숫자와 그 위에 쌓인 칩을 모두 받습니다. 다음 숫자가 바로 제시됩니다.</span></li>
+        <li><strong>총점</strong><span>남은 칩 + 낙찰 숫자의 합입니다. 가장 높은 점수를 얻은 조가 승리합니다.</span></li>
+      </ol>
+      <div class="sequence-example">
+        <span>연속 숫자 예시</span>
+        <div><b>−15</b><s>−16</s><s>−17</s><b>−22</b></div>
+        <p>−15, −16, −17은 연속이므로 −15만 계산합니다. −22는 따로 계산합니다.</p>
+      </div>
+      <div class="shortcut-list">
+        <span><kbd>Space</kbd> 숫자 제시</span>
+        <span><kbd>P</kbd> 낙찰 거부</span>
+        <span><kbd>Enter</kbd> 낙찰</span>
+        <span><kbd>Ctrl Z</kbd> 되돌리기</span>
+      </div>
+      <button class="primary-action modal-confirm" type="button" data-close-dialog>확인</button>
+    </dialog>
+
+    <dialog class="modal result-modal" id="resultDialog">
+      <div class="result-badge" aria-hidden="true">★</div>
+      <p class="eyebrow">경매 종료</p>
+      <h2 id="resultTitle">우승 조</h2>
+      <p id="resultDescription"></p>
+      <div class="result-ranking" id="resultRanking"></div>
+      <div class="result-actions">
+        <button class="small-button" type="button" data-close-dialog>게임판 보기</button>
+        <button class="primary-action" id="resultNewGameButton" type="button">새 게임</button>
+      </div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
