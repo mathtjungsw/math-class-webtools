@@ -493,12 +493,37 @@ async function autoSubmitFinalRound() {
     const connection = getAdminConnection();
     assertConnection(connection);
     setLoading(true, "마지막 라운드 숫자를 자동 제출하고 있습니다…");
-    const state = await requestJsonp(connection.apiUrl, "autoSubmitFinalRound", { spreadsheetId: connection.spreadsheetId });
+    let state;
+    try {
+      state = await requestJsonp(connection.apiUrl, "autoSubmitFinalRound", { spreadsheetId: connection.spreadsheetId });
+    } catch (error) {
+      if (!String(error.message || "").includes("지원하지 않는 요청")) throw error;
+
+      // 이전 Apps Script 배포본에는 일괄 자동 제출 action이 없을 수 있다.
+      // 이미 제공되는 관리자 직접 입력 action을 팀별로 호출해 같은 결과를 만든다.
+      state = appState.admin;
+      for (let index = 0; index < planned.length; index += 1) {
+        const item = planned[index];
+        setLoading(true, `${item.team.teamName} 마지막 숫자 제출 중… (${index + 1}/${planned.length})`);
+        state = await requestJsonp(connection.apiUrl, "adminSubmitNumber", {
+          spreadsheetId: connection.spreadsheetId,
+          teamId: item.team.teamId,
+          round: settings.currentRound,
+          number: item.remaining[0],
+        });
+      }
+    }
     appState.admin = state;
     renderAdminBoard(state);
     showMessage(`${planned.length}개 팀의 마지막 숫자를 자동 제출했습니다.`, "success");
   } catch (error) {
-    showMessage(error.message, "error");
+    const message = String(error.message || "");
+    showMessage(
+      message.includes("지원하지 않는 요청")
+        ? "Apps Script 코드가 오래된 버전입니다. 관리자 화면에서 최신 코드를 다시 복사해 새 버전으로 배포해 주세요."
+        : message,
+      "error",
+    );
   } finally {
     setLoading(false);
   }
