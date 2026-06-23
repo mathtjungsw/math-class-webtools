@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f7fb" />
+    <title>스트림스 수 추출기 | 수학 수업 웹툴 모음</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="back-link" href="../../index.html#math-game" aria-label="수학 게임 목록으로 돌아가기">
+        <span aria-hidden="true">←</span>
+        <span>수학 게임</span>
+      </a>
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">20</span>
+        <span><strong>스트림스 수 추출기</strong><small>Streams number drawer</small></span>
+      </div>
+      <div class="header-actions">
+        <button class="ghost-button" id="resetButton" type="button">초기화</button>
+        <button class="primary-button compact" id="topDrawButton" type="button">추출</button>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section class="mode-tabs" aria-label="추출 모드 선택">
+        <button class="mode-tab is-active" type="button" data-mode="basic" aria-selected="true">
+          <span aria-hidden="true">1</span>
+          <strong>기본 모드</strong>
+        </button>
+        <button class="mode-tab" type="button" data-mode="edit" aria-selected="false">
+          <span aria-hidden="true">✎</span>
+          <strong>편집 모드</strong>
+        </button>
+      </section>
+
+      <section class="workbench">
+        <section class="draw-panel" aria-labelledby="drawTitle">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow" id="modeLabel">기본 스트림스 덱</p>
+              <h1 id="drawTitle">숫자를 하나씩 추출하세요</h1>
+            </div>
+            <div class="round-counter"><span id="drawnCount">0</span><small>/<span id="targetCount">20</span></small></div>
+          </div>
+
+          <div class="current-stage" id="currentStage" aria-live="polite">
+            <div class="current-card" id="currentCard">
+              <span id="currentNumber">준비</span>
+              <small id="currentCaption">아직 추출한 수가 없습니다</small>
+            </div>
+          </div>
+
+          <div class="progress-card">
+            <div class="progress-copy">
+              <span>진행률</span>
+              <strong id="progressText">0%</strong>
+            </div>
+            <div class="progress-track" aria-hidden="true"><span id="progressFill"></span></div>
+            <div class="progress-stats">
+              <span>전체 카드 <b id="totalCards">40</b></span>
+              <span>남은 추출 <b id="drawsLeft">20</b></span>
+              <span>카드 잔량 <b id="cardsLeft">40</b></span>
+            </div>
+          </div>
+
+          <div class="draw-actions">
+            <button class="primary-button draw-button" id="drawButton" type="button">
+              <span aria-hidden="true">↓</span>
+              <strong>다음 수 추출</strong>
+            </button>
+            <button class="secondary-button" id="undoButton" type="button" disabled>
+              <span aria-hidden="true">↶</span>
+              <strong>되돌리기</strong>
+            </button>
+          </div>
+
+          <section class="history-panel" aria-labelledby="historyTitle">
+            <div class="section-title">
+              <h2 id="historyTitle">추출 기록</h2>
+              <button class="text-button" id="copyHistoryButton" type="button">기록 복사</button>
+            </div>
+            <ol class="history-grid" id="historyGrid"></ol>
+          </section>
+        </section>
+
+        <aside class="side-panel">
+          <section class="deck-panel" aria-labelledby="deckTitle">
+            <div class="section-title">
+              <div>
+                <p class="eyebrow">카드 풀</p>
+                <h2 id="deckTitle">남은 수</h2>
+              </div>
+              <span class="deck-badge" id="deckBadge">40장</span>
+            </div>
+            <div class="deck-summary" id="deckSummary">
+              <span>1-10, 21-30은 1장씩</span>
+              <span>11-20은 2장씩</span>
+              <span>총 40장 중 20장 추출</span>
+            </div>
+            <div class="remaining-grid" id="remainingGrid" aria-label="숫자별 남은 카드 수"></div>
+          </section>
+
+          <section class="editor-panel" id="editorPanel" hidden aria-labelledby="editorTitle">
+            <div class="section-title">
+              <div>
+                <p class="eyebrow">편집 모드</p>
+                <h2 id="editorTitle">사용할 수와 개수</h2>
+              </div>
+              <span class="deck-badge" id="editorTotal">40장</span>
+            </div>
+
+            <div class="examples" aria-label="편집 예시">
+              <button class="example-button is-active" type="button" data-example="streams">
+                <strong>기본 스트림스</strong><span>40장 · 20개</span>
+              </button>
+              <button class="example-button" type="button" data-example="oneToThirty">
+                <strong>1-30 한 벌</strong><span>30장 · 20개</span>
+              </button>
+              <button class="example-button" type="button" data-example="oneToTwentyDouble">
+                <strong>1-20 두 벌</strong><span>40장 · 20개</span>
+              </button>
+              <button class="example-button" type="button" data-example="digitsFour">
+                <strong>0-9 네 벌</strong><span>40장 · 20개</span>
+              </button>
+              <button class="example-button" type="button" data-example="integers">
+                <strong>-10-10 정수</strong><span>21장 · 15개</span>
+              </button>
+            </div>
+
+            <label class="field target-field">
+              <span>추출할 개수</span>
+              <input id="editorTarget" type="number" min="1" max="200" step="1" value="20" inputmode="numeric" />
+            </label>
+
+            <div class="add-grid">
+              <section class="mini-editor" aria-labelledby="rangeTitle">
+                <h3 id="rangeTitle">범위 추가</h3>
+                <div class="triple-fields">
+                  <label><span>시작</span><input id="rangeStart" type="number" step="1" value="1" /></label>
+                  <label><span>끝</span><input id="rangeEnd" type="number" step="1" value="10" /></label>
+                  <label><span>개수</span><input id="rangeCount" type="number" min="1" max="20" step="1" value="1" /></label>
+                </div>
+                <button class="secondary-button full" id="addRangeButton" type="button">범위 넣기</button>
+              </section>
+
+              <section class="mini-editor" aria-labelledby="singleTitle">
+                <h3 id="singleTitle">수 추가</h3>
+                <div class="double-fields">
+                  <label><span>수</span><input id="singleValue" type="number" step="1" value="31" /></label>
+                  <label><span>개수</span><input id="singleCount" type="number" min="1" max="20" step="1" value="1" /></label>
+                </div>
+                <button class="secondary-button full" id="addSingleButton" type="button">수 넣기</button>
+              </section>
+            </div>
+
+            <div class="pool-table-wrap">
+              <table class="pool-table">
+                <thead>
+                  <tr><th>수</th><th>개수</th><th><span class="sr-only">삭제</span></th></tr>
+                </thead>
+                <tbody id="poolTableBody"></tbody>
+              </table>
+            </div>
+
+            <div class="editor-actions">
+              <button class="ghost-button danger" id="clearPoolButton" type="button">비우기</button>
+              <button class="primary-button" id="applyEditorButton" type="button">이 설정으로 추출</button>
+            </div>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>

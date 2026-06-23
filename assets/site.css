@@ -712,6 +712,21 @@ h3 {
 .card-betting .balls circle:nth-child(even) { fill: var(--yellow); }
 .card-betting .ball-marks { fill: var(--orange); }
 
+.card-streams .tool-visual { background: #eef6ff; }
+.card-streams .streams-board rect { fill: white; stroke: var(--navy); stroke-width: 5; }
+.card-streams .streams-board path { fill: none; stroke: #b7c9e9; stroke-linecap: round; stroke-width: 3; }
+.card-streams .streams-card rect { stroke: var(--navy); stroke-width: 5; }
+.card-streams .back-card rect { fill: #dbe8ff; }
+.card-streams .back-card path { fill: none; stroke: white; stroke-linecap: round; stroke-width: 5; }
+.card-streams .front-card rect { fill: var(--yellow); }
+.card-streams .front-card text {
+  fill: var(--navy);
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  font-size: 46px;
+  font-weight: 900;
+}
+.card-streams .streams-arrow { fill: none; stroke: var(--orange); stroke-linecap: round; stroke-linejoin: round; stroke-width: 6; }
+
 .card-pig .tool-visual { background: #fff0f0; }
 .card-pig .pig { fill: #ffb4a5; stroke: var(--navy); stroke-linecap: round; stroke-linejoin: round; stroke-width: 5; }
 .card-pig .pig circle { fill: var(--navy); stroke: none; }
