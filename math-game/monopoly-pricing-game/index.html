@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f5f7fb" />
     <title>독점 보드게임</title>
-    <link rel="stylesheet" href="./style.css?v=2" />
+    <link rel="stylesheet" href="./style.css?v=3" />
   </head>
   <body>
     <header class="app-header">
@@ -206,7 +206,11 @@
         <section id="playerGamePanel" hidden>
           <div class="player-identity">
             <div><small>접속한 팀</small><strong id="playerTeamName">-</strong></div>
-            <button class="text-button" type="button" onclick="leavePlayerGame()">다른 게임 접속</button>
+            <div class="player-actions">
+              <button class="button secondary compact" type="button" onclick="openPlayerRules()">게임 규칙</button>
+              <button class="button secondary compact" type="button" onclick="openPlayerPayoff()">점수표</button>
+              <button class="text-button" type="button" onclick="leavePlayerGame()">다른 게임 접속</button>
+            </div>
           </div>
           <section class="panel choice-panel">
             <div class="player-status" id="playerStatusMessage"><span class="pulse-dot"></span><strong>게임 상태를 확인하고 있습니다.</strong></div>
@@ -227,9 +231,55 @@
       </section>
     </main>
 
+    <dialog id="playerRulesDialog" class="reference-dialog" aria-labelledby="playerRulesTitle">
+      <div class="reference-dialog-shell">
+        <header class="reference-dialog-header">
+          <div><p class="step-label">GAME RULES</p><h2 id="playerRulesTitle">게임 규칙</h2></div>
+          <button class="dialog-close" type="button" aria-label="게임 규칙 닫기" onclick="closeReferenceDialog('#playerRulesDialog')">&#215;</button>
+        </header>
+        <div class="reference-dialog-body">
+          <div class="price-key" aria-label="가격 단계">
+            <div><strong>A</strong><span>높은 가격</span></div>
+            <div><strong>B</strong><span>중간 가격</span></div>
+            <div><strong>C</strong><span>낮은 가격</span></div>
+          </div>
+          <ol class="rule-list">
+            <li><strong>1</strong><span>게임은 총 12개월 동안 진행하며, 매월 A·B·C 중 하나의 가격을 제출합니다.</span></li>
+            <li><strong>2</strong><span>제출한 가격은 바꿀 수 없고, 다른 팀의 선택은 관리자가 공개할 때까지 보이지 않습니다.</span></li>
+            <li><strong>3</strong><span>A는 12개월 동안 최소 4번 사용해야 하며, C는 최대 4번까지만 사용할 수 있습니다.</span></li>
+            <li><strong>4</strong><span>매월 모든 팀의 가격 조합에 따라 점수표의 순이익이 각 팀 점수에 더해집니다.</span></li>
+            <li><strong>5</strong><span>12개월이 끝났을 때 누적 순이익이 가장 높은 팀이 우승합니다.</span></li>
+          </ol>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="playerPayoffDialog" class="reference-dialog payoff-reference-dialog" aria-labelledby="playerPayoffTitle">
+      <div class="reference-dialog-shell">
+        <header class="reference-dialog-header">
+          <div><p class="step-label">PAYOFF TABLE</p><h2 id="playerPayoffTitle">점수표</h2></div>
+          <div class="reference-dialog-tools">
+            <span class="status-chip" id="playerPayoffSourceChip">점수표</span>
+            <button class="dialog-close" type="button" aria-label="점수표 닫기" onclick="closeReferenceDialog('#playerPayoffDialog')">&#215;</button>
+          </div>
+        </header>
+        <div class="reference-dialog-body">
+          <div class="price-key compact" aria-label="가격 단계">
+            <div><strong>A</strong><span>높은 가격</span></div>
+            <div><strong>B</strong><span>중간 가격</span></div>
+            <div><strong>C</strong><span>낮은 가격</span></div>
+          </div>
+          <p class="reference-note">같은 월에 제출된 전체 가격 조합을 찾아 우리 팀이 선택한 가격의 이익을 확인하세요.</p>
+          <div class="table-scroll reference-table-scroll">
+            <table class="payoff-table" id="playerPayoffTable"></table>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
     <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
     <div class="loading-overlay" id="loadingOverlay" hidden><div class="spinner"></div><strong id="loadingText">처리 중입니다...</strong></div>
     <script src="../betting-game/vendor/qrcode.min.js"></script>
-    <script src="./app.js?v=2"></script>
+    <script src="./app.js?v=3"></script>
   </body>
 </html>

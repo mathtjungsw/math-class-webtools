@@ -887,6 +887,13 @@ table {
   font-size: 0.78rem;
 }
 
+.payoff-table th small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.65rem;
+}
+
 .payoff-table td {
   height: 34px;
   font-size: 0.8rem;
@@ -947,6 +954,7 @@ table {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 18px;
   margin: -3px 3px 14px;
 }
 
@@ -963,6 +971,14 @@ table {
 .player-identity strong {
   margin-top: 2px;
   font-size: 1.35rem;
+}
+
+.player-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .choice-panel {
@@ -1210,6 +1226,168 @@ table {
   font-size: 0.72rem;
 }
 
+.reference-dialog {
+  width: min(920px, calc(100% - 32px));
+  max-width: none;
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 24px 70px rgba(19, 34, 56, 0.24);
+}
+
+.reference-dialog::backdrop {
+  background: rgba(19, 34, 56, 0.48);
+  backdrop-filter: blur(3px);
+}
+
+.reference-dialog-shell {
+  display: grid;
+  max-height: calc(100dvh - 32px);
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.reference-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--line);
+  background: #f8fafc;
+}
+
+.reference-dialog-header h2 {
+  margin-top: 3px;
+  color: var(--dark);
+  font-size: 1.35rem;
+}
+
+.reference-dialog-tools {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.dialog-close {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--dark);
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.dialog-close:hover {
+  border-color: #b9c4d2;
+  background: #f2f5f8;
+}
+
+.reference-dialog-body {
+  overflow: auto;
+  padding: 20px;
+}
+
+.price-key {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.price-key > div {
+  display: grid;
+  min-height: 78px;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.price-key strong {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--dark);
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+.price-key span {
+  color: var(--dark);
+  font-size: 0.86rem;
+  font-weight: 850;
+}
+
+.price-key.compact > div {
+  min-height: 62px;
+}
+
+.rule-list {
+  display: grid;
+  gap: 9px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rule-list li {
+  display: grid;
+  min-height: 58px;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 11px 13px;
+  border-left: 4px solid var(--green);
+  border-radius: 8px;
+  background: #f4f9f6;
+}
+
+.rule-list strong {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--green);
+  color: #fff;
+  font-size: 0.82rem;
+}
+
+.rule-list span,
+.reference-note {
+  color: #425068;
+  font-size: 0.86rem;
+  font-weight: 750;
+  line-height: 1.55;
+}
+
+.reference-note {
+  margin: 14px 0 10px;
+}
+
+.reference-table-scroll {
+  max-height: 54vh;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.reference-table-scroll .payoff-table {
+  margin: 0;
+}
+
 .toast-region {
   position: fixed;
   right: 18px;
@@ -1363,6 +1541,58 @@ table {
 
   .constraint-line {
     grid-template-columns: 1fr;
+  }
+
+  .player-identity {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .player-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .player-actions .text-button {
+    grid-column: 1 / -1;
+    min-height: 38px;
+  }
+
+  .reference-dialog {
+    width: calc(100% - 16px);
+    max-height: calc(100dvh - 16px);
+  }
+
+  .reference-dialog-shell {
+    max-height: calc(100dvh - 16px);
+  }
+
+  .reference-dialog-header,
+  .reference-dialog-body {
+    padding: 14px;
+  }
+
+  .reference-dialog-header .status-chip {
+    display: none;
+  }
+
+  .price-key > div {
+    min-height: 64px;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 5px;
+    padding: 9px 6px;
+    text-align: center;
+  }
+
+  .price-key strong {
+    width: 34px;
+    height: 34px;
+    font-size: 1rem;
+  }
+
+  .price-key span {
+    font-size: 0.72rem;
   }
 }
 

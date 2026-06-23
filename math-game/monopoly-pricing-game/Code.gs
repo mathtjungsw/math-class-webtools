@@ -219,6 +219,7 @@ function getPlayerState_(spreadsheetId, teamCode) {
       submittedAt: ownSubmission.submittedAt,
       isRevealed: ownSubmission.isRevealed,
     } : null,
+    payoffRows: generatePayoffRows_(settings.teamCount),
     ranking: settings.status === "finished" ? buildFinalRanking_(teams) : [],
   };
 }

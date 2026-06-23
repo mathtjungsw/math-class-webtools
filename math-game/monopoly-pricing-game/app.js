@@ -5,9 +5,9 @@ const STORAGE_KEYS = {
 
 const PRICES = ["A", "B", "C"];
 const PRICE_INFO = {
-  A: { label: "A", detail: "낮은 가격", color: "#147a5c" },
+  A: { label: "A", detail: "높은 가격", color: "#147a5c" },
   B: { label: "B", detail: "중간 가격", color: "#8a6900" },
-  C: { label: "C", detail: "높은 가격", color: "#2d6cdf" },
+  C: { label: "C", detail: "낮은 가격", color: "#2d6cdf" },
 };
 const ROUND_COUNT = 12;
 const MIN_TEAM_COUNT = 3;
@@ -716,9 +716,19 @@ function renderRoundResult(results = []) {
 function renderPayoffTable(teamCount, rows = generatePayoffRows(teamCount)) {
   $("#payoffTitle").textContent = `${teamCount}팀 점수표`;
   $("#payoffSourceChip").textContent = teamCount === 3 ? "3팀은 원본 표 사용" : `${teamCount}팀은 자동 생성 표`;
-  $("#payoffTable").innerHTML = `
+  $("#payoffTable").innerHTML = buildPayoffTableMarkup(rows);
+}
+
+function buildPayoffTableMarkup(rows) {
+  return `
     <thead>
-      <tr><th>가격 조합</th><th>A 수</th><th>B 수</th><th>C 수</th><th>A 이익</th><th>B 이익</th><th>C 이익</th></tr>
+      <tr>
+        <th>가격 조합</th>
+        <th>A 수</th>
+        <th>B 수</th>
+        <th>C 수</th>
+        ${PRICES.map((price) => `<th>${price} 이익<small>${PRICE_INFO[price].detail}</small></th>`).join("")}
+      </tr>
     </thead>
     <tbody>
       ${rows.map((row) => `
@@ -732,6 +742,43 @@ function renderPayoffTable(teamCount, rows = generatePayoffRows(teamCount)) {
       `).join("")}
     </tbody>
   `;
+}
+
+function openPlayerRules() {
+  openReferenceDialog("#playerRulesDialog");
+}
+
+function openPlayerPayoff() {
+  if (!appState.player) {
+    showMessage("게임에 접속한 뒤 점수표를 확인할 수 있습니다.", "info");
+    return;
+  }
+  const teamCount = Number(appState.player.settings.teamCount);
+  const rows = appState.player.payoffRows || generatePayoffRows(teamCount);
+  $("#playerPayoffTitle").textContent = `${teamCount}팀 점수표`;
+  $("#playerPayoffSourceChip").textContent = teamCount === 3 ? "원본 점수표" : "자동 생성 점수표";
+  $("#playerPayoffTable").innerHTML = buildPayoffTableMarkup(rows);
+  openReferenceDialog("#playerPayoffDialog");
+}
+
+function openReferenceDialog(selector) {
+  const dialog = $(selector);
+  if (!dialog) return;
+  if (typeof dialog.showModal === "function") {
+    if (!dialog.open) dialog.showModal();
+    return;
+  }
+  dialog.setAttribute("open", "");
+}
+
+function closeReferenceDialog(selector) {
+  const dialog = $(selector);
+  if (!dialog) return;
+  if (typeof dialog.close === "function") {
+    if (dialog.open) dialog.close();
+    return;
+  }
+  dialog.removeAttribute("open");
 }
 
 async function joinGame() {
@@ -862,6 +909,8 @@ function renderFinalRanking(ranking, targetSelector, compact = false) {
 
 function leavePlayerGame() {
   stopPolling();
+  closeReferenceDialog("#playerRulesDialog");
+  closeReferenceDialog("#playerPayoffDialog");
   appState.player = null;
   appState.selectedChoice = "";
   localStorage.removeItem(STORAGE_KEYS.player);
@@ -935,6 +984,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   $("#adminTeamCount").addEventListener("change", () => {
     if (appState.mode === "admin" && !appState.admin) renderPayoffPreview();
+  });
+  document.querySelectorAll(".reference-dialog").forEach((dialog) => {
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) closeReferenceDialog(`#${dialog.id}`);
+    });
   });
   applySharedJoinParameters();
 });
