@@ -3,307 +3,260 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="description"
-      content="수학 수업에서 바로 활용할 수 있는 확률·통계, 인공지능 수학, 수학 게임 웹툴 모음"
-    />
-    <title>수학 수업 웹툴 모음 by 정T</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23111c35'/%3E%3Cpath d='M16 44V20l16 12 16-12v24' fill='none' stroke='%235dd2b2' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E" />
+    <title>수학 수업 웹툴 모음</title>
     <link rel="stylesheet" href="./assets/site.css" />
   </head>
   <body>
     <header class="topbar">
       <a class="brand" href="./" aria-label="수학 수업 웹툴 모음 홈">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 40 40" role="img">
-            <path d="M8 29V11l12 9 12-9v18" />
-            <circle cx="8" cy="11" r="3" />
-            <circle cx="20" cy="20" r="3" />
-            <circle cx="32" cy="11" r="3" />
-          </svg>
-        </span>
-        <span class="brand-copy">
+        <span class="brand-mark">M</span>
+        <span>
           <strong>수학 수업 웹툴 모음</strong>
-          <small>by 정T</small>
+          <small>교실에서 바로 쓰는 활동형 수학 도구</small>
         </span>
       </a>
-
-      <nav class="top-actions" aria-label="바로가기">
-        <a class="contact-link" href="mailto:mathtjungsw@gmail.com">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M3 6.5h18v11H3z" />
-            <path d="m4 7 8 6 8-6" />
-          </svg>
-          <span>문의하기</span>
-        </a>
-        <a class="github-link" data-github-link href="#" target="_blank" rel="noreferrer" aria-label="GitHub 저장소 열기">
-          GitHub
-          <span aria-hidden="true">↗</span>
-        </a>
+      <nav class="top-actions" aria-label="상단 메뉴">
+        <a class="ghost-link" data-github-link href="#" target="_blank" rel="noreferrer">GitHub</a>
       </nav>
     </header>
 
     <main>
-      <section class="hero" aria-labelledby="page-title">
-        <div class="hero-copy">
-          <p class="eyebrow"><span></span> 교실에서 바로 쓰는 수학 도구</p>
-          <h1 id="page-title">
-            이해하는 순간을<br />
-            <em>직접 경험하게.</em>
-          </h1>
-          <p class="hero-description">
-            설명만으로는 아쉬운 수학 개념을 학생들이 직접 움직이고, 실험하고,
-            발견할 수 있도록 만든 수업용 웹툴입니다.
-          </p>
-          <a class="hero-cta" href="#tools">
-            웹툴 둘러보기
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 12 10 0m-4-4 4 4-4 4" /></svg>
-          </a>
-          <dl class="hero-stats" aria-label="웹툴 현황">
-            <div><dt>8</dt><dd>개의 웹툴</dd></div>
-            <div><dt>3</dt><dd>개의 주제</dd></div>
-            <div><dt>100%</dt><dd>브라우저 실행</dd></div>
-          </dl>
-        </div>
-
-        <div class="hero-visual" aria-hidden="true">
-          <div class="formula formula-one">P(A|B)</div>
-          <div class="formula formula-two">y = ax + b</div>
-          <div class="visual-card visual-card-chart">
-            <div class="mini-label"><i></i> LIVE MATH</div>
-            <svg viewBox="0 0 280 180">
-              <path class="chart-grid" d="M25 20v135h230M25 120h230M25 75h230M80 20v135M140 20v135M200 20v135" />
-              <path class="chart-line" d="M30 135c34-2 40-48 73-44s45 24 73-5 42-56 73-45" />
-              <circle cx="30" cy="135" r="6" /><circle cx="103" cy="91" r="6" />
-              <circle cx="176" cy="86" r="6" /><circle cx="249" cy="41" r="6" />
-            </svg>
-          </div>
-          <div class="visual-card visual-card-dice">
-            <span class="dice"><i></i><i></i><i></i><i></i><i></i></span>
-            <strong>확률을<br />굴려보다</strong>
-          </div>
-          <div class="visual-orbit orbit-one"></div>
-          <div class="visual-orbit orbit-two"></div>
-        </div>
-      </section>
-
-      <section class="tools-section" id="tools" aria-labelledby="tools-title">
-        <div class="section-heading">
+      <section class="workspace-shell" aria-labelledby="page-title">
+        <div class="page-heading">
           <div>
-            <p class="eyebrow"><span></span> TOOL COLLECTION</p>
-            <h2 id="tools-title">오늘 수업에 필요한<br />도구를 골라보세요</h2>
+            <p class="eyebrow">과목 선택</p>
+            <h1 id="page-title">수업에서 사용할 과목을 고르세요</h1>
           </div>
-          <p>설치 없이 링크를 열면 바로 시작할 수 있어요.</p>
+          <p>
+            과목을 선택하면 그 안에 준비된 웹툴이 한 번에 나타납니다.
+            활동형 시뮬레이션과 실습 도구를 수업 상황에 맞게 바로 열 수 있습니다.
+          </p>
         </div>
 
-        <div class="filter-bar" role="tablist" aria-label="웹툴 주제 필터">
-          <button class="filter-button is-active" type="button" role="tab" aria-selected="true" data-filter="all">
-            전체 <span>8</span>
-          </button>
-          <button class="filter-button" type="button" role="tab" aria-selected="false" data-filter="probability-statistics">
-            확률과 통계 <span>1</span>
-          </button>
-          <button class="filter-button" type="button" role="tab" aria-selected="false" data-filter="ai-math">
-            인공지능 수학 <span>3</span>
-          </button>
-          <button class="filter-button" type="button" role="tab" aria-selected="false" data-filter="math-game">
-            수학 게임 <span>4</span>
-          </button>
+        <div class="subject-layout">
+          <aside class="subject-panel" aria-label="과목 목록">
+            <button class="subject-button is-active" type="button" data-subject="probability-statistics">
+              <span class="subject-icon">P</span>
+              <span>
+                <strong>확률과 통계</strong>
+                <small>확률 실험, 시뮬레이션, 누적 데이터 관찰</small>
+              </span>
+            </button>
+            <button class="subject-button" type="button" data-subject="ai-math">
+              <span class="subject-icon">AI</span>
+              <span>
+                <strong>인공지능 수학</strong>
+                <small>단어 벡터, 이미지 분류, 데이터 분류 실습</small>
+              </span>
+            </button>
+            <button class="subject-button" type="button" data-subject="math-game">
+              <span class="subject-icon">G</span>
+              <span>
+                <strong>수학 게임</strong>
+                <small>전략, 추론, 의사결정을 함께 익히는 모둠 활동</small>
+              </span>
+            </button>
+          </aside>
+
+          <section
+            class="tool-panel"
+            id="probability-statistics-panel"
+            data-subject-panel="probability-statistics"
+            aria-labelledby="probability-statistics-title"
+          >
+            <div class="subject-summary">
+              <div>
+                <p class="eyebrow">선택한 과목</p>
+                <h2 id="probability-statistics-title">확률과 통계</h2>
+              </div>
+              <span class="tool-count">웹툴 1개</span>
+            </div>
+
+            <div class="tool-grid">
+              <article class="tool-card">
+                <div class="tool-card-top">
+                  <span class="tool-badge">시뮬레이션</span>
+                  <span class="tool-meta">브라우저 전용</span>
+                </div>
+                <h3>몬티홀 딜레마 실험</h3>
+                <p>
+                  문 개수를 바꾸며 선택 유지와 선택 변경 전략의 승률 차이를 직접 실험하고,
+                  누적 통계와 이론값을 함께 비교합니다.
+                </p>
+                <div class="tool-actions">
+                  <a class="primary-link" href="./probability-statistics/monty-hall/index.html">시작하기</a>
+                  <a class="secondary-link" data-github-link href="#" target="_blank" rel="noreferrer">
+                    GitHub
+                  </a>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section
+            class="tool-panel"
+            id="ai-math-panel"
+            data-subject-panel="ai-math"
+            aria-labelledby="ai-math-title"
+            hidden
+          >
+            <div class="subject-summary">
+              <div>
+                <p class="eyebrow">선택한 과목</p>
+                <h2 id="ai-math-title">인공지능 수학</h2>
+              </div>
+              <span class="tool-count">웹툴 3개</span>
+            </div>
+
+            <div class="tool-grid">
+              <article class="tool-card">
+                <div class="tool-card-top">
+                  <span class="tool-badge">실습</span>
+                  <span class="tool-meta">TensorFlow.js</span>
+                </div>
+                <h3>이미지 지도학습 인공지능 만들기</h3>
+                <p>
+                  웹캠과 이미지 업로드로 클래스별 학습 데이터를 모으고, MobileNet 전이학습으로
+                  이미지 분류 모델을 만든 뒤 예측 기록과 활동 보고서를 생성합니다.
+                </p>
+                <div class="tool-actions">
+                  <a class="primary-link" href="./ai-math/image-supervised-learning/index.html">시작하기</a>
+                  <a class="secondary-link" data-github-link href="#" target="_blank" rel="noreferrer">
+                    GitHub
+                  </a>
+                </div>
+              </article>
+
+              <article class="tool-card">
+                <div class="tool-card-top">
+                  <span class="tool-badge">실습</span>
+                  <span class="tool-meta">브라우저 전용</span>
+                </div>
+                <h3>감성 분석 인공지능 만들기 실습</h3>
+                <p>
+                  긍정/부정 문장을 직접 모으고, 불용어를 제거한 단어 벡터와 코사인 유사도로
+                  새 문장의 감성을 분류해 봅니다.
+                </p>
+                <div class="tool-actions">
+                  <a class="primary-link" href="./ai-math/sentiment-ai/index.html">시작하기</a>
+                  <a class="secondary-link" data-github-link href="#" target="_blank" rel="noreferrer">
+                    GitHub
+                  </a>
+                </div>
+              </article>
+
+              <article class="tool-card">
+                <div class="tool-card-top">
+                  <span class="tool-badge">데이터 분석</span>
+                  <span class="tool-meta">브라우저 전용</span>
+                </div>
+                <h3>데이터의 경향성을 파악하여 예측하기</h3>
+                <p>
+                  x, y 자료로 직선 추세선과 결정계수를 구하고 새로운 값을 예측한 뒤,
+                  그래프와 탐구 내용을 PDF 보고서로 완성합니다.
+                </p>
+                <div class="tool-actions">
+                  <a class="primary-link" href="./ai-math/trendline-prediction/index.html">시작하기</a>
+                  <a class="secondary-link" data-github-link href="#" target="_blank" rel="noreferrer">
+                    GitHub
+                  </a>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section
+            class="tool-panel"
+            id="math-game-panel"
+            data-subject-panel="math-game"
+            aria-labelledby="math-game-title"
+            hidden
+          >
+            <div class="subject-summary">
+              <div>
+                <p class="eyebrow">선택한 과목</p>
+                <h2 id="math-game-title">수학 게임</h2>
+              </div>
+              <span class="tool-count">웹툴 4개</span>
+            </div>
+
+            <div class="tool-grid">
+              <article class="tool-card">
+                <div class="tool-card-top">
+                  <span class="tool-badge">정수 연산</span>
+                  <span class="tool-meta">2~10개 조</span>
+                </div>
+                <h3>마이너스 경매</h3>
+                <p>
+                  칩 1개를 내고 음수 카드를 피할지, 쌓인 칩과 함께 낙찰받을지 선택합니다.
+                  연속된 음수의 점수 규칙을 활용해 정수의 덧셈과 전략적 의사결정을 함께 탐구합니다.
+                </p>
+                <div class="tool-actions">
+                  <a class="primary-link" href="./math-game/minus-auction/index.html">시작하기</a>
+                  <a class="secondary-link" data-github-link href="#" target="_blank" rel="noreferrer">
+                    GitHub
+                  </a>
+                </div>
+              </article>
+
+              <article class="tool-card">
+                <div class="tool-card-top">
+                  <span class="tool-badge">모둠 전략</span>
+                  <span class="tool-meta">Google Sheets 연동</span>
+                </div>
+                <h3>배팅 게임</h3>
+                <p>
+                  5개 팀이 1부터 6까지의 숫자를 한 번씩 선택합니다. 중복된 숫자는 무효가 되고,
+                  남은 수 중 가장 큰 수를 낸 팀이 점수를 얻는 6라운드 전략 게임입니다.
+                </p>
+                <div class="tool-actions">
+                  <a class="primary-link" href="./math-game/betting-game/index.html">시작하기</a>
+                  <a class="secondary-link" data-github-link href="#" target="_blank" rel="noreferrer">
+                    GitHub
+                  </a>
+                </div>
+              </article>
+
+              <article class="tool-card">
+                <div class="tool-card-top">
+                  <span class="tool-badge">확률 전략</span>
+                  <span class="tool-meta">2~10명</span>
+                </div>
+                <h3>돼지 주사위 게임(Pig Dice)</h3>
+                <p>
+                  주사위를 계속 던져 점수를 모으거나 안전하게 저장합니다. 1이 나오면 이번 턴 점수를 모두 잃는
+                  위험 속에서 확률과 기대값을 탐구하고, 여섯 가지 변형 규칙 게임과 인쇄 학습지로 전략을 정리합니다.
+                </p>
+                <div class="tool-actions">
+                  <a class="primary-link" href="./math-game/pig-dice/index.html">시작하기</a>
+                  <a class="secondary-link" data-github-link href="#" target="_blank" rel="noreferrer">
+                    GitHub
+                  </a>
+                </div>
+              </article>
+
+              <article class="tool-card">
+                <div class="tool-card-top">
+                  <span class="tool-badge">조건부 확률</span>
+                  <span class="tool-meta">2025 KBO 데이터</span>
+                </div>
+                <h3>야구 게임 시뮬레이션</h3>
+                <p>
+                  296명의 사진·포지션·상황별 타율 카드로 홈/원정 라인업을 드래그해 구성하고,
+                  저장한 타순으로 한 타석씩 진행하는 9이닝 모의 경기를 체험합니다.
+                </p>
+                <div class="tool-actions">
+                  <a class="primary-link" href="./math-game/kbo-conditional-probability/index.html">시작하기</a>
+                  <a class="secondary-link" data-github-link href="#" target="_blank" rel="noreferrer">
+                    GitHub
+                  </a>
+                </div>
+              </article>
+            </div>
+          </section>
         </div>
-
-        <div class="tool-grid" aria-live="polite">
-          <article class="tool-card card-monty" data-tool-category="probability-statistics">
-            <div class="tool-visual" aria-hidden="true">
-              <svg class="monty-visual" viewBox="0 0 420 210">
-                <path class="ground" d="M35 176h350" />
-                <g class="goat">
-                  <path d="M87 89 68 63l29 14M133 89l19-26-29 14" />
-                  <path d="M70 109c0-38 18-58 41-58s41 20 41 58-18 62-41 62-41-24-41-62Z" />
-                  <path d="m95 58-8-24 19 18m21 6 8-24-19 18" />
-                  <circle cx="95" cy="108" r="4" /><circle cx="127" cy="108" r="4" />
-                  <path d="M101 133q10 9 20 0M111 120v12" />
-                </g>
-                <g class="car">
-                  <path d="m213 130 25-45h78l33 45 23 7v26H196v-22Z" />
-                  <path d="m249 91-19 39h104l-28-39Z" />
-                  <path d="M279 91v39" />
-                  <circle cx="234" cy="164" r="18" /><circle cx="338" cy="164" r="18" />
-                  <circle cx="234" cy="164" r="7" /><circle cx="338" cy="164" r="7" />
-                </g>
-              </svg>
-            </div>
-            <div class="tool-content">
-              <div class="tool-tags"><span>확률 실험</span><small>확률과 통계</small></div>
-              <h3>몬티홀 딜레마 실험</h3>
-              <p>선택을 유지할 때와 바꿀 때, 당첨 확률은 어떻게 달라질까요? 반복 실험으로 직관과 실제 확률을 비교합니다.</p>
-              <div class="tool-footer">
-                <span>실험 · 데이터 비교</span>
-                <a href="./probability-statistics/monty-hall/index.html" aria-label="몬티홀 딜레마 실험 시작하기">시작하기 <b aria-hidden="true">→</b></a>
-              </div>
-            </div>
-          </article>
-
-          <article class="tool-card card-image-ai" data-tool-category="ai-math">
-            <div class="tool-visual" aria-hidden="true">
-              <svg viewBox="0 0 420 210">
-                <rect class="frame" x="43" y="42" width="112" height="128" rx="22" />
-                <circle class="sun" cx="126" cy="71" r="13" />
-                <path class="mountain" d="m58 149 32-43 21 25 17-19 16 37Z" />
-                <path class="flow" d="M171 106h67" />
-                <path class="flow-arrow" d="m226 94 14 12-14 12" />
-                <rect class="tray tray-one" x="263" y="46" width="110" height="48" rx="18" />
-                <rect class="tray tray-two" x="263" y="116" width="110" height="48" rx="18" />
-                <circle cx="291" cy="70" r="10" /><circle cx="291" cy="140" r="10" />
-                <path class="tray-line" d="M313 70h35M313 140h35" />
-              </svg>
-            </div>
-            <div class="tool-content">
-              <div class="tool-tags"><span>AI 학습</span><small>인공지능 수학</small></div>
-              <h3>이미지 지도학습 AI 만들기</h3>
-              <p>직접 모은 이미지로 분류 모델을 학습시키고, 정확도와 혼동 행렬을 통해 모델의 판단을 살펴봅니다.</p>
-              <div class="tool-footer">
-                <span>TensorFlow.js</span>
-                <a href="./ai-math/image-supervised-learning/index.html" aria-label="이미지 지도학습 AI 만들기 시작하기">시작하기 <b aria-hidden="true">→</b></a>
-              </div>
-            </div>
-          </article>
-
-          <article class="tool-card card-sentiment" data-tool-category="ai-math">
-            <div class="tool-visual" aria-hidden="true">
-              <svg viewBox="0 0 420 210">
-                <path class="bubble bubble-left" d="M45 50h122a24 24 0 0 1 24 24v48a24 24 0 0 1-24 24H96l-31 24 7-24H45a24 24 0 0 1-24-24V74a24 24 0 0 1 24-24Z" />
-                <circle cx="82" cy="92" r="5" /><circle cx="125" cy="92" r="5" /><path class="face" d="M76 112q28 25 56 0" />
-                <path class="connector" d="M205 103h41" />
-                <circle class="node" cx="273" cy="62" r="18" /><circle class="node" cx="327" cy="103" r="18" /><circle class="node" cx="273" cy="145" r="18" />
-                <path class="network" d="m246 103 27-41m-27 41 27 42m0-83 54 41m-54 42 54-42m18 0h35" />
-              </svg>
-            </div>
-            <div class="tool-content">
-              <div class="tool-tags"><span>자연어</span><small>인공지능 수학</small></div>
-              <h3>감성 분석 AI 실습</h3>
-              <p>긍정·부정 문장을 모아 단어 벡터와 코사인 유사도로 새로운 문장의 감성을 분류해 봅니다.</p>
-              <div class="tool-footer">
-                <span>문장 · 벡터</span>
-                <a href="./ai-math/sentiment-ai/index.html" aria-label="감성 분석 AI 실습 시작하기">시작하기 <b aria-hidden="true">→</b></a>
-              </div>
-            </div>
-          </article>
-
-          <article class="tool-card card-trend" data-tool-category="ai-math">
-            <div class="tool-visual" aria-hidden="true">
-              <svg viewBox="0 0 420 210">
-                <path class="axis" d="M56 34v137h322" />
-                <path class="trend-grid" d="M56 77h322M56 124h322M132 34v137M210 34v137M288 34v137" />
-                <path class="trend-line" d="m71 151 284-102" />
-                <g class="points"><circle cx="91" cy="145" r="8" /><circle cx="136" cy="121" r="8" /><circle cx="178" cy="130" r="8" /><circle cx="221" cy="91" r="8" /><circle cx="271" cy="98" r="8" /><circle cx="318" cy="61" r="8" /></g>
-                <circle class="future" cx="357" cy="45" r="13" />
-              </svg>
-            </div>
-            <div class="tool-content">
-              <div class="tool-tags"><span>데이터 분석</span><small>인공지능 수학</small></div>
-              <h3>추세선으로 예측하기</h3>
-              <p>x, y 자료의 추세선과 결정계수를 구하고, 그래프를 바탕으로 새로운 값을 예측해 봅니다.</p>
-              <div class="tool-footer">
-                <span>회귀 · 예측</span>
-                <a href="./ai-math/trendline-prediction/index.html" aria-label="추세선으로 예측하기 시작하기">시작하기 <b aria-hidden="true">→</b></a>
-              </div>
-            </div>
-          </article>
-
-          <article class="tool-card card-auction" data-tool-category="math-game">
-            <div class="tool-visual" aria-hidden="true">
-              <svg viewBox="0 0 420 210">
-                <g class="number-card card-back"><rect x="51" y="52" width="94" height="126" rx="18" /><path d="M72 76h52M72 96h52" /></g>
-                <g class="number-card card-front"><rect x="103" y="32" width="112" height="145" rx="20" /><path class="minus" d="M132 104h54" /></g>
-                <g class="hammer"><path d="m278 44 35 35-31 31-35-35Z" /><path d="m277 101 67 67" /><path d="M314 167h66" /></g>
-              </svg>
-            </div>
-            <div class="tool-content">
-              <div class="tool-tags"><span>정수 연산</span><small>수학 게임</small></div>
-              <h3>마이너스 경매</h3>
-              <p>점수 카드를 낙찰받는 과정에서 음수의 덧셈과 뺄셈, 위험을 고려한 의사결정을 함께 경험합니다.</p>
-              <div class="tool-footer">
-                <span>2–10개 모둠</span>
-                <a href="./math-game/minus-auction/index.html" aria-label="마이너스 경매 시작하기">시작하기 <b aria-hidden="true">→</b></a>
-              </div>
-            </div>
-          </article>
-
-          <article class="tool-card card-betting" data-tool-category="math-game">
-            <div class="tool-visual" aria-hidden="true">
-              <svg viewBox="0 0 420 210">
-                <g class="chips"><circle cx="95" cy="122" r="48" /><circle cx="95" cy="122" r="31" /><path d="M95 75v18m0 58v18M48 122h18m58 0h18" /></g>
-                <g class="balls"><circle cx="220" cy="78" r="26" /><circle cx="286" cy="61" r="26" /><circle cx="342" cy="97" r="26" /><circle cx="244" cy="145" r="26" /><circle cx="316" cy="154" r="26" /></g>
-                <g class="ball-marks"><circle cx="220" cy="78" r="5" /><circle cx="286" cy="61" r="5" /><circle cx="342" cy="97" r="5" /><circle cx="244" cy="145" r="5" /><circle cx="316" cy="154" r="5" /></g>
-              </svg>
-            </div>
-            <div class="tool-content">
-              <div class="tool-tags"><span>모둠 확률</span><small>수학 게임</small></div>
-              <h3>베팅 게임</h3>
-              <p>숫자 선택과 중복 규칙 속에서 기대값을 생각하고, 라운드마다 전략을 수정하는 모둠 확률 게임입니다.</p>
-              <div class="tool-footer">
-                <span>Google Sheets 연동</span>
-                <a href="./math-game/betting-game/index.html" aria-label="베팅 게임 시작하기">시작하기 <b aria-hidden="true">→</b></a>
-              </div>
-            </div>
-          </article>
-
-          <article class="tool-card card-pig" data-tool-category="math-game">
-            <div class="tool-visual" aria-hidden="true">
-              <svg viewBox="0 0 420 210">
-                <g class="pig"><ellipse cx="115" cy="109" rx="77" ry="56" /><circle cx="180" cy="104" r="40" /><path d="m160 77 2-33 24 27m-76 88v25m-37-32v32m83-28v28" /><ellipse cx="194" cy="116" rx="20" ry="14" /><circle cx="181" cy="96" r="4" /><circle cx="188" cy="116" r="3" /><circle cx="200" cy="116" r="3" /></g>
-                <g class="die"><rect x="259" y="49" width="104" height="104" rx="22" /><circle cx="285" cy="75" r="8" /><circle cx="337" cy="75" r="8" /><circle cx="311" cy="101" r="8" /><circle cx="285" cy="127" r="8" /><circle cx="337" cy="127" r="8" /></g>
-              </svg>
-            </div>
-            <div class="tool-content">
-              <div class="tool-tags"><span>확률 전략</span><small>수학 게임</small></div>
-              <h3>돼지 주사위 게임</h3>
-              <p>계속 굴릴지 멈출지 선택하며 확률과 기대값을 탐구하고, 다양한 변형 규칙으로 전략을 비교합니다.</p>
-              <div class="tool-footer">
-                <span>2–10명</span>
-                <a href="./math-game/pig-dice/index.html" aria-label="돼지 주사위 게임 시작하기">시작하기 <b aria-hidden="true">→</b></a>
-              </div>
-            </div>
-          </article>
-
-          <article class="tool-card card-kbo" data-tool-category="math-game">
-            <div class="tool-visual" aria-hidden="true">
-              <svg viewBox="0 0 420 210">
-                <path class="diamond" d="m210 28 112 78-112 78-112-78Z" />
-                <path class="infield" d="m210 65 59 41-59 41-59-41Z" />
-                <rect class="base" x="201" y="55" width="18" height="18" transform="rotate(45 210 64)" />
-                <rect class="base" x="260" y="97" width="18" height="18" transform="rotate(45 269 106)" />
-                <rect class="base" x="142" y="97" width="18" height="18" transform="rotate(45 151 106)" />
-                <path class="home" d="m201 147 9-7 9 7-3 13h-12Z" />
-                <g class="ball"><circle cx="347" cy="54" r="27" /><path d="M330 35q23 18 34 39M329 73q21-16 35-38" /></g>
-              </svg>
-            </div>
-            <div class="tool-content">
-              <div class="tool-tags"><span>조건부 확률</span><small>수학 게임</small></div>
-              <h3>야구 게임 시뮬레이터</h3>
-              <p>2025 KBO 타자 데이터로 라인업을 구성하고 9이닝 모의 경기에서 조건부 확률을 생생하게 확인합니다.</p>
-              <div class="tool-footer">
-                <span>KBO 데이터</span>
-                <a href="./math-game/kbo-conditional-probability/index.html" aria-label="야구 게임 시뮬레이터 시작하기">시작하기 <b aria-hidden="true">→</b></a>
-              </div>
-            </div>
-          </article>
-        </div>
-
-        <p class="empty-message" hidden>이 주제에 등록된 웹툴이 없습니다.</p>
       </section>
     </main>
-
-    <footer class="site-footer">
-      <div>
-        <p>수학 수업 웹툴 모음 <strong>by 정T</strong></p>
-        <span>수업의 아이디어를 실제 경험으로 연결합니다.</span>
-      </div>
-      <a href="mailto:mathtjungsw@gmail.com">
-        <small>문의</small>
-        mathtjungsw@gmail.com
-      </a>
-    </footer>
 
     <script src="./assets/app.js"></script>
   </body>
