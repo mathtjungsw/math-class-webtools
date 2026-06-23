@@ -514,6 +514,11 @@ textarea:focus {
   cursor: pointer;
 }
 
+.upload-button.is-busy {
+  cursor: progress;
+  opacity: 0.65;
+}
+
 .sr-only-file,
 .upload-button input {
   position: absolute;

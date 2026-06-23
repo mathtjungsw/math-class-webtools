@@ -294,14 +294,16 @@ function renderClassCards() {
 
     const uploadLabel = document.createElement("label");
     uploadLabel.className = "upload-button";
-    uploadLabel.textContent = "이미지 업로드";
+
+    const uploadText = document.createElement("span");
+    uploadText.textContent = "이미지 업로드";
 
     const uploadInput = document.createElement("input");
     uploadInput.type = "file";
     uploadInput.accept = "image/*";
     uploadInput.multiple = true;
-    uploadInput.addEventListener("change", () => handleTrainingFiles(classItem.id, uploadInput.files));
-    uploadLabel.append(uploadInput);
+    uploadInput.addEventListener("change", () => handleTrainingFiles(classItem.id, uploadInput, uploadText, uploadLabel));
+    uploadLabel.append(uploadText, uploadInput);
 
     const selectButton = document.createElement("button");
     selectButton.className = "plain-button";
@@ -451,7 +453,15 @@ function renderAll() {
 }
 
 function isImageFile(file) {
-  return file && file.type.startsWith("image/");
+  if (!file) {
+    return false;
+  }
+
+  if (file.type?.startsWith("image/")) {
+    return true;
+  }
+
+  return /\.(avif|bmp|gif|heic|heif|jpe?g|png|webp)$/i.test(file.name || "");
 }
 
 function readFileAsDataUrl(file) {
@@ -464,12 +474,28 @@ function readFileAsDataUrl(file) {
   });
 }
 
-async function handleTrainingFiles(classId, fileList) {
-  const files = [...fileList];
+function setTrainingUploadBusy(uploadInput, uploadText, uploadLabel, isBusy) {
+  if (uploadInput) {
+    uploadInput.disabled = isBusy;
+  }
+
+  if (uploadText) {
+    uploadText.textContent = isBusy ? "업로드 중..." : "이미지 업로드";
+  }
+
+  uploadLabel?.classList.toggle("is-busy", isBusy);
+  uploadLabel?.setAttribute("aria-busy", String(isBusy));
+}
+
+async function handleTrainingFiles(classId, fileInputOrList, uploadText = null, uploadLabel = null) {
+  const fileList = fileInputOrList?.files || fileInputOrList;
+  const files = fileList ? [...fileList] : [];
 
   if (files.length === 0) {
     return;
   }
+
+  const uploadInput = fileInputOrList instanceof HTMLInputElement ? fileInputOrList : null;
 
   const imageFiles = files.filter(isImageFile);
 
@@ -482,19 +508,45 @@ async function handleTrainingFiles(classId, fileList) {
     return;
   }
 
+  const classItem = getClassById(classId);
+
+  if (!classItem) {
+    showStatus("이미지를 추가할 클래스를 먼저 선택해 주세요.", "warning");
+    return;
+  }
+
+  setTrainingUploadBusy(uploadInput, uploadText, uploadLabel, true);
+
   try {
+    // 갤러리에서 여러 장을 고를 때는 파일 input이 살아 있는 동안 먼저 모두 읽는다.
+    // 읽는 중간에 카드 전체를 다시 그리면 일부 브라우저에서 남은 파일 접근이나 다음 클릭이 끊길 수 있다.
+    const samples = [];
+
     for (const file of imageFiles) {
       const dataUrl = await readFileAsDataUrl(file);
-      addSampleToClass(classId, dataUrl, "이미지 업로드");
+      samples.push({
+        id: window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`,
+        dataUrl,
+        source: "이미지 업로드",
+        createdAt: new Date().toISOString(),
+      });
     }
 
-    const classItem = getClassById(classId);
+    classItem.samples.push(...samples);
+    markModelStale(`"${getClassName(classItem)}" 클래스에 이미지가 추가되었습니다.`);
+    renderAll();
     showStatus(
       `"${getClassName(classItem)}" 클래스에 이미지 ${imageFiles.length}장을 추가했습니다.`,
       "success",
     );
   } catch (error) {
-    showStatus(error.message, "error");
+    showStatus(error.message || "이미지 파일을 읽는 중 문제가 생겼습니다.", "error");
+  } finally {
+    setTrainingUploadBusy(uploadInput, uploadText, uploadLabel, false);
+
+    if (uploadInput) {
+      uploadInput.value = "";
+    }
   }
 }
 
