@@ -727,6 +727,26 @@ h3 {
 }
 .card-streams .streams-arrow { fill: none; stroke: var(--orange); stroke-linecap: round; stroke-linejoin: round; stroke-width: 6; }
 
+.card-prime .tool-visual { background: #f1f7ef; }
+.card-prime .prime-board rect { fill: white; stroke: var(--navy); stroke-width: 5; }
+.card-prime .prime-board path { fill: none; stroke: #c7d9c1; stroke-linecap: round; stroke-width: 3; }
+.card-prime .prime-board text {
+  fill: var(--orange);
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  font-size: 56px;
+  font-weight: 950;
+}
+.card-prime .prime-cubes rect { fill: var(--yellow); stroke: var(--navy); stroke-width: 5; }
+.card-prime .prime-cubes rect:nth-child(2) { fill: var(--mint); }
+.card-prime .prime-cubes rect:nth-child(3) { fill: #ffffff; }
+.card-prime .prime-cubes text {
+  fill: var(--navy);
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  font-size: 23px;
+  font-weight: 950;
+}
+.card-prime .prime-spark { fill: var(--orange); stroke: var(--navy); stroke-linejoin: round; stroke-width: 4; }
+
 .card-pig .tool-visual { background: #fff0f0; }
 .card-pig .pig { fill: #ffb4a5; stroke: var(--navy); stroke-linecap: round; stroke-linejoin: round; stroke-width: 5; }
 .card-pig .pig circle { fill: var(--navy); stroke: none; }

@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f7fb" />
+    <title>소수 체크 게임 | 수학 수업 웹툴 모음</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="back-link" href="../../index.html#math-game" aria-label="수학 게임 목록으로 돌아가기">
+        <span aria-hidden="true">←</span>
+        <span>수학 게임</span>
+      </a>
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">P</span>
+        <span><strong>소수 체크 게임</strong><small>Prime check battle</small></span>
+      </div>
+      <div class="header-actions">
+        <button class="ghost-button" id="rulesButton" type="button">규칙</button>
+        <button class="ghost-button" id="answerButton" type="button">정답 보기</button>
+        <button class="danger-button" id="newGameButton" type="button">새 게임</button>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section class="summary-strip" aria-label="게임 현황">
+        <div>
+          <span>라운드</span>
+          <strong><b id="roundDisplay">1</b> / 3</strong>
+        </div>
+        <div>
+          <span>숫자 구간</span>
+          <strong id="rangeDisplay">-</strong>
+        </div>
+        <div>
+          <span>소수</span>
+          <strong><b id="foundDisplay">0</b> / 9</strong>
+        </div>
+        <div>
+          <span>5의 배수</span>
+          <strong>0개</strong>
+        </div>
+      </section>
+
+      <section class="game-layout">
+        <section class="board-panel" aria-labelledby="boardTitle">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">25 cubes · 9 primes</p>
+              <h1 id="boardTitle">더 많은 소수를 찾으세요</h1>
+            </div>
+            <div class="board-actions">
+              <button class="secondary-button" id="nextRoundButton" type="button">다음 라운드</button>
+              <button class="secondary-button" id="copyBoardButton" type="button">판 복사</button>
+            </div>
+          </div>
+
+          <div class="board" id="board" aria-label="소수 체크 게임판"></div>
+
+          <p class="status-message" id="statusMessage" aria-live="polite">
+            참가자의 답을 들은 뒤 해당 숫자를 눌러 판정하세요.
+          </p>
+        </section>
+
+        <aside class="control-panel">
+          <section class="turn-panel" aria-labelledby="turnTitle">
+            <div class="section-title">
+              <div>
+                <p class="eyebrow">현재 차례</p>
+                <h2 id="turnTitle"><span id="activeTeamName">A팀</span></h2>
+              </div>
+              <div class="timer-ring" id="timerRing"><strong id="timerDisplay">30</strong><span>초</span></div>
+            </div>
+            <div class="turn-actions">
+              <button class="primary-button" id="timerButton" type="button">타이머 시작</button>
+              <button class="secondary-button" id="passButton" type="button">기회 넘김</button>
+              <button class="secondary-button" id="undoButton" type="button" disabled>되돌리기</button>
+            </div>
+          </section>
+
+          <section class="teams-panel" aria-labelledby="teamsTitle">
+            <div class="section-title">
+              <div>
+                <p class="eyebrow">6점 선취</p>
+                <h2 id="teamsTitle">점수판</h2>
+              </div>
+            </div>
+            <div class="team-list" id="teamList"></div>
+          </section>
+
+          <section class="setup-panel" aria-labelledby="setupTitle">
+            <div class="section-title">
+              <div>
+                <p class="eyebrow">보드 생성</p>
+                <h2 id="setupTitle">구간대</h2>
+              </div>
+            </div>
+            <label class="select-field">
+              <span>숫자 범위</span>
+              <select id="bandSelect">
+                <option value="all">전체 구간</option>
+                <option value="under1000">세 자리 수</option>
+                <option value="1000to2999">1000-2999</option>
+                <option value="3000plus">3000 이상</option>
+              </select>
+            </label>
+            <button class="primary-button full" id="newBoardButton" type="button">새 보드</button>
+          </section>
+
+          <section class="log-panel" aria-labelledby="logTitle">
+            <div class="section-title compact">
+              <h2 id="logTitle">최근 기록</h2>
+              <span id="logCount">0회</span>
+            </div>
+            <ol id="activityLog">
+              <li class="empty-log">아직 기록이 없습니다.</li>
+            </ol>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <dialog class="modal" id="hiddenDialog">
+      <form method="dialog" id="hiddenForm">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow">Hidden prime</p>
+            <h2>히든 소수 입력</h2>
+          </div>
+          <button class="icon-button" type="button" data-close-dialog aria-label="닫기">×</button>
+        </div>
+        <label class="guess-field">
+          <span>참가자가 말한 수</span>
+          <input id="hiddenGuessInput" type="number" inputmode="numeric" autocomplete="off" />
+        </label>
+        <div class="modal-actions">
+          <button class="secondary-button" type="button" data-close-dialog>취소</button>
+          <button class="primary-button" type="submit">판정</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="modal" id="rulesDialog">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">게임 규칙</p>
+          <h2>대학전쟁식 소수 찾기</h2>
+        </div>
+        <button class="icon-button" type="button" data-close-dialog aria-label="닫기">×</button>
+      </div>
+      <ol class="rule-list">
+        <li><strong>숫자판</strong><span>25칸 중 소수는 9개입니다. 2의 배수와 5의 배수는 나오지 않습니다.</span></li>
+        <li><strong>점수</strong><span>보이는 소수를 맞히면 1점, 가운데 히든 소수를 맞히면 3점입니다.</span></li>
+        <li><strong>차례</strong><span>정답이면 같은 팀이 30초를 다시 받고, 오답이나 시간 초과면 차례가 넘어갑니다.</span></li>
+        <li><strong>승리</strong><span>3라운드 동안 진행하며, 6점을 먼저 얻는 팀이 승리합니다.</span></li>
+      </ol>
+      <button class="primary-button full" type="button" data-close-dialog>확인</button>
+    </dialog>
+
+    <dialog class="modal result-modal" id="resultDialog">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">Result</p>
+          <h2 id="resultTitle">승리</h2>
+        </div>
+        <button class="icon-button" type="button" data-close-dialog aria-label="닫기">×</button>
+      </div>
+      <p id="resultDescription" class="result-description"></p>
+      <button class="primary-button full" id="resultNewGameButton" type="button">새 게임</button>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
