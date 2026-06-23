@@ -1,6 +1,7 @@
 // 교사 정보는 이 배열에서 관리합니다.
 // image에는 로컬 이미지 경로("./images/teacher.png"), 원격 이미지 URL, data URL을 넣을 수 있습니다.
-// tools에는 허브의 "웹툴 검색"에 노출할 대표 페이지나 대표 웹툴 정보를 넣습니다.
+// crawlUrl은 자동 수집 스크립트가 읽을 공개 페이지 주소입니다.
+// tools는 자동 수집이 실패했을 때 사용할 fallback 검색 데이터입니다.
 const teachers = [
   {
     name: "정승원",
@@ -8,6 +9,7 @@ const teachers = [
     description: "수학 수업에 바로 활용할 수 있는 인터랙티브 웹툴을 제작하고 공유합니다.",
     tags: ["함수", "확률", "통계", "인공지능 수학", "공학도구", "수업활동"],
     url: "../",
+    crawlUrl: "https://mathtjungsw.github.io/math-class-webtools/",
     image: "",
     imageAlt: "정승원 선생님 수학 수업 웹툴 모음 페이지 미리보기",
     tools: [
@@ -25,6 +27,8 @@ const teachers = [
     description: "학생 참여형 수업과 탐구 활동에 활용할 수 있는 수학 웹툴 모음입니다.",
     tags: ["수업활동", "공학도구", "게임형 수업"],
     url: "https://shootting.github.io/student-app/",
+    crawlUrl: "https://shootting.github.io/student-app/",
+    crawlFollowPatterns: ["/docs/"],
     image: "",
     imageAlt: "정종엽 선생님 웹툴 모음 페이지 미리보기",
     tools: [
@@ -42,6 +46,7 @@ const teachers = [
     description: "중학교 수학 개념을 조작하고 발견하며 배울 수 있는 웹툴을 모았습니다.",
     tags: ["기하", "함수", "게임형 수업", "수업활동"],
     url: "https://bsw0131.github.io/mathfactory/",
+    crawlUrl: "https://bsw0131.github.io/mathfactory/",
     image: "",
     imageAlt: "백승욱 선생님 웹툴 모음 페이지 미리보기",
     tools: [

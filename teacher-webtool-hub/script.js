@@ -12,6 +12,7 @@ const toolEmpty = document.querySelector("#tool-empty");
 const teacherTotal = document.querySelector("#teacher-total");
 const toolTotal = document.querySelector("#tool-total");
 const tagTotal = document.querySelector("#tag-total");
+const crawlStatus = document.querySelector("#crawl-status");
 
 let activeTag = "전체 보기";
 let pageSearchTerm = "";
@@ -35,9 +36,27 @@ function hasReadyUrl(url) {
   return trimmedUrl !== "" && trimmedUrl !== "#";
 }
 
+function getGeneratedTools(teacher) {
+  const generated = window.generatedTeacherTools;
+  const tools = generated?.teachers?.[teacher.name];
+
+  return Array.isArray(tools) ? tools : [];
+}
+
+function getTeacherTools(teacher) {
+  const generatedTools = getGeneratedTools(teacher);
+  const fallbackTools = teacher.tools || [];
+  const preferredTools = generatedTools.length > 0 ? generatedTools : fallbackTools;
+
+  return preferredTools.map((tool) => ({
+    ...tool,
+    source: generatedTools.length > 0 ? "auto" : "manual",
+  }));
+}
+
 function getAllTools() {
   return window.teachers.flatMap((teacher) =>
-    (teacher.tools || []).map((tool) => ({
+    getTeacherTools(teacher).map((tool) => ({
       ...tool,
       teacherName: teacher.name,
       teacherSchool: teacher.school,
@@ -140,7 +159,9 @@ function renderTags(tags, className = "tag") {
 
 function renderTeacherCard(teacher) {
   const isReady = hasReadyUrl(teacher.url);
-  const toolCountText = `${(teacher.tools || []).length}개 웹툴`;
+  const tools = getTeacherTools(teacher);
+  const toolCountText = `${tools.length}개 웹툴`;
+  const toolSourceText = tools.some((tool) => tool.source === "auto") ? "자동 수집" : "수동 등록";
 
   return `
     <article class="teacher-card">
@@ -148,6 +169,7 @@ function renderTeacherCard(teacher) {
       <div class="teacher-card-body">
         <div class="teacher-meta">
           <span>${escapeHtml(toolCountText)}</span>
+          <span>${escapeHtml(toolSourceText)}</span>
           <span>${escapeHtml(teacher.school)}</span>
         </div>
         <h3>${escapeHtml(teacher.name)}</h3>
@@ -166,7 +188,7 @@ function renderTeacherCard(teacher) {
 }
 
 function renderToolResult(tool) {
-  const linkUrl = hasReadyUrl(tool.url) ? tool.url : tool.teacherUrl;
+  const linkUrl = hasReadyUrl(tool.url) ? tool.url : "";
   const hasLink = hasReadyUrl(linkUrl);
 
   return `
@@ -207,6 +229,9 @@ function renderSummary() {
   teacherTotal.textContent = window.teachers.length;
   toolTotal.textContent = getAllTools().length;
   tagTotal.textContent = window.tagFilters.length;
+
+  const generatedAt = window.generatedTeacherTools?.generatedAt;
+  crawlStatus.textContent = generatedAt ? `자동 수집 ${new Date(generatedAt).toLocaleDateString("ko-KR")}` : "";
 }
 
 function updateView() {
