@@ -1,6 +1,8 @@
 const teacherGrid = document.querySelector("#teacher-grid");
 const toolResults = document.querySelector("#tool-results");
 const tagFilterContainer = document.querySelector("#tag-filters");
+const filterSection = document.querySelector(".filter-section");
+const teacherSection = document.querySelector(".teacher-section");
 const pageSearchInput = document.querySelector("#page-search-input");
 const toolSearchInput = document.querySelector("#tool-search-input");
 const clearPageSearchButton = document.querySelector("#clear-page-search");
@@ -101,7 +103,7 @@ function getFilteredTeachers() {
 function getFilteredTools() {
   return getAllTools().filter((tool) => {
     const combinedTags = [...(tool.tags || []), ...(tool.teacherTags || [])];
-    const matchesTag = matchesActiveTag(combinedTags);
+    const matchesTag = toolSearchTerm ? true : matchesActiveTag(combinedTags);
     const matchesSearch = !toolSearchTerm || getToolSearchText(tool).includes(toolSearchTerm);
 
     return matchesTag && matchesSearch;
@@ -234,7 +236,15 @@ function renderSummary() {
   crawlStatus.textContent = generatedAt ? `자동 수집 ${new Date(generatedAt).toLocaleDateString("ko-KR")}` : "";
 }
 
+function updateSearchMode() {
+  const isToolSearching = toolSearchTerm !== "";
+
+  filterSection.hidden = isToolSearching;
+  teacherSection.hidden = isToolSearching;
+}
+
 function updateView() {
+  updateSearchMode();
   renderTagFilters();
   renderTeachers();
   renderTools();
@@ -258,6 +268,7 @@ pageSearchInput.addEventListener("input", (event) => {
 toolSearchInput.addEventListener("input", (event) => {
   toolSearchTerm = normalize(event.target.value);
   clearToolSearchButton.hidden = toolSearchTerm === "";
+  updateSearchMode();
   renderTools();
 });
 
@@ -274,7 +285,7 @@ clearToolSearchButton.addEventListener("click", () => {
   toolSearchTerm = "";
   clearToolSearchButton.hidden = true;
   toolSearchInput.focus();
-  renderTools();
+  updateView();
 });
 
 updateView();
