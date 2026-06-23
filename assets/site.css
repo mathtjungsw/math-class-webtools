@@ -753,6 +753,26 @@ h3 {
 .card-pig .die rect { fill: white; stroke: var(--navy); stroke-width: 5; }
 .card-pig .die circle { fill: var(--orange); }
 
+.card-monopoly .tool-visual { background: #edf6f2; }
+.card-monopoly .pricing-board rect { fill: white; stroke: var(--navy); stroke-width: 5; }
+.card-monopoly .pricing-board path { fill: none; stroke: #b7d4ca; stroke-linecap: round; stroke-width: 3; }
+.card-monopoly .pricing-board text {
+  fill: var(--navy);
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  font-size: 20px;
+  font-weight: 950;
+}
+.card-monopoly .profit-stack rect { fill: var(--yellow); stroke: var(--navy); stroke-width: 5; }
+.card-monopoly .profit-stack rect:nth-child(2) { fill: var(--mint); }
+.card-monopoly .profit-stack rect:nth-child(3) { fill: #fff0e9; }
+.card-monopoly .profit-stack text {
+  fill: var(--navy);
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  font-size: 19px;
+  font-weight: 950;
+}
+.card-monopoly .strategy-line { fill: none; stroke: var(--orange); stroke-linecap: round; stroke-width: 6; }
+
 .card-kbo .tool-visual { background: #edf8e6; }
 .card-kbo .diamond { fill: #91d47d; stroke: var(--navy); stroke-linejoin: round; stroke-width: 5; }
 .card-kbo .infield { fill: #e6b37a; stroke: var(--navy); stroke-linejoin: round; stroke-width: 4; }

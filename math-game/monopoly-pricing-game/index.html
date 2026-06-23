@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f7fb" />
+    <title>독점 보드게임</title>
+    <link rel="stylesheet" href="./style.css?v=2" />
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="back-link" href="../../index.html#math-game">수학 게임</a>
+      <div class="title-block">
+        <span>가격 결정과 전략</span>
+        <h1>독점 보드게임</h1>
+      </div>
+      <span class="connection-pill" id="connectionPill">연결 전</span>
+    </header>
+
+    <main class="app-shell">
+      <section id="modeSelection" class="mode-screen">
+        <div class="mode-hero">
+          <p class="eyebrow">Google Sheets 연동 수업 게임</p>
+          <h2>조별 선택은 숨기고,<br />결과는 한 번에 공개합니다.</h2>
+          <p>
+            3팀부터 8팀까지 팀 수를 정하고, 각 팀은 12개월 동안 A/B/C 가격을 제출합니다.
+            관리자 화면은 제출 현황과 점수를 진행하고, 참여자 화면은 자기 팀 선택만 보여줍니다.
+          </p>
+        </div>
+        <div class="mode-grid" aria-label="접속 모드 선택">
+          <button class="mode-card admin-card" type="button" onclick="switchMode('admin')">
+            <span class="mode-icon" aria-hidden="true">관리</span>
+            <span><small>교사용</small><strong>관리자 모드</strong><em>게임 생성, 제출 공개, 점수 출력</em></span>
+          </button>
+          <button class="mode-card player-card" type="button" onclick="switchMode('player')">
+            <span class="mode-icon" aria-hidden="true">참여</span>
+            <span><small>학생용</small><strong>참여자 모드</strong><em>팀 코드로 접속해 가격 제출</em></span>
+          </button>
+        </div>
+        <div class="rule-strip">
+          <span>A 최소 4회</span>
+          <span>C 최대 4회</span>
+          <span>12개월 진행</span>
+        </div>
+      </section>
+
+      <section id="adminScreen" class="screen workspace" hidden>
+        <div class="workspace-heading">
+          <div>
+            <button class="text-button" type="button" onclick="switchMode('home')">모드 선택으로</button>
+            <p class="eyebrow">교사용 게임 컨트롤</p>
+            <h2>관리자 모드</h2>
+          </div>
+          <div class="round-badge" id="adminRoundBadge"><small>현재 월</small><strong>준비 중</strong></div>
+        </div>
+
+        <section class="panel setup-panel" aria-labelledby="adminSetupTitle">
+          <div class="panel-heading">
+            <div><p class="step-label">STEP 1</p><h3 id="adminSetupTitle">구글 시트 연결과 게임 생성</h3></div>
+            <span class="status-chip" id="adminSetupStatus">설정 필요</span>
+          </div>
+
+          <div class="script-copy-card">
+            <div class="script-copy-icon" aria-hidden="true">&lt;/&gt;</div>
+            <div class="script-copy-copy">
+              <strong>Apps Script 코드를 먼저 준비하세요</strong>
+              <p>버튼으로 전체 코드를 복사한 뒤, 구글 시트의 Apps Script 편집기에 그대로 붙여 넣고 웹앱으로 배포합니다.</p>
+            </div>
+            <button id="copyAppsScriptButton" class="button copy-button" type="button" onclick="copyAppsScriptCode()">코드 전체 복사</button>
+          </div>
+
+          <div class="field-grid">
+            <label class="field">
+              <span>Apps Script 웹앱 URL</span>
+              <input id="adminApiUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="url" />
+            </label>
+            <label class="field">
+              <span>구글 스프레드시트 주소</span>
+              <input id="adminSpreadsheet" type="text" placeholder="https://docs.google.com/spreadsheets/d/.../edit" />
+            </label>
+          </div>
+
+          <div class="setup-options">
+            <label class="field compact-field">
+              <span>팀 수</span>
+              <select id="adminTeamCount">
+                <option value="3">3팀</option>
+                <option value="4">4팀</option>
+                <option value="5">5팀</option>
+                <option value="6">6팀</option>
+                <option value="7">7팀</option>
+                <option value="8">8팀</option>
+              </select>
+            </label>
+            <div class="constraint-card"><strong>A 최소 4회</strong><small>12개월 안에 각 팀이 반드시 지켜야 합니다.</small></div>
+            <div class="constraint-card"><strong>C 최대 4회</strong><small>4번 사용하면 이후 C 제출이 막힙니다.</small></div>
+          </div>
+
+          <div class="button-row">
+            <button id="createGameButton" class="button primary" type="button" onclick="createGame()">게임 생성</button>
+            <button class="button secondary" type="button" onclick="loadAdminState()">기존 게임 불러오기</button>
+          </div>
+          <p class="helper-text">
+            게임 생성은 시트의 게임 영역을 새로 구성합니다. 기존 진행을 이어갈 때만 기존 게임 불러오기를 사용하세요.
+          </p>
+        </section>
+
+        <section id="teamCodesPanel" class="panel" hidden>
+          <div class="panel-heading">
+            <div><p class="step-label">STEP 2</p><h3>팀별 참여 코드</h3></div>
+            <button class="button compact primary" id="startGameButton" type="button" onclick="startGame()">게임 시작</button>
+          </div>
+          <p class="panel-description">학생에게는 공통 QR과 자기 팀 4자리 코드만 알려 주세요.</p>
+          <div class="game-id-line"><span>참여자용 게임 ID</span><code id="gameIdDisplay">-</code></div>
+          <div id="commonQrPanel" class="common-qr-panel" hidden>
+            <div class="common-qr-copy">
+              <p class="step-label">COMMON JOIN QR</p>
+              <h4>참여자 공통 접속 QR</h4>
+              <p>QR에는 웹앱 URL과 게임 ID만 들어갑니다. 학생은 자기 팀 코드만 추가로 입력합니다.</p>
+              <button class="button secondary compact" type="button" onclick="copyCommonJoinLink()">접속 링크 복사</button>
+            </div>
+            <div class="qr-code-frame" id="commonQrCode" aria-label="참여자 공통 접속 QR 코드"></div>
+          </div>
+          <div class="team-code-grid" id="teamCodeGrid"></div>
+        </section>
+
+        <section id="adminGamePanel" class="panel board-panel" hidden>
+          <div class="panel-heading board-heading">
+            <div><p class="step-label">LIVE BOARD</p><h3>월별 진행판</h3></div>
+            <div class="button-row compact-row">
+              <button class="button secondary compact" type="button" onclick="loadAdminState()">동기화</button>
+              <button class="button secondary compact" type="button" onclick="downloadAdminCsv()">CSV 저장</button>
+              <button class="button secondary compact" type="button" onclick="printResults()">결과 인쇄</button>
+              <button class="button danger-ghost compact" type="button" onclick="resetGame()">게임 초기화</button>
+            </div>
+          </div>
+          <div class="progress-track" id="roundProgress" aria-label="월 진행 상황"></div>
+          <div class="table-scroll">
+            <table class="game-board">
+              <thead id="adminBoardHead"></thead>
+              <tbody id="adminBoardBody"></tbody>
+            </table>
+          </div>
+          <div class="legend">
+            <span><i class="legend-dot admin-entry"></i>관리자 직접 입력</span>
+            <span><i class="legend-dot submitted"></i>제출 완료</span>
+            <span><i class="legend-dot revealed"></i>공개 완료</span>
+            <span><i class="legend-dot winner"></i>현재 선두</span>
+          </div>
+          <div class="action-bar">
+            <div><strong id="submissionCount">0팀 제출</strong><small id="roundHint">현재 월의 제출 현황을 확인합니다.</small></div>
+            <div class="button-row">
+              <button id="revealAllButton" class="button accent" type="button" onclick="revealAllCurrentRound()">현재 월 전체 공개</button>
+              <button id="nextRoundButton" class="button primary" type="button" onclick="nextRound()">다음 월로</button>
+            </div>
+          </div>
+        </section>
+
+        <div id="adminSummaryPanel" class="dashboard-grid" hidden>
+          <section class="panel">
+            <div class="panel-heading"><h3>팀 현황</h3><span class="status-chip">실시간</span></div>
+            <div class="team-status-list" id="teamStatusList"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-heading"><h3>월별 결과</h3></div>
+            <div class="result-list" id="roundResultList"><p class="empty-state">공개된 월의 결과가 여기에 표시됩니다.</p></div>
+          </section>
+        </div>
+
+        <section id="payoffPanel" class="panel payoff-panel" hidden>
+          <div class="panel-heading">
+            <div><p class="step-label">PAYOFF TABLE</p><h3 id="payoffTitle">점수표</h3></div>
+            <span class="status-chip" id="payoffSourceChip">3팀은 원본 표 사용</span>
+          </div>
+          <p class="panel-description">선택 조합은 알파벳순으로 정렬됩니다. 빈 칸은 해당 가격을 선택한 팀이 없다는 뜻입니다.</p>
+          <div class="table-scroll">
+            <table class="payoff-table" id="payoffTable"></table>
+          </div>
+        </section>
+      </section>
+
+      <section id="playerScreen" class="screen workspace player-workspace" hidden>
+        <div class="workspace-heading">
+          <div>
+            <button class="text-button" type="button" onclick="switchMode('home')">모드 선택으로</button>
+            <p class="eyebrow">팀 가격 제출</p>
+            <h2>참여자 모드</h2>
+          </div>
+          <div class="round-badge player-round" id="playerRoundBadge"><small>현재 월</small><strong>접속 전</strong></div>
+        </div>
+
+        <section id="playerJoinPanel" class="panel setup-panel">
+          <div class="panel-heading"><div><p class="step-label">TEAM LOGIN</p><h3>우리 팀으로 접속</h3></div></div>
+          <div id="qrJoinNotice" class="qr-join-notice" hidden>
+            <div><strong>QR 접속 정보가 입력되었습니다</strong><p>선생님이 알려준 자기 팀 4자리 코드만 입력하세요.</p></div>
+            <button class="text-button" type="button" onclick="showManualConnectionFields()">직접 입력</button>
+          </div>
+          <div id="playerConnectionFields" class="player-connection-fields">
+            <label class="field"><span>Apps Script 웹앱 URL</span><input id="playerApiUrl" type="url" placeholder="선생님이 알려준 웹앱 URL" autocomplete="url" /></label>
+            <label class="field"><span>스프레드시트 주소 또는 게임 ID</span><input id="playerSpreadsheet" type="text" placeholder="선생님이 알려준 주소 또는 ID" /></label>
+          </div>
+          <label class="field code-field player-code-field"><span>4자리 참여 코드</span><input id="playerTeamCode" type="text" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="0000" autocomplete="one-time-code" /></label>
+          <button id="joinGameButton" class="button primary full-button" type="button" onclick="joinGame()">팀으로 접속하기</button>
+        </section>
+
+        <section id="playerGamePanel" hidden>
+          <div class="player-identity">
+            <div><small>접속한 팀</small><strong id="playerTeamName">-</strong></div>
+            <button class="text-button" type="button" onclick="leavePlayerGame()">다른 게임 접속</button>
+          </div>
+          <section class="panel choice-panel">
+            <div class="player-status" id="playerStatusMessage"><span class="pulse-dot"></span><strong>게임 상태를 확인하고 있습니다.</strong></div>
+            <div class="choice-heading">
+              <div><p class="step-label">YOUR PRICE</p><h3>이번 월의 가격을 고르세요</h3></div>
+              <div class="selected-display"><small>선택</small><strong id="selectedChoiceDisplay">-</strong></div>
+            </div>
+            <div class="price-grid" id="playerPriceGrid" aria-label="가격 선택"></div>
+            <button id="submitChoiceButton" class="button primary submit-button" type="button" onclick="submitChoice()" disabled>가격을 선택하세요</button>
+            <p class="privacy-note">제출 후에는 바꿀 수 없습니다. 다른 팀의 선택은 관리자가 공개할 때까지 보이지 않습니다.</p>
+          </section>
+          <section class="panel remaining-panel">
+            <div class="panel-heading"><h3>우리 팀 현황</h3><span class="status-chip" id="playerScoreChip">현재 0점</span></div>
+            <div id="playerConstraintBars"></div>
+          </section>
+          <section id="playerFinalPanel" class="panel final-panel" hidden><div id="playerFinalRanking"></div></section>
+        </section>
+      </section>
+    </main>
+
+    <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
+    <div class="loading-overlay" id="loadingOverlay" hidden><div class="spinner"></div><strong id="loadingText">처리 중입니다...</strong></div>
+    <script src="../betting-game/vendor/qrcode.min.js"></script>
+    <script src="./app.js?v=2"></script>
+  </body>
+</html>
