@@ -3,9 +3,7 @@ const MANUAL_GITHUB_REPOSITORY_URL = "https://github.com/mathtjungsw/math-class-
 function inferGithubRepositoryUrl() {
   const host = window.location.hostname;
 
-  if (!host.endsWith(".github.io")) {
-    return "";
-  }
+  if (!host.endsWith(".github.io")) return "";
 
   const owner = host.replace(".github.io", "");
   const firstPath = window.location.pathname.split("/").filter(Boolean)[0];
@@ -14,18 +12,12 @@ function inferGithubRepositoryUrl() {
   return `https://github.com/${owner}/${repo}`;
 }
 
-function resolveGithubRepositoryUrl() {
-  return MANUAL_GITHUB_REPOSITORY_URL || inferGithubRepositoryUrl();
-}
-
 function wireGithubLinks() {
-  const githubUrl = resolveGithubRepositoryUrl();
+  const githubUrl = MANUAL_GITHUB_REPOSITORY_URL || inferGithubRepositoryUrl();
 
   document.querySelectorAll("[data-github-link]").forEach((link) => {
     if (!githubUrl) {
-      link.setAttribute("aria-disabled", "true");
-      link.setAttribute("title", "GitHub 원격 저장소를 연결하면 자동으로 활성화됩니다.");
-      link.addEventListener("click", (event) => event.preventDefault());
+      link.hidden = true;
       return;
     }
 
@@ -33,25 +25,36 @@ function wireGithubLinks() {
   });
 }
 
-function selectSubject(selectedSubject, updateHash = false) {
-  const selectedButton = document.querySelector(`[data-subject="${selectedSubject}"]`);
+function selectFilter(filter, updateHash = false) {
+  const selectedButton = document.querySelector(`[data-filter="${filter}"]`);
   if (!selectedButton) return;
 
-  document.querySelectorAll("[data-subject]").forEach((item) => {
-    item.classList.toggle("is-active", item === selectedButton);
+  document.querySelectorAll("[data-filter]").forEach((button) => {
+    const isSelected = button === selectedButton;
+    button.classList.toggle("is-active", isSelected);
+    button.setAttribute("aria-selected", String(isSelected));
   });
 
-  document.querySelectorAll("[data-subject-panel]").forEach((panel) => {
-    panel.hidden = panel.dataset.subjectPanel !== selectedSubject;
+  let visibleCount = 0;
+  document.querySelectorAll("[data-tool-category]").forEach((card) => {
+    const isVisible = filter === "all" || card.dataset.toolCategory === filter;
+    card.classList.toggle("is-hidden", !isVisible);
+    card.setAttribute("aria-hidden", String(!isVisible));
+    if (isVisible) visibleCount += 1;
   });
 
-  if (updateHash) window.history.replaceState({}, "", `#${selectedSubject}`);
+  document.querySelector(".empty-message").hidden = visibleCount !== 0;
+
+  if (updateHash) {
+    const nextHash = filter === "all" ? "tools" : filter;
+    window.history.replaceState({}, "", `#${nextHash}`);
+  }
 }
 
-document.querySelectorAll("[data-subject]").forEach((button) => {
-  button.addEventListener("click", () => selectSubject(button.dataset.subject, true));
+document.querySelectorAll("[data-filter]").forEach((button) => {
+  button.addEventListener("click", () => selectFilter(button.dataset.filter, true));
 });
 
-selectSubject(window.location.hash.slice(1) || "probability-statistics");
-
+const initialFilter = window.location.hash.slice(1);
+selectFilter(document.querySelector(`[data-filter="${initialFilter}"]`) ? initialFilter : "all");
 wireGithubLinks();
