@@ -662,6 +662,15 @@ h3 {
 
 /* 카드별 간단한 시각화 */
 .card-monty .tool-visual { background: #fff3e9; }
+.card-bayes .tool-visual { background: #eef8f5; }
+.card-bayes .people-grid circle { fill: #cad5df; }
+.card-bayes .people-grid circle:nth-child(2),
+.card-bayes .people-grid circle:nth-child(4) { fill: var(--mint); stroke: var(--navy); stroke-width: 3; }
+.card-bayes .bayes-arrow { fill: none; stroke: var(--navy); stroke-linecap: round; stroke-linejoin: round; stroke-width: 5; }
+.card-bayes .positive-group rect { fill: white; stroke: var(--navy); stroke-width: 5; }
+.card-bayes .positive-group .true-positive { fill: var(--mint); stroke: var(--navy); stroke-width: 4; }
+.card-bayes .positive-group .false-positive { fill: var(--yellow); stroke: var(--navy); stroke-width: 4; }
+.card-bayes .positive-group path { fill: none; stroke: var(--orange); stroke-linecap: round; stroke-width: 7; }
 .monty-visual .ground { fill: none; stroke: #e6c7b0; stroke-linecap: round; stroke-width: 3; }
 .monty-visual .goat { fill: #fffaf1; stroke: var(--navy); stroke-linecap: round; stroke-linejoin: round; stroke-width: 5; }
 .monty-visual .goat circle { fill: var(--navy); stroke: none; }

@@ -60,7 +60,7 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 12 10 0m-4-4 4 4-4 4" /></svg>
           </a>
           <dl class="hero-stats" aria-label="웹툴 현황">
-            <div><dt>11</dt><dd>개의 웹툴</dd></div>
+            <div><dt>12</dt><dd>개의 웹툴</dd></div>
             <div><dt>3</dt><dd>개의 주제</dd></div>
             <div><dt>100%</dt><dd>브라우저 실행</dd></div>
           </dl>
@@ -98,10 +98,10 @@
 
         <div class="filter-bar" role="tablist" aria-label="웹툴 주제 필터">
           <button class="filter-button is-active" type="button" role="tab" aria-selected="true" data-filter="all">
-            전체 <span>11</span>
+            전체 <span>12</span>
           </button>
           <button class="filter-button" type="button" role="tab" aria-selected="false" data-filter="probability-statistics">
-            확률과 통계 <span>1</span>
+            확률과 통계 <span>2</span>
           </button>
           <button class="filter-button" type="button" role="tab" aria-selected="false" data-filter="ai-math">
             인공지능 수학 <span>3</span>
@@ -139,6 +139,38 @@
               <div class="tool-footer">
                 <span>실험 · 데이터 비교</span>
                 <a href="./probability-statistics/monty-hall/index.html" aria-label="몬티홀 딜레마 실험 시작하기">시작하기 <b aria-hidden="true">→</b></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="tool-card card-bayes" data-tool-category="probability-statistics">
+            <div class="tool-visual" aria-hidden="true">
+              <svg class="bayes-visual" viewBox="0 0 420 210">
+                <g class="people-grid">
+                  <circle cx="54" cy="48" r="8" /><circle cx="82" cy="48" r="8" /><circle cx="110" cy="48" r="8" />
+                  <circle cx="54" cy="76" r="8" /><circle cx="82" cy="76" r="8" /><circle cx="110" cy="76" r="8" />
+                  <circle cx="54" cy="104" r="8" /><circle cx="82" cy="104" r="8" /><circle cx="110" cy="104" r="8" />
+                  <circle cx="54" cy="132" r="8" /><circle cx="82" cy="132" r="8" /><circle cx="110" cy="132" r="8" />
+                  <circle cx="54" cy="160" r="8" /><circle cx="82" cy="160" r="8" /><circle cx="110" cy="160" r="8" />
+                </g>
+                <path class="bayes-arrow" d="M140 104h55m-15-14 15 14-15 14" />
+                <g class="positive-group">
+                  <rect x="222" y="42" width="158" height="126" rx="25" />
+                  <circle class="true-positive" cx="263" cy="83" r="15" />
+                  <circle class="true-positive" cx="309" cy="83" r="15" />
+                  <circle class="false-positive" cx="263" cy="129" r="15" />
+                  <circle class="false-positive" cx="309" cy="129" r="15" />
+                  <path d="M351 68v30m-15-15h30" />
+                </g>
+              </svg>
+            </div>
+            <div class="tool-content">
+              <div class="tool-tags"><span>베이즈 정리</span><small>확률과 통계</small></div>
+              <h3>조건부 확률 실험기</h3>
+              <p>검사 정확도가 99%라면 양성자의 99%가 환자일까요? 기저율과 위양성을 움직이며 직관을 다시 계산합니다.</p>
+              <div class="tool-footer">
+                <span>시각화 · 재검사 · 퀴즈</span>
+                <a href="./probability-statistics/conditional-probability/index.html" aria-label="조건부 확률 실험기 시작하기">시작하기 <b aria-hidden="true">→</b></a>
               </div>
             </div>
           </article>
