@@ -772,6 +772,21 @@ h3 {
 .card-pig .die rect { fill: white; stroke: var(--navy); stroke-width: 5; }
 .card-pig .die circle { fill: var(--orange); }
 
+.card-pharaoh .tool-visual { background: #fff4d9; }
+.card-pharaoh .pharaoh-sun { fill: var(--yellow); }
+.card-pharaoh .pharaoh-pyramid { fill: #dba744; stroke: var(--navy); stroke-linejoin: round; stroke-width: 5; }
+.card-pharaoh .pharaoh-cards rect { fill: #fffdf6; stroke: var(--navy); stroke-width: 4; }
+.card-pharaoh .pharaoh-cards text,
+.card-pharaoh .pharaoh-dice text {
+  fill: var(--navy);
+  font-family: Georgia, serif;
+  font-size: 23px;
+  font-weight: 900;
+}
+.card-pharaoh .pharaoh-dice rect,
+.card-pharaoh .pharaoh-dice path { fill: white; stroke: var(--orange); stroke-linejoin: round; stroke-width: 5; }
+.card-pharaoh .pharaoh-dice text { font-size: 21px; }
+
 .card-monopoly .tool-visual { background: #edf6f2; }
 .card-monopoly .pricing-board rect { fill: white; stroke: var(--navy); stroke-width: 5; }
 .card-monopoly .pricing-board path { fill: none; stroke: #b7d4ca; stroke-linecap: round; stroke-width: 3; }

@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6efe4" />
+    <meta
+      name="description"
+      content="6면·8면·12면 주사위의 수를 계산해 목표 숫자를 만들고 조별 점수를 얻는 수학 게임"
+    />
+    <title>파라오 코드 | 수학 게임</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="game-header">
+      <a class="back-link" href="../../index.html#math-game" aria-label="수학 게임 목록으로 돌아가기">
+        <span aria-hidden="true">←</span>
+        <span>수학 게임</span>
+      </a>
+      <div class="game-brand">
+        <span class="brand-glyph" aria-hidden="true">△</span>
+        <span><strong>파라오 코드</strong><small>PHARAOH CODE</small></span>
+      </div>
+      <div class="header-actions">
+        <button class="text-button" id="rulesButton" type="button">게임 방법</button>
+        <button class="text-button" id="fullscreenButton" type="button">전체 화면</button>
+        <button class="text-button danger" id="newGameButton" type="button">새 게임</button>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="hero" id="heroPanel" aria-labelledby="pageTitle">
+        <div class="hero-copy">
+          <p class="eyebrow">수 연산 · 전략 · 모둠 활동</p>
+          <h1 id="pageTitle">주사위의 수로<br /><em>파라오의 암호</em>를 풀어라</h1>
+          <p>
+            6면·8면·12면 주사위에서 나온 수 두 개 또는 세 개를 계산해 목표 숫자를 만드세요.
+            어려운 숫자일수록 더 높은 점수를 얻습니다.
+          </p>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="sun-disc"></div>
+          <div class="pyramid-back"></div>
+          <div class="pyramid-front">
+            <span>84</span>
+            <span>54</span><span>80</span>
+            <span>25</span><span>60</span><span>48</span>
+          </div>
+          <div class="hero-die die-six">6</div>
+          <div class="hero-die die-eight">8</div>
+          <div class="hero-die die-twelve">12</div>
+        </div>
+      </section>
+
+      <section class="setup-card" id="setupPanel" aria-labelledby="setupTitle">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">게임 준비</p>
+            <h2 id="setupTitle">참가할 조와 제한 시간을 정하세요</h2>
+          </div>
+          <span class="source-chip">원본 엑셀 기본값: 6조</span>
+        </div>
+
+        <div class="setup-grid">
+          <label class="field-card">
+            <span>조 수</span>
+            <select id="teamCount">
+              <option value="2">2조</option>
+              <option value="3">3조</option>
+              <option value="4">4조</option>
+              <option value="5">5조</option>
+              <option value="6" selected>6조</option>
+              <option value="7">7조</option>
+              <option value="8">8조</option>
+              <option value="9">9조</option>
+              <option value="10">10조</option>
+            </select>
+          </label>
+          <label class="field-card">
+            <span>한 라운드 제한 시간</span>
+            <div class="number-field">
+              <input id="setupTimerSeconds" type="number" min="0" max="600" step="5" value="60" inputmode="numeric" />
+              <span>초</span>
+            </div>
+            <small>0초로 설정하면 타이머를 사용하지 않습니다.</small>
+          </label>
+          <div class="field-card rule-summary">
+            <span>게임 카드</span>
+            <strong>4단계 · 48장</strong>
+            <small>어느 한 단계라도 END가 나오면 종료</small>
+          </div>
+        </div>
+
+        <div class="name-section">
+          <div class="name-heading">
+            <h3>조 이름</h3>
+            <button class="small-button" id="resetNamesButton" type="button">기본 이름</button>
+          </div>
+          <div class="name-grid" id="teamNameFields"></div>
+        </div>
+
+        <button class="primary-action start-button" id="startButton" type="button">
+          <span>게임 시작</span>
+          <span aria-hidden="true">→</span>
+        </button>
+      </section>
+
+      <section class="game-panel" id="gamePanel" hidden aria-label="파라오 코드 게임판">
+        <div class="game-stats" aria-label="게임 현황">
+          <div><span>남은 목표 카드</span><strong><b id="remainingCount">48</b>장</strong></div>
+          <div><span>해독한 카드</span><strong><b id="solvedCount">0</b>장</strong></div>
+          <div><span>현재 최고 점수</span><strong id="leaderDisplay">아직 없음</strong></div>
+          <div class="round-stat"><span>주사위 라운드</span><strong><b id="roundCount">0</b>회</strong></div>
+        </div>
+
+        <div class="game-layout">
+          <section class="target-panel" aria-labelledby="targetTitle">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">TARGET PYRAMID</p>
+                <h2 id="targetTitle">만들 수 있는 목표 숫자를 선택하세요</h2>
+              </div>
+              <div class="panel-actions">
+                <button class="small-button" id="undoButton" type="button" disabled>득점 되돌리기</button>
+              </div>
+            </div>
+            <p class="target-help">
+              숫자를 만들었다면 카드를 눌러 조와 계산식을 기록하세요. 카드별 배점은 색과 배지로 표시됩니다.
+            </p>
+            <div class="target-pyramid" id="targetPyramid"></div>
+          </section>
+
+          <aside class="side-column">
+            <section class="dice-panel" aria-labelledby="diceTitle">
+              <div class="panel-heading compact">
+                <div>
+                  <p class="eyebrow">ROLL THE DICE</p>
+                  <h2 id="diceTitle">주사위 던지기</h2>
+                </div>
+                <span class="round-badge">#<b id="diceRoundBadge">0</b></span>
+              </div>
+
+              <div class="dice-row" id="diceRow" aria-live="polite">
+                <div class="poly-die six-sided" data-die="six">
+                  <span>6면</span><strong id="dieSix">?</strong>
+                </div>
+                <div class="poly-die eight-sided" data-die="eight">
+                  <span>8면</span><strong id="dieEight">?</strong>
+                </div>
+                <div class="poly-die twelve-sided" data-die="twelve">
+                  <span>12면</span><strong id="dieTwelve">?</strong>
+                </div>
+              </div>
+
+              <button class="primary-action roll-button" id="rollButton" type="button">
+                <span aria-hidden="true">⚄</span>
+                <span>세 주사위 던지기</span>
+                <kbd>Space</kbd>
+              </button>
+              <p class="dice-hint" id="diceHint">두 수 또는 세 수를 골라 사칙연산으로 목표 숫자를 만드세요.</p>
+            </section>
+
+            <section class="timer-panel" aria-labelledby="timerTitle">
+              <div class="timer-heading">
+                <div>
+                  <p class="eyebrow">ROUND TIMER</p>
+                  <h2 id="timerTitle">제한 시간</h2>
+                </div>
+                <strong id="timerDisplay">01:00</strong>
+              </div>
+              <div class="timer-track" aria-hidden="true"><span id="timerProgress"></span></div>
+              <div class="timer-controls">
+                <label>
+                  <span class="sr-only">제한 시간</span>
+                  <select id="timerPreset">
+                    <option value="0">사용 안 함</option>
+                    <option value="30">30초</option>
+                    <option value="45">45초</option>
+                    <option value="60" selected>1분</option>
+                    <option value="90">1분 30초</option>
+                    <option value="120">2분</option>
+                    <option value="180">3분</option>
+                  </select>
+                </label>
+                <button class="small-button" id="timerToggleButton" type="button">시작</button>
+                <button class="small-button" id="timerResetButton" type="button">초기화</button>
+              </div>
+            </section>
+          </aside>
+        </div>
+
+        <section class="score-panel" aria-labelledby="scoreTitle">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">TEAM SCORE</p>
+              <h2 id="scoreTitle">조별 점수</h2>
+            </div>
+            <span class="score-note">카드를 누르면 해당 조에 점수가 더해집니다.</span>
+          </div>
+          <div class="score-grid" id="scoreGrid"></div>
+        </section>
+
+        <section class="history-panel" aria-labelledby="historyTitle">
+          <div class="panel-heading compact">
+            <div>
+              <p class="eyebrow">CODE LOG</p>
+              <h2 id="historyTitle">최근 해독 기록</h2>
+            </div>
+            <span id="historyCount">0건</span>
+          </div>
+          <ol id="historyList">
+            <li class="empty-history">아직 해독한 숫자가 없습니다.</li>
+          </ol>
+        </section>
+      </section>
+    </main>
+
+    <dialog class="modal rules-modal" id="rulesDialog">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">HOW TO PLAY</p>
+          <h2>파라오 코드를 푸는 방법</h2>
+        </div>
+        <button class="close-button" type="button" data-close-dialog aria-label="닫기">×</button>
+      </div>
+      <ol class="rule-list">
+        <li><strong>주사위 던지기</strong><span>6면·8면·12면 주사위를 한 번에 던집니다.</span></li>
+        <li><strong>계산하기</strong><span>나온 수 중 두 개 또는 세 개를 각각 한 번씩 사용해 목표 숫자를 만듭니다. 기본 연산은 +, −, ×, ÷와 괄호입니다.</span></li>
+        <li><strong>득점하기</strong><span>만든 목표 카드를 누르고 조를 선택합니다. 계산식은 선택 사항이며 교사가 판정합니다.</span></li>
+        <li><strong>새 카드</strong><span>득점한 카드는 같은 난이도의 다음 카드로 교체됩니다. 카드의 숫자마다 고정 배점이 있습니다.</span></li>
+        <li><strong>게임 종료</strong><span>어느 한 난이도의 카드 더미라도 모두 소진되어 END가 나타나면 즉시 종료합니다.</span></li>
+      </ol>
+      <div class="difficulty-guide">
+        <div class="guide-peak"><span>최상</span><strong>7–8점</strong><small>1장 공개</small></div>
+        <div class="guide-high"><span>상</span><strong>5–6점</strong><small>2장 공개</small></div>
+        <div class="guide-middle"><span>중</span><strong>3–4점</strong><small>3장 공개</small></div>
+        <div class="guide-low"><span>하</span><strong>1–2점</strong><small>4장 공개</small></div>
+      </div>
+      <p class="rule-note">
+        나눗셈의 중간 결과나 음수 사용 여부 등 세부 판정 기준은 수업 목표에 맞게 교사가 정할 수 있습니다.
+      </p>
+      <button class="primary-action modal-confirm" type="button" data-close-dialog>확인</button>
+    </dialog>
+
+    <dialog class="modal score-dialog" id="scoreDialog">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow" id="scoreTierLabel">TARGET</p>
+          <h2>목표 숫자 <strong id="scoreTargetValue">84</strong>를 해독했나요?</h2>
+        </div>
+        <button class="close-button" type="button" data-close-dialog aria-label="닫기">×</button>
+      </div>
+      <div class="score-dialog-summary">
+        <div><span>배점</span><strong><b id="scoreTargetPoints">8</b>점</strong></div>
+        <div><span>주사위</span><strong id="scoreDiceValues">아직 던지지 않음</strong></div>
+      </div>
+      <label class="expression-field">
+        <span>계산식 <small>(선택)</small></span>
+        <input id="expressionInput" type="text" maxlength="80" placeholder="예: (12 − 6) × 8 = 48" autocomplete="off" />
+      </label>
+      <div class="team-picker-heading">
+        <strong>득점할 조를 선택하세요</strong>
+        <span>선택 즉시 점수가 반영됩니다.</span>
+      </div>
+      <div class="team-picker" id="teamPicker"></div>
+      <button class="secondary-action modal-cancel" type="button" data-close-dialog>취소</button>
+    </dialog>
+
+    <dialog class="modal result-modal" id="resultDialog">
+      <div class="result-icon" aria-hidden="true">☀</div>
+      <p class="eyebrow">GAME OVER</p>
+      <h2 id="resultTitle">파라오의 암호를 모두 풀었습니다</h2>
+      <p id="resultDescription"></p>
+      <div class="result-ranking" id="resultRanking"></div>
+      <div class="result-actions">
+        <button class="secondary-action" type="button" data-close-dialog>게임판 보기</button>
+        <button class="primary-action" id="resultNewGameButton" type="button">새 게임</button>
+      </div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
