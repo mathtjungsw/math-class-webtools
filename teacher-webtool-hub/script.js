@@ -91,9 +91,15 @@ function matchesActiveTag(tags) {
   return activeTag === "전체 보기" || (tags || []).includes(activeTag);
 }
 
+function teacherHasActiveTag(teacher) {
+  if (activeTag === "전체 보기") return true;
+
+  return getTeacherTools(teacher).some((tool) => matchesActiveTag(tool.tags));
+}
+
 function getFilteredTeachers() {
   return window.teachers.filter((teacher) => {
-    const matchesTag = matchesActiveTag(teacher.tags);
+    const matchesTag = teacherHasActiveTag(teacher);
     const matchesSearch = !pageSearchTerm || getTeacherSearchText(teacher).includes(pageSearchTerm);
 
     return matchesTag && matchesSearch;
@@ -102,8 +108,7 @@ function getFilteredTeachers() {
 
 function getFilteredTools() {
   return getAllTools().filter((tool) => {
-    const combinedTags = [...(tool.tags || []), ...(tool.teacherTags || [])];
-    const matchesTag = toolSearchTerm ? true : matchesActiveTag(combinedTags);
+    const matchesTag = toolSearchTerm ? true : matchesActiveTag(tool.tags);
     const matchesSearch = !toolSearchTerm || getToolSearchText(tool).includes(toolSearchTerm);
 
     return matchesTag && matchesSearch;
@@ -111,8 +116,10 @@ function getFilteredTools() {
 }
 
 function getTagCount(tag) {
-  if (tag === "전체 보기") return window.teachers.length;
-  return window.teachers.filter((teacher) => (teacher.tags || []).includes(tag)).length;
+  const tools = getAllTools();
+
+  if (tag === "전체 보기") return tools.length;
+  return tools.filter((tool) => (tool.tags || []).includes(tag)).length;
 }
 
 function renderTagFilters() {
