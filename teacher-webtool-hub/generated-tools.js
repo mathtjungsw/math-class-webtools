@@ -1,5 +1,5 @@
 window.generatedTeacherTools = {
-  "generatedAt": "2026-06-23T06:43:14.902Z",
+  "generatedAt": "2026-06-24T01:45:33.412Z",
   "teachers": {
     "정승원": [
       {
@@ -67,6 +67,23 @@ window.generatedTeacherTools = {
         "url": "https://mathtjungsw.github.io/math-class-webtools/math-game/betting-game/index.html"
       },
       {
+        "title": "스트림스 수 추출기",
+        "description": "17 수 배열 게임 수학 게임 스트림스 수 추출기 스트림스 보드게임용 숫자를 기본 덱에서 하나씩 뽑거나, 수와 카드 개수를 직접 편집해 무작위로 추출합니다.",
+        "tags": [
+          "확률",
+          "게임형 수업"
+        ],
+        "url": "https://mathtjungsw.github.io/math-class-webtools/math-game/streams-number-drawer/index.html"
+      },
+      {
+        "title": "소수 체크 게임",
+        "description": "? 37 41 43 소수 판별 수학 게임 소수 체크 게임 25칸 숫자판에서 소수를 찾는 대학전쟁식 게임입니다. 2의 배수와 5의 배수를 제외하고 소수 9개가 나오도록 보드를 생성합니다.",
+        "tags": [
+          "게임형 수업"
+        ],
+        "url": "https://mathtjungsw.github.io/math-class-webtools/math-game/prime-check-battle/index.html"
+      },
+      {
         "title": "돼지 주사위 게임",
         "description": "확률 전략 수학 게임 돼지 주사위 게임 계속 굴릴지 멈출지 선택하며 확률과 기대값을 탐구하고, 다양한 변형 규칙으로 전략을 비교합니다.",
         "tags": [
@@ -75,6 +92,16 @@ window.generatedTeacherTools = {
           "수업활동"
         ],
         "url": "https://mathtjungsw.github.io/math-class-webtools/math-game/pig-dice/index.html"
+      },
+      {
+        "title": "독점 보드게임",
+        "description": "월 1조 2조 3조 1 A A B 2 C B A +140 +20 -40 전략 게임 수학 게임 독점 보드게임 3~8팀이 12개월 동안 A, B, C 가격을 선택하고 조합별 순이익을 누적하며 제약 조건을 관리하는 가격 결정 게임입니다.",
+        "tags": [
+          "확률",
+          "게임형 수업",
+          "수업활동"
+        ],
+        "url": "https://mathtjungsw.github.io/math-class-webtools/math-game/monopoly-pricing-game/index.html"
       },
       {
         "title": "야구 게임 시뮬레이터",
@@ -234,6 +261,7 @@ window.generatedTeacherTools = {
         "title": "숫자야구 게임",
         "description": "자리값과 논리 추론을 연습하는 교실용 숫자 게임",
         "tags": [
+          "확률",
           "기하",
           "공학도구",
           "게임형 수업",
@@ -288,6 +316,42 @@ window.generatedTeacherTools = {
           "게임형 수업"
         ],
         "url": "https://bsw0131.github.io/mathfactory/tools/student-record-textifier.html"
+      },
+      {
+        "title": "엑셀 텍스트화",
+        "description": "원하는 시트와 여러 열을 선택해 텍스트로 변환",
+        "tags": [
+          "확률",
+          "통계",
+          "기하",
+          "공학도구",
+          "게임형 수업"
+        ],
+        "url": "https://bsw0131.github.io/mathfactory/tools/excel-textifier.html"
+      },
+      {
+        "title": "수학 탐구 영상이 필요하다면?",
+        "description": "반복 업무는 줄이고, 중요한 일에 더 집중하도록 돕는 도구",
+        "tags": [
+          "확률",
+          "통계",
+          "기하",
+          "공학도구",
+          "게임형 수업"
+        ],
+        "url": "https://www.youtube.com/@mathlab8437"
+      },
+      {
+        "title": "수업 아이디어가 필요하다면?",
+        "description": "반복 업무는 줄이고, 중요한 일에 더 집중하도록 돕는 도구",
+        "tags": [
+          "확률",
+          "통계",
+          "기하",
+          "공학도구",
+          "게임형 수업"
+        ],
+        "url": "https://blog.naver.com/bswbsw0131"
       }
     ]
   },
