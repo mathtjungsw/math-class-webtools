@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f7fb" />
+    <title>SET 게임 | 수학 수업 웹툴 모음</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="back-link" href="../../index.html#math-game" aria-label="수학 게임 목록으로 돌아가기">
+        <span aria-hidden="true">←</span>
+        <span>수학 게임</span>
+      </a>
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">SET</span>
+        <span><strong>SET 게임</strong><small>Same or all different</small></span>
+      </div>
+      <div class="header-actions">
+        <button class="ghost-button" id="rulesButton" type="button">게임 규칙</button>
+        <button class="danger-button" id="newGameButton" type="button">새 게임</button>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section class="mode-switch" aria-label="게임 버전 선택">
+        <button class="mode-card is-active" type="button" data-mode="four" aria-pressed="true">
+          <span class="mode-number">4</span>
+          <span>
+            <strong>4속성 버전</strong>
+            <small>개수 · 모양 · 색 · 채움 / 81장</small>
+          </span>
+        </button>
+        <button class="mode-card" type="button" data-mode="three" aria-pressed="false">
+          <span class="mode-number">3</span>
+          <span>
+            <strong>3속성 버전</strong>
+            <small>개수 · 모양 · 색 / 27장</small>
+          </span>
+        </button>
+      </section>
+
+      <section class="summary-strip" aria-label="게임 현황">
+        <div>
+          <span>현재 버전</span>
+          <strong id="modeSummary">4속성 · 81장</strong>
+        </div>
+        <div>
+          <span>찾은 SET</span>
+          <strong><b id="foundCount">0</b>개</strong>
+        </div>
+        <div>
+          <span>보드 / 남은 카드</span>
+          <strong><b id="boardCount">12</b> / <b id="deckCount">69</b></strong>
+        </div>
+        <div>
+          <span>선택</span>
+          <strong><b id="selectedCount">0</b> / 3장</strong>
+        </div>
+      </section>
+
+      <section class="game-layout">
+        <section class="board-panel" aria-labelledby="boardTitle">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow" id="modeEyebrow">4 ATTRIBUTES · 81 CARDS</p>
+              <h1 id="boardTitle">SET이 되는 세 장을 찾으세요</h1>
+            </div>
+            <div class="board-actions">
+              <button class="secondary-button" id="hintButton" type="button">힌트</button>
+              <button class="secondary-button" id="shuffleButton" type="button">보드 섞기</button>
+              <button class="secondary-button" id="noSetButton" type="button">SET 없음</button>
+            </div>
+          </div>
+
+          <div class="attribute-guide" id="attributeGuide" aria-label="사용 속성">
+            <span>개수 1·2·3</span>
+            <span>원·마름모·별</span>
+            <span>빨강·초록·파랑</span>
+            <span>채움·줄무늬·테두리</span>
+          </div>
+
+          <div class="set-board" id="setBoard" aria-label="SET 카드 게임판"></div>
+
+          <p class="status-message" id="statusMessage" aria-live="polite">
+            카드 세 장을 선택한 뒤 SET 판정 버튼을 누르세요.
+          </p>
+        </section>
+
+        <aside class="side-panel">
+          <section class="selection-panel" aria-labelledby="selectionTitle">
+            <div class="section-title">
+              <div>
+                <p class="eyebrow">SELECT 3</p>
+                <h2 id="selectionTitle">선택한 카드</h2>
+              </div>
+              <button class="text-button" id="clearButton" type="button">선택 해제</button>
+            </div>
+            <div class="selection-slots" id="selectionSlots" aria-label="선택한 카드 목록"></div>
+            <button class="primary-button full judge-button" id="judgeButton" type="button" disabled>
+              SET 판정
+            </button>
+          </section>
+
+          <section class="timer-panel" aria-labelledby="timerTitle">
+            <div class="section-title timer-title">
+              <div>
+                <p class="eyebrow">MINI TIMER</p>
+                <h2 id="timerTitle">라운드 타이머</h2>
+              </div>
+              <div class="timer-display" id="timerDisplay" aria-live="polite">01:00</div>
+            </div>
+            <div class="timer-progress" aria-hidden="true"><span id="timerProgress"></span></div>
+            <div class="timer-controls">
+              <select id="timerPreset" aria-label="타이머 시간">
+                <option value="30">30초</option>
+                <option value="60" selected>1분</option>
+                <option value="90">1분 30초</option>
+                <option value="180">3분</option>
+              </select>
+              <button class="primary-button" id="timerToggleButton" type="button">시작</button>
+              <button class="secondary-button" id="timerResetButton" type="button">초기화</button>
+            </div>
+          </section>
+
+          <section class="history-panel" aria-labelledby="historyTitle">
+            <div class="section-title compact">
+              <div>
+                <p class="eyebrow">FOUND SETS</p>
+                <h2 id="historyTitle">찾은 기록</h2>
+              </div>
+              <span class="history-count" id="historyCount">0개</span>
+            </div>
+            <ol class="history-list" id="historyList">
+              <li class="empty-history">아직 찾은 SET이 없습니다.</li>
+            </ol>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <dialog class="modal" id="rulesDialog">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">HOW TO PLAY</p>
+          <h2>SET은 어떻게 찾나요?</h2>
+        </div>
+        <button class="icon-button" type="button" data-close-dialog aria-label="닫기">×</button>
+      </div>
+      <p class="rule-intro">
+        세 장의 카드가 각 속성마다 <strong>모두 같거나, 모두 달라야</strong> SET입니다.
+      </p>
+      <div class="rule-grid">
+        <article>
+          <span>1</span>
+          <strong>세 장 선택</strong>
+          <p>보드에서 카드 세 장을 차례로 누릅니다.</p>
+        </article>
+        <article>
+          <span>2</span>
+          <strong>속성별 확인</strong>
+          <p>개수·모양·색·채움을 각각 따로 비교합니다.</p>
+        </article>
+        <article>
+          <span>3</span>
+          <strong>판정</strong>
+          <p>모든 속성이 ‘전부 같음’ 또는 ‘전부 다름’이면 성공입니다.</p>
+        </article>
+      </div>
+      <div class="example-box">
+        <strong>3속성 버전</strong>
+        <span>채움 속성을 제외하여 처음 배우는 학생도 더 쉽게 규칙을 익힐 수 있습니다.</span>
+      </div>
+      <button class="primary-button full" type="button" data-close-dialog>게임 시작</button>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
