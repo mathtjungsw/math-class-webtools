@@ -11,7 +11,7 @@ const MODE_CONFIG = {
     title: "3속성",
     deckSize: 27,
     boardSize: 9,
-    attributes: ["number", "shape", "color"],
+    attributes: ["shape", "color", "fill"],
     eyebrow: "3 ATTRIBUTES · 27 CARDS",
   },
 };
@@ -19,13 +19,13 @@ const MODE_CONFIG = {
 const ATTRIBUTE_NAMES = {
   number: "개수",
   shape: "모양",
-  color: "색",
-  fill: "채움",
+  color: "색깔",
+  fill: "투명도",
 };
 
 const SHAPE_NAMES = ["원", "마름모", "별"];
 const COLOR_NAMES = ["빨강", "초록", "파랑"];
-const FILL_NAMES = ["채움", "줄무늬", "테두리"];
+const FILL_NAMES = ["불투명", "반투명", "투명"];
 const COLORS = ["#e5484d", "#16a46f", "#3b6bdc"];
 
 const elements = {
@@ -88,12 +88,12 @@ function shuffle(values) {
 function generateDeck(mode) {
   const cards = [];
   let id = 0;
-  const fills = mode === "four" ? ATTRIBUTE_VALUES : [0];
+  const numbers = mode === "four" ? ATTRIBUTE_VALUES : [0];
 
-  for (const number of ATTRIBUTE_VALUES) {
+  for (const number of numbers) {
     for (const shape of ATTRIBUTE_VALUES) {
       for (const color of ATTRIBUTE_VALUES) {
-        for (const fill of fills) {
+        for (const fill of ATTRIBUTE_VALUES) {
           cards.push({
             id: `${mode}-${id}`,
             number,
@@ -139,8 +139,6 @@ function matchingThirdCard(first, second, mode, deck) {
         ? first[attribute]
         : 3 - first[attribute] - second[attribute];
   }
-  if (mode === "three") values.fill = 0;
-
   return deck.find((card) =>
     MODE_CONFIG[mode].attributes.every((attribute) => card[attribute] === values[attribute])
   );
@@ -193,12 +191,8 @@ function setStatus(message, type = "normal") {
 }
 
 function cardDescription(card) {
-  const parts = [
-    `${card.number + 1}개`,
-    SHAPE_NAMES[card.shape],
-    COLOR_NAMES[card.color],
-  ];
-  if (state.mode === "four") parts.push(FILL_NAMES[card.fill]);
+  const parts = state.mode === "four" ? [`${card.number + 1}개`] : [];
+  parts.push(SHAPE_NAMES[card.shape], COLOR_NAMES[card.color], FILL_NAMES[card.fill]);
   return parts.join(" · ");
 }
 
@@ -214,38 +208,28 @@ function starPath(centerY) {
   return points.join(" ");
 }
 
-function shapeMarkup(card, centerY, patternId) {
+function shapeMarkup(card, centerY) {
   const color = COLORS[card.color];
-  const fill =
-    card.fill === 0 ? color :
-    card.fill === 1 ? `url(#${patternId})` :
-    "#ffffff";
+  const fill = card.fill === 2 ? "#ffffff" : color;
+  const fillOpacity = card.fill === 0 ? 1 : card.fill === 1 ? 0.38 : 0;
   const common = `fill="${fill}" stroke="${color}" stroke-width="3.5" stroke-linejoin="round"`;
 
   if (card.shape === 0) {
-    return `<ellipse cx="50" cy="${centerY}" rx="20" ry="10.5" ${common} />`;
+    return `<ellipse cx="50" cy="${centerY}" rx="20" ry="10.5" fill-opacity="${fillOpacity}" ${common} />`;
   }
   if (card.shape === 1) {
-    return `<path d="M50 ${centerY - 13} L73 ${centerY} L50 ${centerY + 13} L27 ${centerY} Z" ${common} />`;
+    return `<path d="M50 ${centerY - 13} L73 ${centerY} L50 ${centerY + 13} L27 ${centerY} Z" fill-opacity="${fillOpacity}" ${common} />`;
   }
-  return `<polygon points="${starPath(centerY)}" ${common} />`;
+  return `<polygon points="${starPath(centerY)}" fill-opacity="${fillOpacity}" ${common} />`;
 }
 
 function cardSvg(card, compact = false) {
   const count = card.number + 1;
   const positions = count === 1 ? [50] : count === 2 ? [34, 66] : [23, 50, 77];
-  const patternId = `stripe-${card.id.replaceAll("-", "")}-${compact ? "c" : "b"}`;
-  const color = COLORS[card.color];
-  const shapes = positions.map((centerY) => shapeMarkup(card, centerY, patternId)).join("");
+  const shapes = positions.map((centerY) => shapeMarkup(card, centerY)).join("");
 
   return `
     <svg class="card-art" viewBox="0 0 100 100" role="img" aria-label="${cardDescription(card)}">
-      <defs>
-        <pattern id="${patternId}" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(24)">
-          <rect width="7" height="7" fill="#ffffff"></rect>
-          <rect width="2.6" height="7" fill="${color}"></rect>
-        </pattern>
-      </defs>
       ${shapes}
     </svg>
   `;
@@ -270,12 +254,9 @@ function renderSummary() {
 }
 
 function renderGuide() {
-  const labels = [
-    "개수 1·2·3",
-    "원·마름모·별",
-    "빨강·초록·파랑",
-  ];
-  if (state.mode === "four") labels.push("채움·줄무늬·테두리");
+  const labels = state.mode === "four"
+    ? ["개수 1·2·3", "원·마름모·별", "빨강·초록·파랑", "불투명·반투명·투명"]
+    : ["원·마름모·별", "빨강·초록·파랑", "불투명·반투명·투명"];
   elements.attributeGuide.innerHTML = labels.map((label) => `<span>${label}</span>`).join("");
 }
 
