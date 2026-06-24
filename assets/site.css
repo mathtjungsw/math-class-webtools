@@ -736,6 +736,16 @@ h3 {
 }
 .card-streams .streams-arrow { fill: none; stroke: var(--orange); stroke-linecap: round; stroke-linejoin: round; stroke-width: 6; }
 
+.card-set .tool-visual { background: #f7f0ff; }
+.card-set .set-preview-card rect { fill: white; stroke: var(--navy); stroke-width: 5; }
+.card-set .set-preview-card circle,
+.card-set .set-preview-card path { stroke-width: 4; }
+.card-set .card-one circle { fill: #e5484d; stroke: #e5484d; }
+.card-set .card-two path { fill: white; stroke: #16a46f; }
+.card-set .card-three path { fill: #3b6bdc; stroke: #3b6bdc; }
+.card-set .card-one { transform: rotate(-5deg); transform-origin: 102px 114px; }
+.card-set .card-three { transform: rotate(5deg); transform-origin: 318px 116px; }
+
 .card-prime .tool-visual { background: #f1f7ef; }
 .card-prime .prime-board rect { fill: white; stroke: var(--navy); stroke-width: 5; }
 .card-prime .prime-board path { fill: none; stroke: #c7d9c1; stroke-linecap: round; stroke-width: 3; }
