@@ -8,6 +8,7 @@ const DATA_PATH = path.join(HUB_DIR, "data.js");
 const OUTPUT_PATH = path.join(HUB_DIR, "generated-tools.js");
 const MAX_TOOLS_PER_TEACHER = 40;
 const MAX_CRAWL_DEPTH = 2;
+const MAX_PAGES_PER_TEACHER = 80;
 
 const SKIP_TEXT = new Set([
   "홈",
@@ -163,32 +164,49 @@ function isHtmlLikeUrl(url) {
   return basename === "" || basename.endsWith(".html") || !basename.includes(".");
 }
 
+function normalizeUrl(url) {
+  const parsed = new URL(url);
+  parsed.hash = "";
+  return parsed.href;
+}
+
+function normalizePathname(url) {
+  return new URL(url).pathname
+    .replace(/index\.html$/i, "")
+    .replace(/\/+$/, "/");
+}
+
+function isRootPage(url, rootUrl) {
+  const parsed = new URL(url);
+  const root = new URL(rootUrl);
+
+  return parsed.origin === root.origin && normalizePathname(parsed) === normalizePathname(root);
+}
+
 function shouldSkip(title, url, pageUrl, rootUrl) {
   const normalizedTitle = canonical(title);
   const parsed = new URL(url);
   const page = new URL(pageUrl);
-  const root = new URL(rootUrl);
 
   if (!title || SKIP_TEXT.has(normalizedTitle)) return true;
-  if (normalizedTitle.includes("더보기") || normalizedTitle.includes("어떤 도움이 필요")) return true;
   if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return true;
   if (parsed.hostname.includes("github.com")) return true;
-  if (parsed.pathname.endsWith("/index.html") && parsed.pathname.includes("/docs/")) return true;
   if (parsed.hash && parsed.pathname === page.pathname && parsed.origin === page.origin) return true;
-  if (parsed.href.replace(/\/$/, "") === root.href.replace(/\/$/, "")) return true;
+  if (isRootPage(parsed, rootUrl)) return true;
 
   return false;
 }
 
 function shouldFollow(candidate, teacher, depth) {
-  if (depth !== 0 || depth >= MAX_CRAWL_DEPTH) return false;
+  if (depth >= MAX_CRAWL_DEPTH) return false;
   if (!isHtmlLikeUrl(candidate.url)) return false;
 
   const root = new URL(teacher.crawlUrl || teacher.url);
   const parsed = new URL(candidate.url);
   if (parsed.origin !== root.origin) return false;
+  if (isRootPage(parsed, root)) return false;
 
-  return (teacher.crawlFollowPatterns || []).some((pattern) => new RegExp(pattern).test(parsed.pathname));
+  return !(teacher.crawlExcludePatterns || []).some((pattern) => new RegExp(pattern).test(parsed.pathname));
 }
 
 function extractCandidatesFromHtml(html, teacher, pageUrl) {
@@ -222,18 +240,46 @@ function extractCandidatesFromHtml(html, teacher, pageUrl) {
       description,
       tags: tags.length ? tags : (teacher.tags || []).slice(0, 3),
       url,
+      _kind: "anchor",
     });
   }
 
   return candidates;
 }
 
+function getClassNames(tag) {
+  const className = getAttribute(tag, "class");
+  return className.split(/\s+/).filter(Boolean);
+}
+
+function extractDivBlocksByClass(html, className) {
+  const blocks = [];
+  const openPattern = /<div\b[^>]*>/gi;
+
+  for (const openMatch of html.matchAll(openPattern)) {
+    if (!getClassNames(openMatch[0]).includes(className)) continue;
+
+    const tokenPattern = /<div\b[^>]*>|<\/div\s*>/gi;
+    tokenPattern.lastIndex = (openMatch.index || 0) + openMatch[0].length;
+    let depth = 1;
+    let closeMatch;
+
+    while ((closeMatch = tokenPattern.exec(html))) {
+      depth += /^<div\b/i.test(closeMatch[0]) ? 1 : -1;
+      if (depth === 0) {
+        blocks.push(html.slice((openMatch.index || 0) + openMatch[0].length, closeMatch.index));
+        break;
+      }
+    }
+  }
+
+  return blocks;
+}
+
 function extractCardToolsFromHtml(html, teacher, pageUrl) {
   const tools = [];
-  const cardPattern = /<div\b[^>]*class=["'][^"']*\bcard\b[^"']*["'][^>]*>([\s\S]*?)(?=<div\b[^>]*class=["'][^"']*\bcard\b|<\/section>|<\/main>|<\/body>)/gi;
 
-  for (const match of html.matchAll(cardPattern)) {
-    const cardHtml = match[1];
+  for (const cardHtml of extractDivBlocksByClass(html, "card")) {
     const title = firstMatchText(cardHtml, /<h[1-4][^>]*>([\s\S]*?)<\/h[1-4]>/i) || firstMatchText(cardHtml, /<strong[^>]*>([\s\S]*?)<\/strong>/i);
     if (!title || SKIP_TEXT.has(canonical(title)) || GENERIC_TEXT.has(canonical(title))) continue;
 
@@ -246,6 +292,11 @@ function extractCardToolsFromHtml(html, teacher, pageUrl) {
       "";
     const anchorMatch = cardHtml.match(/<a\b([^>]*)>/i);
     const href = anchorMatch ? getAttribute(anchorMatch[1], "href") : "";
+    const pendingLabel =
+      firstMatchText(cardHtml, /<(?:span|button)[^>]*class=["'][^"']*(?:btn-wip|is-disabled|coming-soon)[^"']*["'][^>]*>([\s\S]*?)<\/(?:span|button)>/i) ||
+      "";
+    if (!href && !pendingLabel) continue;
+
     let url = "#";
 
     if (href && !href.startsWith("#") && !href.startsWith("mailto:") && !href.startsWith("tel:")) {
@@ -264,6 +315,7 @@ function extractCardToolsFromHtml(html, teacher, pageUrl) {
       description,
       tags: tags.length ? tags.slice(0, 5) : (teacher.tags || []).slice(0, 3),
       url,
+      _kind: "card",
     });
   }
 
@@ -285,56 +337,156 @@ async function fetchHtml(url) {
   return response.text();
 }
 
-function mergeTool(tools, seen, tool) {
-  let urlKey = `${tool.title}::${tool.url || "#"}`;
-  try {
-    urlKey = new URL(tool.url).href.replace(/\/$/, "");
-  } catch {
-    // Prepared-but-unpublished cards use "#" and are deduped by title.
+function getMetaContent(html, attributeName, attributeValue) {
+  const metaPattern = /<meta\b[^>]*>/gi;
+
+  for (const match of html.matchAll(metaPattern)) {
+    if (canonical(getAttribute(match[0], attributeName)) === canonical(attributeValue)) {
+      return normalizeText(getAttribute(match[0], "content"));
+    }
   }
+
+  return "";
+}
+
+function extractPageTool(html, teacher, pageUrl, sourceCandidate) {
+  const heading = firstMatchText(html, /<h1[^>]*>([\s\S]*?)<\/h1>/i);
+  const documentTitle = firstMatchText(html, /<title[^>]*>([\s\S]*?)<\/title>/i)
+    .split(/\s+[|—]\s+/)[0]
+    .trim();
+  const metaDescription =
+    getMetaContent(html, "name", "description") ||
+    getMetaContent(html, "property", "og:description");
+  const firstParagraph = firstMatchText(html, /<main[^>]*>[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>/i);
+  const title = sourceCandidate?.title || heading || documentTitle || `${teacher.name} 선생님의 웹툴`;
+  const description =
+    sourceCandidate?.description ||
+    metaDescription ||
+    firstParagraph ||
+    `${teacher.name} 선생님의 웹툴입니다.`;
+  const tags = inferTags(`${title} ${description} ${heading} ${documentTitle}`, teacher.tags);
+
+  return {
+    title,
+    description,
+    tags: tags.length ? tags : (sourceCandidate?.tags || teacher.tags || []).slice(0, 5),
+    url: pageUrl,
+  };
+}
+
+function getCandidateKey(candidate) {
+  if (!candidate.url || candidate.url === "#") {
+    return `pending:${canonical(candidate.title)}`;
+  }
+
+  try {
+    return normalizeUrl(candidate.url).replace(/\/$/, "");
+  } catch {
+    return `${canonical(candidate.title)}:${candidate.url}`;
+  }
+}
+
+function extractPageCandidates(html, teacher, pageUrl) {
+  const candidates = [
+    ...extractCardToolsFromHtml(html, teacher, pageUrl),
+    ...extractCandidatesFromHtml(html, teacher, pageUrl),
+  ];
+  const uniqueCandidates = new Map();
+
+  for (const candidate of candidates) {
+    const key = getCandidateKey(candidate);
+    if (!uniqueCandidates.has(key)) {
+      uniqueCandidates.set(key, candidate);
+    }
+  }
+
+  return [...uniqueCandidates.values()];
+}
+
+function isExternalToolCandidate(candidate, teacher, depth) {
+  if (depth === 0 || candidate._kind !== "card" || !candidate.url || candidate.url === "#") {
+    return false;
+  }
+
+  const root = new URL(teacher.crawlUrl || teacher.url);
+  const parsed = new URL(candidate.url);
+
+  return parsed.origin !== root.origin && ["http:", "https:"].includes(parsed.protocol);
+}
+
+function mergeTool(tools, seen, tool) {
+  const cleanTool = {
+    title: tool.title,
+    description: tool.description,
+    tags: tool.tags || [],
+    url: tool.url || "#",
+  };
+  const urlKey = getCandidateKey(cleanTool);
 
   if (seen.has(urlKey)) return;
 
   seen.add(urlKey);
-  tools.push(tool);
+  tools.push(cleanTool);
 }
 
 async function crawlTeacherTools(teacher) {
   const crawlUrl = teacher.crawlUrl || teacher.url;
-  const queue = [{ url: crawlUrl, depth: 0 }];
+  const queue = [{ url: crawlUrl, depth: 0, sourceCandidate: null }];
   const visited = new Set();
   const seenTools = new Set();
   const tools = [];
 
-  while (queue.length && tools.length < MAX_TOOLS_PER_TEACHER) {
+  while (queue.length && tools.length < MAX_TOOLS_PER_TEACHER && visited.size < MAX_PAGES_PER_TEACHER) {
     const current = queue.shift();
-    const pageUrl = new URL(current.url, crawlUrl).href;
+    const pageUrl = normalizeUrl(new URL(current.url, crawlUrl));
     const pageKey = pageUrl.replace(/\/$/, "");
     if (visited.has(pageKey)) continue;
     visited.add(pageKey);
 
-    const html = await fetchHtml(pageUrl);
-    const candidates = extractCandidatesFromHtml(html, teacher, pageUrl);
+    let html;
+    try {
+      html = await fetchHtml(pageUrl);
+    } catch (error) {
+      if (current.depth === 0) throw error;
+      console.warn(`${teacher.name}: ${pageUrl} (${error.message})`);
+      continue;
+    }
 
-    if (current.depth > 0) {
-      const cardTools = extractCardToolsFromHtml(html, teacher, pageUrl);
-      if (cardTools.length > 0) {
-        for (const tool of cardTools) {
-          mergeTool(tools, seenTools, tool);
-          if (tools.length >= MAX_TOOLS_PER_TEACHER) break;
-        }
-        continue;
+    const candidates = extractPageCandidates(html, teacher, pageUrl);
+    const pendingTools = candidates.filter((candidate) => candidate.url === "#");
+    const listedToolCards = candidates.filter((candidate) => candidate._kind === "card");
+    let hasChildTools = pendingTools.length > 0;
+
+    if (current.depth >= MAX_CRAWL_DEPTH) {
+      if (listedToolCards.length === 0) {
+        mergeTool(tools, seenTools, extractPageTool(html, teacher, pageUrl, current.sourceCandidate));
       }
+      continue;
     }
 
     for (const candidate of candidates) {
+      if (!candidate.url || candidate.url === "#") continue;
+
       if (shouldFollow(candidate, teacher, current.depth)) {
-        queue.push({ url: candidate.url, depth: current.depth + 1 });
+        queue.push({
+          url: candidate.url,
+          depth: current.depth + 1,
+          sourceCandidate: candidate,
+        });
+        hasChildTools = true;
         continue;
       }
 
-      mergeTool(tools, seenTools, candidate);
+      if (isExternalToolCandidate(candidate, teacher, current.depth)) {
+        mergeTool(tools, seenTools, candidate);
+        hasChildTools = true;
+      }
+
       if (tools.length >= MAX_TOOLS_PER_TEACHER) break;
+    }
+
+    if (current.depth > 0 && !hasChildTools) {
+      mergeTool(tools, seenTools, extractPageTool(html, teacher, pageUrl, current.sourceCandidate));
     }
   }
 
@@ -372,7 +524,18 @@ async function main() {
   fs.writeFileSync(OUTPUT_PATH, file, "utf8");
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = {
+  crawlTeacherTools,
+  extractCardToolsFromHtml,
+  extractCandidatesFromHtml,
+  extractPageCandidates,
+  loadTeachers,
+  shouldFollow,
+};

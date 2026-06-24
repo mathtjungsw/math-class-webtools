@@ -28,7 +28,6 @@ const teachers = [
     tags: ["수업활동", "공학도구", "게임형 수업"],
     url: "https://shootting.github.io/student-app/",
     crawlUrl: "https://shootting.github.io/student-app/",
-    crawlFollowPatterns: ["/docs/"],
     image: "",
     imageAlt: "정종엽 선생님 웹툴 모음 페이지 미리보기",
     tools: [
