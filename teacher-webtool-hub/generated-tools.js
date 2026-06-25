@@ -1,5 +1,5 @@
 window.generatedTeacherTools = {
-  "generatedAt": "2026-06-24T21:21:34.071Z",
+  "generatedAt": "2026-06-25T10:40:51.076Z",
   "teachers": {
     "정승원": [
       {
@@ -144,7 +144,7 @@ window.generatedTeacherTools = {
           "확률",
           "통계"
         ],
-        "url": "https://shootting.github.io/student-app/yut_probability.html"
+        "url": "https://shootting.github.io/student-app/probability/yut_probability.html"
       },
       {
         "title": "몬티홀 딜레마: 바꿔야 할까, 고집해야 할까?",
@@ -152,7 +152,7 @@ window.generatedTeacherTools = {
         "tags": [
           "확률"
         ],
-        "url": "https://shootting.github.io/student-app/monty_hall.html"
+        "url": "https://shootting.github.io/student-app/probability/monty_hall.html"
       },
       {
         "title": "이항분포와 정규분포의 신기한 연결고리",
@@ -161,7 +161,7 @@ window.generatedTeacherTools = {
           "확률",
           "통계"
         ],
-        "url": "https://shootting.github.io/student-app/bi_distcon.html"
+        "url": "https://shootting.github.io/student-app/probability/bi_distcon.html"
       }
     ],
     "백승욱": [
