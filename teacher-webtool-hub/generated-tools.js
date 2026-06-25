@@ -1,5 +1,5 @@
 window.generatedTeacherTools = {
-  "generatedAt": "2026-06-25T10:40:51.076Z",
+  "generatedAt": "2026-06-25T13:40:19.114Z",
   "teachers": {
     "정승원": [
       {
@@ -223,6 +223,17 @@ window.generatedTeacherTools = {
           "게임형 수업"
         ],
         "url": "https://bsw0131.github.io/mathfactory/tools/countdown-game.html"
+      }
+    ],
+    "배미란": [
+      {
+        "title": "수업용 웹툴 모음",
+        "description": "다양한 수업용 웹툴을 모아둔 교사 웹툴 라이브러리입니다.",
+        "tags": [
+          "공학도구",
+          "수업활동"
+        ],
+        "url": "https://meerani-t.github.io/teaching-app-library/"
       }
     ]
   },

@@ -57,6 +57,24 @@ const teachers = [
       },
     ],
   },
+  {
+    name: "배미란",
+    school: "경남 대암고등학교",
+    description: "다양한 수업용 웹툴을 모아둔 교사 웹툴 라이브러리입니다.",
+    tags: ["공학도구", "수업활동"],
+    url: "https://meerani-t.github.io/teaching-app-library/",
+    crawlUrl: "https://meerani-t.github.io/teaching-app-library/",
+    image: "",
+    imageAlt: "배미란 선생님 수업용 웹툴 모음 페이지 미리보기",
+    tools: [
+      {
+        title: "수업용 웹툴 모음",
+        description: "다양한 수업용 웹툴을 모아둔 교사 웹툴 라이브러리입니다.",
+        tags: ["공학도구", "수업활동"],
+        url: "https://meerani-t.github.io/teaching-app-library/",
+      },
+    ],
+  },
 ];
 
 const tagFilters = [
