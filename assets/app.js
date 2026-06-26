@@ -43,6 +43,12 @@ function selectFilter(filter, updateHash = false) {
     if (isVisible) visibleCount += 1;
   });
 
+  document.querySelectorAll("[data-tool-section]").forEach((section) => {
+    const hasVisibleCards = Boolean(section.querySelector("[data-tool-category]:not(.is-hidden)"));
+    section.classList.toggle("is-hidden", !hasVisibleCards);
+    section.setAttribute("aria-hidden", String(!hasVisibleCards));
+  });
+
   document.querySelector(".empty-message").hidden = visibleCount !== 0;
 
   if (updateHash) {

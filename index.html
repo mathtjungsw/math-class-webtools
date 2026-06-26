@@ -98,7 +98,7 @@
 
         <div class="filter-bar" role="tablist" aria-label="웹툴 주제 필터">
           <button class="filter-button is-active" type="button" role="tab" aria-selected="true" data-filter="all">
-            전체 <span>14</span>
+            전체 <span>16</span>
           </button>
           <button class="filter-button" type="button" role="tab" aria-selected="false" data-filter="probability-statistics">
             확률과 통계 <span>2</span>
@@ -108,6 +108,9 @@
           </button>
           <button class="filter-button" type="button" role="tab" aria-selected="false" data-filter="math-game">
             수학 게임 <span>9</span>
+          </button>
+          <button class="filter-button" type="button" role="tab" aria-selected="false" data-filter="school-work">
+            학교 업무용 웹툴 <span>2</span>
           </button>
         </div>
 
@@ -483,6 +486,73 @@
               </div>
             </div>
           </article>
+        </div>
+
+        <div class="tool-subsection" data-tool-section="school-work">
+          <div class="subsection-heading">
+            <p class="eyebrow"><span></span> SCHOOL WORK</p>
+            <h3>학교 업무용 웹툴</h3>
+            <p>수업 준비와 학교 업무를 조금 더 가볍게 만드는 도구입니다.</p>
+          </div>
+
+          <div class="tool-grid school-tool-grid" aria-live="polite">
+            <article class="tool-card card-school-hub" data-tool-category="school-work">
+              <div class="tool-visual" aria-hidden="true">
+                <svg viewBox="0 0 420 210">
+                  <rect class="school-window" x="54" y="42" width="208" height="130" rx="22" />
+                  <path class="school-window-line" d="M82 80h82M82 111h132M82 142h102" />
+                  <g class="school-checks">
+                    <circle cx="296" cy="68" r="22" />
+                    <path d="m286 68 8 8 16-18" />
+                    <circle cx="330" cy="122" r="28" />
+                    <path d="m317 122 10 10 21-24" />
+                  </g>
+                  <path class="school-spark" d="M326 38 337 58l22 8-21 9-10 21-11-20-22-9 21-10Z" />
+                  <path class="school-pencil" d="m252 155 56-56 29 29-56 56-36 8Z" />
+                </svg>
+              </div>
+              <div class="tool-content">
+                <div class="tool-tags"><span>업무 자동화</span><small>학교 업무용 웹툴</small></div>
+                <h3>교사용 웹툴 허브</h3>
+                <p>자주 쓰는 학교 업무용 도구를 한곳에서 관리하고 빠르게 열 수 있는 교사용 웹툴 모음입니다.</p>
+                <div class="tool-footer">
+                  <span>업무 도구 모음</span>
+                  <a href="./teacher-webtool-hub/index.html" aria-label="교사용 웹툴 허브 시작하기">시작하기 <b aria-hidden="true">→</b></a>
+                </div>
+              </div>
+            </article>
+
+            <article class="tool-card card-pdf-splitter" data-tool-category="school-work">
+              <div class="tool-visual" aria-hidden="true">
+                <svg viewBox="0 0 420 210">
+                  <g class="pdf-pages">
+                    <rect x="84" y="38" width="112" height="138" rx="16" />
+                    <path d="M160 38v38h36" />
+                    <rect x="132" y="24" width="112" height="138" rx="16" />
+                    <path d="M208 24v38h36" />
+                    <rect x="180" y="48" width="112" height="138" rx="16" />
+                    <path d="M256 48v38h36" />
+                  </g>
+                  <path class="pdf-cut" d="M316 52 103 168" />
+                  <g class="pdf-scissors">
+                    <circle cx="315" cy="58" r="16" />
+                    <circle cx="348" cy="78" r="16" />
+                    <path d="m327 66 45-25M329 69l50 15" />
+                  </g>
+                  <text x="218" y="128" text-anchor="middle">PDF</text>
+                </svg>
+              </div>
+              <div class="tool-content">
+                <div class="tool-tags"><span>PDF 분할</span><small>학교 업무용 웹툴</small></div>
+                <h3>PDF 파일 분할기</h3>
+                <p>PDF 파일을 원하는 페이지 단위로 나누고, 분할된 PDF들을 ZIP 파일로 묶어 내려받는 브라우저 실행 도구입니다.</p>
+                <div class="tool-footer">
+                  <span>브라우저 처리 · ZIP 다운로드</span>
+                  <a href="./school-work/pdf-file-splitter/index.html" aria-label="PDF 파일 분할기 시작하기">시작하기 <b aria-hidden="true">→</b></a>
+                </div>
+              </div>
+            </article>
+          </div>
         </div>
 
         <p class="empty-message" hidden>이 주제에 등록된 웹툴이 없습니다.</p>

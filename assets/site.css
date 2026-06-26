@@ -518,6 +518,44 @@ h2 {
   gap: 22px;
 }
 
+.tool-subsection {
+  margin-top: 58px;
+  padding-top: 48px;
+  border-top: 1px solid var(--line);
+}
+
+.tool-subsection.is-hidden {
+  display: none;
+}
+
+.subsection-heading {
+  max-width: 720px;
+  margin-bottom: 28px;
+}
+
+.subsection-heading .eyebrow {
+  margin-bottom: 12px;
+}
+
+.subsection-heading h3 {
+  margin: 0;
+  color: var(--navy);
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 850;
+  letter-spacing: -0.045em;
+}
+
+.subsection-heading p:not(.eyebrow) {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.school-tool-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .tool-card {
   display: flex;
   min-width: 0;
@@ -815,6 +853,26 @@ h3 {
 .card-kbo .ball circle { fill: white; stroke: var(--navy); stroke-width: 4; }
 .card-kbo .ball path { fill: none; stroke: var(--orange); stroke-width: 3; }
 
+.card-school-hub .tool-visual { background: #eef7ff; }
+.card-school-hub .school-window { fill: white; stroke: var(--navy); stroke-width: 5; }
+.card-school-hub .school-window-line { fill: none; stroke: #b9c7dc; stroke-linecap: round; stroke-width: 7; }
+.card-school-hub .school-checks circle { fill: var(--mint); stroke: var(--navy); stroke-width: 5; }
+.card-school-hub .school-checks path { fill: none; stroke: white; stroke-linecap: round; stroke-linejoin: round; stroke-width: 6; }
+.card-school-hub .school-spark { fill: var(--yellow); stroke: var(--navy); stroke-linejoin: round; stroke-width: 5; }
+.card-school-hub .school-pencil { fill: var(--orange); stroke: var(--navy); stroke-linejoin: round; stroke-width: 5; }
+
+.card-pdf-splitter .tool-visual { background: #f3f6fb; }
+.card-pdf-splitter .pdf-pages rect { fill: white; stroke: var(--navy); stroke-width: 5; }
+.card-pdf-splitter .pdf-pages path { fill: #dbe5f3; stroke: var(--navy); stroke-linejoin: round; stroke-width: 4; }
+.card-pdf-splitter .pdf-cut { fill: none; stroke: var(--orange); stroke-dasharray: 10 10; stroke-linecap: round; stroke-width: 6; }
+.card-pdf-splitter .pdf-scissors { fill: var(--yellow); stroke: var(--navy); stroke-linecap: round; stroke-linejoin: round; stroke-width: 5; }
+.card-pdf-splitter text {
+  fill: var(--orange);
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  font-size: 32px;
+  font-weight: 950;
+}
+
 .site-footer {
   display: flex;
   align-items: center;
@@ -872,6 +930,10 @@ h3 {
   }
 
   .tool-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .school-tool-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -978,6 +1040,10 @@ h3 {
   }
 
   .tool-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .school-tool-grid {
     grid-template-columns: 1fr;
   }
 
