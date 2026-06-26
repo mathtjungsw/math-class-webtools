@@ -75,6 +75,24 @@ const teachers = [
       },
     ],
   },
+  {
+    name: "김동우",
+    school: "안남중학교",
+    description: "AI와 수학 수업에 활용할 수 있는 웹툴 페이지입니다.",
+    tags: ["인공지능 수학", "공학도구", "수업활동"],
+    url: "https://ai-math.streamlit.app/",
+    crawlUrl: "https://ai-math.streamlit.app/",
+    image: "",
+    imageAlt: "김동우 선생님 AI 수학 웹툴 페이지 미리보기",
+    tools: [
+      {
+        title: "AI Math",
+        description: "AI와 수학 수업에 활용할 수 있는 웹툴 페이지입니다.",
+        tags: ["인공지능 수학", "공학도구", "수업활동"],
+        url: "https://ai-math.streamlit.app/",
+      },
+    ],
+  },
 ];
 
 const tagFilters = [

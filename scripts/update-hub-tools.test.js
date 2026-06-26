@@ -2,6 +2,7 @@ const assert = require("node:assert/strict");
 const test = require("node:test");
 
 const {
+  extractAppsFromJavaScript,
   extractCardToolsFromHtml,
   shouldFollow,
 } = require("./update-hub-tools.js");
@@ -59,4 +60,28 @@ test("follows same-site pages through two link levels only", () => {
   assert.equal(shouldFollow(firstLevel, teacher, 0), true);
   assert.equal(shouldFollow(secondLevel, teacher, 1), true);
   assert.equal(shouldFollow(secondLevel, teacher, 2), false);
+});
+
+test("extracts rendered apps from a JavaScript apps array", () => {
+  const script = `
+    const apps = [
+      {
+        title: "몬티홀 실험실",
+        subject: "수학",
+        category: "확률",
+        description: "조건부확률의 직관을 확인하는 실험입니다.",
+        tags: ["확률", "시뮬레이션", "게임"],
+        url: "./apps/monty-hall/index.html",
+      },
+    ];
+
+    document.querySelector("#appGrid").innerHTML = "";
+  `;
+
+  const tools = extractAppsFromJavaScript(script, teacher, "https://example.com/library/");
+
+  assert.equal(tools.length, 1);
+  assert.equal(tools[0].title, "몬티홀 실험실");
+  assert.equal(tools[0].url, "https://example.com/library/apps/monty-hall/index.html");
+  assert.ok(tools[0].tags.includes("확률"));
 });

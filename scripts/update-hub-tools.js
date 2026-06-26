@@ -337,6 +337,123 @@ async function fetchHtml(url) {
   return response.text();
 }
 
+function findJavaScriptArray(source, variableName) {
+  const assignmentPattern = new RegExp(`(?:const|let|var)\\s+${variableName}\\s*=\\s*\\[`, "i");
+  const match = assignmentPattern.exec(source);
+  if (!match) return "";
+
+  const start = match.index + match[0].lastIndexOf("[");
+  let depth = 0;
+  let quote = "";
+  let escaped = false;
+
+  for (let index = start; index < source.length; index += 1) {
+    const character = source[index];
+
+    if (quote) {
+      if (escaped) {
+        escaped = false;
+      } else if (character === "\\") {
+        escaped = true;
+      } else if (character === quote) {
+        quote = "";
+      }
+      continue;
+    }
+
+    if (character === '"' || character === "'" || character === "`") {
+      quote = character;
+      continue;
+    }
+
+    if (character === "[") depth += 1;
+    if (character === "]") depth -= 1;
+    if (depth === 0) return source.slice(start, index + 1);
+  }
+
+  return "";
+}
+
+function extractAppsFromJavaScript(source, teacher, pageUrl) {
+  const arraySource = findJavaScriptArray(source, "apps");
+  if (!arraySource) return [];
+
+  const sandbox = {};
+  let apps;
+
+  try {
+    apps = vm.runInNewContext(arraySource, sandbox, { timeout: 1000 });
+  } catch {
+    return [];
+  }
+
+  if (!Array.isArray(apps)) return [];
+
+  return apps
+    .filter((app) => app && app.title && app.url)
+    .map((app) => {
+      let url = "#";
+
+      try {
+        url = new URL(app.url, pageUrl).href;
+      } catch {
+        url = "#";
+      }
+
+      const tags = inferTags(
+        `${app.title || ""} ${app.subject || ""} ${app.category || ""} ${app.description || ""} ${(app.tags || []).join(" ")}`,
+        teacher.tags,
+      );
+      for (const tag of app.tags || []) {
+        if (tag && !tags.includes(tag)) tags.push(tag);
+      }
+
+      return {
+        title: normalizeText(app.title),
+        description: normalizeText(app.description) || `${teacher.name} 선생님의 웹툴입니다.`,
+        tags: tags.slice(0, 5),
+        url,
+        _kind: "script-app",
+      };
+    });
+}
+
+function extractScriptUrls(html, pageUrl) {
+  const scripts = [];
+  const scriptPattern = /<script\b([^>]*)><\/script>/gi;
+
+  for (const match of html.matchAll(scriptPattern)) {
+    const src = getAttribute(match[1], "src");
+    if (!src) continue;
+
+    try {
+      scripts.push(new URL(src, pageUrl).href);
+    } catch {
+      // Ignore malformed script URLs.
+    }
+  }
+
+  return scripts;
+}
+
+async function extractScriptAppTools(html, teacher, pageUrl) {
+  const tools = [];
+
+  for (const scriptUrl of extractScriptUrls(html, pageUrl)) {
+    let script;
+
+    try {
+      script = await fetchHtml(scriptUrl);
+    } catch {
+      continue;
+    }
+
+    tools.push(...extractAppsFromJavaScript(script, teacher, pageUrl));
+  }
+
+  return tools;
+}
+
 function getMetaContent(html, attributeName, attributeValue) {
   const metaPattern = /<meta\b[^>]*>/gi;
 
@@ -452,10 +569,15 @@ async function crawlTeacherTools(teacher) {
       continue;
     }
 
+    const scriptTools = await extractScriptAppTools(html, teacher, pageUrl);
+    for (const tool of scriptTools) {
+      mergeTool(tools, seenTools, tool);
+    }
+
     const candidates = extractPageCandidates(html, teacher, pageUrl);
     const pendingTools = candidates.filter((candidate) => candidate.url === "#");
     const listedToolCards = candidates.filter((candidate) => candidate._kind === "card");
-    let hasChildTools = pendingTools.length > 0;
+    let hasChildTools = pendingTools.length > 0 || scriptTools.length > 0;
 
     if (current.depth >= MAX_CRAWL_DEPTH) {
       if (listedToolCards.length === 0) {
@@ -534,6 +656,7 @@ if (require.main === module) {
 module.exports = {
   crawlTeacherTools,
   extractCardToolsFromHtml,
+  extractAppsFromJavaScript,
   extractCandidatesFromHtml,
   extractPageCandidates,
   loadTeachers,

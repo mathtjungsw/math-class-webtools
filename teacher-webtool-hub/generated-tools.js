@@ -1,5 +1,5 @@
 window.generatedTeacherTools = {
-  "generatedAt": "2026-06-25T21:41:21.617Z",
+  "generatedAt": "2026-06-26T06:42:06.624Z",
   "teachers": {
     "정승원": [
       {
@@ -227,15 +227,60 @@ window.generatedTeacherTools = {
     ],
     "배미란": [
       {
-        "title": "수업용 웹툴 모음",
-        "description": "다양한 수업용 웹툴을 모아둔 교사 웹툴 라이브러리입니다.",
+        "title": "곡선 속에 숨은 직선",
+        "description": "돋보기로 곡선을 점점 확대하며 Δx가 0에 가까워질 때 접선이 나타나는 과정을 발견하는 미분 도입 활동입니다.",
         "tags": [
+          "함수",
+          "수업활동",
+          "미분",
+          "접선",
+          "극한"
+        ],
+        "url": "https://meerani-t.github.io/teaching-app-library/apps/derivative-intro/index.html"
+      },
+      {
+        "title": "몬티홀 실험실",
+        "description": "문을 직접 고르고 선택 유지와 변경 전략의 승률을 비교하며 조건부확률의 직관을 확인하는 실험입니다.",
+        "tags": [
+          "확률",
+          "통계",
+          "공학도구",
+          "게임형 수업",
+          "시뮬레이션"
+        ],
+        "url": "https://meerani-t.github.io/teaching-app-library/apps/monty-hall/index.html"
+      },
+      {
+        "title": "삼각함수 탱크 대전",
+        "description": "모둠별 탱크가 삼각함수식을 입력해 미사일 궤적을 만들고 좌표, 그래프, 전략을 함께 탐구하는 활동입니다.",
+        "tags": [
+          "함수",
+          "게임형 수업",
+          "수업활동",
+          "삼각함수",
+          "좌표평면"
+        ],
+        "url": "https://meerani-t.github.io/teaching-app-library/apps/trig-tank-game/index.html"
+      }
+    ],
+    "김동우": [
+      {
+        "title": "AI Math",
+        "description": "AI와 수학 수업에 활용할 수 있는 웹툴 페이지입니다.",
+        "tags": [
+          "인공지능 수학",
           "공학도구",
           "수업활동"
         ],
-        "url": "https://meerani-t.github.io/teaching-app-library/"
+        "url": "https://ai-math.streamlit.app/"
       }
     ]
   },
-  "crawlErrors": []
+  "crawlErrors": [
+    {
+      "teacher": "김동우",
+      "url": "https://ai-math.streamlit.app/",
+      "message": "fetch failed"
+    }
+  ]
 };
