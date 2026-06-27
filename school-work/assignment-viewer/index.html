@@ -1,0 +1,1529 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>학생 과제 통합 뷰어 · 웹툴</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --panel2: #fbfcff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --brand: #2563eb;
+      --brand-dark: #1d4ed8;
+      --ok: #059669;
+      --warn: #d97706;
+      --bad: #dc2626;
+      --chip: #eef2ff;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    button, input, textarea, select {
+      font: inherit;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 9px 12px;
+      cursor: pointer;
+      transition: 0.15s ease;
+      white-space: nowrap;
+    }
+    button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08); }
+    button.primary { background: var(--brand); border-color: var(--brand); color: white; }
+    button.primary:hover { background: var(--brand-dark); }
+    button.ghost { background: transparent; }
+    button.danger { border-color: #fecaca; color: var(--bad); background: #fff7f7; }
+    button.small { padding: 6px 9px; border-radius: 8px; font-size: 13px; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    input[type="text"], input[type="number"], textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel);
+      color: var(--text);
+      padding: 9px 10px;
+      outline: none;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
+    textarea { resize: vertical; min-height: 140px; line-height: 1.55; }
+
+    .app {
+      height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .topbar {
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 14px;
+      display: grid;
+      gap: 8px;
+      box-shadow: 0 1px 10px rgba(15, 23, 42, 0.04);
+      z-index: 5;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-right: 8px;
+    }
+    .title h1 {
+      font-size: 18px;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: #3730a3;
+      background: var(--chip);
+      border: 1px solid #e0e7ff;
+    }
+    .status {
+      color: var(--muted);
+      font-size: 13px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .spacer { flex: 1; }
+    .hidden { display: none !important; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(260px, 310px) 1fr minmax(285px, 330px);
+      min-height: 0;
+    }
+
+    .left, .right {
+      background: var(--panel);
+      border-right: 1px solid var(--line);
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .right {
+      border-right: 0;
+      border-left: 1px solid var(--line);
+    }
+    .panel-head {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      gap: 8px;
+    }
+    .panel-title {
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .file-list {
+      overflow: auto;
+      padding: 8px;
+      display: grid;
+      gap: 6px;
+    }
+    .file-card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: var(--panel2);
+      cursor: pointer;
+      display: grid;
+      gap: 6px;
+    }
+    .file-card:hover { border-color: #bfdbfe; background: #f8fbff; }
+    .file-card.active { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); background: #ffffff; }
+    .file-name {
+      font-size: 14px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+      line-height: 1.35;
+    }
+    .file-meta {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
+      align-items: center;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      display: inline-block;
+      background: #cbd5e1;
+    }
+    .dot.done { background: var(--ok); }
+    .dot.fail { background: var(--bad); }
+    .dot.warn { background: var(--warn); }
+
+    .viewer {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      background: #eef1f7;
+    }
+    .viewer-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      background: rgba(255,255,255,0.86);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(8px);
+    }
+    .viewer-file {
+      min-width: 0;
+      flex: 1;
+      font-weight: 800;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .viewer-body {
+      min-height: 0;
+      overflow: auto;
+      padding: 18px;
+      display: grid;
+      justify-items: center;
+      align-content: start;
+      gap: 16px;
+    }
+    .page-wrap {
+      width: fit-content;
+      max-width: 100%;
+      display: grid;
+      gap: 7px;
+      justify-items: center;
+    }
+    .page-label {
+      font-size: 13px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.85);
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+    }
+    canvas.pdf-page, img.image-page {
+      max-width: 100%;
+      background: white;
+      border-radius: 7px;
+      box-shadow: var(--shadow);
+    }
+    .empty-state {
+      max-width: 620px;
+      margin: 70px auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+      line-height: 1.7;
+    }
+    .empty-state h2 { margin: 0 0 8px; font-size: 22px; }
+    .empty-state p { color: var(--muted); margin: 8px 0; }
+    .dropzone {
+      border: 2px dashed #bfdbfe;
+      border-radius: 18px;
+      background: #eff6ff;
+      padding: 20px;
+      text-align: center;
+      color: #1e40af;
+      margin-top: 14px;
+    }
+
+    .right-body {
+      padding: 12px;
+      overflow: auto;
+      display: grid;
+      gap: 12px;
+    }
+    .criteria-list { display: grid; gap: 8px; }
+    .criterion-row {
+      display: grid;
+      grid-template-columns: 1fr 82px;
+      gap: 8px;
+      align-items: center;
+    }
+    .criterion-row label {
+      font-size: 14px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+    .total-box {
+      border-radius: 14px;
+      background: linear-gradient(135deg, #eff6ff, #ffffff);
+      border: 1px solid #bfdbfe;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .total-value { font-size: 26px; font-weight: 900; color: var(--brand); }
+    .mini-help { color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 10px;
+      background: var(--panel2);
+      text-align: center;
+    }
+    .stat b { display: block; font-size: 19px; }
+    .stat span { color: var(--muted); font-size: 12px; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      display: grid;
+      place-items: center;
+      z-index: 50;
+      padding: 18px;
+    }
+    .modal {
+      width: min(560px, 100%);
+      background: var(--panel);
+      border-radius: 18px;
+      box-shadow: 0 20px 70px rgba(15, 23, 42, 0.22);
+      overflow: hidden;
+    }
+    .modal-head, .modal-foot { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; }
+    .modal-foot { border-top: 1px solid var(--line); border-bottom: 0; justify-content: flex-end; }
+    .modal-head h2 { font-size: 18px; margin: 0; }
+    .modal-body { padding: 16px; display: grid; gap: 12px; max-height: min(70vh, 620px); overflow: auto; }
+    .criteria-editor { display: grid; gap: 8px; }
+    .edit-row { display: grid; grid-template-columns: 84px 1fr auto; gap: 8px; align-items: center; }
+    .manual-steps { margin: 0; padding-left: 22px; color: var(--text); line-height: 1.75; }
+    .manual-steps li + li { margin-top: 8px; }
+    .manual-note { padding: 12px 14px; border: 1px solid var(--line); border-radius: 13px; background: var(--panel2); color: var(--muted); line-height: 1.65; }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      background: #111827;
+      color: white;
+      border-radius: 14px;
+      padding: 11px 14px;
+      box-shadow: var(--shadow);
+      z-index: 70;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: 0.18s ease;
+      max-width: 380px;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    .kbd {
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      border-bottom-width: 2px;
+      border-radius: 6px;
+      padding: 1px 5px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 1100px) {
+      body { overflow: auto; }
+      .app { height: auto; min-height: 100vh; }
+      .layout { grid-template-columns: 1fr; }
+      .left, .right { min-height: 360px; border-left: 0; border-right: 0; border-bottom: 1px solid var(--line); }
+      .viewer { min-height: 680px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="row">
+        <div class="title">
+          <h1>학생 과제 통합 뷰어</h1>
+          <span class="badge">웹 버전</span>
+        </div>
+        <input id="folderInput" class="hidden" type="file" webkitdirectory directory multiple />
+        <input id="fileInput" class="hidden" type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,.pptx,.hwp,.hwpx" />
+        <input id="importExcelInput" class="hidden" type="file" accept=".xlsx,.xls" />
+        <button id="openFolderBtn" class="primary">폴더 열기</button>
+        <button id="openFilesBtn">파일 추가</button>
+        <button id="prevBtn">이전 파일</button>
+        <button id="nextBtn">다음 파일</button>
+        <button id="criteriaBtn">채점 설정</button>
+        <button id="manualBtn">설명서</button>
+        <span class="spacer"></span>
+        <button id="importExcelBtn">엑셀 불러오기</button>
+        <button id="exportExcelBtn" class="primary">엑셀 저장</button>
+      </div>
+      <div class="row">
+        <button id="zoomOutBtn" class="small">축소</button>
+        <button id="zoomResetBtn" class="small">기본</button>
+        <button id="zoomInBtn" class="small">확대</button>
+        <span id="zoomLabel" class="badge">배율 100%</span>
+        <span id="collectionLabel" class="status">폴더나 파일을 열어 주세요.</span>
+        <span class="spacer"></span>
+        <span class="mini-help"><span class="kbd">Ctrl</span> + 휠: 확대/축소 · 점수/메모는 브라우저에 자동 임시저장</span>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="left">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span>파일 목록</span>
+            <span id="progressLabel" class="badge">0 / 0</span>
+          </div>
+          <input id="searchInput" type="text" placeholder="파일명 검색" />
+          <label class="mini-help"><input id="showOnlyUngraded" type="checkbox" /> 미채점만 보기</label>
+          <div class="stat-grid">
+            <div class="stat"><b id="totalCount">0</b><span>전체</span></div>
+            <div class="stat"><b id="doneCount">0</b><span>채점</span></div>
+            <div class="stat"><b id="unsupportedCount">0</b><span>변환필요</span></div>
+          </div>
+        </div>
+        <div id="fileList" class="file-list"></div>
+      </aside>
+
+      <section class="viewer">
+        <div class="viewer-head">
+          <div id="viewerFileName" class="viewer-file">파일: 없음</div>
+          <button id="openOriginalBtn" class="small">원본 열기</button>
+          <button id="saveNowBtn" class="small">현재 저장</button>
+        </div>
+        <div id="viewerBody" class="viewer-body">
+          <div class="empty-state">
+            <h2>과제 폴더를 선택해 주세요</h2>
+            <p>PDF는 페이지별로 바로 보여주고, 이미지 파일도 함께 확인할 수 있어요.</p>
+            <p>DOCX, PPTX, HWP, HWPX는 브라우저에서 직접 변환할 수 없어서 같은 이름의 PDF가 있으면 그 PDF를 대신 보여줍니다.</p>
+            <div id="dropzone" class="dropzone">여기에 파일을 끌어다 놓아도 됩니다.</div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="right">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span>채점</span>
+            <span id="saveState" class="badge">대기</span>
+          </div>
+          <div class="mini-help">기준별 점수는 숫자로 입력하면 총점에 자동 반영됩니다. 빈칸은 미입력으로 저장됩니다.</div>
+        </div>
+        <div class="right-body">
+          <div id="criteriaList" class="criteria-list"></div>
+          <div class="total-box">
+            <div>
+              <div class="mini-help">총점</div>
+              <div id="totalScore" class="total-value">-</div>
+            </div>
+            <button id="clearCurrentBtn" class="danger small">현재 기록 지우기</button>
+          </div>
+          <div>
+            <label for="noteText" style="font-weight:800; display:block; margin-bottom:6px;">메모</label>
+            <textarea id="noteText" placeholder="학생 과제에 대한 메모를 적어 주세요."></textarea>
+          </div>
+          <button id="markDoneBtn" class="primary">저장하고 다음 파일</button>
+          <div class="mini-help">
+            저장된 결과는 상단의 <b>엑셀 저장</b>으로 내려받을 수 있습니다. 같은 브라우저에서 다시 열면 임시저장 내용이 복원됩니다.
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div id="criteriaModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-head">
+        <h2>채점 기준 설정</h2>
+        <span class="spacer"></span>
+        <button id="closeCriteriaBtn" class="small ghost">닫기</button>
+      </div>
+      <div class="modal-body">
+        <div class="mini-help">기준 이름을 바꾸거나 추가할 수 있습니다. 기존 점수는 같은 기준 이름일 때 유지됩니다.</div>
+        <div id="criteriaEditor" class="criteria-editor"></div>
+        <button id="addCriteriaBtn">기준 추가</button>
+      </div>
+      <div class="modal-foot">
+        <button id="resetCriteriaBtn" class="danger">기본값</button>
+        <button id="applyCriteriaBtn" class="primary">적용</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="manualModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="manualTitle">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="manualTitle">학생 과제 통합 뷰어 설명서</h2>
+        <span class="spacer"></span>
+        <button id="closeManualBtn" class="small ghost">닫기</button>
+      </div>
+      <div class="modal-body">
+        <ol class="manual-steps">
+          <li><b>과제 불러오기</b> — 「폴더 열기」 또는 「파일 추가」로 학생 과제를 선택합니다.</li>
+          <li><b>파일 확인</b> — 왼쪽 목록이나 이전/다음 버튼으로 과제를 이동하며 가운데 화면에서 내용을 확인합니다.</li>
+          <li><b>채점 기준 설정</b> — 「채점 설정」에서 평가 기준을 추가하거나 이름을 바꿉니다.</li>
+          <li><b>점수와 메모 기록</b> — 오른쪽 채점 영역에 기준별 점수와 메모를 입력한 뒤 「저장하고 다음 파일」을 누릅니다.</li>
+          <li><b>결과 저장</b> — 모든 채점이 끝나면 상단의 「엑셀 저장」으로 결과를 내려받습니다.</li>
+        </ol>
+        <div class="manual-note">PDF와 이미지 파일은 바로 미리 볼 수 있습니다. DOCX, PPTX, HWP, HWPX는 같은 이름의 PDF가 함께 있을 때 해당 PDF를 대신 표시합니다. 점수와 메모는 브라우저에 임시 저장됩니다.</div>
+      </div>
+      <div class="modal-foot">
+        <button id="confirmManualBtn" class="primary">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script type="module">
+    let pdfjsLib = null;
+    try {
+      pdfjsLib = await import("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs");
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
+    } catch (err) {
+      console.warn("PDF.js를 불러오지 못해 브라우저 기본 PDF 뷰어로 대체합니다.", err);
+    }
+
+    const SUPPORTED = ["pdf", "docx", "pptx", "hwp", "hwpx", "png", "jpg", "jpeg", "webp"];
+    const PREVIEWABLE_IMAGES = ["png", "jpg", "jpeg", "webp"];
+    const DEFAULT_CRITERIA = ["내용", "구성", "표현"];
+    const CACHE_FOLDER = "_converted_pdf_cache";
+    const DRAFT_DB_NAME = "assignment-viewer-draft-db";
+    const DRAFT_DB_VERSION = 1;
+    const DRAFT_STORE = "drafts";
+    const DRAFT_ID = "latest";
+
+    const state = {
+      files: [],
+      filteredIndexes: [],
+      currentIndex: -1,
+      collectionName: "과제",
+      storageKey: "assignment-viewer-webtool-default",
+      criteria: [...DEFAULT_CRITERIA],
+      records: {},
+      zoom: 1,
+      renderToken: 0,
+      pdfObjectUrls: new Map(),
+      originalObjectUrls: new Map(),
+      pdfCacheByStem: new Map(),
+    };
+
+    const els = {
+      folderInput: document.getElementById("folderInput"),
+      fileInput: document.getElementById("fileInput"),
+      importExcelInput: document.getElementById("importExcelInput"),
+      openFolderBtn: document.getElementById("openFolderBtn"),
+      openFilesBtn: document.getElementById("openFilesBtn"),
+      prevBtn: document.getElementById("prevBtn"),
+      nextBtn: document.getElementById("nextBtn"),
+      criteriaBtn: document.getElementById("criteriaBtn"),
+      manualBtn: document.getElementById("manualBtn"),
+      importExcelBtn: document.getElementById("importExcelBtn"),
+      exportExcelBtn: document.getElementById("exportExcelBtn"),
+      zoomOutBtn: document.getElementById("zoomOutBtn"),
+      zoomResetBtn: document.getElementById("zoomResetBtn"),
+      zoomInBtn: document.getElementById("zoomInBtn"),
+      zoomLabel: document.getElementById("zoomLabel"),
+      collectionLabel: document.getElementById("collectionLabel"),
+      progressLabel: document.getElementById("progressLabel"),
+      searchInput: document.getElementById("searchInput"),
+      showOnlyUngraded: document.getElementById("showOnlyUngraded"),
+      fileList: document.getElementById("fileList"),
+      viewerFileName: document.getElementById("viewerFileName"),
+      viewerBody: document.getElementById("viewerBody"),
+      openOriginalBtn: document.getElementById("openOriginalBtn"),
+      saveNowBtn: document.getElementById("saveNowBtn"),
+      criteriaList: document.getElementById("criteriaList"),
+      totalScore: document.getElementById("totalScore"),
+      clearCurrentBtn: document.getElementById("clearCurrentBtn"),
+      noteText: document.getElementById("noteText"),
+      markDoneBtn: document.getElementById("markDoneBtn"),
+      saveState: document.getElementById("saveState"),
+      totalCount: document.getElementById("totalCount"),
+      doneCount: document.getElementById("doneCount"),
+      unsupportedCount: document.getElementById("unsupportedCount"),
+      criteriaModal: document.getElementById("criteriaModal"),
+      criteriaEditor: document.getElementById("criteriaEditor"),
+      addCriteriaBtn: document.getElementById("addCriteriaBtn"),
+      applyCriteriaBtn: document.getElementById("applyCriteriaBtn"),
+      resetCriteriaBtn: document.getElementById("resetCriteriaBtn"),
+      closeCriteriaBtn: document.getElementById("closeCriteriaBtn"),
+      manualModal: document.getElementById("manualModal"),
+      closeManualBtn: document.getElementById("closeManualBtn"),
+      confirmManualBtn: document.getElementById("confirmManualBtn"),
+      toast: document.getElementById("toast"),
+      dropzone: document.getElementById("dropzone"),
+    };
+
+    function extOf(name) {
+      const parts = name.split(".");
+      return parts.length > 1 ? parts.pop().toLowerCase() : "";
+    }
+
+    function stemOf(name) {
+      const base = name.split(/[\\/]/).pop() || name;
+      const i = base.lastIndexOf(".");
+      return i > 0 ? base.slice(0, i) : base;
+    }
+
+    function cleanName(path) {
+      return path.split(/[\\/]/).pop() || path;
+    }
+
+    function relativePathOf(file) {
+      return file.webkitRelativePath || file._relativePath || file.name;
+    }
+
+    function normalizeForKey(text) {
+      return String(text || "").replace(/\\/g, "/").toLowerCase();
+    }
+
+    function makeStorageKey(files, collectionName) {
+      const signature = files
+        .map(f => `${f.relativePath}|${f.size}|${f.lastModified}`)
+        .sort()
+        .join("::");
+      let hash = 0;
+      for (let i = 0; i < signature.length; i++) {
+        hash = ((hash << 5) - hash + signature.charCodeAt(i)) | 0;
+      }
+      return `assignment-viewer-webtool:${collectionName}:${Math.abs(hash)}`;
+    }
+
+    function toast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add("show");
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => els.toast.classList.remove("show"), 2200);
+    }
+
+    function setSaveState(text) {
+      els.saveState.textContent = text;
+    }
+
+    function currentFile() {
+      return state.files[state.currentIndex] || null;
+    }
+
+    function currentRecord() {
+      const file = currentFile();
+      if (!file) return null;
+      ensureRecord(file.id);
+      return state.records[file.id];
+    }
+
+    function ensureRecord(fileId) {
+      if (!state.records[fileId]) {
+        state.records[fileId] = { scores: {}, note: "" };
+      }
+      state.criteria.forEach(c => {
+        if (!(c in state.records[fileId].scores)) state.records[fileId].scores[c] = "";
+      });
+    }
+
+    function isRecordFilled(record) {
+      if (!record) return false;
+      const hasScore = state.criteria.some(c => String(record.scores?.[c] ?? "").trim() !== "");
+      const hasNote = String(record.note ?? "").trim() !== "";
+      return hasScore || hasNote;
+    }
+
+    function canPreview(fileItem) {
+      return fileItem.ext === "pdf" || PREVIEWABLE_IMAGES.includes(fileItem.ext) || Boolean(fileItem.cachedPdfFile);
+    }
+
+    function previewKind(fileItem) {
+      if (fileItem.ext === "pdf" || fileItem.cachedPdfFile) return "pdf";
+      if (PREVIEWABLE_IMAGES.includes(fileItem.ext)) return "image";
+      return "none";
+    }
+
+    function prepareFiles(fileList, collectionName = "과제") {
+      cleanupObjectUrls();
+      state.pdfCacheByStem.clear();
+
+      const all = Array.from(fileList || []);
+      const pdfCacheCandidates = all.filter(file => {
+        const rel = normalizeForKey(relativePathOf(file));
+        return rel.includes(`/${CACHE_FOLDER.toLowerCase()}/`) && extOf(file.name) === "pdf";
+      });
+      for (const file of pdfCacheCandidates) {
+        state.pdfCacheByStem.set(stemOf(file.name), file);
+      }
+
+      const usable = all
+        .filter(file => SUPPORTED.includes(extOf(file.name)))
+        .filter(file => {
+          const rel = normalizeForKey(relativePathOf(file));
+          return !rel.includes(`/${CACHE_FOLDER.toLowerCase()}/`);
+        })
+        .sort((a, b) => relativePathOf(a).localeCompare(relativePathOf(b), "ko"));
+
+      state.files = usable.map((file, idx) => {
+        const rel = relativePathOf(file);
+        const ext = extOf(file.name);
+        const stem = stemOf(file.name);
+        const cachedPdfFile = ext !== "pdf" ? state.pdfCacheByStem.get(stem) || null : null;
+        return {
+          file,
+          id: `${rel}|${file.size}|${file.lastModified}`,
+          name: file.name,
+          relativePath: rel,
+          ext,
+          stem,
+          size: file.size,
+          lastModified: file.lastModified,
+          cachedPdfFile,
+          order: idx + 1,
+        };
+      });
+
+      state.collectionName = collectionName || "과제";
+      state.storageKey = makeStorageKey(state.files, state.collectionName);
+      state.records = {};
+      loadLocalState();
+      state.files.forEach(f => ensureRecord(f.id));
+      state.currentIndex = state.files.length ? 0 : -1;
+      applyFilter();
+      renderCriteriaInputs();
+      renderFileList();
+      showCurrentFile();
+      updateStats();
+      saveLocalState();
+      els.collectionLabel.textContent = state.files.length
+        ? `${state.collectionName} · ${state.files.length}개 파일 불러옴`
+        : "지원되는 파일이 없습니다.";
+    }
+
+    function cleanupObjectUrls() {
+      for (const url of state.pdfObjectUrls.values()) URL.revokeObjectURL(url);
+      for (const url of state.originalObjectUrls.values()) URL.revokeObjectURL(url);
+      state.pdfObjectUrls.clear();
+      state.originalObjectUrls.clear();
+    }
+
+    function loadLocalState() {
+      try {
+        const raw = localStorage.getItem(state.storageKey);
+        if (!raw) return;
+        const saved = JSON.parse(raw);
+        if (Array.isArray(saved.criteria) && saved.criteria.length) {
+          state.criteria = saved.criteria.map(String).filter(Boolean).slice(0, 20);
+        }
+        if (saved.records && typeof saved.records === "object") {
+          state.records = saved.records;
+        }
+        toast("임시저장 내용을 불러왔습니다.");
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+
+    function saveLocalState() {
+      try {
+        localStorage.setItem(state.storageKey, JSON.stringify({
+          criteria: state.criteria,
+          records: state.records,
+          savedAt: new Date().toISOString(),
+        }));
+        setSaveState("저장됨");
+      } catch (err) {
+        console.warn(err);
+        setSaveState("저장 실패");
+      }
+    }
+
+
+    function openDraftDb() {
+      return new Promise((resolve, reject) => {
+        if (!window.indexedDB) {
+          reject(new Error("이 브라우저는 IndexedDB 임시저장을 지원하지 않습니다."));
+          return;
+        }
+        const request = indexedDB.open(DRAFT_DB_NAME, DRAFT_DB_VERSION);
+        request.onupgradeneeded = () => {
+          const db = request.result;
+          if (!db.objectStoreNames.contains(DRAFT_STORE)) db.createObjectStore(DRAFT_STORE, { keyPath: "id" });
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error || new Error("임시저장소를 열지 못했습니다."));
+      });
+    }
+
+    async function getDraftFromIndexedDB() {
+      const db = await openDraftDb();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(DRAFT_STORE, "readonly");
+        const request = tx.objectStore(DRAFT_STORE).get(DRAFT_ID);
+        request.onsuccess = () => resolve(request.result || null);
+        request.onerror = () => reject(request.error || new Error("임시저장 내용을 읽지 못했습니다."));
+        tx.oncomplete = () => db.close();
+        tx.onerror = () => {
+          db.close();
+          reject(tx.error || new Error("임시저장 내용을 읽지 못했습니다."));
+        };
+      });
+    }
+
+    async function putDraftToIndexedDB(snapshot) {
+      const db = await openDraftDb();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(DRAFT_STORE, "readwrite");
+        tx.objectStore(DRAFT_STORE).put(snapshot);
+        tx.oncomplete = () => {
+          db.close();
+          resolve();
+        };
+        tx.onerror = () => {
+          db.close();
+          reject(tx.error || new Error("임시저장 내용을 기록하지 못했습니다."));
+        };
+      });
+    }
+
+    function attachRelativePath(file, relativePath) {
+      if (!file || !relativePath) return file;
+      try {
+        Object.defineProperty(file, "_relativePath", { value: relativePath, configurable: true });
+      } catch (err) {
+        file._relativePath = relativePath;
+      }
+      return file;
+    }
+
+    async function saveDraftToIndexedDB({ silent = false } = {}) {
+      if (!state.files.length) return;
+      try {
+        const snapshot = {
+          id: DRAFT_ID,
+          app: "assignment-viewer-webtool",
+          version: 1,
+          savedAt: new Date().toISOString(),
+          collectionName: state.collectionName,
+          currentIndex: state.currentIndex,
+          criteria: state.criteria,
+          records: state.records,
+          zoom: state.zoom,
+          files: state.files.map(item => ({
+            file: item.file,
+            relativePath: item.relativePath,
+            cachedPdfFile: item.cachedPdfFile || null,
+            cachedPdfRelativePath: item.cachedPdfFile ? `${state.collectionName}/${CACHE_FOLDER}/${item.cachedPdfFile.name}` : "",
+          })),
+        };
+        await putDraftToIndexedDB(snapshot);
+        if (!silent) toast("파일과 채점 내용을 브라우저에 임시저장했습니다.");
+      } catch (err) {
+        console.warn(err);
+        if (!silent) toast("브라우저 임시저장에 실패했습니다. 엑셀 저장도 함께 해 주세요.");
+      }
+    }
+
+    async function restoreDraftFromIndexedDB(snapshot) {
+      if (!snapshot?.files?.length) return;
+      const restoredFiles = [];
+      for (const item of snapshot.files) {
+        if (item.file) restoredFiles.push(attachRelativePath(item.file, item.relativePath || item.file.name));
+        if (item.cachedPdfFile) {
+          restoredFiles.push(attachRelativePath(
+            item.cachedPdfFile,
+            item.cachedPdfRelativePath || `${snapshot.collectionName || "과제"}/${CACHE_FOLDER}/${item.cachedPdfFile.name}`,
+          ));
+        }
+      }
+      prepareFiles(restoredFiles, snapshot.collectionName || "임시저장 과제");
+      if (Array.isArray(snapshot.criteria) && snapshot.criteria.length) {
+        state.criteria = snapshot.criteria.map(String).filter(Boolean).slice(0, 20);
+      }
+      if (snapshot.records && typeof snapshot.records === "object") state.records = snapshot.records;
+      state.zoom = Number.isFinite(snapshot.zoom) ? snapshot.zoom : 1;
+      state.currentIndex = Math.max(0, Math.min(state.files.length - 1, Number(snapshot.currentIndex) || 0));
+      state.files.forEach(f => ensureRecord(f.id));
+      renderCriteriaInputs();
+      applyFilter();
+      renderFileList(false);
+      showCurrentFile();
+      updateStats();
+      updateProgress();
+      saveLocalState();
+      toast("임시저장된 파일과 채점 내용을 불러왔습니다.");
+    }
+
+    async function offerDraftRestoreOnStartup() {
+      try {
+        const snapshot = await getDraftFromIndexedDB();
+        if (!snapshot?.files?.length) return;
+        const savedAt = snapshot.savedAt ? new Date(snapshot.savedAt).toLocaleString("ko-KR") : "저장 시각 없음";
+        const count = snapshot.files.length;
+        const ok = confirm(`브라우저에 임시저장된 과제가 있습니다.\n\n${snapshot.collectionName || "과제"} · ${count}개 파일\n저장 시각: ${savedAt}\n\n불러올까요?`);
+        if (ok) await restoreDraftFromIndexedDB(snapshot);
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+
+    function autoSaveCurrent() {
+      const file = currentFile();
+      if (!file) return;
+      const record = currentRecord();
+      if (!record) return;
+      state.criteria.forEach(c => {
+        const input = findScoreInput(c);
+        if (input) record.scores[c] = input.value.trim();
+      });
+      record.note = els.noteText.value.trim();
+      refreshTotal();
+      renderFileList(false);
+      updateStats();
+      setSaveState("저장 중");
+      clearTimeout(autoSaveCurrent._timer);
+      autoSaveCurrent._timer = setTimeout(() => {
+        saveLocalState();
+      }, 180);
+    }
+
+    function cssEscape(value) {
+      return String(value).replace(/"/g, "\\\"");
+    }
+
+    function findScoreInput(crit) {
+      return Array.from(document.querySelectorAll("[data-score-input]")).find(input => input.dataset.scoreInput === crit) || null;
+    }
+
+    function formatSize(bytes) {
+      if (!Number.isFinite(bytes)) return "";
+      if (bytes < 1024) return `${bytes}B`;
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)}KB`;
+      return `${(bytes / 1024 / 1024).toFixed(1)}MB`;
+    }
+
+    function applyFilter() {
+      const q = els.searchInput.value.trim().toLowerCase();
+      const onlyUngraded = els.showOnlyUngraded.checked;
+      state.filteredIndexes = state.files
+        .map((f, i) => [f, i])
+        .filter(([f]) => {
+          if (q && !f.name.toLowerCase().includes(q) && !f.relativePath.toLowerCase().includes(q)) return false;
+          if (onlyUngraded && isRecordFilled(state.records[f.id])) return false;
+          return true;
+        })
+        .map(([, i]) => i);
+    }
+
+    function renderFileList(keepScroll = true) {
+      const oldScroll = keepScroll ? els.fileList.scrollTop : 0;
+      applyFilter();
+      els.fileList.innerHTML = "";
+      if (!state.filteredIndexes.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.style.margin = "10px 0";
+        empty.innerHTML = "<h2>표시할 파일이 없어요</h2><p>검색어 또는 미채점 필터를 확인해 주세요.</p>";
+        els.fileList.appendChild(empty);
+        updateProgress();
+        return;
+      }
+      for (const index of state.filteredIndexes) {
+        const item = state.files[index];
+        const record = state.records[item.id];
+        const done = isRecordFilled(record);
+        const preview = canPreview(item);
+        const card = document.createElement("div");
+        card.className = `file-card ${index === state.currentIndex ? "active" : ""}`;
+        card.tabIndex = 0;
+        card.innerHTML = `
+          <div class="file-name">${done ? "✓ " : ""}${escapeHtml(item.name)}</div>
+          <div class="file-meta">
+            <span class="dot ${done ? "done" : preview ? "" : "warn"}"></span>
+            <span>${item.order}번</span>
+            <span>· ${item.ext.toUpperCase()}</span>
+            <span>· ${formatSize(item.size)}</span>
+            ${item.cachedPdfFile ? `<span>· 변환 PDF 있음</span>` : ""}
+            ${!preview ? `<span>· 미리보기 제한</span>` : ""}
+          </div>
+        `;
+        card.addEventListener("click", () => selectIndex(index));
+        card.addEventListener("keydown", e => {
+          if (e.key === "Enter" || e.key === " ") selectIndex(index);
+        });
+        els.fileList.appendChild(card);
+      }
+      els.fileList.scrollTop = oldScroll;
+      updateProgress();
+    }
+
+    function escapeHtml(text) {
+      return String(text).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[ch]));
+    }
+
+    function updateStats() {
+      const total = state.files.length;
+      const done = state.files.filter(f => isRecordFilled(state.records[f.id])).length;
+      const unsupported = state.files.filter(f => !canPreview(f)).length;
+      els.totalCount.textContent = total;
+      els.doneCount.textContent = done;
+      els.unsupportedCount.textContent = unsupported;
+    }
+
+    function updateProgress() {
+      if (!state.files.length || state.currentIndex < 0) {
+        els.progressLabel.textContent = "0 / 0";
+        return;
+      }
+      els.progressLabel.textContent = `${state.currentIndex + 1} / ${state.files.length}`;
+    }
+
+    function selectIndex(index) {
+      if (index < 0 || index >= state.files.length) return;
+      autoSaveCurrent();
+      state.currentIndex = index;
+      renderFileList();
+      showCurrentFile();
+    }
+
+    function move(delta) {
+      if (!state.files.length) return;
+      autoSaveCurrent();
+      const next = Math.max(0, Math.min(state.files.length - 1, state.currentIndex + delta));
+      if (next !== state.currentIndex) selectIndex(next);
+    }
+
+    function renderCriteriaInputs() {
+      els.criteriaList.innerHTML = "";
+      if (!state.criteria.length) {
+        els.criteriaList.innerHTML = `<div class="mini-help">채점 기준이 없습니다. [채점 설정]에서 기준을 추가해 주세요.</div>`;
+        return;
+      }
+      for (const crit of state.criteria) {
+        const row = document.createElement("div");
+        row.className = "criterion-row";
+        row.innerHTML = `
+          <label>${escapeHtml(crit)}</label>
+          <input data-score-input="${escapeHtml(crit)}" type="number" step="0.1" inputmode="decimal" placeholder="점수" />
+        `;
+        const input = row.querySelector("input");
+        input.addEventListener("input", autoSaveCurrent);
+        els.criteriaList.appendChild(row);
+      }
+      loadRecordIntoPanel();
+    }
+
+    function loadRecordIntoPanel() {
+      const record = currentRecord();
+      for (const crit of state.criteria) {
+        const input = findScoreInput(crit);
+        if (input) input.value = record?.scores?.[crit] ?? "";
+      }
+      els.noteText.value = record?.note ?? "";
+      refreshTotal();
+    }
+
+    function refreshTotal() {
+      const record = currentRecord();
+      if (!record) {
+        els.totalScore.textContent = "-";
+        return;
+      }
+      let total = 0;
+      let has = false;
+      for (const crit of state.criteria) {
+        const input = findScoreInput(crit);
+        const raw = input ? input.value.trim() : record.scores?.[crit];
+        if (raw === "" || raw == null) continue;
+        const num = Number(raw);
+        if (Number.isFinite(num)) {
+          total += num;
+          has = true;
+        }
+      }
+      if (!has) els.totalScore.textContent = "-";
+      else els.totalScore.textContent = Number.isInteger(total) ? String(total) : String(Math.round(total * 10) / 10);
+    }
+
+    async function showCurrentFile() {
+      const item = currentFile();
+      state.renderToken += 1;
+      const token = state.renderToken;
+      els.viewerBody.innerHTML = "";
+      if (!item) {
+        els.viewerFileName.textContent = "파일: 없음";
+        els.viewerBody.innerHTML = `
+          <div class="empty-state">
+            <h2>과제 폴더를 선택해 주세요</h2>
+            <p>PDF, 이미지 파일은 바로 확인할 수 있고, 점수와 메모는 엑셀로 저장할 수 있습니다.</p>
+            <div id="dropzone2" class="dropzone">여기에 파일을 끌어다 놓아도 됩니다.</div>
+          </div>`;
+        document.getElementById("dropzone2")?.addEventListener("dragover", onDragOver);
+        document.getElementById("dropzone2")?.addEventListener("drop", onDrop);
+        loadRecordIntoPanel();
+        updateProgress();
+        return;
+      }
+
+      ensureRecord(item.id);
+      loadRecordIntoPanel();
+      updateProgress();
+      els.viewerFileName.textContent = `파일: ${item.name}`;
+      els.collectionLabel.textContent = `${state.collectionName} · ${item.name}`;
+      els.viewerBody.scrollTop = 0;
+
+      const kind = previewKind(item);
+      try {
+        if (kind === "pdf") {
+          await renderPdf(item, token);
+        } else if (kind === "image") {
+          renderImage(item);
+        } else {
+          renderUnsupported(item);
+        }
+      } catch (err) {
+        console.error(err);
+        if (token !== state.renderToken) return;
+        renderError(item, err);
+      }
+      renderFileList();
+      updateStats();
+    }
+
+    function getPreviewFile(item) {
+      return item.ext === "pdf" ? item.file : item.cachedPdfFile;
+    }
+
+    function getObjectUrl(map, key, file) {
+      if (map.has(key)) return map.get(key);
+      const url = URL.createObjectURL(file);
+      map.set(key, url);
+      return url;
+    }
+
+    async function renderPdf(item, token) {
+      if (!pdfjsLib) {
+        renderPdfFallback(item);
+        return;
+      }
+      const file = getPreviewFile(item);
+      const key = item.ext === "pdf" ? item.id : `${item.id}:cached-pdf`;
+      const url = getObjectUrl(state.pdfObjectUrls, key, file);
+      els.viewerBody.innerHTML = `<div class="mini-help">PDF를 불러오는 중입니다.</div>`;
+      const loadingTask = pdfjsLib.getDocument(url);
+      const pdf = await loadingTask.promise;
+      if (token !== state.renderToken) return;
+      els.viewerBody.innerHTML = "";
+      const containerWidth = Math.max(320, els.viewerBody.clientWidth - 50);
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        if (token !== state.renderToken) return;
+        const page = await pdf.getPage(pageNum);
+        const baseViewport = page.getViewport({ scale: 1 });
+        const fitScale = Math.min(containerWidth / baseViewport.width, 2.5);
+        const viewport = page.getViewport({ scale: fitScale * state.zoom });
+        const wrap = document.createElement("div");
+        wrap.className = "page-wrap";
+        const label = document.createElement("div");
+        label.className = "page-label";
+        label.textContent = `페이지 ${pageNum} / ${pdf.numPages}`;
+        const canvas = document.createElement("canvas");
+        canvas.className = "pdf-page";
+        const context = canvas.getContext("2d", { alpha: false });
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = Math.floor(viewport.width * dpr);
+        canvas.height = Math.floor(viewport.height * dpr);
+        canvas.style.width = `${Math.floor(viewport.width)}px`;
+        canvas.style.height = `${Math.floor(viewport.height)}px`;
+        context.setTransform(dpr, 0, 0, dpr, 0, 0);
+        wrap.append(label, canvas);
+        els.viewerBody.appendChild(wrap);
+        await page.render({ canvasContext: context, viewport }).promise;
+      }
+    }
+
+    function renderPdfFallback(item) {
+      const file = getPreviewFile(item);
+      const key = item.ext === "pdf" ? item.id : `${item.id}:cached-pdf`;
+      const url = getObjectUrl(state.pdfObjectUrls, key, file);
+      els.viewerBody.innerHTML = `
+        <div class="empty-state" style="width:min(980px,100%); margin:0;">
+          <h2>PDF 미리보기</h2>
+          <p>PDF.js를 불러오지 못해 브라우저 기본 PDF 뷰어로 표시합니다.</p>
+          <iframe src="${url}" style="width:100%; height:72vh; border:1px solid var(--line); border-radius:12px; background:white;"></iframe>
+        </div>`;
+    }
+
+    function renderImage(item) {
+      const url = getObjectUrl(state.originalObjectUrls, item.id, item.file);
+      els.viewerBody.innerHTML = "";
+      const wrap = document.createElement("div");
+      wrap.className = "page-wrap";
+      const label = document.createElement("div");
+      label.className = "page-label";
+      label.textContent = item.name;
+      const img = document.createElement("img");
+      img.className = "image-page";
+      img.src = url;
+      img.alt = item.name;
+      img.style.width = `${Math.round(900 * state.zoom)}px`;
+      img.style.height = "auto";
+      wrap.append(label, img);
+      els.viewerBody.appendChild(wrap);
+    }
+
+    function renderUnsupported(item) {
+      els.viewerBody.innerHTML = `
+        <div class="empty-state">
+          <h2>이 파일은 브라우저에서 바로 표시할 수 없어요</h2>
+          <p><b>${escapeHtml(item.name)}</b></p>
+          <p>웹브라우저는 Word, PowerPoint, 한글 파일을 사용자의 컴퓨터 안에서 자동으로 PDF 변환할 권한이 없습니다.</p>
+          <p>해결 방법: 이 파일을 PDF로 저장한 뒤 함께 넣어 주세요. 특히 원래 데스크톱 버전처럼 <b>${CACHE_FOLDER}</b> 폴더 안에 같은 이름의 PDF가 있으면 자동으로 연결됩니다.</p>
+          <p>예: <b>${escapeHtml(item.stem)}.pdf</b></p>
+        </div>`;
+    }
+
+    function renderError(item, err) {
+      els.viewerBody.innerHTML = `
+        <div class="empty-state">
+          <h2>파일을 표시하지 못했습니다</h2>
+          <p><b>${escapeHtml(item.name)}</b></p>
+          <p>${escapeHtml(err?.message || String(err))}</p>
+        </div>`;
+    }
+
+    function rerender() {
+      showCurrentFile();
+      els.zoomLabel.textContent = `배율 ${Math.round(state.zoom * 100)}%`;
+    }
+
+    function openOriginal() {
+      const item = currentFile();
+      if (!item) return;
+      const url = getObjectUrl(state.originalObjectUrls, `${item.id}:original`, item.file);
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+
+    function clearCurrentRecord() {
+      const file = currentFile();
+      if (!file) return;
+      if (!confirm("현재 파일의 점수와 메모를 지울까요?")) return;
+      state.records[file.id] = { scores: {}, note: "" };
+      ensureRecord(file.id);
+      loadRecordIntoPanel();
+      saveLocalState();
+      renderFileList();
+      updateStats();
+      toast("현재 기록을 지웠습니다.");
+    }
+
+    function exportExcel() {
+      autoSaveCurrent();
+      if (!state.files.length) {
+        toast("저장할 파일 목록이 없습니다.");
+        return;
+      }
+      if (!window.XLSX) {
+        exportCsvFallback();
+        return;
+      }
+      const headers = ["번호", "파일명", ...state.criteria, "총점", "메모", "원본경로", "미리보기상태"];
+      const rows = [headers];
+      state.files.forEach((item, idx) => {
+        const record = state.records[item.id] || { scores: {}, note: "" };
+        const scoreValues = state.criteria.map(c => record.scores?.[c] ?? "");
+        let total = 0;
+        let has = false;
+        for (const value of scoreValues) {
+          const num = Number(value);
+          if (String(value).trim() !== "" && Number.isFinite(num)) {
+            total += num;
+            has = true;
+          }
+        }
+        rows.push([
+          idx + 1,
+          item.stem,
+          ...scoreValues,
+          has ? total : "",
+          record.note ?? "",
+          item.relativePath,
+          canPreview(item) ? "표시 가능" : "PDF 변환 필요",
+        ]);
+      });
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      const colWidths = headers.map((h, cIdx) => ({
+        wch: Math.min(42, Math.max(10, ...rows.map(r => String(r[cIdx] ?? "").length + 2)))
+      }));
+      ws["!cols"] = colWidths;
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "채점결과");
+      const safe = state.collectionName.replace(/[\\/:*?"<>|]/g, "_") || "과제";
+      XLSX.writeFile(wb, `${safe}_채점결과.xlsx`);
+      toast("엑셀 파일을 저장했습니다.");
+    }
+
+    function exportCsvFallback() {
+      const headers = ["번호", "파일명", ...state.criteria, "총점", "메모", "원본경로", "미리보기상태"];
+      const rows = [headers];
+      state.files.forEach((item, idx) => {
+        const record = state.records[item.id] || { scores: {}, note: "" };
+        const scoreValues = state.criteria.map(c => record.scores?.[c] ?? "");
+        let total = 0;
+        let has = false;
+        for (const value of scoreValues) {
+          const num = Number(value);
+          if (String(value).trim() !== "" && Number.isFinite(num)) {
+            total += num;
+            has = true;
+          }
+        }
+        rows.push([idx + 1, item.stem, ...scoreValues, has ? total : "", record.note ?? "", item.relativePath, canPreview(item) ? "표시 가능" : "PDF 변환 필요"]);
+      });
+      const csv = rows.map(row => row.map(cell => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(",")).join("\n");
+      const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${state.collectionName}_채점결과.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast("CSV 파일로 저장했습니다.");
+    }
+
+    async function importExcel(file) {
+      if (!file) return;
+      if (!window.XLSX) {
+        toast("엑셀 라이브러리를 불러오지 못했습니다.");
+        return;
+      }
+      const buffer = await file.arrayBuffer();
+      const wb = XLSX.read(buffer, { type: "array" });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+      if (!rows.length) return;
+      const headers = rows[0].map(String);
+      const fileNameIdx = headers.indexOf("파일명");
+      const noteIdx = headers.indexOf("메모");
+      if (fileNameIdx < 0) {
+        toast("'파일명' 열이 없어 불러오지 못했습니다.");
+        return;
+      }
+      const reserved = new Set(["번호", "파일명", "총점", "메모", "원본경로", "미리보기상태"]);
+      const importedCriteria = headers.filter(h => h && !reserved.has(h));
+      if (importedCriteria.length && confirm(`엑셀의 채점 기준을 사용할까요?\n\n${importedCriteria.join(", ")}`)) {
+        state.criteria = importedCriteria;
+        state.files.forEach(f => ensureRecord(f.id));
+        renderCriteriaInputs();
+      }
+      const byStem = new Map(state.files.map(f => [f.stem, f]));
+      let count = 0;
+      for (let r = 1; r < rows.length; r++) {
+        const row = rows[r];
+        const stem = String(row[fileNameIdx] ?? "").trim();
+        const item = byStem.get(stem);
+        if (!item) continue;
+        ensureRecord(item.id);
+        const record = state.records[item.id];
+        for (const crit of state.criteria) {
+          const idx = headers.indexOf(crit);
+          if (idx >= 0) record.scores[crit] = String(row[idx] ?? "");
+        }
+        if (noteIdx >= 0) record.note = String(row[noteIdx] ?? "");
+        count += 1;
+      }
+      loadRecordIntoPanel();
+      renderFileList();
+      updateStats();
+      saveLocalState();
+      toast(`${count}개 파일의 채점 결과를 불러왔습니다.`);
+    }
+
+    function openCriteriaModal() {
+      els.criteriaModal.classList.remove("hidden");
+      renderCriteriaEditor();
+    }
+
+    function closeCriteriaModal() {
+      els.criteriaModal.classList.add("hidden");
+    }
+
+    function renderCriteriaEditor() {
+      els.criteriaEditor.innerHTML = "";
+      state.criteria.forEach((name, idx) => addCriteriaEditorRow(name, idx));
+    }
+
+    function addCriteriaEditorRow(name = "", idx = null) {
+      const row = document.createElement("div");
+      row.className = "edit-row";
+      row.innerHTML = `
+        <label>기준 ${idx == null ? els.criteriaEditor.children.length + 1 : idx + 1}</label>
+        <input type="text" value="${escapeHtml(name)}" placeholder="예: 내용" />
+        <button class="small danger" type="button">삭제</button>
+      `;
+      row.querySelector("button").addEventListener("click", () => {
+        row.remove();
+        renumberCriteriaEditor();
+      });
+      els.criteriaEditor.appendChild(row);
+    }
+
+    function renumberCriteriaEditor() {
+      Array.from(els.criteriaEditor.children).forEach((row, idx) => {
+        row.querySelector("label").textContent = `기준 ${idx + 1}`;
+      });
+    }
+
+    function applyCriteria() {
+      const values = Array.from(els.criteriaEditor.querySelectorAll("input"))
+        .map(input => input.value.trim())
+        .filter(Boolean);
+      const unique = [...new Set(values)];
+      if (!unique.length) {
+        toast("채점 기준을 1개 이상 입력해 주세요.");
+        return;
+      }
+      if (unique.length !== values.length) {
+        toast("채점 기준 이름은 서로 달라야 합니다.");
+        return;
+      }
+      autoSaveCurrent();
+      state.criteria = unique.slice(0, 20);
+      state.files.forEach(f => ensureRecord(f.id));
+      renderCriteriaInputs();
+      loadRecordIntoPanel();
+      saveLocalState();
+      closeCriteriaModal();
+      toast("채점 기준을 적용했습니다.");
+    }
+
+    function resetCriteria() {
+      state.criteria = [...DEFAULT_CRITERIA];
+      renderCriteriaEditor();
+    }
+
+    function handleFolderChange(event) {
+      const files = Array.from(event.target.files || []);
+      const firstPath = files[0]?.webkitRelativePath || "";
+      const collectionName = firstPath ? firstPath.split("/")[0] : "과제";
+      prepareFiles(files, collectionName);
+      event.target.value = "";
+    }
+
+    function handleFileChange(event) {
+      const files = Array.from(event.target.files || []);
+      prepareFiles(files, "선택파일");
+      event.target.value = "";
+    }
+
+    function onDragOver(event) {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "copy";
+    }
+
+    function onDrop(event) {
+      event.preventDefault();
+      const files = Array.from(event.dataTransfer.files || []);
+      if (files.length) prepareFiles(files, "드롭파일");
+    }
+
+    function bindEvents() {
+      els.openFolderBtn.addEventListener("click", () => els.folderInput.click());
+      els.openFilesBtn.addEventListener("click", () => els.fileInput.click());
+      els.folderInput.addEventListener("change", handleFolderChange);
+      els.fileInput.addEventListener("change", handleFileChange);
+      els.prevBtn.addEventListener("click", () => move(-1));
+      els.nextBtn.addEventListener("click", () => move(1));
+      els.criteriaBtn.addEventListener("click", openCriteriaModal);
+      els.manualBtn.addEventListener("click", () => els.manualModal.classList.remove("hidden"));
+      els.importExcelBtn.addEventListener("click", () => els.importExcelInput.click());
+      els.importExcelInput.addEventListener("change", e => {
+        importExcel(e.target.files?.[0]);
+        e.target.value = "";
+      });
+      els.exportExcelBtn.addEventListener("click", exportExcel);
+      els.zoomOutBtn.addEventListener("click", () => { state.zoom = Math.max(0.3, state.zoom / 1.1); rerender(); });
+      els.zoomResetBtn.addEventListener("click", () => { state.zoom = 1; rerender(); });
+      els.zoomInBtn.addEventListener("click", () => { state.zoom = Math.min(5, state.zoom * 1.1); rerender(); });
+      els.searchInput.addEventListener("input", () => renderFileList(false));
+      els.showOnlyUngraded.addEventListener("change", () => renderFileList(false));
+      els.openOriginalBtn.addEventListener("click", openOriginal);
+      els.saveNowBtn.addEventListener("click", async () => { autoSaveCurrent(); saveLocalState(); await saveDraftToIndexedDB(); toast("현재 기록과 파일 목록을 임시저장했습니다."); });
+      els.noteText.addEventListener("input", autoSaveCurrent);
+      els.clearCurrentBtn.addEventListener("click", clearCurrentRecord);
+      els.markDoneBtn.addEventListener("click", async () => { autoSaveCurrent(); saveLocalState(); await saveDraftToIndexedDB(); move(1); });
+      els.addCriteriaBtn.addEventListener("click", () => addCriteriaEditorRow(`기준${els.criteriaEditor.children.length + 1}`));
+      els.applyCriteriaBtn.addEventListener("click", applyCriteria);
+      els.resetCriteriaBtn.addEventListener("click", resetCriteria);
+      els.closeCriteriaBtn.addEventListener("click", closeCriteriaModal);
+      els.criteriaModal.addEventListener("click", e => { if (e.target === els.criteriaModal) closeCriteriaModal(); });
+      els.closeManualBtn.addEventListener("click", () => els.manualModal.classList.add("hidden"));
+      els.confirmManualBtn.addEventListener("click", () => els.manualModal.classList.add("hidden"));
+      els.manualModal.addEventListener("click", e => { if (e.target === els.manualModal) els.manualModal.classList.add("hidden"); });
+      els.dropzone?.addEventListener("dragover", onDragOver);
+      els.dropzone?.addEventListener("drop", onDrop);
+      document.body.addEventListener("dragover", onDragOver);
+      document.body.addEventListener("drop", onDrop);
+      window.addEventListener("keydown", e => {
+        if (e.target && ["INPUT", "TEXTAREA"].includes(e.target.tagName)) return;
+        if (e.key === "ArrowLeft") move(-1);
+        if (e.key === "ArrowRight") move(1);
+      });
+      els.viewerBody.addEventListener("wheel", e => {
+        if (!e.ctrlKey) return;
+        e.preventDefault();
+        state.zoom = e.deltaY < 0 ? Math.min(5, state.zoom * 1.08) : Math.max(0.3, state.zoom / 1.08);
+        rerender();
+      }, { passive: false });
+      window.addEventListener("resize", () => {
+        clearTimeout(window._resizeTimer);
+        window._resizeTimer = setTimeout(() => showCurrentFile(), 180);
+      });
+    }
+
+    bindEvents();
+    if (new URLSearchParams(location.search).get("manual") === "1") {
+      els.manualModal.classList.remove("hidden");
+    }
+    renderCriteriaInputs();
+    updateStats();
+    updateProgress();
+    offerDraftRestoreOnStartup();
+  </script>
+</body>
+</html>

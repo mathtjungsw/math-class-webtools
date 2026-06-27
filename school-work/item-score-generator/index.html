@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>문항 배점 생성기</title>
+<style>
+:root{
+  --bg:#f4f7ff;--bg2:#eef3ff;--card:#fff;--text:#172033;--muted:#6d7890;
+  --line:#e2e8f4;--accent:#586cff;--accent2:#7c5cff;--good:#0ea66b;--bad:#e5484d;--warn:#d97706;
+  --shadow:0 18px 46px rgba(28,41,80,.10);--r:22px;
+}
+*{box-sizing:border-box}body{margin:0;font-family:Pretendard,"Noto Sans KR",Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:radial-gradient(900px 500px at 0 0,#fff 0,rgba(255,255,255,.6) 55%,transparent 75%),linear-gradient(180deg,var(--bg2),var(--bg));min-height:100vh}.wrap{max-width:1240px;margin:0 auto;padding:28px 16px 56px}.top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px}.title{font-size:clamp(28px,4vw,42px);font-weight:950;letter-spacing:-.04em}.sub{margin-top:8px;color:var(--muted);font-size:14px;line-height:1.6}.tabs{display:flex;gap:8px;flex-wrap:wrap}.tab{border:1px solid var(--line);background:#fff;color:var(--muted);padding:12px 20px;border-radius:999px;font-weight:900;cursor:pointer}.tab.active{border-color:transparent;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 10px 24px rgba(88,108,255,.25)}.grid{display:grid;grid-template-columns:1fr .95fr;gap:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}.panel{padding:20px}h2{margin:0 0 14px;font-size:20px;letter-spacing:-.02em}.hint{font-size:13px;color:var(--muted);line-height:1.65;background:#f8faff;border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:14px}.row{display:grid;grid-template-columns:140px 1fr 1fr;gap:10px;align-items:center;margin-bottom:10px}.row.four{grid-template-columns:140px 1fr 1fr 1fr}.lbl{font-weight:900;color:#334155}.mini{font-size:12px;color:var(--muted);font-weight:800;margin-bottom:5px}input,select{width:100%;border:1px solid #d6deed;border-radius:13px;background:#fff;color:var(--text);padding:11px 12px;font-size:15px;outline:none}input:focus,select:focus{border-color:#8192ff;box-shadow:0 0 0 4px rgba(88,108,255,.12)}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}button{border:0;border-radius:14px;padding:13px 16px;font-weight:900;cursor:pointer;transition:.14s ease;font-size:14px}button:hover{transform:translateY(-1px)}.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 12px 24px rgba(88,108,255,.22)}.secondary{background:#f4f7fc;color:#334155;border:1px solid var(--line)}.danger{background:#fff4f4;color:#b4232a;border:1px solid #ffd2d2}.download{background:linear-gradient(135deg,#0ea5e9,#2563eb);color:#fff}.msg{display:none;margin-top:14px;border-radius:16px;padding:13px 15px;font-size:14px;line-height:1.65;white-space:pre-wrap}.msg.ok{display:block;background:#effdf6;border:1px solid #bdebd0;color:#166534}.msg.err{display:block;background:#fff4f4;border:1px solid #ffd0d0;color:#9f1239}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}.sumcard{border:1px solid var(--line);background:#fbfcff;border-radius:16px;padding:13px}.sumcard .s{font-size:12px;color:var(--muted);font-weight:800}.sumcard .b{margin-top:4px;font-size:22px;font-weight:950}.result-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.box{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fcfdff}.box h3{margin:0;padding:12px 14px;background:#f8faff;border-bottom:1px solid var(--line);font-size:15px}.list{list-style:none;margin:0;padding:10px;display:grid;gap:7px;max-height:310px;overflow:auto}.item{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:9px 10px;border:1px solid #edf1f7;border-radius:12px;background:#fff;font-variant-numeric:tabular-nums}.item .q{font-size:12px;color:var(--muted);font-weight:900}.item .v{font-weight:950}.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}.chip{font-size:12px;font-weight:900;color:#3152c7;background:#eef3ff;border:1px solid #cfd9ff;border-radius:999px;padding:7px 11px}.progress{display:flex;align-items:center;gap:8px;margin-bottom:14px}.dot{flex:1;height:9px;border-radius:999px;background:#e6ebf5}.dot.on{background:linear-gradient(135deg,var(--accent),var(--accent2))}.easyStep{display:none}.easyStep.active{display:block}.big{font-size:30px;font-weight:950;text-align:center;padding:16px}.modeCards{display:grid;grid-template-columns:1fr 1fr;gap:10px}.modeCard{border:2px solid var(--line);border-radius:18px;background:#fff;padding:16px;cursor:pointer;text-align:center}.modeCard.selected{border-color:var(--accent);background:#f4f6ff}.modeCard strong{display:block;margin-bottom:6px}.totalLine{display:flex;justify-content:space-between;align-items:center;background:#f8faff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:10px;font-weight:900}.okText{color:var(--good)}.badText{color:var(--bad)}table{width:100%;border-collapse:collapse}th,td{border:1px solid var(--line);padding:9px;text-align:center}th{background:#f8faff}.qtableWrap{max-height:420px;overflow:auto;border:1px solid var(--line);border-radius:18px}.qtableWrap table{border:0}.qtableWrap th{position:sticky;top:0;z-index:1}.hidden{display:none!important}
+.help-tab{background:#fffdf4;color:#9a5b00;border-color:#f5d48a}.help-tab:hover{border-color:#d97706;color:#d97706}
+.helpOverlay{position:fixed;inset:0;background:rgba(15,23,42,.48);z-index:50;display:none;align-items:center;justify-content:center;padding:18px}.helpOverlay.open{display:flex}.helpModal{width:min(920px,100%);max-height:88vh;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:26px;box-shadow:0 28px 80px rgba(15,23,42,.24)}.helpHead{position:sticky;top:0;background:linear-gradient(135deg,#f8faff,#fff);border-bottom:1px solid var(--line);padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;z-index:2}.helpHead h2{margin:0}.helpClose{background:#f4f7fc;color:#334155;border:1px solid var(--line);padding:10px 14px}.helpBody{padding:20px}.helpLead{background:#f8faff;border:1px solid var(--line);border-radius:18px;padding:14px 16px;color:#334155;line-height:1.75;margin-bottom:16px}.helpGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.helpCard{border:1px solid var(--line);border-radius:18px;background:#fcfdff;padding:15px}.helpCard h3{margin:0 0 10px;font-size:16px}.helpCard ol,.helpCard ul{margin:0;padding-left:20px;color:#334155;line-height:1.75;font-size:14px}.helpCard li+li{margin-top:4px}.helpFull{grid-column:1/-1}.kbd{display:inline-block;border:1px solid #d5ddea;background:#fff;border-radius:8px;padding:1px 7px;font-size:12px;font-weight:900;color:#475569}.warnBox{border:1px solid #fed7aa;background:#fff7ed;color:#92400e;border-radius:16px;padding:12px 14px;line-height:1.7;font-size:14px;margin-top:12px}
+@media(max-width:760px){.helpGrid{grid-template-columns:1fr}.helpHead{align-items:flex-start}.helpClose{flex-shrink:0}}
+@media(max-width:980px){.grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.summary{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){.row,.row.four{grid-template-columns:1fr}.result-grid,.modeCards{grid-template-columns:1fr}.summary{grid-template-columns:1fr}.actions button{width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><div class="title">문항 배점 생성기</div><div class="sub">문항 수, 총점, 선택형/서답형 점수, 상·중·하 비율을 넣으면 조건에 맞는 배점을 자동 생성합니다.</div></div>
+    <div class="tabs"><button class="tab active" id="tabEasy">⚡ 간편모드</button><button class="tab" id="tabBasic">⚙️ 기본모드</button><button class="tab help-tab" id="helpBtn" type="button">📘 설명서 보기</button></div>
+  </div>
+
+  <section id="easyMode" class="card panel">
+    <div class="progress"><div class="dot on" id="p1"></div><div class="dot" id="p2"></div><div class="dot" id="p3"></div><div class="dot" id="p4"></div></div>
+
+    <div class="easyStep active" id="step1">
+      <h2>1. 전체 문항 수</h2>
+      <div class="hint">선택형과 서답형 문항 수는 다음 단계에서 자동으로 나눕니다. 나중에 기본모드에서 직접 수정할 수 있어요.</div>
+      <input id="easyTotal" class="big" type="number" min="2" max="200" value="22" />
+      <div class="actions"><button class="primary" id="go2">다음 단계 →</button></div>
+      <div class="msg" id="msg1"></div>
+    </div>
+
+    <div class="easyStep" id="step2">
+      <h2>2. 총점과 영역별 점수</h2>
+      <div class="row"><div class="lbl">총점</div><div><div class="mini">전체 총점</div><input id="easyTotalScore" type="number" min="1" max="999" value="100"></div><div><div class="mini">선택형 비율</div><input id="easyMcPercent" type="number" min="1" max="99" value="70"></div></div>
+      <div class="row"><div class="lbl">영역별 점수</div><div><div class="mini">선택형 점수</div><input id="easyMcScore" type="number" min="1" value="70"></div><div><div class="mini">서답형 점수</div><input id="easySaScore" type="number" min="1" value="30"></div></div>
+      <div class="totalLine"><span>합계</span><span id="easyScoreSum">100점</span></div>
+      <div class="actions"><button class="secondary" data-back="1">← 이전</button><button class="primary" id="go3">다음 단계 →</button></div>
+      <div class="msg" id="msg2"></div>
+    </div>
+
+    <div class="easyStep" id="step3">
+      <h2>3. 난이도 비율</h2>
+      <div class="modeCards">
+        <div class="modeCard selected" id="cntMode"><strong>문항 수 기준</strong><span class="sub">상·중·하 문항 개수를 목표 비율에 맞춥니다.</span></div>
+        <div class="modeCard" id="scoreMode"><strong>점수 합 기준</strong><span class="sub">상·중·하 배점 합계를 목표 비율에 맞춥니다.</span></div>
+      </div>
+      <div style="height:14px"></div>
+      <div class="row four"><div class="lbl">상·중·하 비율</div><div><div class="mini">상 (%)</div><input id="rH" type="number" min="0" max="100" value="20"></div><div><div class="mini">중 (%)</div><input id="rM" type="number" min="0" max="100" value="50"></div><div><div class="mini">하 (%)</div><input id="rL" type="number" min="0" max="100" value="30"></div></div>
+      <div class="totalLine"><span>비율 합계</span><span id="ratioSum">100%</span></div>
+      <div class="actions"><button class="secondary" data-back="2">← 이전</button><button class="primary" id="makeEasy">배점 생성하기 →</button></div>
+      <div class="msg" id="msg3"></div>
+    </div>
+
+    <div class="easyStep" id="step4">
+      <h2>4. 생성 결과</h2>
+      <div class="chips" id="easyChips"></div>
+      <div class="summary"><div class="sumcard"><div class="s">선택형</div><div class="b" id="sumMc">0</div></div><div class="sumcard"><div class="s">서답형</div><div class="b" id="sumSa">0</div></div><div class="sumcard"><div class="s">전체</div><div class="b" id="sumAll">0</div></div><div class="sumcard"><div class="s">문항 수</div><div class="b" id="sumCnt">0</div></div></div>
+      <div class="result-grid" id="resultBoxes"></div>
+      <div style="height:14px"></div>
+      <h2>문항 순서 배정표</h2>
+      <div class="qtableWrap"><table id="questionTable"><thead><tr><th>문항</th><th>유형</th><th>난이도</th><th>배점</th></tr></thead><tbody></tbody></table></div>
+      <div class="actions"><button class="primary" id="again">🎲 다시 생성</button><button class="secondary" id="toBasic">⚙️ 기본모드로 수정</button><button class="download" id="copyBtn">📋 표 복사</button><button class="download" id="csvBtn">📥 CSV 내려받기</button></div>
+      <div class="msg" id="msg4"></div>
+    </div>
+  </section>
+
+  <section id="basicMode" class="hidden">
+    <div class="grid">
+      <div class="card panel">
+        <h2>기본모드 입력</h2>
+        <div class="hint">상·중·하 문항 수와 점수 합계를 직접 조절합니다. 선택형은 0.1점 단위, 서답형은 1점 단위로 생성됩니다.</div>
+        <div class="row"><div class="lbl">문항 수</div><div><div class="mini">선택형</div><input id="mcCount" type="number" value="16"></div><div><div class="mini">서답형</div><input id="saCount" type="number" value="6"></div></div>
+        <div class="row four"><div class="lbl">선택형 난이도</div><div><div class="mini">상 문항</div><input id="mcH" type="number" value="3"></div><div><div class="mini">중 문항</div><input id="mcM" type="number" value="8"></div><div><div class="mini">하 문항</div><input id="mcL" type="number" value="5"></div></div>
+        <div class="row four"><div class="lbl">서답형 난이도</div><div><div class="mini">상 문항</div><input id="saH" type="number" value="2"></div><div><div class="mini">중 문항</div><input id="saM" type="number" value="3"></div><div><div class="mini">하 문항</div><input id="saL" type="number" value="1"></div></div>
+        <div class="row"><div class="lbl">영역 점수</div><div><div class="mini">선택형 총점</div><input id="mcScore" type="number" value="70"></div><div><div class="mini">서답형 총점</div><input id="saScore" type="number" value="30"></div></div>
+        <div class="row four"><div class="lbl">선택형 점수합</div><div><div class="mini">상</div><input id="mcHS" type="number" value="18"></div><div><div class="mini">중</div><input id="mcMS" type="number" value="36"></div><div><div class="mini">하</div><input id="mcLS" type="number" value="16"></div></div>
+        <div class="row four"><div class="lbl">서답형 점수합</div><div><div class="mini">상</div><input id="saHS" type="number" value="13"></div><div><div class="mini">중</div><input id="saMS" type="number" value="14"></div><div><div class="mini">하</div><input id="saLS" type="number" value="3"></div></div>
+        <div class="actions"><button class="primary" id="makeBasic">배점 생성</button><button class="secondary" id="autoBasic">현재 문항 수로 점수 자동배분</button><button class="danger" id="resetBasic">기본값 복원</button></div>
+        <div class="msg" id="basicMsg"></div>
+      </div>
+      <div class="card panel">
+        <h2>기본모드 결과</h2>
+        <div class="summary"><div class="sumcard"><div class="s">선택형</div><div class="b" id="bSumMc">0</div></div><div class="sumcard"><div class="s">서답형</div><div class="b" id="bSumSa">0</div></div><div class="sumcard"><div class="s">전체</div><div class="b" id="bSumAll">0</div></div><div class="sumcard"><div class="s">문항 수</div><div class="b" id="bSumCnt">0</div></div></div>
+        <div class="result-grid" id="basicBoxes"></div>
+        <div class="actions"><button class="download" id="bCopyBtn">📋 표 복사</button><button class="download" id="bCsvBtn">📥 CSV 내려받기</button></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+  <div class="helpOverlay" id="helpOverlay" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <div class="helpModal">
+      <div class="helpHead">
+        <h2 id="helpTitle">📘 문항 배점 생성기 설명서</h2>
+        <button class="helpClose" id="helpClose" type="button">닫기 ✕</button>
+      </div>
+      <div class="helpBody">
+        <div class="helpLead">
+          이 도구는 평가 문항의 <strong>선택형/서답형 점수</strong>와 <strong>상·중·하 난이도 비율</strong>을 입력하면, 조건에 맞는 배점표를 자동으로 만들어 주는 웹툴입니다. 선택형은 0.1점 단위, 서답형은 1점 단위로 생성됩니다.
+        </div>
+        <div class="helpGrid">
+          <div class="helpCard">
+            <h3>⚡ 간편모드 사용 순서</h3>
+            <ol>
+              <li><strong>전체 문항 수</strong>를 입력합니다.</li>
+              <li><strong>총점</strong>과 선택형 비율 또는 선택형/서답형 점수를 입력합니다.</li>
+              <li><strong>상·중·하 비율</strong>을 입력합니다. 합계는 100%여야 합니다.</li>
+              <li><strong>배점 생성하기</strong>를 누르면 결과가 만들어집니다.</li>
+            </ol>
+          </div>
+          <div class="helpCard">
+            <h3>⚙️ 기본모드 사용 순서</h3>
+            <ol>
+              <li>선택형/서답형 문항 수를 직접 입력합니다.</li>
+              <li>상·중·하 문항 수와 점수합을 직접 조정합니다.</li>
+              <li><strong>배점 생성</strong>을 눌러 조건에 맞는 배점을 만듭니다.</li>
+              <li>간편모드 결과를 불러온 뒤 세부 수정할 때 쓰면 좋습니다.</li>
+            </ol>
+          </div>
+          <div class="helpCard">
+            <h3>🔢 문항 수 기준 / 점수 합 기준</h3>
+            <ul>
+              <li><strong>문항 수 기준</strong>: 상·중·하 문항 개수 비율을 목표에 가깝게 맞춥니다.</li>
+              <li><strong>점수 합 기준</strong>: 상·중·하 난이도별 배점 합계를 목표 비율에 가깝게 맞춥니다.</li>
+              <li>보통은 <strong>문항 수 기준</strong>으로 시작한 뒤, 필요하면 기본모드에서 조정하는 방식이 편합니다.</li>
+            </ul>
+          </div>
+          <div class="helpCard">
+            <h3>📋 결과 활용</h3>
+            <ul>
+              <li><strong>표 복사</strong>: 엑셀, 한셀, 구글 스프레드시트에 바로 붙여넣을 수 있습니다.</li>
+              <li><strong>CSV 내려받기</strong>: 문항, 유형, 난이도, 배점이 들어간 파일을 저장합니다.</li>
+              <li><strong>기본모드로 수정</strong>: 자동 생성 결과를 세부 조정할 수 있습니다.</li>
+            </ul>
+          </div>
+          <div class="helpCard helpFull">
+            <h3>🚧 생성이 실패할 때</h3>
+            <div class="warnBox">
+              실패가 뜨는 경우는 대부분 조건이 너무 빡빡할 때입니다. 예를 들어 상 문항 수는 많은데 상 점수합이 너무 낮거나, 하 문항 수는 적은데 하 점수합이 너무 높은 경우입니다. 이럴 때는 상·중·하 비율을 조금 바꾸거나, 기본모드에서 점수합을 조정해 주세요.
+            </div>
+          </div>
+          <div class="helpCard helpFull">
+            <h3>💡 추천 사용 예시</h3>
+            <ul>
+              <li>22문항, 100점 시험이라면 총점 100, 선택형 비율 70, 난이도 비율 상 20 / 중 50 / 하 30으로 시작해 보세요.</li>
+              <li>결과가 마음에 들지 않으면 <span class="kbd">다시 생성</span>을 눌러 다른 배점 조합을 만들 수 있습니다.</li>
+              <li>최종 확인은 문항 순서 배정표에서 유형, 난이도, 배점을 같이 보면서 하면 좋습니다.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const ids = ['mcCount','saCount','mcH','mcM','mcL','saH','saM','saL','mcScore','saScore','mcHS','mcMS','mcLS','saHS','saMS','saLS'];
+  const defaults = Object.fromEntries(ids.map(id => [id, $(id).value]));
+  let ratioMode = 'count';
+  let last = null;
+
+  const read = id => { const v = Number($(id).value); return Number.isFinite(v) ? v : 0; };
+  const sum = a => a.reduce((x,y)=>x+y,0);
+  const rand = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+  const shuffle = arr => { const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=rand(0,i); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+  const fmt = v => Number.isInteger(v) ? String(v) : v.toFixed(1);
+
+  function msg(id, text, type='err') { const el=$(id); el.className='msg '+type; el.textContent=text; }
+  function clearMsg(id){ const el=$(id); el.className='msg'; el.textContent=''; }
+  function setStep(n){ [1,2,3,4].forEach(i=>{ $('step'+i).classList.toggle('active',i===n); $('p'+i).classList.toggle('on',i<=n); }); }
+  function setMode(m){
+    $('easyMode').classList.toggle('hidden',m!=='easy'); $('basicMode').classList.toggle('hidden',m!=='basic');
+    $('tabEasy').classList.toggle('active',m==='easy'); $('tabBasic').classList.toggle('active',m==='basic');
+  }
+
+  function distributeIntegers(n,total,minUnit,maxUnit){
+    if(n===0) return total===0 ? [] : null;
+    if(total < n*minUnit || total > n*maxUnit) return null;
+    const arr = Array(n).fill(minUnit);
+    let left = total - n*minUnit;
+    while(left>0){
+      const candidates = arr.map((v,i)=>v<maxUnit?i:null).filter(i=>i!==null);
+      if(!candidates.length) return null;
+      const i = candidates[rand(0,candidates.length-1)];
+      const add = rand(1, Math.min(left, maxUnit-arr[i]));
+      arr[i] += add; left -= add;
+    }
+    return shuffle(arr).sort((a,b)=>b-a);
+  }
+
+  function findLeveled({hCnt,mCnt,lCnt,hTotal,mTotal,lTotal,unitName}){
+    const maxTotal = Math.max(hTotal,mTotal,lTotal,1);
+    if(hCnt===0 && hTotal!==0) return null;
+    if(mCnt===0 && mTotal!==0) return null;
+    if(lCnt===0 && lTotal!==0) return null;
+    const minUnit = 1;
+    for(let lowMax=1; lowMax<=maxTotal; lowMax++){
+      const low = distributeIntegers(lCnt,lTotal,minUnit,lowMax); if(!low) continue;
+      const midMin = lCnt>0 ? lowMax+1 : 1;
+      for(let midMax=midMin; midMax<=maxTotal; midMax++){
+        const mid = distributeIntegers(mCnt,mTotal,midMin,midMax); if(!mid) continue;
+        const highMin = mCnt>0 ? midMax+1 : (lCnt>0 ? lowMax+1 : 1);
+        const high = distributeIntegers(hCnt,hTotal,highMin,maxTotal); if(!high) continue;
+        return {high,mid,low};
+      }
+    }
+    return null;
+  }
+
+  function validateParams(p){
+    const errors=[];
+    ['mcCount','saCount','mcH','mcM','mcL','saH','saM','saL','mcScore','saScore','mcHS','mcMS','mcLS','saHS','saMS','saLS'].forEach(k=>{ if(p[k]<0) errors.push('음수는 입력할 수 없습니다.'); });
+    if(p.mcCount<1) errors.push('선택형 문항 수는 1 이상이어야 합니다.');
+    if(p.saCount<1) errors.push('서답형 문항 수는 1 이상이어야 합니다.');
+    if(p.mcH+p.mcM+p.mcL!==p.mcCount) errors.push('선택형 상/중/하 문항 수의 합이 선택형 문항 수와 다릅니다.');
+    if(p.saH+p.saM+p.saL!==p.saCount) errors.push('서답형 상/중/하 문항 수의 합이 서답형 문항 수와 다릅니다.');
+    if(Math.round((p.mcHS+p.mcMS+p.mcLS)*10)!==Math.round(p.mcScore*10)) errors.push('선택형 상/중/하 점수 합이 선택형 총점과 다릅니다.');
+    if(p.saHS+p.saMS+p.saLS!==p.saScore) errors.push('서답형 상/중/하 점수 합이 서답형 총점과 다릅니다.');
+    if(p.mcH>0 && p.mcHS*10<p.mcH) errors.push('선택형 상 점수가 너무 작습니다. 각 문항에 최소 0.1점은 필요합니다.');
+    if(p.mcM>0 && p.mcMS*10<p.mcM) errors.push('선택형 중 점수가 너무 작습니다. 각 문항에 최소 0.1점은 필요합니다.');
+    if(p.mcL>0 && p.mcLS*10<p.mcL) errors.push('선택형 하 점수가 너무 작습니다. 각 문항에 최소 0.1점은 필요합니다.');
+    if(p.saH>0 && p.saHS<p.saH) errors.push('서답형 상 점수가 너무 작습니다. 각 문항에 최소 1점은 필요합니다.');
+    if(p.saM>0 && p.saMS<p.saM) errors.push('서답형 중 점수가 너무 작습니다. 각 문항에 최소 1점은 필요합니다.');
+    if(p.saL>0 && p.saLS<p.saL) errors.push('서답형 하 점수가 너무 작습니다. 각 문항에 최소 1점은 필요합니다.');
+    return [...new Set(errors)];
+  }
+
+  function generateFromParams(p){
+    const errors = validateParams(p); if(errors.length) return {ok:false, errors};
+    const mc = findLeveled({hCnt:p.mcH,mCnt:p.mcM,lCnt:p.mcL,hTotal:Math.round(p.mcHS*10),mTotal:Math.round(p.mcMS*10),lTotal:Math.round(p.mcLS*10),unitName:'선택형'});
+    if(!mc) return {ok:false, errors:['선택형에서 상>중>하 순서를 만족하는 배점을 만들 수 없습니다. 상 점수를 늘리거나 중/하 점수를 낮춰 보세요.']};
+    const sa = findLeveled({hCnt:p.saH,mCnt:p.saM,lCnt:p.saL,hTotal:p.saHS,mTotal:p.saMS,lTotal:p.saLS,unitName:'서답형'});
+    if(!sa) return {ok:false, errors:['서답형에서 상>중>하 순서를 만족하는 배점을 만들 수 없습니다. 상 점수를 늘리거나 중/하 점수를 낮춰 보세요.']};
+    const rows = buildQuestionRows(p, mc, sa);
+    return {ok:true, p, mc, sa, rows};
+  }
+
+  function splitCounts(total, ratio){
+    const h = Math.max(1, Math.round(total*ratio.h));
+    const m = Math.max(1, Math.round(total*ratio.m));
+    let l = total-h-m;
+    if(l<0) return null;
+    return {h,m,l};
+  }
+  function splitCountsForScoreMode(total){
+    const h = Math.max(1, Math.round(total*0.15));
+    const m = Math.max(1, Math.round(total*0.40));
+    const l = total-h-m;
+    return l<1 ? null : {h,m,l};
+  }
+  function splitScores(total, ratio){
+    const h = Math.round(total*ratio.h);
+    const l = Math.round(total*ratio.l);
+    const m = total-h-l;
+    return {h,m,l};
+  }
+  function easyParams(){
+    const total = read('easyTotal'), mcScore=read('easyMcScore'), saScore=read('easySaScore');
+    const ratio = {h:read('rH')/100,m:read('rM')/100,l:read('rL')/100};
+    if(total<2 || total>200) return {error:'문항 수는 2~200 사이로 입력해 주세요.'};
+    if(Math.abs((ratio.h+ratio.m+ratio.l)-1)>0.005) return {error:'상/중/하 비율 합계가 100%가 되어야 합니다.'};
+    if(mcScore<1 || saScore<1) return {error:'선택형 점수와 서답형 점수는 1점 이상이어야 합니다.'};
+    let mcCount = Math.round(total*(read('easyMcPercent')/100));
+    mcCount = Math.max(1, Math.min(total-1, mcCount));
+    const saCount = total-mcCount;
+    const mcC = ratioMode==='score' ? splitCountsForScoreMode(mcCount) : splitCounts(mcCount, ratio);
+    const saC = ratioMode==='score' ? splitCountsForScoreMode(saCount) : splitCounts(saCount, ratio);
+    if(!mcC || !saC) return {error:'문항 수가 너무 적어 상·중·하를 모두 배치하기 어렵습니다. 문항 수나 비율을 조정해 주세요.'};
+    let mcS, saS;
+    if(ratioMode==='score') { mcS=splitScores(mcScore,ratio); saS=splitScores(saScore,ratio); }
+    else {
+      mcS={h:Math.max(mcC.h,Math.round(mcScore*0.30)), l:Math.max(mcC.l,Math.round(mcScore*0.18))}; mcS.m=mcScore-mcS.h-mcS.l;
+      saS={h:Math.max(saC.h,Math.round(saScore*0.40)), l:Math.max(saC.l,Math.round(saScore*0.12))}; saS.m=saScore-saS.h-saS.l;
+    }
+    return {mcCount,saCount,mcH:mcC.h,mcM:mcC.m,mcL:mcC.l,saH:saC.h,saM:saC.m,saL:saC.l,mcScore,saScore,mcHS:mcS.h,mcMS:mcS.m,mcLS:mcS.l,saHS:saS.h,saMS:saS.m,saLS:saS.l};
+  }
+
+  function buildQuestionRows(p,mc,sa){
+    const chunks=[];
+    mc.high.forEach(v=>chunks.push({type:'선택형',level:'상',score:v/10}));
+    mc.mid.forEach(v=>chunks.push({type:'선택형',level:'중',score:v/10}));
+    mc.low.forEach(v=>chunks.push({type:'선택형',level:'하',score:v/10}));
+    sa.high.forEach(v=>chunks.push({type:'서답형',level:'상',score:v}));
+    sa.mid.forEach(v=>chunks.push({type:'서답형',level:'중',score:v}));
+    sa.low.forEach(v=>chunks.push({type:'서답형',level:'하',score:v}));
+    return shuffle(chunks).map((r,i)=>({...r,no:i+1}));
+  }
+
+  function renderBoxes(target, res){
+    const boxes=[['선택형 상',res.mc.high,true],['선택형 중',res.mc.mid,true],['선택형 하',res.mc.low,true],['서답형 상',res.sa.high,false],['서답형 중',res.sa.mid,false],['서답형 하',res.sa.low,false]];
+    $(target).innerHTML=boxes.map((b,bi)=>`<div class="box"><h3>${b[0]}</h3><ul class="list" id="box_${target}_${bi}"></ul></div>`).join('');
+    boxes.forEach((b,bi)=>{
+      const ul=$(`box_${target}_${bi}`); ul.innerHTML = b[1].length ? b[1].map((v,i)=>`<li class="item"><span class="q">${i+1}번</span><span class="v">${b[2]?fmt(v/10):v}점</span></li>`).join('') : '<li class="item"><span class="q">-</span><span class="v">없음</span></li>';
+    });
+  }
+  function renderQuestionTable(res){
+    const tb=$('questionTable').querySelector('tbody');
+    tb.innerHTML = res.rows.map(r=>`<tr><td>${r.no}</td><td>${r.type}</td><td>${r.level}</td><td>${fmt(r.score)}</td></tr>`).join('');
+  }
+  function renderSummary(prefix,res){
+    const mc = (sum(res.mc.high)+sum(res.mc.mid)+sum(res.mc.low))/10;
+    const sa = sum(res.sa.high)+sum(res.sa.mid)+sum(res.sa.low);
+    const ids = prefix==='b'
+      ? ['bSumMc','bSumSa','bSumAll','bSumCnt']
+      : ['sumMc','sumSa','sumAll','sumCnt'];
+    $(ids[0]).textContent=fmt(mc); $(ids[1]).textContent=fmt(sa); $(ids[2]).textContent=fmt(mc+sa); $(ids[3]).textContent=res.rows.length;
+  }
+  function renderEasy(res){
+    last=res; renderSummary('',res); renderBoxes('resultBoxes',res); renderQuestionTable(res);
+    const p=res.p, total=p.mcCount+p.saCount;
+    $('easyChips').innerHTML = `<span class="chip">총 ${total}문항</span><span class="chip">선택형 ${p.mcCount}문항 · ${p.mcScore}점</span><span class="chip">서답형 ${p.saCount}문항 · ${p.saScore}점</span><span class="chip">선택형 상/중/하 ${p.mcH}/${p.mcM}/${p.mcL}</span><span class="chip">서답형 상/중/하 ${p.saH}/${p.saM}/${p.saL}</span>`;
+  }
+  function renderBasic(res){ last=res; renderSummary('b',res); renderBoxes('basicBoxes',res); }
+
+  function resultToTSV(res){
+    const lines=['문항\t유형\t난이도\t배점'];
+    res.rows.forEach(r=>lines.push(`${r.no}\t${r.type}\t${r.level}\t${fmt(r.score)}`));
+    return lines.join('\n');
+  }
+  function downloadCSV(res){
+    const csv='\ufeff문항,유형,난이도,배점\n'+res.rows.map(r=>`${r.no},${r.type},${r.level},${fmt(r.score)}`).join('\n');
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download='문항_배점표.csv'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+  async function copyTSV(res, id){
+    try{ await navigator.clipboard.writeText(resultToTSV(res)); msg(id,'표가 클립보드에 복사되었습니다. 엑셀이나 한셀에 바로 붙여넣을 수 있어요.','ok'); }
+    catch(e){ msg(id,'브라우저 권한 때문에 자동 복사가 막혔습니다. CSV 내려받기를 사용해 주세요.'); }
+  }
+
+  function syncEasyScores(){
+    const total=read('easyTotalScore'), percent=read('easyMcPercent');
+    const mc=Math.round(total*percent/100); $('easyMcScore').value=mc; $('easySaScore').value=total-mc; updateEasySum();
+  }
+  function updateEasySum(){
+    const total=read('easyTotalScore'), s=read('easyMcScore')+read('easySaScore');
+    $('easyScoreSum').textContent=s+'점'; $('easyScoreSum').className = Math.abs(total-s)<0.001 ? 'okText' : 'badText';
+  }
+  function updateRatioSum(){
+    const s=read('rH')+read('rM')+read('rL'); $('ratioSum').textContent=s+'%'; $('ratioSum').className = Math.abs(s-100)<0.001 ? 'okText' : 'badText';
+  }
+
+  function fillBasic(p){ Object.entries({mcCount:p.mcCount,saCount:p.saCount,mcH:p.mcH,mcM:p.mcM,mcL:p.mcL,saH:p.saH,saM:p.saM,saL:p.saL,mcScore:p.mcScore,saScore:p.saScore,mcHS:p.mcHS,mcMS:p.mcMS,mcLS:p.mcLS,saHS:p.saHS,saMS:p.saMS,saLS:p.saLS}).forEach(([k,v])=>$(k).value=v); }
+  function readBasic(){ return Object.fromEntries(ids.map(id=>[id,read(id)])); }
+  function autoBasicScores(){
+    const p=readBasic(); const total=p.mcScore+p.saScore; const ratio={h:0.25,m:0.5,l:0.25};
+    let mcS=splitScores(p.mcScore,ratio), saS=splitScores(p.saScore,ratio);
+    $('mcHS').value=mcS.h; $('mcMS').value=mcS.m; $('mcLS').value=mcS.l; $('saHS').value=saS.h; $('saMS').value=saS.m; $('saLS').value=saS.l;
+  }
+
+  $('tabEasy').onclick=()=>setMode('easy'); $('tabBasic').onclick=()=>setMode('basic');
+  document.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>setStep(Number(b.dataset.back)));
+  $('go2').onclick=()=>{ clearMsg('msg1'); if(read('easyTotal')<2) msg('msg1','문항 수는 2개 이상이어야 합니다.'); else setStep(2); };
+  $('go3').onclick=()=>{ clearMsg('msg2'); updateEasySum(); if(read('easyMcScore')<1||read('easySaScore')<1) msg('msg2','선택형/서답형 점수를 모두 1점 이상 입력해 주세요.'); else if(read('easyMcScore')+read('easySaScore')!==read('easyTotalScore')) msg('msg2','선택형 점수와 서답형 점수의 합이 총점과 같아야 합니다.'); else setStep(3); };
+  $('makeEasy').onclick=()=>{ clearMsg('msg3'); const p=easyParams(); if(p.error){msg('msg3',p.error);return;} const res=generateFromParams(p); if(!res.ok){msg('msg3','배점 생성 실패\n\n'+res.errors.join('\n'));return;} renderEasy(res); setStep(4); };
+  $('again').onclick=()=>{$('makeEasy').click();};
+  $('toBasic').onclick=()=>{ if(!last) return; fillBasic(last.p); setMode('basic'); renderBasic(last); msg('basicMsg','간편모드 결과를 기본모드로 불러왔습니다.','ok'); };
+  $('makeBasic').onclick=()=>{ clearMsg('basicMsg'); const res=generateFromParams(readBasic()); if(!res.ok){msg('basicMsg','배점 생성 실패\n\n'+res.errors.join('\n'));return;} renderBasic(res); msg('basicMsg','배점 생성이 완료되었습니다.','ok'); };
+  $('autoBasic').onclick=()=>{ autoBasicScores(); };
+  $('resetBasic').onclick=()=>{ ids.forEach(id=>$(id).value=defaults[id]); $('basicBoxes').innerHTML=''; ['bSumMc','bSumSa','bSumAll','bSumCnt'].forEach(id=>$(id).textContent='0'); clearMsg('basicMsg'); };
+  $('cntMode').onclick=()=>{ratioMode='count'; $('cntMode').classList.add('selected'); $('scoreMode').classList.remove('selected');};
+  $('scoreMode').onclick=()=>{ratioMode='score'; $('scoreMode').classList.add('selected'); $('cntMode').classList.remove('selected');};
+  $('easyTotalScore').addEventListener('input',syncEasyScores); $('easyMcPercent').addEventListener('input',syncEasyScores); $('easyMcScore').addEventListener('input',updateEasySum); $('easySaScore').addEventListener('input',updateEasySum);
+  ['rH','rM','rL'].forEach(id=>$(id).addEventListener('input',updateRatioSum));
+  $('csvBtn').onclick=()=> last ? downloadCSV(last) : msg('msg4','먼저 배점을 생성해 주세요.');
+  $('copyBtn').onclick=()=> last ? copyTSV(last,'msg4') : msg('msg4','먼저 배점을 생성해 주세요.');
+  $('bCsvBtn').onclick=()=> last ? downloadCSV(last) : msg('basicMsg','먼저 배점을 생성해 주세요.');
+  $('bCopyBtn').onclick=()=> last ? copyTSV(last,'basicMsg') : msg('basicMsg','먼저 배점을 생성해 주세요.');
+
+  function openHelp(){ $('helpOverlay').classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeHelp(){ $('helpOverlay').classList.remove('open'); document.body.style.overflow=''; }
+  $('helpBtn').onclick=openHelp;
+  $('helpClose').onclick=closeHelp;
+  $('helpOverlay').addEventListener('click',e=>{ if(e.target===$('helpOverlay')) closeHelp(); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape' && $('helpOverlay').classList.contains('open')) closeHelp(); });
+  if(new URLSearchParams(location.search).get('manual')==='1') openHelp();
+  syncEasyScores(); updateRatioSum();
+})();
+</script>
+</body>
+</html>

@@ -668,6 +668,12 @@ h3 {
   font-weight: 700;
 }
 
+.tool-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
 .tool-footer a {
   display: inline-flex;
   min-height: 38px;
@@ -679,6 +685,12 @@ h3 {
   color: white;
   font-size: 13px;
   font-weight: 800;
+}
+
+.tool-footer .guide-link {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--navy);
 }
 
 .tool-footer b {
@@ -873,6 +885,31 @@ h3 {
   font-weight: 950;
 }
 
+.card-file-renamer .tool-visual { background: #eef7ff; }
+.card-file-renamer .file-list rect { fill: white; stroke: var(--navy); stroke-width: 5; }
+.card-file-renamer .file-list path { fill: none; stroke: #b9c7dc; stroke-linecap: round; stroke-width: 7; }
+.card-file-renamer .rename-arrow { fill: none; stroke: var(--mint); stroke-linecap: round; stroke-linejoin: round; stroke-width: 7; }
+.card-file-renamer .rename-pencil { fill: var(--orange); stroke: var(--navy); stroke-linejoin: round; stroke-width: 5; }
+
+.card-score-generator .tool-visual { background: #f1edff; }
+.card-score-generator .score-sheet { fill: white; stroke: var(--navy); stroke-width: 5; }
+.card-score-generator .score-lines { fill: none; stroke: #cfc3e8; stroke-linecap: round; stroke-width: 7; }
+.card-score-generator .score-badges circle { fill: var(--yellow); stroke: var(--navy); stroke-width: 5; }
+.card-score-generator .score-badges circle:last-of-type { fill: var(--mint); }
+.card-score-generator .score-badges text {
+  fill: var(--navy);
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  font-size: 23px;
+  font-weight: 950;
+}
+
+.card-assignment-viewer .tool-visual { background: #eaf8f6; }
+.card-assignment-viewer .viewer-window { fill: white; stroke: var(--navy); stroke-width: 5; }
+.card-assignment-viewer .viewer-dividers { fill: none; stroke: #b9d8d1; stroke-linecap: round; stroke-width: 5; }
+.card-assignment-viewer .viewer-paper { fill: #fff7d9; stroke: var(--navy); stroke-width: 4; }
+.card-assignment-viewer .viewer-lines { fill: none; stroke: #d6b963; stroke-linecap: round; stroke-width: 5; }
+.card-assignment-viewer .viewer-check { fill: none; stroke: var(--orange); stroke-linecap: round; stroke-linejoin: round; stroke-width: 8; }
+
 .site-footer {
   display: flex;
   align-items: center;
@@ -1010,6 +1047,20 @@ h3 {
   .hero-visual {
     min-height: 350px;
     border-radius: 38px;
+  }
+
+  .tool-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .tool-actions {
+    width: 100%;
+  }
+
+  .tool-actions a {
+    flex: 1;
+    justify-content: center;
   }
 
   .visual-card-chart {

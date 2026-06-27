@@ -98,7 +98,7 @@
 
         <div class="filter-bar" role="tablist" aria-label="웹툴 주제 필터">
           <button class="filter-button is-active" type="button" role="tab" aria-selected="true" data-filter="all">
-            전체 <span>16</span>
+            전체 <span>18</span>
           </button>
           <button class="filter-button" type="button" role="tab" aria-selected="false" data-filter="probability-statistics">
             확률과 통계 <span>2</span>
@@ -110,7 +110,7 @@
             수학 게임 <span>9</span>
           </button>
           <button class="filter-button" type="button" role="tab" aria-selected="false" data-filter="school-work">
-            학교 업무용 웹툴 <span>2</span>
+            학교 업무용 웹툴 <span>4</span>
           </button>
         </div>
 
@@ -496,6 +496,82 @@
           </div>
 
           <div class="tool-grid school-tool-grid" aria-live="polite">
+            <article class="tool-card card-file-renamer" data-tool-category="school-work">
+              <div class="tool-visual" aria-hidden="true">
+                <svg viewBox="0 0 420 210">
+                  <g class="file-list">
+                    <rect x="65" y="42" width="245" height="126" rx="18" />
+                    <path d="M96 78h126M96 108h152M96 138h108" />
+                  </g>
+                  <path class="rename-arrow" d="M278 78h66m-18-18 18 18-18 18" />
+                  <path class="rename-pencil" d="m260 142 69-69 26 26-69 69-34 8Z" />
+                </svg>
+              </div>
+              <div class="tool-content">
+                <div class="tool-tags"><span>파일관리 · 업무자동화 · 일괄수정</span><small>학교 업무용 웹툴</small></div>
+                <h3>파일명 일괄 수정기</h3>
+                <p>여러 파일과 폴더의 이름을 미리 확인하고 한 번에 바꾸는 도구입니다.</p>
+                <div class="tool-footer">
+                  <span>브라우저에서 안전하게 미리보기</span>
+                  <div class="tool-actions">
+                    <a class="guide-link" href="./school-work/school-file-renamer/index.html?manual=1" aria-label="파일명 일괄 수정기 설명서 열기">설명서</a>
+                    <a href="./school-work/school-file-renamer/index.html" aria-label="파일명 일괄 수정기 열기">열기 <b aria-hidden="true">→</b></a>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="tool-card card-score-generator" data-tool-category="school-work">
+              <div class="tool-visual" aria-hidden="true">
+                <svg viewBox="0 0 420 210">
+                  <rect class="score-sheet" x="72" y="30" width="212" height="150" rx="20" />
+                  <path class="score-lines" d="M104 70h92M104 102h126M104 134h108" />
+                  <g class="score-badges">
+                    <circle cx="307" cy="69" r="27" />
+                    <circle cx="342" cy="121" r="31" />
+                    <text x="307" y="77" text-anchor="middle">3</text>
+                    <text x="342" y="130" text-anchor="middle">5</text>
+                  </g>
+                </svg>
+              </div>
+              <div class="tool-content">
+                <div class="tool-tags"><span>평가 · 배점 · 시험출제</span><small>학교 업무용 웹툴</small></div>
+                <h3>문항 배점 생성기</h3>
+                <p>문항 수, 총점, 선택형/서답형 점수, 상·중·하 비율을 바탕으로 배점을 자동 생성하는 도구입니다.</p>
+                <div class="tool-footer">
+                  <span>배점표 자동 생성 · CSV 저장</span>
+                  <div class="tool-actions">
+                    <a class="guide-link" href="./school-work/item-score-generator/index.html?manual=1" aria-label="문항 배점 생성기 설명서 열기">설명서</a>
+                    <a href="./school-work/item-score-generator/index.html" aria-label="문항 배점 생성기 열기">열기 <b aria-hidden="true">→</b></a>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="tool-card card-assignment-viewer" data-tool-category="school-work">
+              <div class="tool-visual" aria-hidden="true">
+                <svg viewBox="0 0 420 210">
+                  <rect class="viewer-window" x="48" y="35" width="324" height="140" rx="20" />
+                  <path class="viewer-dividers" d="M140 35v140M288 35v140M73 70h42M73 96h42M73 122h42" />
+                  <rect class="viewer-paper" x="174" y="61" width="80" height="91" rx="10" />
+                  <path class="viewer-lines" d="M190 86h48M190 105h48M190 124h33" />
+                  <path class="viewer-check" d="m309 101 15 15 28-35" />
+                </svg>
+              </div>
+              <div class="tool-content">
+                <div class="tool-tags"><span>채점 · 과제확인 · 엑셀저장</span><small>학교 업무용 웹툴</small></div>
+                <h3>채점용 학생 과제 통합 뷰어</h3>
+                <p>학생 과제 파일을 한 화면에서 확인하고 기준별 점수와 메모를 기록한 뒤 엑셀로 저장하는 도구입니다.</p>
+                <div class="tool-footer">
+                  <span>통합 확인 · 채점 기록 · 엑셀 저장</span>
+                  <div class="tool-actions">
+                    <a class="guide-link" href="./school-work/assignment-viewer/index.html?manual=1" aria-label="채점용 학생 과제 통합 뷰어 설명서 열기">설명서</a>
+                    <a href="./school-work/assignment-viewer/index.html" aria-label="채점용 학생 과제 통합 뷰어 열기">열기 <b aria-hidden="true">→</b></a>
+                  </div>
+                </div>
+              </div>
+            </article>
+
             <article class="tool-card card-pdf-splitter" data-tool-category="school-work">
               <div class="tool-visual" aria-hidden="true">
                 <svg viewBox="0 0 420 210">
