@@ -620,6 +620,30 @@
       </a>
     </footer>
 
+    <div class="guide-modal" data-guide-modal hidden>
+      <div class="guide-modal__backdrop" data-guide-close></div>
+      <section
+        class="guide-modal__dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="guide-modal-title"
+        aria-describedby="guide-modal-intro"
+        tabindex="-1"
+      >
+        <header class="guide-modal__header">
+          <div>
+            <p class="guide-modal__eyebrow">CLASS GUIDE</p>
+            <h2 id="guide-modal-title"></h2>
+            <p id="guide-modal-intro">수업에서 바로 활용할 수 있도록 정리한 간단 설명서입니다.</p>
+          </div>
+          <button class="guide-modal__close" type="button" data-guide-close aria-label="설명서 닫기">
+            <span aria-hidden="true">×</span>
+          </button>
+        </header>
+        <div class="guide-modal__body" data-guide-content></div>
+      </section>
+    </div>
+
     <script src="./assets/app.js"></script>
   </body>
 </html>
