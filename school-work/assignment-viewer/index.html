@@ -563,7 +563,7 @@
     const PREVIEWABLE_IMAGES = ["png", "jpg", "jpeg", "webp"];
     const CONVERTIBLE_OFFICE = ["docx", "pptx", "hwp", "hwpx"];
     const CONVERTER_URL = "http://127.0.0.1:8765/convert";
-    const CONVERTER_DOWNLOAD_URL = "https://github.com/mathtjungsw/math-class-webtools/releases/download/converter-helper-v1.0.0/AssignmentConverterHelper.exe";
+    const CONVERTER_DOWNLOAD_URL = "https://github.com/mathtjungsw/math-class-webtools/releases/download/converter-helper-v1.1.0/AssignmentConverterHelper.exe";
     const DEFAULT_CRITERIA = ["내용", "구성", "표현"];
     const CACHE_FOLDER = "_converted_pdf_cache";
     const DRAFT_DB_NAME = "assignment-viewer-draft-db";
@@ -745,7 +745,10 @@
         const rel = relativePathOf(file);
         const ext = extOf(file.name);
         const stem = stemOf(file.name);
-        const cachedPdfFile = ext !== "pdf" ? state.pdfCacheByStem.get(stem) || null : null;
+        const cachedPdfCandidate = ext !== "pdf" ? state.pdfCacheByStem.get(stem) || null : null;
+        const cachedPdfFile = cachedPdfCandidate && cachedPdfCandidate.lastModified >= file.lastModified
+          ? cachedPdfCandidate
+          : null;
         return {
           file,
           id: `${rel}|${file.size}|${file.lastModified}`,
@@ -1348,8 +1351,10 @@
                 <ol>
                   <li>위 버튼으로 <b>AssignmentConverterHelper.exe</b>를 내려받습니다.</li>
                   <li>내려받은 EXE를 실행합니다. Windows 보안 안내가 나오면 파일 출처가 이 웹툴의 공식 GitHub 저장소인지 확인한 뒤 실행 여부를 결정해 주세요.</li>
-                  <li>검은 창에 <b>http://127.0.0.1:8765</b>가 표시되면 정상입니다. 웹툴을 사용하는 동안 그 창을 닫지 마세요.</li>
-                  <li>웹툴로 돌아와 이 파일을 다시 클릭하거나 폴더를 다시 불러옵니다.</li>
+                  <li>폴더 선택 창이 열리면 웹툴에서 사용할 <b>학생 과제 폴더</b>를 선택합니다.</li>
+                  <li>검은 창에 <b>http://127.0.0.1:8765</b>와 선택한 과제 폴더가 표시되면 정상입니다. 웹툴을 사용하는 동안 그 창을 닫지 마세요.</li>
+                  <li>웹툴로 돌아와 이 파일을 다시 클릭합니다. 변환된 PDF는 과제 폴더의 <b>_converted_pdf_cache</b>에 자동 저장됩니다.</li>
+                  <li>다음에 과제 폴더를 다시 열면 저장된 PDF를 바로 사용합니다. 원본 파일이 수정된 경우에만 다시 변환합니다.</li>
                   <li>DOCX/PPTX는 Microsoft Office, HWP/HWPX는 한글 프로그램이 PC에 설치되어 있어야 변환할 수 있습니다.</li>
                 </ol>
               </details>

@@ -11,7 +11,9 @@
 import shutil
 import tempfile
 import traceback
+import tkinter as tk
 from pathlib import Path
+from tkinter import filedialog
 
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -22,6 +24,8 @@ from starlette.background import BackgroundTask
 HOST = "127.0.0.1"
 PORT = 8765
 SUPPORTED_EXTENSIONS = {".pdf", ".docx", ".pptx", ".hwp", ".hwpx"}
+CACHE_FOLDER_NAME = "_converted_pdf_cache"
+assignment_folder: Path | None = None
 
 
 def conversion_hint(extension: str) -> str:
@@ -38,6 +42,32 @@ def conversion_hint(extension: str) -> str:
 
 class ConversionError(Exception):
     """Office 문서를 PDF로 변환하지 못했을 때 발생하는 오류."""
+
+
+def choose_assignment_folder() -> Path | None:
+    root = tk.Tk()
+    root.withdraw()
+    root.attributes("-topmost", True)
+    try:
+        selected = filedialog.askdirectory(title="학생 과제 폴더를 선택해 주세요")
+    finally:
+        root.destroy()
+    return Path(selected).resolve() if selected else None
+
+
+def save_pdf_to_assignment_cache(pdf_path: str, original_name: str) -> Path:
+    if assignment_folder is None:
+        raise ConversionError("과제 폴더가 선택되지 않았습니다.")
+
+    stem = Path(original_name).stem.strip()
+    if not stem or stem in {".", ".."}:
+        raise ConversionError("저장할 PDF 파일 이름을 확인할 수 없습니다.")
+
+    cache_dir = assignment_folder / CACHE_FOLDER_NAME
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    cache_path = cache_dir / f"{stem}.pdf"
+    shutil.copy2(pdf_path, cache_path)
+    return cache_path
 
 
 class OfficeConverter:
@@ -230,6 +260,9 @@ def convert(file: UploadFile = File(...)) -> Response:
 
         pdf_path = OfficeConverter.convert_to_pdf(str(source_path), str(temp_dir))
         download_stem = Path(original_name).stem or "converted"
+        if extension != ".pdf":
+            cache_path = save_pdf_to_assignment_cache(pdf_path, original_name)
+            print(f"변환 PDF 저장 완료: {cache_path}", flush=True)
 
         return FileResponse(
             path=pdf_path,
@@ -266,4 +299,12 @@ def convert(file: UploadFile = File(...)) -> Response:
 if __name__ == "__main__":
     import uvicorn
 
+    assignment_folder = choose_assignment_folder()
+    if assignment_folder is None:
+        print("과제 폴더가 선택되지 않아 변환 도우미를 종료합니다.")
+        input("창을 닫으려면 Enter 키를 누르세요.")
+        raise SystemExit(1)
+
+    print(f"과제 폴더: {assignment_folder}")
+    print(f"변환 PDF 저장 폴더: {assignment_folder / CACHE_FOLDER_NAME}")
     uvicorn.run(app, host=HOST, port=PORT)
