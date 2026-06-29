@@ -527,6 +527,8 @@
 
     const SUPPORTED = ["pdf", "docx", "pptx", "hwp", "hwpx", "png", "jpg", "jpeg", "webp"];
     const PREVIEWABLE_IMAGES = ["png", "jpg", "jpeg", "webp"];
+    const CONVERTIBLE_OFFICE = ["docx", "pptx", "hwp", "hwpx"];
+    const CONVERTER_URL = "http://127.0.0.1:8765/convert";
     const DEFAULT_CRITERIA = ["내용", "구성", "표현"];
     const CACHE_FOLDER = "_converted_pdf_cache";
     const DRAFT_DB_NAME = "assignment-viewer-draft-db";
@@ -547,6 +549,7 @@
       pdfObjectUrls: new Map(),
       originalObjectUrls: new Map(),
       pdfCacheByStem: new Map(),
+      convertedPdfCache: new Map(),
     };
 
     const els = {
@@ -670,11 +673,14 @@
     }
 
     function canPreview(fileItem) {
-      return fileItem.ext === "pdf" || PREVIEWABLE_IMAGES.includes(fileItem.ext) || Boolean(fileItem.cachedPdfFile);
+      return fileItem.ext === "pdf"
+        || PREVIEWABLE_IMAGES.includes(fileItem.ext)
+        || Boolean(fileItem.cachedPdfFile)
+        || Boolean(fileItem.convertedPdfFile);
     }
 
     function previewKind(fileItem) {
-      if (fileItem.ext === "pdf" || fileItem.cachedPdfFile) return "pdf";
+      if (fileItem.ext === "pdf" || fileItem.cachedPdfFile || fileItem.convertedPdfFile) return "pdf";
       if (PREVIEWABLE_IMAGES.includes(fileItem.ext)) return "image";
       return "none";
     }
@@ -1108,8 +1114,13 @@
       els.collectionLabel.textContent = `${state.collectionName} · ${item.name}`;
       els.viewerBody.scrollTop = 0;
 
-      const kind = previewKind(item);
       try {
+        if (CONVERTIBLE_OFFICE.includes(item.ext) && !item.cachedPdfFile && !item.convertedPdfFile) {
+          await convertOfficeToPdf(item);
+          if (token !== state.renderToken) return;
+        }
+
+        const kind = previewKind(item);
         if (kind === "pdf") {
           await renderPdf(item, token);
         } else if (kind === "image") {
@@ -1127,7 +1138,88 @@
     }
 
     function getPreviewFile(item) {
-      return item.ext === "pdf" ? item.file : item.cachedPdfFile;
+      return item.ext === "pdf" ? item.file : (item.cachedPdfFile || item.convertedPdfFile);
+    }
+
+    function getPreviewPdfKey(item) {
+      if (item.ext === "pdf") return item.id;
+      return item.cachedPdfFile ? `${item.id}:cached-pdf` : `${item.id}:converted-pdf`;
+    }
+
+    function makeConversionCacheKey(file) {
+      return `${file.name}|${file.size}|${file.lastModified}`;
+    }
+
+    function getPreviewPdfUrl(item) {
+      if (item.convertedPdfUrl) return item.convertedPdfUrl;
+      return getObjectUrl(state.pdfObjectUrls, getPreviewPdfKey(item), getPreviewFile(item));
+    }
+
+    function conversionFailureHint(ext) {
+      const fileHint = "파일이 손상되었거나 암호가 걸려 있으면 변환할 수 없습니다.";
+      if (ext === "docx") return `Microsoft Word가 설치되어 있는지 확인해 주세요. ${fileHint}`;
+      if (ext === "pptx") return `Microsoft PowerPoint가 설치되어 있는지 확인해 주세요. ${fileHint}`;
+      if (ext === "hwp" || ext === "hwpx") {
+        return `한글 프로그램이 설치되어 있는지 확인해 주세요. 보안 승인 창이 뜨면 허용해 주세요. ${fileHint}`;
+      }
+      return fileHint;
+    }
+
+    async function convertOfficeToPdf(item) {
+      const cacheKey = makeConversionCacheKey(item.file);
+      const cached = state.convertedPdfCache.get(cacheKey);
+      if (cached) {
+        item.convertedPdfFile = cached.blob;
+        item.convertedPdfUrl = cached.url;
+        return;
+      }
+
+      els.viewerBody.innerHTML = `<div class="mini-help">PDF 변환 중...</div>`;
+
+      const formData = new FormData();
+      formData.append("file", item.file, item.name);
+
+      let response;
+      try {
+        response = await fetch(CONVERTER_URL, {
+          method: "POST",
+          body: formData,
+        });
+      } catch (err) {
+        const error = new Error("변환 도우미에 연결하지 못했어요.");
+        error.hint = "변환 도우미 프로그램을 먼저 실행해 주세요.";
+        error.developerDetail = err?.message || String(err);
+        throw error;
+      }
+
+      if (!response.ok) {
+        let result = null;
+        try {
+          result = await response.json();
+        } catch (err) {
+          // JSON 오류 응답이 아니면 상태 코드로 안내한다.
+        }
+        const error = new Error("파일을 PDF로 변환하지 못했어요.");
+        error.hint = conversionFailureHint(item.ext);
+        error.developerDetail = result?.error
+          ? `${result.error} (HTTP ${response.status})`
+          : `변환 서버 응답: HTTP ${response.status}`;
+        throw error;
+      }
+
+      const contentType = response.headers.get("content-type") || "";
+      if (!contentType.toLowerCase().includes("application/pdf")) {
+        const error = new Error("변환 결과를 확인하지 못했어요.");
+        error.hint = "변환 도우미 프로그램을 다시 실행한 뒤 재시도해 주세요.";
+        error.developerDetail = `응답 Content-Type: ${contentType || "(없음)"}`;
+        throw error;
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      state.convertedPdfCache.set(cacheKey, { blob, url });
+      item.convertedPdfFile = blob;
+      item.convertedPdfUrl = url;
     }
 
     function getObjectUrl(map, key, file) {
@@ -1142,9 +1234,7 @@
         renderPdfFallback(item);
         return;
       }
-      const file = getPreviewFile(item);
-      const key = item.ext === "pdf" ? item.id : `${item.id}:cached-pdf`;
-      const url = getObjectUrl(state.pdfObjectUrls, key, file);
+      const url = getPreviewPdfUrl(item);
       els.viewerBody.innerHTML = `<div class="mini-help">PDF를 불러오는 중입니다.</div>`;
       const loadingTask = pdfjsLib.getDocument(url);
       const pdf = await loadingTask.promise;
@@ -1178,9 +1268,7 @@
     }
 
     function renderPdfFallback(item) {
-      const file = getPreviewFile(item);
-      const key = item.ext === "pdf" ? item.id : `${item.id}:cached-pdf`;
-      const url = getObjectUrl(state.pdfObjectUrls, key, file);
+      const url = getPreviewPdfUrl(item);
       els.viewerBody.innerHTML = `
         <div class="empty-state" style="width:min(980px,100%); margin:0;">
           <h2>PDF 미리보기</h2>
@@ -1224,6 +1312,12 @@
           <h2>파일을 표시하지 못했습니다</h2>
           <p><b>${escapeHtml(item.name)}</b></p>
           <p>${escapeHtml(err?.message || String(err))}</p>
+          ${err?.hint ? `<p><b>해결 안내:</b> ${escapeHtml(err.hint)}</p>` : ""}
+          ${err?.developerDetail ? `
+            <details style="margin-top:12px; text-align:left;">
+              <summary style="cursor:pointer;">오류 상세 보기</summary>
+              <small style="display:block; margin-top:8px; color:var(--muted); white-space:pre-wrap;">${escapeHtml(err.developerDetail)}</small>
+            </details>` : ""}
         </div>`;
     }
 
