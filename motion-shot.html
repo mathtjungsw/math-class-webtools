@@ -662,6 +662,125 @@
       line-height: 1.55;
     }
 
+    body.mode-pending .app,
+    body.mode-pending .manual-dialog,
+    body.mode-pending .mode-change-button {
+      visibility: hidden;
+    }
+
+    .mode-picker {
+      position: fixed;
+      z-index: 200;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(255, 193, 135, 0.4), transparent 25rem),
+        radial-gradient(circle at 90% 20%, rgba(135, 168, 255, 0.35), transparent 28rem),
+        #f4f6fb;
+    }
+
+    body:not(.mode-pending) .mode-picker {
+      display: none;
+    }
+
+    .mode-picker-panel {
+      width: min(100%, 520px);
+      padding: 30px;
+      border: 1px solid rgba(223, 229, 239, 0.9);
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .mode-picker-icon {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 16px;
+      border-radius: 18px;
+      color: #fff;
+      background: var(--primary);
+      font-size: 1.5rem;
+    }
+
+    .mode-picker-panel h2 {
+      font-size: 1.45rem;
+    }
+
+    .mode-picker-panel > p {
+      margin: 9px 0 22px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .mode-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .mode-option {
+      min-height: 112px;
+      padding: 16px 12px;
+      border: 1px solid #dfe4ee;
+      border-radius: 18px;
+      color: var(--ink);
+      background: #f8f9fc;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .mode-option:hover {
+      border-color: var(--primary);
+      background: #f0f2ff;
+    }
+
+    .mode-option span,
+    .mode-option strong,
+    .mode-option small {
+      display: block;
+    }
+
+    .mode-option span {
+      margin-bottom: 8px;
+      font-size: 1.5rem;
+    }
+
+    .mode-option strong {
+      margin-bottom: 5px;
+      font-size: 0.92rem;
+    }
+
+    .mode-option small {
+      color: var(--muted);
+      font-size: 0.7rem;
+      line-height: 1.4;
+    }
+
+    .mode-change-button {
+      position: fixed;
+      z-index: 50;
+      left: 14px;
+      bottom: 14px;
+      min-height: 40px;
+      padding: 8px 12px;
+      border: 1px solid #dce1eb;
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 8px 24px rgba(24, 34, 59, 0.12);
+      font-size: 0.72rem;
+      font-weight: 800;
+      cursor: pointer;
+      touch-action: manipulation;
+      backdrop-filter: blur(10px);
+    }
+
     .mobile-only,
     .share-sheet {
       display: none;
@@ -810,6 +929,19 @@
       .mobile-status[data-state="error"] {
         border-color: rgba(255, 104, 112, 0.5);
         background: rgba(90, 20, 31, 0.82);
+      }
+
+      .mode-change-button {
+        top: max(12px, env(safe-area-inset-top));
+        bottom: auto;
+        left: 50%;
+        min-height: 32px;
+        padding: 6px 10px;
+        border-color: rgba(255, 255, 255, 0.16);
+        color: #d7dce7;
+        background: rgba(7, 11, 19, 0.62);
+        font-size: 0.64rem;
+        transform: translateX(-50%);
       }
 
       .mobile-control-button {
@@ -1042,6 +1174,14 @@
     }
 
     @media (max-width: 430px) and (orientation: portrait) {
+      .mode-options {
+        grid-template-columns: 1fr;
+      }
+
+      .mode-option {
+        min-height: 90px;
+      }
+
       .mobile-result-slider {
         padding: 8px 12px 7px;
       }
@@ -1062,7 +1202,29 @@
     }
   </style>
 </head>
-<body>
+<body class="mode-pending">
+  <div class="mode-picker" id="modePicker" role="dialog" aria-modal="true" aria-labelledby="modePickerTitle">
+    <section class="mode-picker-panel">
+      <div class="mode-picker-icon" aria-hidden="true">↔</div>
+      <h2 id="modePickerTitle">사용할 화면을 선택하세요</h2>
+      <p>기기에 맞는 화면을 직접 선택하면 회전하거나 창 크기가 바뀌어도 선택한 화면을 유지합니다.</p>
+      <div class="mode-options">
+        <button class="mode-option" type="button" data-display-mode="desktop">
+          <span aria-hidden="true">🖥️</span>
+          <strong>PC·노트북으로 사용</strong>
+          <small>기존 수업용 전체 화면 구성</small>
+        </button>
+        <button class="mode-option" type="button" data-display-mode="mobile">
+          <span aria-hidden="true">📱</span>
+          <strong>스마트폰으로 사용</strong>
+          <small>가로·세로 모두 모바일 촬영 화면 유지</small>
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <button class="mode-change-button" id="changeDisplayMode" type="button">화면 모드 변경</button>
+
   <main class="app">
     <header class="hero">
       <div>
@@ -1136,7 +1298,7 @@
                 <span>모션 간격</span>
                 <output id="mobileIntervalValue" for="mobileMotionInterval">간격 1 · 0장</output>
               </label>
-              <input id="mobileMotionInterval" type="range" min="1" max="5" step="1" value="1" disabled>
+              <input id="mobileMotionInterval" type="range" min="1" max="10" step="1" value="1" disabled>
               <div><span>촘촘하게</span><span>띄엄띄엄</span></div>
             </div>
             <div class="mobile-result-actions mobile-only" aria-label="모바일 결과 컨트롤">
@@ -1180,10 +1342,10 @@
               <output class="slider-value" id="usedFrameCount" for="motionInterval">0장 사용</output>
             </span>
           </label>
-          <input id="motionInterval" type="range" min="1" max="5" step="1" value="1" disabled>
+          <input id="motionInterval" type="range" min="1" max="10" step="1" value="1" disabled>
           <div class="range-ends" aria-hidden="true">
             <span>1 · 촘촘하게</span>
-            <span>5 · 띄엄띄엄</span>
+            <span>10 · 띄엄띄엄</span>
           </div>
           <p class="slider-help">값이 1이면 거의 모든 프레임을 사용하고, 값이 커질수록 해당 장수마다 한 장씩 골라 사용합니다. 촬영 후 자유롭게 다시 조절할 수 있습니다.</p>
         </div>
@@ -1258,7 +1420,8 @@
       // 촬영 설정: 최대 시간, 저장 해상도, 프레임 캡처 주기
       const MAX_DURATION = 10000;
       const MAX_CAPTURE_EDGE = 800;
-      const CAPTURE_INTERVAL = 300;
+      const MAX_MOBILE_CAPTURE_EDGE = 640;
+      const CAPTURE_INTERVAL = 100;
 
       // 카메라 흔들림 보정 설정: 축소 분석 크기, 탐색 범위, 실패 기준
       const ALIGNMENT_SAMPLE_WIDTH = 180;
@@ -1313,6 +1476,9 @@
       const closeShareSheetButton = document.querySelector("#closeShareSheet");
       const downloadToDeviceButton = document.querySelector("#downloadToDevice");
       const shareToKakaoButton = document.querySelector("#shareToKakao");
+      const modePicker = document.querySelector("#modePicker");
+      const displayModeButtons = document.querySelectorAll("[data-display-mode]");
+      const changeDisplayModeButton = document.querySelector("#changeDisplayMode");
 
       let stream = null;
       let frames = [];
@@ -1325,6 +1491,65 @@
       let composeRevision = 0;
       let mirrorCamera = true;
       let resultReady = false;
+      const DISPLAY_MODE_STORAGE_KEY = "motion-shot-display-mode";
+      let mobileLayoutMediaRule = null;
+
+      for (const styleSheet of document.styleSheets) {
+        try {
+          const matchingRule = [...styleSheet.cssRules].find(
+            (rule) => rule.conditionText === "(max-width: 850px)"
+          );
+          if (matchingRule) {
+            mobileLayoutMediaRule = matchingRule;
+            break;
+          }
+        } catch {
+          // 외부 스타일시트가 추가되더라도 접근 가능한 인라인 규칙만 사용합니다.
+        }
+      }
+
+      function saveDisplayMode(mode) {
+        try {
+          localStorage.setItem(DISPLAY_MODE_STORAGE_KEY, mode);
+        } catch {
+          // 저장이 제한된 브라우저에서는 현재 접속 동안만 선택을 유지합니다.
+        }
+      }
+
+      function readDisplayMode() {
+        try {
+          return localStorage.getItem(DISPLAY_MODE_STORAGE_KEY);
+        } catch {
+          return null;
+        }
+      }
+
+      function applyDisplayMode(mode) {
+        if (mobileLayoutMediaRule) {
+          mobileLayoutMediaRule.media.mediaText = mode === "mobile" ? "all" : "not all";
+        }
+
+        document.body.classList.remove("mode-pending", "mode-mobile", "mode-desktop");
+        document.body.classList.add(mode === "mobile" ? "mode-mobile" : "mode-desktop");
+        changeDisplayModeButton.textContent = mode === "mobile"
+          ? "스마트폰 모드 · 변경"
+          : "PC·노트북 모드 · 변경";
+
+        if (mode === "mobile" && !recording && frames.length > 0) {
+          document.body.classList.add("mobile-result-mode");
+        } else {
+          document.body.classList.remove("mobile-result-mode");
+        }
+
+        modePicker.setAttribute("aria-hidden", "true");
+        saveDisplayMode(mode);
+        syncMobileControls();
+      }
+
+      function openDisplayModePicker() {
+        document.body.classList.add("mode-pending");
+        modePicker.removeAttribute("aria-hidden");
+      }
 
       function syncMobileControls() {
         mobileStartCameraButton.disabled = startCameraButton.disabled;
@@ -1419,7 +1644,10 @@
 
         const sourceWidth = video.videoWidth || 1280;
         const sourceHeight = video.videoHeight || 720;
-        const scale = Math.min(1, MAX_CAPTURE_EDGE / Math.max(sourceWidth, sourceHeight));
+        const captureEdge = document.body.classList.contains("mode-mobile")
+          ? MAX_MOBILE_CAPTURE_EDGE
+          : MAX_CAPTURE_EDGE;
+        const scale = Math.min(1, captureEdge / Math.max(sourceWidth, sourceHeight));
         const width = Math.round(sourceWidth * scale);
         const height = Math.round(sourceHeight * scale);
         const frame = document.createElement("canvas");
@@ -1941,6 +2169,10 @@
       shareToKakaoButton.addEventListener("click", shareResultToKakao);
       closeShareBackdrop.addEventListener("click", closeShareSheet);
       closeShareSheetButton.addEventListener("click", closeShareSheet);
+      displayModeButtons.forEach((button) => {
+        button.addEventListener("click", () => applyDisplayMode(button.dataset.displayMode));
+      });
+      changeDisplayModeButton.addEventListener("click", openDisplayModePicker);
       openManualButton.addEventListener("click", openManual);
       closeManualButton.addEventListener("click", closeManual);
       manualDialog.addEventListener("click", (event) => {
@@ -1951,7 +2183,12 @@
       });
 
       updateIntervalLabel();
-      syncMobileControls();
+      const savedDisplayMode = readDisplayMode();
+      if (savedDisplayMode === "desktop" || savedDisplayMode === "mobile") {
+        applyDisplayMode(savedDisplayMode);
+      } else {
+        syncMobileControls();
+      }
     })();
   </script>
 </body>
