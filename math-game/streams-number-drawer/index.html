@@ -18,6 +18,10 @@
         <span><strong>스트림스 수 추출기</strong><small>Streams number drawer</small></span>
       </div>
       <div class="header-actions">
+        <button class="worksheet-button" id="worksheetButton" type="button">
+          <span aria-hidden="true">↓</span>
+          <span>활동지 다운로드</span>
+        </button>
         <button class="ghost-button" id="resetButton" type="button">초기화</button>
         <button class="primary-button compact" id="topDrawButton" type="button">추출</button>
       </div>
@@ -172,6 +176,33 @@
         </aside>
       </section>
     </main>
+
+    <dialog class="password-dialog" id="passwordDialog" aria-labelledby="passwordDialogTitle">
+      <form class="password-form" id="passwordForm" method="dialog">
+        <div class="dialog-heading">
+          <span class="dialog-icon" aria-hidden="true">↓</span>
+          <div>
+            <h2 id="passwordDialogTitle">스트림스 활동지</h2>
+            <p>다운로드 비밀번호를 입력하세요.</p>
+          </div>
+        </div>
+        <label class="password-field">
+          <span>비밀번호</span>
+          <input
+            id="worksheetPassword"
+            type="password"
+            inputmode="numeric"
+            autocomplete="current-password"
+            aria-describedby="passwordError"
+          />
+        </label>
+        <p class="password-error" id="passwordError" role="alert"></p>
+        <div class="dialog-actions">
+          <button class="ghost-button" id="cancelDownloadButton" type="button">취소</button>
+          <button class="primary-button" id="confirmDownloadButton" type="submit">다운로드</button>
+        </div>
+      </form>
+    </dialog>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script src="./app.js"></script>

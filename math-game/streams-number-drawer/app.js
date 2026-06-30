@@ -37,8 +37,18 @@ const elements = {
   poolTableBody: $("#poolTableBody"),
   clearPoolButton: $("#clearPoolButton"),
   applyEditorButton: $("#applyEditorButton"),
+  worksheetButton: $("#worksheetButton"),
+  passwordDialog: $("#passwordDialog"),
+  passwordForm: $("#passwordForm"),
+  worksheetPassword: $("#worksheetPassword"),
+  passwordError: $("#passwordError"),
+  cancelDownloadButton: $("#cancelDownloadButton"),
+  confirmDownloadButton: $("#confirmDownloadButton"),
   toast: $("#toast"),
 };
+
+const WORKSHEET_PASSWORD_HASH = "d4c363025fb95b88563b72ac9f9914ba5e04b66d6e6b39591b90fffdd97a5f75";
+const WORKSHEET_PATH = "./assets/streams-worksheet.pdf";
 
 function rangeEntries(start, end, count = 1) {
   const step = start <= end ? 1 : -1;
@@ -518,6 +528,54 @@ async function copyHistory() {
   }
 }
 
+async function sha256(value) {
+  const data = new TextEncoder().encode(value);
+  const digest = await window.crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function openPasswordDialog() {
+  elements.passwordForm.reset();
+  elements.passwordError.textContent = "";
+  elements.worksheetPassword.removeAttribute("aria-invalid");
+  elements.passwordDialog.showModal();
+  window.setTimeout(() => elements.worksheetPassword.focus(), 0);
+}
+
+async function downloadWorksheet() {
+  elements.confirmDownloadButton.disabled = true;
+  elements.confirmDownloadButton.textContent = "확인 중";
+
+  try {
+    const passwordHash = await sha256(elements.worksheetPassword.value);
+    if (passwordHash !== WORKSHEET_PASSWORD_HASH) {
+      elements.passwordError.textContent = "비밀번호가 올바르지 않습니다.";
+      elements.worksheetPassword.setAttribute("aria-invalid", "true");
+      elements.worksheetPassword.select();
+      return;
+    }
+
+    const response = await fetch(WORKSHEET_PATH);
+    if (!response.ok) throw new Error("Worksheet download failed");
+
+    const url = URL.createObjectURL(await response.blob());
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "스트림스 활동지.pdf";
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    elements.passwordDialog.close();
+    showToast("활동지 다운로드를 시작했습니다.");
+  } catch {
+    elements.passwordError.textContent = "파일을 불러오지 못했습니다. 잠시 후 다시 시도하세요.";
+  } finally {
+    elements.confirmDownloadButton.disabled = false;
+    elements.confirmDownloadButton.textContent = "다운로드";
+  }
+}
+
 elements.modeTabs.forEach((button) => {
   button.addEventListener("click", () => switchMode(button.dataset.mode));
 });
@@ -527,6 +585,16 @@ elements.topDrawButton.addEventListener("click", drawOne);
 elements.undoButton.addEventListener("click", undoLast);
 elements.resetButton.addEventListener("click", requestReset);
 elements.copyHistoryButton.addEventListener("click", copyHistory);
+elements.worksheetButton.addEventListener("click", openPasswordDialog);
+elements.cancelDownloadButton.addEventListener("click", () => elements.passwordDialog.close());
+elements.passwordForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  downloadWorksheet();
+});
+elements.worksheetPassword.addEventListener("input", () => {
+  elements.passwordError.textContent = "";
+  elements.worksheetPassword.removeAttribute("aria-invalid");
+});
 
 elements.exampleButtons.forEach((button) => {
   button.addEventListener("click", () => loadExample(button.dataset.example));
