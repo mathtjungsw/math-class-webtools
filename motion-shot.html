@@ -662,100 +662,391 @@
       line-height: 1.55;
     }
 
+    .mobile-only,
+    .share-sheet {
+      display: none;
+    }
+
     @media (max-width: 850px) {
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #080b12;
+      }
+
       .app {
-        padding-top: 32px;
+        width: 100%;
+        height: 100dvh;
+        margin: 0;
+        padding: 0;
       }
 
-      .hero {
-        display: block;
-      }
-
-      .hero-actions {
-        margin-top: 18px;
-      }
-
-      .quick-start {
-        grid-template-columns: repeat(2, 1fr);
+      .hero,
+      .quick-start,
+      .side-panel,
+      .camera-heading,
+      .result-block > .stage-heading {
+        display: none;
       }
 
       .workspace {
-        grid-template-columns: 1fr;
-      }
-
-      .side-panel {
-        position: static;
-      }
-    }
-
-    @media (max-width: 520px) {
-      .app {
-        width: min(100% - 20px, 1180px);
-        padding: 24px 0 32px;
-      }
-
-      h1 {
-        font-size: 2.25rem;
-      }
-
-      .hero-description {
-        font-size: 0.88rem;
-      }
-
-      .card {
-        border-radius: 18px;
+        display: block;
+        width: 100%;
+        height: 100%;
       }
 
       .stage-card {
-        padding: 11px;
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        overflow: hidden;
+        border: 0;
+        border-radius: 0;
+        background: #080b12;
+        box-shadow: none;
       }
 
-      .side-panel {
-        padding: 17px;
+      .mobile-only {
+        display: flex;
       }
 
-      .media-frame {
+      .camera-frame,
+      .result-frame {
+        width: 100vw;
+        height: 100dvh;
+        border-radius: 0;
+        aspect-ratio: auto;
+        background: #080b12;
+      }
+
+      .camera-frame video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .camera-empty {
+        padding-right: 108px;
+        color: #d8deea;
+        background:
+          linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+          #101522;
+        background-size: 32px 32px;
+      }
+
+      .timer,
+      .mobile-frame-count {
+        z-index: 5;
+        top: max(14px, env(safe-area-inset-top));
+        bottom: auto;
+        padding: 8px 11px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 999px;
+        color: #fff;
+        background: rgba(6, 9, 16, 0.66);
+        font-size: 0.76rem;
+        font-weight: 800;
+        backdrop-filter: blur(10px);
+      }
+
+      .timer {
+        right: auto;
+        left: max(14px, env(safe-area-inset-left));
+      }
+
+      .mobile-frame-count {
+        position: absolute;
+        right: calc(max(14px, env(safe-area-inset-right)) + 78px);
+      }
+
+      .mobile-camera-controls,
+      .mobile-result-actions {
+        position: absolute;
+        z-index: 8;
+        top: 50%;
+        right: max(12px, env(safe-area-inset-right));
+        flex-direction: column;
+        gap: 12px;
+        transform: translateY(-50%);
+      }
+
+      .mobile-status {
+        position: fixed;
+        z-index: 10;
+        right: calc(max(12px, env(safe-area-inset-right)) + 82px);
+        bottom: max(12px, env(safe-area-inset-bottom));
+        left: max(12px, env(safe-area-inset-left));
+        display: block;
+        padding: 10px 13px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 14px;
+        color: #fff;
+        background: rgba(7, 11, 19, 0.68);
+        backdrop-filter: blur(12px);
+      }
+
+      .mobile-status strong,
+      .mobile-status span {
+        display: block;
+      }
+
+      .mobile-status strong {
+        margin-bottom: 2px;
+        font-size: 0.76rem;
+      }
+
+      .mobile-status span {
+        overflow: hidden;
+        color: #c5ccd9;
+        font-size: 0.67rem;
+        line-height: 1.35;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .mobile-status[data-state="error"] {
+        border-color: rgba(255, 104, 112, 0.5);
+        background: rgba(90, 20, 31, 0.82);
+      }
+
+      .mobile-control-button {
+        display: grid;
+        place-items: center;
+        width: 68px;
+        min-height: 58px;
+        padding: 9px 7px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 18px;
+        color: #fff;
+        background: rgba(9, 13, 22, 0.72);
+        box-shadow: 0 8px 26px rgba(0, 0, 0, 0.24);
+        font-size: 0.76rem;
+        font-weight: 850;
+        line-height: 1.25;
+        text-align: center;
+        touch-action: manipulation;
+        backdrop-filter: blur(12px);
+      }
+
+      .mobile-control-button.record {
+        border-color: rgba(255, 104, 112, 0.65);
+        background: rgba(190, 38, 55, 0.78);
+      }
+
+      .mobile-control-button.stop {
+        border-color: rgba(255, 255, 255, 0.4);
+        background: rgba(22, 27, 39, 0.86);
+      }
+
+      .mobile-control-button.save {
+        color: #16213c;
+        border-color: rgba(255, 255, 255, 0.5);
+        background: rgba(255, 255, 255, 0.92);
+      }
+
+      .mobile-control-button:disabled {
+        opacity: 0.38;
+        filter: grayscale(0.7);
+      }
+
+      body:not(.mobile-result-mode) .result-block {
+        display: none;
+      }
+
+      body.mobile-result-mode .camera-frame {
+        display: none;
+      }
+
+      body.mobile-result-mode .result-block {
+        display: block;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        border: 0;
+      }
+
+      #resultCanvas {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .result-placeholder {
+        padding: 96px 104px 28px 24px;
+        color: #c9cfda;
+        background: #111722;
+      }
+
+      .result-placeholder strong {
+        color: #fff;
+      }
+
+      .result-placeholder.failure {
+        padding: 96px 104px 28px 24px;
+        background: #28171c;
+      }
+
+      .mobile-result-slider {
+        position: absolute;
+        z-index: 9;
+        top: max(12px, env(safe-area-inset-top));
+        right: calc(max(12px, env(safe-area-inset-right)) + 82px);
+        left: max(12px, env(safe-area-inset-left));
+        display: block;
+        padding: 10px 14px 9px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 16px;
+        color: #fff;
+        background: rgba(7, 11, 19, 0.72);
+        backdrop-filter: blur(12px);
+      }
+
+      .mobile-result-slider label,
+      .mobile-result-slider > div {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .mobile-result-slider label {
+        margin-bottom: 3px;
+        font-size: 0.76rem;
+        font-weight: 850;
+      }
+
+      .mobile-result-slider output {
+        color: #cbd4ff;
+        font-size: 0.7rem;
+      }
+
+      .mobile-result-slider input {
+        width: 100%;
+        min-height: 28px;
+        accent-color: #91a2ff;
+      }
+
+      .mobile-result-slider > div {
+        color: #b7becc;
+        font-size: 0.62rem;
+      }
+
+      .share-sheet:not([hidden]) {
+        position: fixed;
+        z-index: 100;
+        inset: 0;
+        display: block;
+      }
+
+      .share-sheet-backdrop {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        border: 0;
+        background: rgba(3, 6, 12, 0.66);
+        backdrop-filter: blur(5px);
+      }
+
+      .share-sheet-panel {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        padding: 10px 18px calc(18px + env(safe-area-inset-bottom));
+        border-radius: 24px 24px 0 0;
+        color: var(--ink);
+        background: #fff;
+        box-shadow: 0 -18px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      .share-sheet-handle {
+        width: 42px;
+        height: 5px;
+        margin: 0 auto 14px;
+        border-radius: 999px;
+        background: #d7dbe4;
+      }
+
+      .share-sheet-panel h2 {
+        margin: 0;
+        font-size: 1.15rem;
+      }
+
+      .share-sheet-panel > p {
+        margin: 6px 0 16px;
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+
+      .share-sheet-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .share-action {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 64px;
+        padding: 10px 12px;
+        border: 1px solid #e0e4ec;
+        border-radius: 16px;
+        color: var(--ink);
+        background: #f7f8fb;
+        text-align: left;
+        touch-action: manipulation;
+      }
+
+      .share-action span {
+        display: grid;
+        flex: 0 0 auto;
+        place-items: center;
+        width: 38px;
+        height: 38px;
         border-radius: 12px;
+        color: #fff;
+        background: var(--primary);
+        font-size: 0.7rem;
+        font-weight: 900;
       }
 
-      .controls {
-        grid-template-columns: 1fr;
+      .share-action.kakao {
+        background: #fffbea;
       }
 
-      .button.primary,
-      .button.save {
-        grid-column: auto;
+      .share-action.kakao span {
+        color: #3b2500;
+        background: #fee500;
       }
 
-      .button {
-        min-height: 54px;
-        font-size: 0.92rem;
+      .share-action strong {
+        font-size: 0.78rem;
       }
 
-      .manual-button {
+      .share-sheet-cancel {
         width: 100%;
         min-height: 50px;
+        margin-top: 10px;
+        border: 0;
+        border-radius: 14px;
+        color: var(--muted);
+        background: #eef0f4;
+        font-weight: 800;
+        touch-action: manipulation;
+      }
+    }
+
+    @media (max-width: 430px) and (orientation: portrait) {
+      .mobile-result-slider {
+        padding: 8px 12px 7px;
       }
 
-      .quick-start {
-        grid-template-columns: 1fr;
-        padding: 9px;
-      }
-
-      .quick-step {
-        padding: 7px;
-      }
-
-      .quick-step span {
-        overflow: visible;
-        text-overflow: clip;
-      }
-
-      .manual-content {
-        padding: 20px;
-      }
-
-      .lesson-examples {
+      .share-sheet-actions {
         grid-template-columns: 1fr;
       }
     }
@@ -805,11 +1096,11 @@
 
     <div class="workspace">
       <section class="card stage-card" aria-label="카메라와 결과">
-        <div class="stage-heading">
+        <div class="stage-heading camera-heading">
           <h2>카메라 미리보기</h2>
           <span class="live-badge" id="liveBadge">대기</span>
         </div>
-        <div class="media-frame">
+        <div class="media-frame camera-frame">
           <video id="camera" autoplay muted playsinline aria-label="카메라 미리보기"></video>
           <div class="camera-empty" id="cameraEmpty">
             <div class="camera-icon" aria-hidden="true">
@@ -821,6 +1112,12 @@
             <p>카메라 시작 버튼을 눌러<br>미리보기를 준비하세요.</p>
           </div>
           <span class="timer" id="timer" aria-live="off">0.0초 / 10초</span>
+          <span class="mobile-frame-count mobile-only" id="mobileFrameCount">0 프레임</span>
+          <div class="mobile-camera-controls mobile-only" aria-label="모바일 촬영 컨트롤">
+            <button class="mobile-control-button camera" id="mobileStartCamera" type="button">카메라<br>시작</button>
+            <button class="mobile-control-button record" id="mobileStartRecording" type="button" disabled>촬영<br>시작</button>
+            <button class="mobile-control-button stop" id="mobileStopRecording" type="button" disabled>정지</button>
+          </div>
         </div>
 
         <div class="result-block">
@@ -834,7 +1131,23 @@
               <strong>아직 결과가 없어요</strong>
               <span>촬영을 마치면 이곳에 합성 이미지가 나타납니다.</span>
             </div>
+            <div class="mobile-result-slider mobile-only">
+              <label for="mobileMotionInterval">
+                <span>모션 간격</span>
+                <output id="mobileIntervalValue" for="mobileMotionInterval">간격 1 · 0장</output>
+              </label>
+              <input id="mobileMotionInterval" type="range" min="1" max="5" step="1" value="1" disabled>
+              <div><span>촘촘하게</span><span>띄엄띄엄</span></div>
+            </div>
+            <div class="mobile-result-actions mobile-only" aria-label="모바일 결과 컨트롤">
+              <button class="mobile-control-button" id="mobileRetake" type="button" disabled>다시<br>찍기</button>
+              <button class="mobile-control-button save" id="mobileSaveResult" type="button" disabled>이미지<br>저장</button>
+            </div>
           </div>
+        </div>
+        <div class="mobile-status mobile-only" id="mobileStatus" data-state="idle" role="status" aria-live="polite">
+          <strong id="mobileStatusTitle">카메라 준비 중</strong>
+          <span id="mobileStatusDetail">오른쪽의 카메라 시작 버튼을 눌러주세요.</span>
         </div>
       </section>
 
@@ -918,6 +1231,26 @@
     </div>
   </dialog>
 
+  <div class="share-sheet" id="shareSheet" hidden>
+    <button class="share-sheet-backdrop" id="closeShareBackdrop" type="button" aria-label="저장 메뉴 닫기"></button>
+    <section class="share-sheet-panel" role="dialog" aria-modal="true" aria-labelledby="shareSheetTitle">
+      <div class="share-sheet-handle" aria-hidden="true"></div>
+      <h2 id="shareSheetTitle">결과 이미지 보내기</h2>
+      <p id="shareSheetMessage">기기에 저장하거나 공유 화면에서 카카오톡을 선택하세요.</p>
+      <div class="share-sheet-actions">
+        <button class="share-action download" id="downloadToDevice" type="button">
+          <span aria-hidden="true">↓</span>
+          <strong>기기에 저장하기</strong>
+        </button>
+        <button class="share-action kakao" id="shareToKakao" type="button">
+          <span aria-hidden="true">Talk</span>
+          <strong>카톡으로 이미지 보내기</strong>
+        </button>
+      </div>
+      <button class="share-sheet-cancel" id="closeShareSheet" type="button">취소</button>
+    </section>
+  </div>
+
   <script>
     (() => {
       "use strict";
@@ -963,6 +1296,23 @@
       const manualDialog = document.querySelector("#manualDialog");
       const openManualButton = document.querySelector("#openManual");
       const closeManualButton = document.querySelector("#closeManual");
+      const mobileStartCameraButton = document.querySelector("#mobileStartCamera");
+      const mobileStartRecordingButton = document.querySelector("#mobileStartRecording");
+      const mobileStopRecordingButton = document.querySelector("#mobileStopRecording");
+      const mobileRetakeButton = document.querySelector("#mobileRetake");
+      const mobileSaveButton = document.querySelector("#mobileSaveResult");
+      const mobileIntervalInput = document.querySelector("#mobileMotionInterval");
+      const mobileIntervalValue = document.querySelector("#mobileIntervalValue");
+      const mobileFrameCount = document.querySelector("#mobileFrameCount");
+      const mobileStatus = document.querySelector("#mobileStatus");
+      const mobileStatusTitle = document.querySelector("#mobileStatusTitle");
+      const mobileStatusDetail = document.querySelector("#mobileStatusDetail");
+      const shareSheet = document.querySelector("#shareSheet");
+      const shareSheetMessage = document.querySelector("#shareSheetMessage");
+      const closeShareBackdrop = document.querySelector("#closeShareBackdrop");
+      const closeShareSheetButton = document.querySelector("#closeShareSheet");
+      const downloadToDeviceButton = document.querySelector("#downloadToDevice");
+      const shareToKakaoButton = document.querySelector("#shareToKakao");
 
       let stream = null;
       let frames = [];
@@ -976,10 +1326,25 @@
       let mirrorCamera = true;
       let resultReady = false;
 
+      function syncMobileControls() {
+        mobileStartCameraButton.disabled = startCameraButton.disabled;
+        mobileStartRecordingButton.disabled = startRecordingButton.disabled;
+        mobileStopRecordingButton.disabled = stopRecordingButton.disabled;
+        mobileRetakeButton.disabled = retakeButton.disabled;
+        mobileSaveButton.disabled = saveButton.disabled;
+        mobileIntervalInput.disabled = intervalInput.disabled;
+        mobileIntervalInput.value = intervalInput.value;
+        mobileFrameCount.textContent = frameCount.textContent;
+      }
+
       function setStatus(state, title, detail) {
         status.dataset.state = state;
         statusTitle.textContent = title;
         statusDetail.textContent = detail;
+        mobileStatus.dataset.state = state;
+        mobileStatusTitle.textContent = title;
+        mobileStatusDetail.textContent = detail;
+        syncMobileControls();
       }
 
       function formatTime(milliseconds) {
@@ -988,8 +1353,11 @@
       }
 
       function updateIntervalLabel() {
+        const selectedFrameCount = frames.length ? selectCompositeFrames().length : 0;
         intervalValue.value = `간격 ${intervalInput.value}`;
-        usedFrameCount.value = `${frames.length ? selectCompositeFrames().length : 0}장 사용`;
+        usedFrameCount.value = `${selectedFrameCount}장 사용`;
+        mobileIntervalInput.value = intervalInput.value;
+        mobileIntervalValue.value = `간격 ${intervalInput.value} · ${selectedFrameCount}장`;
       }
 
       async function startCamera() {
@@ -1065,11 +1433,14 @@
         frameContext.drawImage(video, 0, 0, width, height);
         frames.push(frame);
         frameCount.textContent = `${frames.length} 프레임`;
+        mobileFrameCount.textContent = frameCount.textContent;
       }
 
       function beginRecording() {
         if (!stream || recording) return;
 
+        document.body.classList.remove("mobile-result-mode");
+        shareSheet.hidden = true;
         frames = [];
         recording = true;
         resultReady = false;
@@ -1084,6 +1455,7 @@
         stopRecordingButton.disabled = false;
         intervalInput.disabled = true;
         usedFrameCount.value = "0장 사용";
+        mobileIntervalValue.value = `간격 ${intervalInput.value} · 0장`;
         liveBadge.textContent = "REC";
         frameCount.textContent = "0 프레임";
         setStatus("recording", "촬영 중", "물체를 움직여 궤적을 만들어보세요.");
@@ -1222,6 +1594,7 @@
         try {
           const selectedFrames = selectCompositeFrames();
           usedFrameCount.value = `${selectedFrames.length}장 사용`;
+          mobileIntervalValue.value = `간격 ${intervalInput.value} · ${selectedFrames.length}장`;
           const width = selectedFrames[0].width;
           const height = selectedFrames[0].height;
           const pixelCount = width * height;
@@ -1440,6 +1813,7 @@
         if (!recording) return;
 
         recording = false;
+        document.body.classList.add("mobile-result-mode");
         window.clearInterval(captureTimer);
         window.clearInterval(clockTimer);
         window.clearTimeout(autoStopTimer);
@@ -1458,6 +1832,8 @@
 
       function resetResult() {
         if (recording) finishRecording();
+        document.body.classList.remove("mobile-result-mode");
+        shareSheet.hidden = true;
         composeRevision += 1;
         window.clearTimeout(recomposeTimer);
         recomposeTimer = null;
@@ -1475,6 +1851,7 @@
         startRecordingButton.disabled = !stream;
         intervalInput.disabled = true;
         usedFrameCount.value = "0장 사용";
+        mobileIntervalValue.value = `간격 ${intervalInput.value} · 0장`;
         setStatus(stream ? "ready" : "idle", stream ? "촬영 준비 완료" : "카메라 준비 중",
           stream ? "카메라를 고정한 뒤 촬영 시작을 눌러주세요." : "카메라를 시작하면 촬영할 수 있습니다.");
       }
@@ -1488,12 +1865,82 @@
         link.click();
       }
 
+      function openShareSheet() {
+        if (!resultReady) return;
+        shareSheetMessage.textContent = "기기에 저장하거나 공유 화면에서 카카오톡을 선택하세요.";
+        shareSheet.hidden = false;
+      }
+
+      function closeShareSheet() {
+        shareSheet.hidden = true;
+      }
+
+      function createResultFile() {
+        const dataUrl = canvas.toDataURL("image/png");
+        const encoded = dataUrl.split(",")[1];
+        const binary = window.atob(encoded);
+        const bytes = new Uint8Array(binary.length);
+        for (let index = 0; index < binary.length; index += 1) {
+          bytes[index] = binary.charCodeAt(index);
+        }
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+        return new File([bytes], `motion-shot-${timestamp}.png`, { type: "image/png" });
+      }
+
+      async function shareResultToKakao() {
+        if (!resultReady) return;
+
+        let file;
+        try {
+          file = createResultFile();
+        } catch {
+          shareSheetMessage.textContent = "공유할 이미지 파일을 만들지 못했어요. 기기에 저장하기를 이용해 주세요.";
+          return;
+        }
+
+        const shareData = {
+          files: [file],
+          title: "모션 샷 결과",
+          text: "공유할 앱에서 카카오톡을 선택해 주세요."
+        };
+
+        if (!navigator.share || (navigator.canShare && !navigator.canShare({ files: [file] }))) {
+          shareSheetMessage.textContent = "이 브라우저는 이미지 공유를 지원하지 않아요. 먼저 기기에 저장한 뒤 카카오톡에서 보내 주세요.";
+          return;
+        }
+
+        try {
+          await navigator.share(shareData);
+          closeShareSheet();
+        } catch (error) {
+          if (error.name !== "AbortError") {
+            shareSheetMessage.textContent = "공유 화면을 열지 못했어요. 기기에 저장한 뒤 카카오톡에서 이미지를 선택해 주세요.";
+          }
+        }
+      }
+
       startCameraButton.addEventListener("click", startCamera);
       startRecordingButton.addEventListener("click", beginRecording);
       stopRecordingButton.addEventListener("click", finishRecording);
       retakeButton.addEventListener("click", resetResult);
       saveButton.addEventListener("click", saveResult);
       intervalInput.addEventListener("input", scheduleRecompose);
+      mobileStartCameraButton.addEventListener("click", startCamera);
+      mobileStartRecordingButton.addEventListener("click", beginRecording);
+      mobileStopRecordingButton.addEventListener("click", finishRecording);
+      mobileRetakeButton.addEventListener("click", resetResult);
+      mobileSaveButton.addEventListener("click", openShareSheet);
+      mobileIntervalInput.addEventListener("input", () => {
+        intervalInput.value = mobileIntervalInput.value;
+        scheduleRecompose();
+      });
+      downloadToDeviceButton.addEventListener("click", () => {
+        saveResult();
+        closeShareSheet();
+      });
+      shareToKakaoButton.addEventListener("click", shareResultToKakao);
+      closeShareBackdrop.addEventListener("click", closeShareSheet);
+      closeShareSheetButton.addEventListener("click", closeShareSheet);
       openManualButton.addEventListener("click", openManual);
       closeManualButton.addEventListener("click", closeManual);
       manualDialog.addEventListener("click", (event) => {
@@ -1504,6 +1951,7 @@
       });
 
       updateIntervalLabel();
+      syncMobileControls();
     })();
   </script>
 </body>
