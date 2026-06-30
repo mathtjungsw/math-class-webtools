@@ -864,6 +864,47 @@ body.is-modal-open {
 }
 
 /* 카드별 간단한 시각화 */
+.card-motion-shot .tool-visual { background: #edf3ff; }
+.card-motion-shot .motion-camera {
+  fill: white;
+  stroke: var(--navy);
+  stroke-width: 5;
+}
+.card-motion-shot .motion-camera-top {
+  fill: white;
+  stroke: var(--navy);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 5;
+}
+.card-motion-shot .motion-lens {
+  fill: #dbe5ff;
+  stroke: var(--navy);
+  stroke-width: 5;
+}
+.card-motion-shot .motion-lens-inner {
+  fill: #b9c9f5;
+  stroke: var(--navy);
+  stroke-width: 4;
+}
+.card-motion-shot .motion-trajectory {
+  fill: none;
+  stroke: var(--orange);
+  stroke-dasharray: 9 9;
+  stroke-linecap: round;
+  stroke-width: 4;
+}
+.card-motion-shot .motion-balls circle {
+  fill: var(--yellow);
+  stroke: var(--navy);
+  stroke-width: 4;
+}
+.card-motion-shot .motion-record {
+  fill: var(--orange);
+  stroke: white;
+  stroke-width: 4;
+}
+
 .card-monty .tool-visual { background: #fff3e9; }
 .card-bayes .tool-visual { background: #eef8f5; }
 .card-bayes .people-grid circle { fill: #cad5df; }
