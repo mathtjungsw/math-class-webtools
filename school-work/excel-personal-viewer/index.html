@@ -1,0 +1,1381 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="엑셀 파일의 제목 행과 열을 브라우저 안에서 확인하는 교사용 웹툴" />
+  <title>엑셀 개인자료 조회기</title>
+  <script src="./vendor/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      color-scheme: light;
+      --navy: #18243f; --blue: #3457d5; --blue-dark: #2746b4; --blue-soft: #edf2ff;
+      --mint: #168b74; --mint-soft: #eaf8f4; --amber-soft: #fff7e8;
+      --red: #a92f39; --red-soft: #fff0f1; --ink: #202a3c; --muted: #657084;
+      --line: #dfe5ef; --paper: #fff; --bg: #f5f7fb;
+      --shadow: 0 18px 45px rgba(24, 36, 63, .1);
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-width: 320px; margin: 0; color: var(--ink); background: var(--bg);
+      font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      line-height: 1.55;
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: .48; }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+      min-height: 68px; padding: 12px max(24px, calc((100vw - 1180px) / 2));
+      border-bottom: 1px solid var(--line); background: rgba(255,255,255,.94);
+    }
+    .brand { display: inline-flex; align-items: center; gap: 11px; color: var(--navy); text-decoration: none; }
+    .brand-mark {
+      display: grid; width: 42px; height: 42px; place-items: center; border-radius: 13px;
+      color: #fff; background: var(--navy); font-size: 21px; font-weight: 900;
+    }
+    .brand-copy strong, .brand-copy small { display: block; }
+    .brand-copy strong { font-size: 15px; }
+    .brand-copy small { color: var(--muted); font-size: 12px; }
+    .back-link { color: var(--navy); font-size: 14px; font-weight: 800; text-decoration: none; }
+    main { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 44px 0 70px; }
+    .hero {
+      display: flex; align-items: end; justify-content: space-between; gap: 32px; margin-bottom: 28px;
+    }
+    .eyebrow { margin: 0 0 7px; color: var(--blue); font-size: 13px; font-weight: 900; letter-spacing: .08em; }
+    h1 { margin: 0; color: var(--navy); font-size: clamp(34px,5vw,52px); letter-spacing: -.05em; line-height: 1.13; }
+    .hero p:last-child { max-width: 650px; margin: 14px 0 0; color: var(--muted); font-size: 17px; }
+    .step-badge {
+      flex: 0 0 auto; padding: 9px 14px; border: 1px solid #cfd9ff; border-radius: 999px;
+      color: var(--blue-dark); background: var(--blue-soft); font-size: 14px; font-weight: 900;
+    }
+    .privacy-notice {
+      display: grid; gap: 10px; margin-bottom: 26px; padding: 22px 24px;
+      border: 2px solid #9ed8c9; border-radius: 18px; background: var(--mint-soft);
+      box-shadow: 0 8px 22px rgba(22,160,133,.08);
+    }
+    .security-head { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .security-head h2 { margin: 0; color: #104c3f; font-size: 25px; letter-spacing: -.03em; }
+    .security-head .secondary { border-color: #e8a8ad; color: #922b33; background: #fff7f7; }
+    .privacy-line {
+      display: flex; align-items: flex-start; gap: 11px; margin: 0; color: #144c40;
+      font-size: clamp(18px,2vw,22px); font-weight: 900; letter-spacing: -.025em;
+    }
+    .privacy-line span {
+      display: grid; flex: 0 0 27px; width: 27px; height: 27px; margin-top: 2px;
+      place-items: center; border-radius: 50%; color: #fff; background: var(--mint); font-size: 15px;
+    }
+    .storage-option {
+      display: flex; align-items: flex-start; gap: 10px; margin-top: 4px; padding: 13px 14px;
+      border: 1px solid #aad9ce; border-radius: 12px; color: #174f43; background: rgba(255,255,255,.72);
+    }
+    .storage-option input { flex: 0 0 auto; width: 18px; height: 18px; margin-top: 3px; accent-color: var(--mint); }
+    .storage-option strong, .storage-option small { display: block; }
+    .storage-option small { margin-top: 2px; color: #47766d; }
+    .reset-notice { padding: 10px 12px; border-radius: 10px; color: #145c4c; background: #fff; font-weight: 900; }
+    .workflow {
+      display: grid; grid-template-columns: repeat(6,1fr); gap: 9px; margin: 0 0 18px;
+      padding: 0; list-style: none;
+    }
+    .workflow li {
+      display: flex; align-items: center; gap: 9px; padding: 12px 14px; border: 1px solid var(--line);
+      border-radius: 13px; color: var(--muted); background: #fff; font-size: 14px; font-weight: 800;
+    }
+    .workflow b {
+      display: grid; flex: 0 0 27px; width: 27px; height: 27px; place-items: center;
+      border-radius: 50%; color: var(--muted); background: #edf0f5;
+    }
+    .workflow .active { border-color: #b8c6ff; color: var(--blue-dark); background: var(--blue-soft); }
+    .workflow .active b { color: #fff; background: var(--blue); }
+    .panel { overflow: hidden; border: 1px solid var(--line); border-radius: 22px; background: var(--paper); box-shadow: var(--shadow); }
+    .panel-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+      padding: 22px 24px; border-bottom: 1px solid var(--line);
+    }
+    .panel-head h2 { margin: 0; color: var(--navy); font-size: 22px; letter-spacing: -.03em; }
+    .panel-head p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+    .status-pill {
+      flex: 0 0 auto; padding: 7px 11px; border-radius: 999px; color: var(--muted);
+      background: #eef1f6; font-size: 13px; font-weight: 800;
+    }
+    .status-pill.ready { color: #0d6d58; background: #dff5ef; }
+    .panel-body { padding: 24px; }
+    .dropzone {
+      display: grid; min-height: 250px; place-items: center; padding: 30px; border: 2px dashed #aebce9;
+      border-radius: 18px; background: #f8faff; text-align: center;
+      transition: border-color .16s, background .16s, transform .16s;
+    }
+    .dropzone.dragging { border-color: var(--blue); background: var(--blue-soft); transform: scale(1.005); }
+    .drop-icon {
+      display: grid; width: 70px; height: 70px; margin: 0 auto 15px; place-items: center;
+      border-radius: 22px; color: #fff; background: var(--blue); font-size: 31px; font-weight: 900;
+    }
+    .dropzone h3 { margin: 0; color: var(--navy); font-size: 22px; }
+    .dropzone p { margin: 7px 0 17px; color: var(--muted); }
+    .primary, .secondary, .text-button {
+      min-height: 43px; padding: 10px 17px; border-radius: 11px; font-weight: 900;
+    }
+    .primary { border: 1px solid var(--blue); color: #fff; background: var(--blue); }
+    .primary:hover:not(:disabled) { border-color: var(--blue-dark); background: var(--blue-dark); }
+    .secondary { border: 1px solid var(--line); color: var(--navy); background: #fff; }
+    .text-button { border: 0; color: var(--red); background: transparent; }
+    .file-input {
+      position: absolute; width: 1px; height: 1px; overflow: hidden;
+      clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+    }
+    .support-note { margin-top: 13px !important; font-size: 13px; }
+    .error-box {
+      margin-bottom: 18px; padding: 14px 16px; border: 1px solid #ffc9cc; border-radius: 12px;
+      color: #8e252c; background: var(--red-soft); font-weight: 700;
+    }
+    .result { display: grid; gap: 20px; }
+    .file-summary {
+      display: flex; align-items: center; gap: 16px; padding: 17px 18px;
+      border: 1px solid var(--line); border-radius: 16px; background: #f8fafc;
+    }
+    .file-type {
+      display: grid; flex: 0 0 52px; width: 52px; height: 52px; place-items: center;
+      border-radius: 14px; color: #fff; background: var(--mint); font-size: 12px; font-weight: 950;
+    }
+    .file-info { min-width: 0; }
+    .file-info strong {
+      display: block; overflow: hidden; color: var(--navy); font-size: 17px;
+      text-overflow: ellipsis; white-space: nowrap;
+    }
+    .file-info span { color: var(--muted); font-size: 13px; }
+    .summary-actions { display: flex; margin-left: auto; }
+    .stat-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; }
+    .stat-card {
+      padding: 18px; border: 1px solid var(--line); border-radius: 15px;
+      background: #f8fafc; text-align: center;
+    }
+    .stat-card strong { display: block; color: var(--blue-dark); font-size: 28px; line-height: 1.2; }
+    .stat-card #sheetName { overflow-wrap: anywhere; font-size: 18px; }
+    .stat-card span { color: var(--muted); font-size: 13px; font-weight: 800; }
+    .settings-summary {
+      display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px;
+      padding: 16px; border: 2px solid #d3dcfb; border-radius: 16px; background: #f8faff;
+    }
+    .summary-item { min-width: 0; padding: 4px 8px; }
+    .summary-item small, .summary-item strong { display: block; }
+    .summary-item small { color: var(--muted); font-weight: 800; }
+    .summary-item strong { overflow: hidden; color: var(--navy); font-size: 17px; text-overflow: ellipsis; white-space: nowrap; }
+    .control-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 15px; }
+    .field label { display: block; margin-bottom: 6px; color: var(--navy); font-size: 14px; font-weight: 900; }
+    .field select, .field input {
+      width: 100%; min-height: 45px; padding: 9px 38px 9px 12px; border: 1px solid #cfd7e5;
+      border-radius: 11px; color: var(--ink); background: #fff;
+    }
+    .field small { display: block; margin-top: 6px; color: var(--muted); }
+    .analysis-note {
+      padding: 14px 16px; border: 1px solid #f0d9ae; border-radius: 13px;
+      color: #785018; background: var(--amber-soft); font-size: 14px;
+    }
+    .section-title {
+      display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 11px;
+    }
+    .section-title h3 { margin: 0; color: var(--navy); font-size: 18px; }
+    .section-title span { color: var(--muted); font-size: 13px; }
+    .column-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+    .column-list li {
+      padding: 8px 11px; border: 1px solid #cdd8ff; border-radius: 10px;
+      color: #2945a2; background: var(--blue-soft); font-size: 14px; font-weight: 850;
+    }
+    .column-list small { margin-right: 7px; color: #7180b2; font-weight: 700; }
+    .selection-settings { display: grid; grid-template-columns: minmax(230px,.7fr) minmax(0,1.3fr); gap: 15px; }
+    .selection-panel { padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: #fafbfd; }
+    .choice-toolbar {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;
+    }
+    .choice-toolbar strong { margin-right: auto; color: var(--navy); font-size: 14px; }
+    .choice-toolbar .secondary { min-height: 34px; padding: 6px 10px; font-size: 13px; }
+    .selected-count {
+      padding: 5px 9px; border-radius: 999px; color: var(--blue-dark);
+      background: var(--blue-soft); font-size: 12px; font-weight: 900;
+    }
+    .choice-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap: 8px; }
+    .choice-card {
+      display: flex; align-items: center; gap: 9px; min-width: 0; padding: 10px 11px;
+      border: 1px solid var(--line); border-radius: 11px; background: #fff; cursor: pointer;
+    }
+    .choice-card.selected { border-color: #aebdff; color: #2945a2; background: var(--blue-soft); }
+    .choice-card.key-column { border-color: #8fd5c5; color: #12604f; background: var(--mint-soft); }
+    .choice-card input { flex: 0 0 auto; width: 17px; height: 17px; accent-color: var(--blue); }
+    .choice-card span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 800; }
+    .choice-card small { margin-right: 7px; color: var(--muted); font-weight: 700; }
+    .start-message { padding: 12px 14px; border: 1px solid #ffc9cc; border-radius: 11px; color: #8e252c; background: var(--red-soft); font-weight: 800; }
+    .start-message.success { border-color: #9ed8c9; color: #145c4c; background: var(--mint-soft); }
+    .mode-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; }
+    .mode-card {
+      display: flex; align-items: flex-start; gap: 10px; padding: 14px;
+      border: 1px solid var(--line); border-radius: 13px; background: #fff; cursor: pointer;
+    }
+    .mode-card.selected { border-color: #aebdff; background: var(--blue-soft); box-shadow: 0 0 0 2px rgba(52,87,213,.08); }
+    .mode-card input { width: 17px; height: 17px; margin-top: 3px; accent-color: var(--blue); }
+    .mode-card strong, .mode-card small { display: block; }
+    .mode-card strong { color: var(--navy); }
+    .mode-card small { margin-top: 3px; color: var(--muted); }
+    .viewer-section { padding: 20px; border: 2px solid #cbd6fb; border-radius: 18px; background: #f8faff; }
+    .execution-view { display: grid; gap: 18px; }
+    .execution-head {
+      display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 18px;
+      padding: 20px; border: 2px solid #cbd6fb; border-radius: 18px; background: #f8faff;
+    }
+    .execution-head h2 { margin: 0; color: var(--navy); font-size: 24px; }
+    .execution-key { min-width: 180px; text-align: center; }
+    .execution-key small, .execution-key strong { display: block; }
+    .execution-key small { color: var(--muted); font-weight: 800; }
+    .execution-key strong { overflow-wrap: anywhere; color: var(--blue-dark); font-size: 28px; }
+    .execution-progress { color: var(--muted); font-weight: 900; text-align: center; }
+    .viewer-controls { margin: 14px 0; }
+    .viewer-panel { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+    .viewer-panel input {
+      flex: 1 1 240px; min-height: 43px; padding: 9px 12px;
+      border: 1px solid #cfd7e5; border-radius: 11px;
+    }
+    .viewer-position { min-width: 90px; color: var(--muted); text-align: center; font-weight: 800; }
+    .key-list { display: flex; flex-wrap: wrap; gap: 7px; max-height: 180px; overflow: auto; padding: 2px; }
+    .list-panel { display: grid; width: 100%; gap: 10px; }
+    .list-panel input {
+      width: 100%; min-height: 43px; padding: 9px 12px;
+      border: 1px solid #cfd7e5; border-radius: 11px;
+    }
+    .key-list button {
+      padding: 8px 11px; border: 1px solid #cfd7e5; border-radius: 10px;
+      color: var(--navy); background: #fff; font-weight: 800;
+    }
+    .key-list button.selected { border-color: var(--blue); color: #fff; background: var(--blue); }
+    .key-list button small { margin-left: 5px; opacity: .75; }
+    .viewer-status { margin: 10px 0; color: var(--muted); font-size: 14px; font-weight: 800; }
+    .record-list { display: grid; gap: 12px; }
+    .record-card { overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+    .record-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 10px 13px; color: var(--navy); background: #edf2ff; font-weight: 900;
+    }
+    .record-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .record-field { min-width: 0; padding: 13px; border-top: 1px solid var(--line); }
+    .record-field:nth-child(odd) { border-right: 1px solid var(--line); }
+    .record-field small { display: block; margin-bottom: 3px; color: var(--muted); font-weight: 800; }
+    .record-field strong {
+      display: block; overflow-wrap: anywhere; color: var(--navy); font-size: 22px;
+      line-height: 1.45; white-space: pre-wrap; word-break: break-word;
+    }
+    .table-wrap { overflow: auto; max-height: 390px; border: 1px solid var(--line); border-radius: 14px; }
+    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; white-space: nowrap; }
+    th, td {
+      max-width: 310px; overflow: hidden; padding: 11px 13px; border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line); text-align: left; text-overflow: ellipsis;
+    }
+    th:last-child, td:last-child { border-right: 0; }
+    tbody tr:last-child td { border-bottom: 0; }
+    th { position: sticky; top: 0; z-index: 1; color: var(--navy); background: #eef2f8; font-weight: 900; }
+    tbody tr:nth-child(even) td { background: #fafbfd; }
+    .footer-actions {
+      display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding-top: 4px;
+    }
+    .footer-actions span { margin-right: auto; color: var(--muted); font-size: 13px; }
+    .hidden { display: none !important; }
+    @media (max-width: 1000px) {
+      .workflow { grid-template-columns: repeat(3,1fr); }
+      .settings-summary { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    }
+    @media (max-width: 760px) {
+      main { width: min(100% - 24px,1180px); padding-top: 28px; }
+      .hero { align-items: flex-start; flex-direction: column; }
+      .privacy-notice { padding: 18px; }
+      .security-head { align-items: stretch; flex-direction: column; }
+      .security-head .secondary { width: 100%; }
+      .privacy-line { font-size: 17px; }
+      .workflow, .control-grid, .stat-grid, .settings-summary, .selection-settings, .choice-grid, .mode-grid, .record-fields { grid-template-columns: 1fr; }
+      .panel-head, .panel-body { padding: 18px; }
+      .file-summary { align-items: flex-start; flex-wrap: wrap; }
+      .summary-actions { width: 100%; margin-left: 0; }
+      .summary-actions button { width: 100%; }
+      .footer-actions { align-items: stretch; flex-direction: column; }
+      .footer-actions span { margin: 0; }
+      .execution-head { grid-template-columns: 1fr; align-items: stretch; }
+      .execution-key, .execution-progress { text-align: left; }
+      .record-field:nth-child(odd) { border-right: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="../../index.html#school-work">
+      <span class="brand-mark" aria-hidden="true">X</span>
+      <span class="brand-copy"><strong>엑셀 개인자료 조회기</strong><small>학교 업무용 웹툴</small></span>
+    </a>
+    <a class="back-link" href="../../index.html#school-work">웹툴 모음으로</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">EXCEL PERSONAL VIEWER</p>
+        <h1>필요한 개인 자료만<br />빠르고 또렷하게</h1>
+        <p>파일 업로드부터 개인별 확인까지, 현재 단계와 설정 상태를 한눈에 보여줍니다.</p>
+      </div>
+      <span id="stepBadge" class="step-badge">현재 1단계 · 파일 업로드</span>
+    </section>
+
+    <section class="privacy-notice" aria-label="개인정보 처리 안내">
+      <div class="security-head">
+        <h2>개인정보 보호 안내</h2>
+        <button id="clearDataBtn" class="secondary" type="button">자료 초기화</button>
+      </div>
+      <p class="privacy-line"><span aria-hidden="true">✓</span>이 웹툴은 엑셀 자료를 서버로 업로드하지 않습니다.</p>
+      <p class="privacy-line"><span aria-hidden="true">✓</span>업로드한 엑셀 자료는 현재 PC/브라우저 안에서만 처리되며 외부로 전송되지 않습니다.</p>
+      <p class="privacy-line"><span aria-hidden="true">!</span>공용 PC에서는 사용 후 반드시 자료 초기화 버튼을 눌러주세요.</p>
+      <label class="storage-option">
+        <input id="keepOnRefreshCheckbox" type="checkbox" />
+        <span>
+          <strong>새로고침 후에도 이 브라우저에 자료 유지</strong>
+          <small id="storagePolicyText">기본값은 꺼짐입니다. 현재 자료는 메모리에만 보관되며 새로고침하면 사라집니다.</small>
+        </span>
+      </label>
+      <div id="resetNotice" class="reset-notice hidden" role="status"></div>
+    </section>
+
+    <div id="settingsView">
+      <ol class="workflow" aria-label="설정 순서">
+        <li class="active" data-step="1"><b>1</b> 파일 업로드</li>
+        <li data-step="2"><b>2</b> 제목 행 확인</li>
+        <li data-step="3"><b>3</b> key 열 선택</li>
+        <li data-step="4"><b>4</b> 표시 열 선택</li>
+        <li data-step="5"><b>5</b> 표시 방식 선택</li>
+        <li data-step="6"><b>6</b> 시작</li>
+      </ol>
+
+      <section class="panel" aria-labelledby="upload-title">
+      <div class="panel-head">
+        <div><h2 id="upload-title">엑셀 자료 불러오기</h2><p>파일의 첫 번째 시트를 브라우저 안에서 읽습니다.</p></div>
+        <span id="statusPill" class="status-pill" role="status">파일을 기다리는 중</span>
+      </div>
+      <div class="panel-body">
+        <div id="errorBox" class="error-box hidden" role="alert"></div>
+        <div id="dropzone" class="dropzone">
+          <div>
+            <div class="drop-icon" aria-hidden="true">↑</div>
+            <h3>파일을 여기에 끌어놓으세요</h3>
+            <p>또는 아래 버튼을 눌러 PC에 있는 파일을 선택하세요.</p>
+            <button id="chooseFileBtn" class="primary" type="button">엑셀 파일 선택</button>
+            <input id="fileInput" class="file-input" type="file" accept=".xlsx,.xls,.csv" />
+            <p class="support-note">지원 형식: .xlsx, .xls, .csv · 최대 25MB</p>
+          </div>
+        </div>
+
+        <div id="result" class="result hidden">
+          <div class="file-summary">
+            <span id="fileType" class="file-type">XLSX</span>
+            <div class="file-info"><strong id="fileName"></strong><span id="fileMeta"></span></div>
+            <div class="summary-actions"><button id="resetBtn" class="text-button" type="button">다른 파일 선택</button></div>
+          </div>
+          <div class="control-grid">
+            <div class="field">
+              <label for="headerRowInput">제목 행 번호</label>
+              <input id="headerRowInput" type="number" min="1" max="1" value="1" inputmode="numeric" />
+              <small>기본값은 1행입니다. 숫자를 입력하거나 화살표로 바꿀 수 있습니다.</small>
+              <button id="confirmHeaderBtn" class="secondary" type="button">이 제목 행 사용</button>
+            </div>
+            <div id="analysisNote" class="analysis-note" aria-live="polite"></div>
+          </div>
+          <div class="stat-grid" aria-label="파일 분석 결과">
+            <div class="stat-card"><strong id="rowCount">0</strong><span>데이터 행</span></div>
+            <div class="stat-card"><strong id="columnCount">0</strong><span>인식한 열</span></div>
+            <div class="stat-card"><strong id="sheetName">-</strong><span>첫 번째 시트</span></div>
+          </div>
+          <section class="settings-summary" aria-label="현재 선택 요약">
+            <div class="summary-item"><small>key 열</small><strong id="summaryKeyColumn">미선택</strong></div>
+            <div class="summary-item"><small>표시 열</small><strong id="summaryDisplayCount">0개</strong></div>
+            <div class="summary-item"><small>표시 방식</small><strong id="summaryDisplayMode">순서대로 보기</strong></div>
+            <div class="summary-item"><small>전체 데이터 행</small><strong id="summaryDataRows">0행</strong></div>
+          </section>
+          <section aria-labelledby="columns-title">
+            <div class="section-title"><h3 id="columns-title">열 제목 목록</h3><span id="columnSummary"></span></div>
+            <ol id="columnList" class="column-list"></ol>
+          </section>
+          <section aria-labelledby="selection-title">
+            <div class="section-title">
+              <h3 id="selection-title">조회할 열 설정</h3>
+              <span>key 열은 표시 열에 항상 포함됩니다.</span>
+            </div>
+            <div class="selection-settings">
+              <div class="field">
+                <label for="keyColumnSelect">key 열</label>
+                <select id="keyColumnSelect">
+                  <option value="">key 열을 선택하세요</option>
+                </select>
+                <small>이름, 학번처럼 개인을 찾을 때 사용할 열을 하나 고릅니다.</small>
+              </div>
+              <div class="selection-panel">
+                <div class="choice-toolbar">
+                  <strong>화면에 표시할 열</strong>
+                  <span id="selectedCount" class="selected-count">0개 선택</span>
+                  <button id="selectAllBtn" class="secondary" type="button">전체 선택</button>
+                  <button id="clearAllBtn" class="secondary" type="button">전체 해제</button>
+                  <button id="confirmDisplayBtn" class="secondary" type="button">선택 완료</button>
+                </div>
+                <div id="displayColumnList" class="choice-grid"></div>
+              </div>
+            </div>
+          </section>
+          <section aria-labelledby="mode-title">
+            <div class="section-title">
+              <h3 id="mode-title">개인 자료 보기 방식</h3>
+              <span>한 가지 방식을 선택하세요.</span>
+            </div>
+            <div class="mode-grid">
+              <label class="mode-card selected">
+                <input type="radio" name="displayMode" value="sequential" checked />
+                <span><strong>순서대로 보기</strong><small>이전·다음 버튼으로 한 행씩 이동합니다.</small></span>
+              </label>
+              <label class="mode-card">
+                <input type="radio" name="displayMode" value="direct" />
+                <span><strong>key 직접 입력</strong><small>입력한 key와 일치하는 자료를 찾습니다.</small></span>
+              </label>
+              <label class="mode-card">
+                <input type="radio" name="displayMode" value="list" />
+                <span><strong>key 목록 클릭</strong><small>key 목록에서 원하는 값을 눌러 찾습니다.</small></span>
+              </label>
+            </div>
+          </section>
+          <section aria-labelledby="preview-title">
+            <div class="section-title"><h3 id="preview-title">데이터 미리보기</h3><span>제목 아래 최대 5행</span></div>
+            <div class="table-wrap">
+              <table><thead id="previewHead"></thead><tbody id="previewBody"></tbody></table>
+            </div>
+          </section>
+          <div class="footer-actions">
+            <span>파일 내용은 메모리에만 있으며 이 단계에서는 별도로 저장하지 않습니다.</span>
+            <button id="startBtn" class="primary" type="button">선택한 설정으로 시작</button>
+          </div>
+          <div id="startMessage" class="start-message hidden" role="alert"></div>
+        </div>
+      </div>
+      </section>
+    </div>
+
+    <section id="viewerSection" class="execution-view hidden" aria-labelledby="viewer-title">
+      <div class="execution-head">
+        <div>
+          <p class="eyebrow">PERSONAL DATA VIEW</p>
+          <h2 id="viewer-title">개인별 자료 확인</h2>
+        </div>
+        <div class="execution-key">
+          <small>현재 key</small>
+          <strong id="currentKeyValue">—</strong>
+        </div>
+        <div>
+          <div id="executionProgress" class="execution-progress">0건</div>
+          <button id="backToSettingsBtn" class="secondary" type="button">설정으로 돌아가기</button>
+        </div>
+      </div>
+      <div class="viewer-section">
+        <div class="section-title">
+          <h3>조회 결과</h3>
+          <span id="viewerModeLabel"></span>
+        </div>
+        <div class="viewer-controls">
+          <div id="sequentialPanel" class="viewer-panel">
+            <button id="prevRecordBtn" class="secondary" type="button">이전</button>
+            <span id="viewerPosition" class="viewer-position">0 / 0</span>
+            <button id="nextRecordBtn" class="secondary" type="button">다음</button>
+          </div>
+          <div id="directPanel" class="viewer-panel hidden">
+            <input id="keySearchInput" type="text" placeholder="찾을 key 값을 입력하세요" />
+            <button id="keySearchBtn" class="primary" type="button">검색</button>
+          </div>
+          <div id="listPanel" class="viewer-panel hidden">
+            <div class="list-panel">
+              <input id="keyListFilterInput" type="search" placeholder="key 목록 필터" />
+              <div id="keyList" class="key-list"></div>
+            </div>
+          </div>
+        </div>
+        <div id="viewerStatus" class="viewer-status" role="status"></div>
+        <div id="recordList" class="record-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+      const MAX_FILE_SIZE = 25 * 1024 * 1024;
+      const PREVIEW_ROWS = 5;
+      const MAX_KEY_LIST_ITEMS = 500;
+      const STORAGE_KEY = "excel-personal-viewer-state-v1";
+      const MAX_STORAGE_TEXT_LENGTH = 3_500_000;
+      const state = {
+        file: null,
+        extension: "",
+        rows: [],
+        sheetName: "",
+        headerIndex: 0,
+        columns: [],
+        keyColumnIndex: null,
+        displayColumnIndexes: new Set(),
+        displayMode: "sequential",
+        sequentialIndex: 0,
+        viewerStarted: false,
+        activeListKey: null,
+        keyListFilter: "",
+        persistenceEnabled: false,
+        titleReviewed: false,
+        displayReviewed: false,
+        modeReviewed: false
+      };
+      const els = Object.fromEntries([
+        "chooseFileBtn","fileInput","dropzone","result","errorBox","statusPill","fileType","fileName","stepBadge",
+        "clearDataBtn","keepOnRefreshCheckbox","storagePolicyText","resetNotice",
+        "fileMeta","resetBtn","headerRowInput","confirmHeaderBtn","analysisNote","rowCount","columnCount","sheetName",
+        "summaryKeyColumn","summaryDisplayCount","summaryDisplayMode","summaryDataRows",
+        "columnSummary","columnList","keyColumnSelect","selectedCount","selectAllBtn","clearAllBtn",
+        "confirmDisplayBtn",
+        "displayColumnList","previewHead","previewBody","startBtn","startMessage","settingsView","viewerSection",
+        "currentKeyValue","executionProgress","backToSettingsBtn",
+        "viewerModeLabel","sequentialPanel","prevRecordBtn","viewerPosition","nextRecordBtn",
+        "directPanel","keySearchInput","keySearchBtn","listPanel","keyListFilterInput","keyList",
+        "viewerStatus","recordList"
+      ].map((id) => [id, document.getElementById(id)]));
+
+      function showError(message) {
+        els.errorBox.textContent = message;
+        els.errorBox.classList.remove("hidden");
+        els.statusPill.textContent = "확인이 필요합니다";
+        els.statusPill.classList.remove("ready");
+      }
+      function clearError() { els.errorBox.textContent = ""; els.errorBox.classList.add("hidden"); }
+      function showResetNotice(message) {
+        els.resetNotice.textContent = message;
+        els.resetNotice.classList.remove("hidden");
+      }
+      function hideResetNotice() {
+        els.resetNotice.textContent = "";
+        els.resetNotice.classList.add("hidden");
+      }
+      function updateStoragePolicyText() {
+        if (els.keepOnRefreshCheckbox.checked) {
+          els.storagePolicyText.textContent =
+            "사용자가 직접 켰습니다. 자료와 설정을 이 브라우저 저장소에 보관하며, 자료 초기화 버튼으로 모두 삭제할 수 있습니다.";
+        } else {
+          els.storagePolicyText.textContent =
+            "기본값은 꺼짐입니다. 현재 자료는 메모리에만 보관되며 새로고침하면 사라집니다.";
+        }
+      }
+      function removeStoredState() {
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (error) {
+          console.warn("브라우저 저장 자료를 삭제하지 못했습니다.", error);
+        }
+      }
+      function savePersistentState() {
+        state.persistenceEnabled = els.keepOnRefreshCheckbox.checked;
+        updateStoragePolicyText();
+        if (!state.persistenceEnabled || !state.file || !state.rows.length) {
+          removeStoredState();
+          return;
+        }
+        const payload = {
+          version: 1,
+          file: {
+            name: state.file.name || "복원된 자료",
+            size: Number(state.file.size) || 0
+          },
+          extension: state.extension,
+          rows: state.rows,
+          sheetName: state.sheetName,
+          headerIndex: state.headerIndex,
+          keyColumnIndex: state.keyColumnIndex,
+          displayColumnIndexes: [...state.displayColumnIndexes],
+          displayMode: state.displayMode,
+          titleReviewed: state.titleReviewed,
+          displayReviewed: state.displayReviewed,
+          modeReviewed: state.modeReviewed
+        };
+        try {
+          const text = JSON.stringify(payload);
+          if (text.length > MAX_STORAGE_TEXT_LENGTH) {
+            throw new Error("브라우저 저장 한도를 넘는 큰 자료입니다.");
+          }
+          localStorage.setItem(STORAGE_KEY, text);
+          showResetNotice("새로고침 유지가 켜졌습니다. 사용 후에는 반드시 자료 초기화를 눌러주세요.");
+        } catch (error) {
+          state.persistenceEnabled = false;
+          els.keepOnRefreshCheckbox.checked = false;
+          updateStoragePolicyText();
+          removeStoredState();
+          showResetNotice(error instanceof Error ? error.message : "브라우저에 자료를 저장하지 못했습니다.");
+        }
+      }
+      function restorePersistentState() {
+        let saved;
+        try {
+          const text = localStorage.getItem(STORAGE_KEY);
+          if (!text) return;
+          saved = JSON.parse(text);
+        } catch (error) {
+          removeStoredState();
+          return;
+        }
+        if (!saved || saved.version !== 1 || !Array.isArray(saved.rows) || !saved.rows.length) {
+          removeStoredState();
+          return;
+        }
+        Object.assign(state, {
+          file: {
+            name: valueText(saved.file?.name) || "복원된 자료",
+            size: Number(saved.file?.size) || 0
+          },
+          extension: valueText(saved.extension) || "xlsx",
+          rows: saved.rows,
+          sheetName: valueText(saved.sheetName) || "첫 번째 시트",
+          headerIndex: Number.isInteger(saved.headerIndex) ? saved.headerIndex : 0,
+          columns: [],
+          keyColumnIndex: Number.isInteger(saved.keyColumnIndex) ? saved.keyColumnIndex : null,
+          displayColumnIndexes: new Set(
+            Array.isArray(saved.displayColumnIndexes) ? saved.displayColumnIndexes.filter(Number.isInteger) : []
+          ),
+          displayMode: ["sequential", "direct", "list"].includes(saved.displayMode)
+            ? saved.displayMode
+            : "sequential",
+          sequentialIndex: 0,
+          viewerStarted: false,
+          activeListKey: null,
+          keyListFilter: "",
+          persistenceEnabled: true,
+          titleReviewed: saved.titleReviewed !== false,
+          displayReviewed: saved.displayReviewed !== false && Array.isArray(saved.displayColumnIndexes) && saved.displayColumnIndexes.length > 0,
+          modeReviewed: saved.modeReviewed !== false
+        });
+        state.headerIndex = Math.min(state.rows.length - 1, Math.max(0, state.headerIndex));
+        els.keepOnRefreshCheckbox.checked = true;
+        updateStoragePolicyText();
+        els.headerRowInput.max = String(state.rows.length);
+        els.headerRowInput.value = String(state.headerIndex + 1);
+        renderAnalysis();
+        els.fileType.textContent = state.extension.toLocaleUpperCase();
+        els.fileName.textContent = state.file.name;
+        els.dropzone.classList.add("hidden");
+        els.result.classList.remove("hidden");
+        els.statusPill.textContent = "저장 자료 복원 완료";
+        els.statusPill.classList.add("ready");
+        updateModeCards();
+        updateTeacherUi();
+        showResetNotice("이 브라우저에 저장된 자료를 복원했습니다.");
+      }
+      function formatBytes(bytes) {
+        if (bytes < 1024) return `${bytes} B`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+        return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+      }
+      function displayModeLabel(mode = state.displayMode) {
+        return {
+          sequential: "순서대로 보기",
+          direct: "key 직접 입력",
+          list: "key 목록 클릭"
+        }[mode] || "미선택";
+      }
+      function calculateCurrentStep() {
+        if (!state.file || !state.rows.length) return 1;
+        if (!state.titleReviewed) return 2;
+        if (state.keyColumnIndex == null) return 3;
+        if (!state.displayReviewed) return 4;
+        if (!state.modeReviewed) return 5;
+        return 6;
+      }
+      function updateTeacherUi() {
+        const currentStep = calculateCurrentStep();
+        const stepLabels = {
+          1: "파일 업로드",
+          2: "제목 행 확인",
+          3: "key 열 선택",
+          4: "표시 열 선택",
+          5: "표시 방식 선택",
+          6: "시작"
+        };
+        els.stepBadge.textContent = `현재 ${currentStep}단계 · ${stepLabels[currentStep]}`;
+        document.querySelectorAll(".workflow [data-step]").forEach((item) => {
+          item.classList.toggle("active", Number(item.dataset.step) === currentStep);
+        });
+        const keyColumn = state.columns.find((column) => column.index === state.keyColumnIndex);
+        els.summaryKeyColumn.textContent = keyColumn?.title || "미선택";
+        els.summaryKeyColumn.title = keyColumn?.title || "";
+        els.summaryDisplayCount.textContent = `${state.displayColumnIndexes.size.toLocaleString("ko-KR")}개`;
+        els.summaryDisplayMode.textContent = displayModeLabel();
+        els.summaryDataRows.textContent = `${getDataRows().length.toLocaleString("ko-KR")}행`;
+      }
+      function valueText(value) { return value == null ? "" : String(value).trim(); }
+      function isRowEmpty(row) { return !Array.isArray(row) || row.every((value) => valueText(value) === ""); }
+      function trimRows(rows) {
+        const normalized = rows.map((row) => Array.isArray(row) ? row : []);
+        let last = normalized.length - 1;
+        while (last >= 0 && isRowEmpty(normalized[last])) last -= 1;
+        return normalized.slice(0, last + 1);
+      }
+      function decodeCsv(buffer) {
+        const bytes = new Uint8Array(buffer);
+        if (bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf) return new TextDecoder("utf-8").decode(bytes.subarray(3));
+        try { return new TextDecoder("utf-8", { fatal: true }).decode(bytes); }
+        catch {
+          try { return new TextDecoder("euc-kr").decode(bytes); }
+          catch { return new TextDecoder().decode(bytes); }
+        }
+      }
+      function columnLetter(index) {
+        let value = index + 1; let output = "";
+        while (value > 0) { value -= 1; output = String.fromCharCode(65 + value % 26) + output; value = Math.floor(value / 26); }
+        return output;
+      }
+      function getColumnCount(rows) {
+        return rows.reduce((max, row) => {
+          let lastFilled = -1;
+          row.forEach((value, index) => {
+            if (valueText(value) !== "") lastFilled = index;
+          });
+          return Math.max(max, lastFilled + 1);
+        }, 0);
+      }
+      function buildColumns(columnCount) {
+        const headerRow = state.rows[state.headerIndex] || [];
+        return Array.from({ length: columnCount }, (_, index) => ({
+          index,
+          letter: columnLetter(index),
+          title: valueText(headerRow[index]) || `열${index + 1}`
+        }));
+      }
+      function getDataRows() {
+        return state.rows
+          .slice(state.headerIndex + 1)
+          .map((row, offset) => ({
+            row,
+            sourceRowNumber: state.headerIndex + offset + 2
+          }))
+          .filter(({ row }) => !isRowEmpty(row));
+      }
+      function hideViewer() {
+        state.viewerStarted = false;
+        state.sequentialIndex = 0;
+        state.activeListKey = null;
+        state.keyListFilter = "";
+        els.settingsView.classList.remove("hidden");
+        els.viewerSection.classList.add("hidden");
+        els.currentKeyValue.textContent = "—";
+        els.executionProgress.textContent = "0건";
+        els.keyListFilterInput.value = "";
+        els.viewerStatus.textContent = "";
+        els.recordList.replaceChildren();
+        els.keyList.replaceChildren();
+      }
+      function hideStartMessage() {
+        els.startMessage.textContent = "";
+        els.startMessage.classList.add("hidden");
+        els.startMessage.classList.remove("success");
+        hideViewer();
+      }
+      function updateSelectedCount() {
+        els.selectedCount.textContent = `${state.displayColumnIndexes.size.toLocaleString("ko-KR")}개 선택`;
+        updateTeacherUi();
+      }
+      function renderSelectionControls(columns) {
+        state.columns = columns;
+        state.displayColumnIndexes = new Set(
+          [...state.displayColumnIndexes].filter((index) => index >= 0 && index < columns.length)
+        );
+        if (state.keyColumnIndex != null && state.keyColumnIndex >= columns.length) {
+          state.keyColumnIndex = null;
+        }
+        if (state.keyColumnIndex != null) {
+          state.displayColumnIndexes.add(state.keyColumnIndex);
+        }
+
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = "key 열을 선택하세요";
+        const keyOptions = columns.map((column) => {
+          const option = document.createElement("option");
+          option.value = String(column.index);
+          option.textContent = `${column.letter}열 · ${column.title}`;
+          return option;
+        });
+        els.keyColumnSelect.replaceChildren(placeholder, ...keyOptions);
+        els.keyColumnSelect.value = state.keyColumnIndex == null ? "" : String(state.keyColumnIndex);
+
+        els.displayColumnList.replaceChildren(...columns.map((column) => {
+          const label = document.createElement("label");
+          label.className = "choice-card";
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.value = String(column.index);
+          checkbox.checked = state.displayColumnIndexes.has(column.index);
+          checkbox.disabled = column.index === state.keyColumnIndex;
+          label.classList.toggle("selected", checkbox.checked);
+          label.classList.toggle("key-column", checkbox.disabled);
+
+          const text = document.createElement("span");
+          const letter = document.createElement("small");
+          letter.textContent = `${column.letter}열`;
+          text.append(letter, document.createTextNode(column.title));
+          label.append(checkbox, text);
+
+          checkbox.addEventListener("change", () => {
+            if (checkbox.checked) state.displayColumnIndexes.add(column.index);
+            else state.displayColumnIndexes.delete(column.index);
+            state.displayReviewed = false;
+            label.classList.toggle("selected", checkbox.checked);
+            updateSelectedCount();
+            hideStartMessage();
+            savePersistentState();
+          });
+          return label;
+        }));
+        updateSelectedCount();
+        hideStartMessage();
+        updateTeacherUi();
+      }
+      function renderTable(columns, dataRows) {
+        const head = document.createElement("tr");
+        const rowNumberHead = document.createElement("th");
+        rowNumberHead.textContent = "행";
+        head.append(rowNumberHead);
+        columns.forEach((column) => {
+          const th = document.createElement("th");
+          th.textContent = column.title;
+          th.title = `${column.letter}열 · ${column.title}`;
+          head.append(th);
+        });
+        els.previewHead.replaceChildren(head);
+        const rendered = dataRows.slice(0, PREVIEW_ROWS).map(({ row, sourceRowNumber }) => {
+          const tr = document.createElement("tr");
+          const rowNumber = document.createElement("td");
+          rowNumber.textContent = String(sourceRowNumber);
+          tr.append(rowNumber);
+          columns.forEach((column) => {
+            const td = document.createElement("td");
+            const text = valueText(row[column.index]);
+            td.textContent = text;
+            td.title = text;
+            tr.append(td);
+          });
+          return tr;
+        });
+        if (!rendered.length) {
+          const tr = document.createElement("tr");
+          const td = document.createElement("td");
+          td.colSpan = Math.max(columns.length + 1, 1);
+          td.textContent = "선택한 제목 행 아래에 데이터가 없습니다.";
+          tr.append(td);
+          rendered.push(tr);
+        }
+        els.previewBody.replaceChildren(...rendered);
+      }
+      function keyValueFor(entry) {
+        return valueText(entry.row[state.keyColumnIndex]);
+      }
+      function keyLabel(value) {
+        return value === "" ? "미입력" : value;
+      }
+      function selectedColumns() {
+        return state.columns.filter((column) => state.displayColumnIndexes.has(column.index));
+      }
+      function renderRecords(entries, statusText) {
+        els.viewerStatus.textContent = statusText;
+        els.currentKeyValue.textContent = entries.length ? keyLabel(keyValueFor(entries[0])) : "—";
+        els.executionProgress.textContent = `${entries.length.toLocaleString("ko-KR")}건 표시`;
+        const columns = selectedColumns();
+        els.recordList.replaceChildren(...entries.map((entry) => {
+          const card = document.createElement("article");
+          card.className = "record-card";
+          const head = document.createElement("div");
+          head.className = "record-head";
+          const title = document.createElement("span");
+          title.textContent = `key: ${keyLabel(keyValueFor(entry))}`;
+          const rowNumber = document.createElement("small");
+          rowNumber.textContent = `엑셀 ${entry.sourceRowNumber}행`;
+          head.append(title, rowNumber);
+
+          const fields = document.createElement("div");
+          fields.className = "record-fields";
+          columns.forEach((column) => {
+            const field = document.createElement("div");
+            field.className = "record-field";
+            const label = document.createElement("small");
+            label.textContent = column.title;
+            const value = document.createElement("strong");
+            value.textContent = valueText(entry.row[column.index]) || "미입력";
+            field.append(label, value);
+            fields.append(field);
+          });
+          card.append(head, fields);
+          return card;
+        }));
+      }
+      function renderSequentialRecord() {
+        const rows = getDataRows();
+        if (!rows.length) {
+          els.viewerPosition.textContent = "0 / 0";
+          els.prevRecordBtn.disabled = true;
+          els.nextRecordBtn.disabled = true;
+          renderRecords([], "표시할 데이터 행이 없습니다.");
+          return;
+        }
+        state.sequentialIndex = Math.min(rows.length - 1, Math.max(0, state.sequentialIndex));
+        els.viewerPosition.textContent = `${state.sequentialIndex + 1} / ${rows.length}`;
+        els.prevRecordBtn.disabled = state.sequentialIndex === 0;
+        els.nextRecordBtn.disabled = state.sequentialIndex === rows.length - 1;
+        renderRecords(
+          [rows[state.sequentialIndex]],
+          `${state.sequentialIndex + 1}번째 자료를 표시하고 있습니다.`
+        );
+        els.executionProgress.textContent = `${state.sequentialIndex + 1} / ${rows.length}`;
+      }
+      function findKeyRecords() {
+        const query = valueText(els.keySearchInput.value);
+        const matches = getDataRows().filter((entry) => keyValueFor(entry) === query);
+        if (!matches.length) {
+          renderRecords([], "해당 key를 찾을 수 없습니다.");
+          return;
+        }
+        const duplicateText = matches.length > 1 ? ` 중복 key ${matches.length}건을 모두 표시합니다.` : "";
+        renderRecords(matches, `“${keyLabel(query)}” 검색 결과 ${matches.length}건.${duplicateText}`);
+      }
+      function keyGroups() {
+        const groups = new Map();
+        getDataRows().forEach((entry) => {
+          const key = keyValueFor(entry);
+          if (!groups.has(key)) groups.set(key, []);
+          groups.get(key).push(entry);
+        });
+        return groups;
+      }
+      function renderKeyList() {
+        const groups = keyGroups();
+        const filter = state.keyListFilter.toLocaleLowerCase("ko-KR");
+        const visibleGroups = [...groups.entries()].filter(([key]) =>
+          keyLabel(key).toLocaleLowerCase("ko-KR").includes(filter)
+        );
+        const renderedGroups = visibleGroups.slice(0, MAX_KEY_LIST_ITEMS);
+        els.keyList.replaceChildren(...renderedGroups.map(([key, entries]) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.classList.toggle("selected", key === state.activeListKey);
+          button.append(document.createTextNode(keyLabel(key)));
+          if (entries.length > 1) {
+            const count = document.createElement("small");
+            count.textContent = `${entries.length}건`;
+            button.append(count);
+          }
+          button.addEventListener("click", () => {
+            state.activeListKey = key;
+            renderKeyList();
+            const duplicateText = entries.length > 1 ? ` 중복 key ${entries.length}건을 모두 표시합니다.` : "";
+            renderRecords(entries, `“${keyLabel(key)}” ${entries.length}건.${duplicateText}`);
+          });
+          return button;
+        }));
+        if (!groups.size) {
+          renderRecords([], "목록에 표시할 key가 없습니다.");
+        } else if (!visibleGroups.length) {
+          renderRecords([], "필터와 일치하는 key가 없습니다.");
+        } else if (state.activeListKey == null) {
+          els.viewerStatus.textContent = visibleGroups.length > MAX_KEY_LIST_ITEMS
+            ? `key가 많아 처음 ${MAX_KEY_LIST_ITEMS.toLocaleString("ko-KR")}개만 표시합니다. 필터를 사용해 좁혀주세요.`
+            : "목록에서 key를 선택하세요. 중복 key는 건수로 표시됩니다.";
+        }
+      }
+      function updateModeCards() {
+        document.querySelectorAll('input[name="displayMode"]').forEach((radio) => {
+          radio.checked = radio.value === state.displayMode;
+          radio.closest(".mode-card")?.classList.toggle("selected", radio.checked);
+        });
+      }
+      function updateViewerMode() {
+        updateModeCards();
+        els.sequentialPanel.classList.toggle("hidden", state.displayMode !== "sequential");
+        els.directPanel.classList.toggle("hidden", state.displayMode !== "direct");
+        els.listPanel.classList.toggle("hidden", state.displayMode !== "list");
+        els.viewerModeLabel.textContent = displayModeLabel();
+        if (!state.viewerStarted) return;
+        els.recordList.replaceChildren();
+        els.viewerStatus.textContent = "";
+        if (state.displayMode === "sequential") {
+          state.sequentialIndex = 0;
+          renderSequentialRecord();
+        } else if (state.displayMode === "direct") {
+          els.currentKeyValue.textContent = "—";
+          els.executionProgress.textContent = "검색 대기";
+          els.viewerStatus.textContent = "key 값을 입력하고 찾기 버튼을 누르세요. 빈 key는 입력란을 비운 채 찾을 수 있습니다.";
+          els.keySearchInput.focus();
+        } else {
+          state.activeListKey = null;
+          state.keyListFilter = "";
+          els.keyListFilterInput.value = "";
+          els.currentKeyValue.textContent = "—";
+          els.executionProgress.textContent = "선택 대기";
+          renderKeyList();
+          if (getDataRows().length) els.viewerStatus.textContent = "목록에서 key를 선택하세요. 중복 key는 건수로 표시됩니다.";
+        }
+      }
+      function renderAnalysis() {
+        const columnCount = getColumnCount(state.rows);
+        const columns = buildColumns(columnCount);
+        const dataRows = getDataRows();
+        els.rowCount.textContent = dataRows.length.toLocaleString("ko-KR");
+        els.columnCount.textContent = columnCount.toLocaleString("ko-KR");
+        els.sheetName.textContent = state.sheetName;
+        els.sheetName.title = state.sheetName;
+        els.fileMeta.textContent =
+          `${formatBytes(state.file.size)} · 전체 ${state.rows.length.toLocaleString("ko-KR")}행 · 첫 번째 시트 “${state.sheetName}”`;
+        els.analysisNote.textContent =
+          `${state.headerIndex + 1}행을 제목 행으로 사용하고, 그 아래 ${dataRows.length.toLocaleString("ko-KR")}행을 데이터로 처리합니다.`;
+        els.columnSummary.textContent = `${columns.length.toLocaleString("ko-KR")}개`;
+        els.columnList.replaceChildren(...columns.map((column) => {
+          const item = document.createElement("li");
+          const letter = document.createElement("small");
+          letter.textContent = `${column.letter}열`;
+          item.append(letter, document.createTextNode(column.title));
+          return item;
+        }));
+        renderSelectionControls(columns);
+        renderTable(columns, dataRows);
+        updateTeacherUi();
+      }
+      function updateHeaderRow(options = {}) {
+        if (!state.rows.length) return;
+        const rawValue = Number(els.headerRowInput.value);
+        if (options.clamp) {
+          const nextValue = Number.isFinite(rawValue) ? Math.trunc(rawValue) : 1;
+          els.headerRowInput.value = String(Math.min(state.rows.length, Math.max(1, nextValue)));
+        }
+        const rowNumber = Number(els.headerRowInput.value);
+        if (!Number.isInteger(rowNumber) || rowNumber < 1 || rowNumber > state.rows.length) return;
+        if (state.headerIndex !== rowNumber - 1) {
+          state.keyColumnIndex = null;
+          state.displayColumnIndexes = new Set();
+          state.titleReviewed = false;
+          state.displayReviewed = false;
+          state.modeReviewed = false;
+        }
+        state.headerIndex = rowNumber - 1;
+        renderAnalysis();
+        updateTeacherUi();
+        savePersistentState();
+      }
+      function validateSignature(extension, bytes) {
+        if (extension === "xlsx" && !(bytes[0] === 0x50 && bytes[1] === 0x4b)) {
+          throw new Error("올바른 .xlsx 파일이 아닙니다. 파일 형식이나 확장자를 확인해 주세요.");
+        }
+        if (extension === "xls" && !(
+          bytes[0] === 0xd0 && bytes[1] === 0xcf && bytes[2] === 0x11 && bytes[3] === 0xe0
+        )) {
+          throw new Error("올바른 .xls 파일이 아닙니다. 파일 형식이나 확장자를 확인해 주세요.");
+        }
+      }
+      async function handleFile(file) {
+        clearError();
+        if (!file) return;
+        const extension = file.name.split(".").pop().toLocaleLowerCase();
+        if (!["xlsx","xls","csv"].includes(extension)) { showError(".xlsx, .xls, .csv 파일만 선택할 수 있습니다."); return; }
+        if (file.size === 0) { showError("파일이 비어 있습니다. 내용이 있는 파일을 선택해 주세요."); return; }
+        if (file.size > MAX_FILE_SIZE) { showError("파일이 25MB보다 큽니다. 필요한 열과 행만 남긴 뒤 다시 시도해 주세요."); return; }
+        els.chooseFileBtn.disabled = true; els.statusPill.textContent = "파일을 분석하는 중…";
+        try {
+          if (!window.XLSX) throw new Error("엑셀 분석 기능을 불러오지 못했습니다. 인터넷 연결을 확인한 뒤 페이지를 다시 열어 주세요.");
+          const buffer = await file.arrayBuffer();
+          const bytes = new Uint8Array(buffer);
+          validateSignature(extension, bytes);
+          let workbook;
+          if (extension === "csv") {
+            const text = decodeCsv(buffer);
+            if (!text.trim()) throw new Error("CSV 파일이 비어 있습니다. 내용이 있는 파일을 선택해 주세요.");
+            workbook = XLSX.read(text, { type: "string", raw: false });
+          } else {
+            workbook = XLSX.read(buffer, { type: "array", cellDates: false, cellText: true });
+          }
+          const firstSheetName = workbook.SheetNames[0];
+          if (!firstSheetName) throw new Error("파일에서 첫 번째 시트를 찾지 못했습니다.");
+          const sheet = workbook.Sheets[firstSheetName];
+          const rows = trimRows(XLSX.utils.sheet_to_json(sheet, {
+            header: 1, defval: "", raw: false, blankrows: true
+          }));
+          if (!rows.length || rows.every(isRowEmpty) || getColumnCount(rows) === 0) {
+            throw new Error("첫 번째 시트가 비어 있습니다. 내용이 있는 파일을 선택해 주세요.");
+          }
+          Object.assign(state, {
+            file,
+            extension,
+            rows,
+            sheetName: firstSheetName,
+            headerIndex: 0,
+            columns: [],
+            keyColumnIndex: null,
+            displayColumnIndexes: new Set(),
+            displayMode: "sequential",
+            sequentialIndex: 0,
+            viewerStarted: false,
+            activeListKey: null,
+            keyListFilter: "",
+            titleReviewed: false,
+            displayReviewed: false,
+            modeReviewed: false
+          });
+          els.headerRowInput.max = String(rows.length);
+          els.headerRowInput.value = "1";
+          renderAnalysis();
+          els.fileType.textContent = extension.toLocaleUpperCase();
+          els.fileName.textContent = file.name;
+          els.dropzone.classList.add("hidden"); els.result.classList.remove("hidden");
+          els.statusPill.textContent = "분석 완료"; els.statusPill.classList.add("ready");
+          savePersistentState();
+        } catch (error) {
+          console.error(error); reset(false);
+          showError(error instanceof Error ? error.message : "파일을 분석하지 못했습니다.");
+        } finally { els.chooseFileBtn.disabled = false; }
+      }
+
+      // 브라우저 자동 점검용 샘플: localhost에서 ?sample=1을 붙였을 때만 사용한다.
+      // 중복 key, 빈 key, 긴 셀, 여러 열을 한 번에 확인할 수 있는 구조다.
+      function loadSampleDataForTest() {
+        const rows = [
+          ["학번", "이름", "점수", "메모"],
+          ["1001", "김민수", "92", "일반 자료"],
+          ["1002", "중복학생", "85", "첫 번째 중복 key"],
+          ["1003", "중복학생", "78", "두 번째 중복 key"],
+          ["1004", "", "88", "이름이 비어 있는 자료"],
+          ["1005", "이서연", "95", "긴 문장도 카드 안에서 자연스럽게 줄바꿈되는지 확인하기 위한 테스트 문장입니다. 교사가 수업 중 화면을 좁게 조절해도 내용이 카드 바깥으로 넘치지 않아야 합니다."]
+        ];
+        Object.assign(state, {
+          file: { name: "개인별-자료-점검용.xlsx", size: 4096 },
+          extension: "xlsx",
+          rows,
+          sheetName: "학생자료",
+          headerIndex: 0,
+          columns: [],
+          keyColumnIndex: null,
+          displayColumnIndexes: new Set(),
+          displayMode: "sequential",
+          sequentialIndex: 0,
+          viewerStarted: false,
+          activeListKey: null,
+          keyListFilter: "",
+          persistenceEnabled: false,
+          titleReviewed: false,
+          displayReviewed: false,
+          modeReviewed: false
+        });
+        els.headerRowInput.max = String(rows.length);
+        els.headerRowInput.value = "1";
+        renderAnalysis();
+        els.fileType.textContent = "XLSX";
+        els.fileName.textContent = state.file.name;
+        els.dropzone.classList.add("hidden");
+        els.result.classList.remove("hidden");
+        els.statusPill.textContent = "테스트 자료 준비 완료";
+        els.statusPill.classList.add("ready");
+        updateModeCards();
+      }
+
+      function reset(clearMessage = true, options = {}) {
+        Object.assign(state, {
+          file: null,
+          extension: "",
+          rows: [],
+          sheetName: "",
+          headerIndex: 0,
+          columns: [],
+          keyColumnIndex: null,
+          displayColumnIndexes: new Set(),
+          displayMode: "sequential",
+          sequentialIndex: 0,
+          viewerStarted: false,
+          activeListKey: null,
+          keyListFilter: "",
+          persistenceEnabled: false,
+          titleReviewed: false,
+          displayReviewed: false,
+          modeReviewed: false
+        });
+        removeStoredState();
+        els.keepOnRefreshCheckbox.checked = false;
+        updateStoragePolicyText();
+        els.headerRowInput.max = "1";
+        els.headerRowInput.value = "1";
+        els.keyColumnSelect.value = "";
+        els.displayColumnList.replaceChildren();
+        els.columnList.replaceChildren();
+        els.previewHead.replaceChildren();
+        els.previewBody.replaceChildren();
+        els.keySearchInput.value = "";
+        els.keyListFilterInput.value = "";
+        updateSelectedCount();
+        hideStartMessage();
+        updateModeCards();
+        els.fileInput.value = ""; els.result.classList.add("hidden"); els.dropzone.classList.remove("hidden","dragging");
+        els.statusPill.textContent = "파일을 기다리는 중"; els.statusPill.classList.remove("ready");
+        if (clearMessage) clearError();
+        hideResetNotice();
+        if (options.showNotice) {
+          showResetNotice("업로드 자료, 선택 설정, 브라우저 저장 자료와 현재 조회 상태를 모두 초기화했습니다.");
+        }
+        updateTeacherUi();
+      }
+      els.chooseFileBtn.addEventListener("click", () => els.fileInput.click());
+      els.fileInput.addEventListener("change", (event) => handleFile(event.target.files?.[0]));
+      els.resetBtn.addEventListener("click", () => reset());
+      els.clearDataBtn.addEventListener("click", () => reset(true, { showNotice: true }));
+      els.keepOnRefreshCheckbox.addEventListener("change", () => {
+        hideResetNotice();
+        savePersistentState();
+      });
+      els.headerRowInput.addEventListener("input", () => updateHeaderRow());
+      els.headerRowInput.addEventListener("change", () => updateHeaderRow({ clamp: true }));
+      els.confirmHeaderBtn.addEventListener("click", () => {
+        updateHeaderRow({ clamp: true });
+        state.titleReviewed = true;
+        updateTeacherUi();
+        savePersistentState();
+      });
+      els.keyColumnSelect.addEventListener("change", () => {
+        state.keyColumnIndex = els.keyColumnSelect.value === "" ? null : Number(els.keyColumnSelect.value);
+        if (state.keyColumnIndex != null) state.displayColumnIndexes.add(state.keyColumnIndex);
+        if (state.keyColumnIndex != null) state.titleReviewed = true;
+        state.displayReviewed = false;
+        renderSelectionControls(state.columns);
+        updateTeacherUi();
+        savePersistentState();
+      });
+      els.selectAllBtn.addEventListener("click", () => {
+        state.displayColumnIndexes = new Set(state.columns.map((column) => column.index));
+        state.displayReviewed = false;
+        renderSelectionControls(state.columns);
+        savePersistentState();
+      });
+      els.clearAllBtn.addEventListener("click", () => {
+        state.displayColumnIndexes = new Set(
+          state.keyColumnIndex == null ? [] : [state.keyColumnIndex]
+        );
+        state.displayReviewed = false;
+        renderSelectionControls(state.columns);
+        savePersistentState();
+      });
+      els.confirmDisplayBtn.addEventListener("click", () => {
+        if (!state.displayColumnIndexes.size) {
+          els.startMessage.textContent = "표시할 열을 하나 이상 선택해 주세요.";
+          els.startMessage.classList.remove("hidden", "success");
+          return;
+        }
+        state.displayReviewed = true;
+        hideStartMessage();
+        updateTeacherUi();
+        savePersistentState();
+      });
+      document.querySelectorAll('input[name="displayMode"]').forEach((radio) => {
+        radio.addEventListener("change", () => {
+          if (!radio.checked) return;
+          state.displayMode = radio.value;
+          state.modeReviewed = true;
+          updateViewerMode();
+          updateTeacherUi();
+          savePersistentState();
+        });
+      });
+      document.querySelectorAll(".mode-card").forEach((card) => {
+        card.addEventListener("click", () => {
+          const radio = card.querySelector('input[name="displayMode"]');
+          if (!radio) return;
+          state.displayMode = radio.value;
+          state.modeReviewed = true;
+          updateModeCards();
+          updateTeacherUi();
+          savePersistentState();
+        });
+      });
+      els.prevRecordBtn.addEventListener("click", () => {
+        state.sequentialIndex -= 1;
+        renderSequentialRecord();
+      });
+      els.nextRecordBtn.addEventListener("click", () => {
+        state.sequentialIndex += 1;
+        renderSequentialRecord();
+      });
+      els.keySearchBtn.addEventListener("click", findKeyRecords);
+      els.keySearchInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") findKeyRecords();
+      });
+      els.keyListFilterInput.addEventListener("input", () => {
+        state.keyListFilter = els.keyListFilterInput.value.trim();
+        renderKeyList();
+      });
+      els.backToSettingsBtn.addEventListener("click", () => {
+        hideViewer();
+        hideStartMessage();
+      });
+      els.startBtn.addEventListener("click", () => {
+        els.startMessage.classList.remove("hidden", "success");
+        if (!state.file || !state.rows.length) {
+          hideViewer();
+          els.startMessage.textContent = "먼저 엑셀 파일을 업로드해 주세요.";
+          return;
+        }
+        if (!Number.isInteger(state.headerIndex) || state.headerIndex < 0 || state.headerIndex >= state.rows.length) {
+          hideViewer();
+          els.startMessage.textContent = "올바른 제목 행을 설정해 주세요.";
+          return;
+        }
+        if (state.keyColumnIndex == null && state.displayColumnIndexes.size === 0) {
+          hideViewer();
+          els.startMessage.textContent = "key 열과 화면에 표시할 열을 선택해 주세요.";
+          return;
+        }
+        if (state.keyColumnIndex == null) {
+          hideViewer();
+          els.startMessage.textContent = "개인을 찾을 때 사용할 key 열을 선택해 주세요.";
+          return;
+        }
+        if (state.displayColumnIndexes.size === 0) {
+          hideViewer();
+          els.startMessage.textContent = "화면에 표시할 열을 하나 이상 선택해 주세요.";
+          return;
+        }
+        if (!["sequential", "direct", "list"].includes(state.displayMode)) {
+          hideViewer();
+          els.startMessage.textContent = "개인 자료를 볼 방식을 선택해 주세요.";
+          return;
+        }
+        state.titleReviewed = true;
+        state.displayReviewed = true;
+        state.modeReviewed = true;
+        updateTeacherUi();
+        els.startMessage.textContent = "";
+        els.startMessage.classList.add("hidden");
+        state.viewerStarted = true;
+        state.sequentialIndex = 0;
+        state.activeListKey = null;
+        state.keyListFilter = "";
+        els.settingsView.classList.add("hidden");
+        els.viewerSection.classList.remove("hidden");
+        updateViewerMode();
+      });
+      ["dragenter","dragover"].forEach((type) => els.dropzone.addEventListener(type, (event) => {
+        event.preventDefault(); els.dropzone.classList.add("dragging");
+      }));
+      ["dragleave","drop"].forEach((type) => els.dropzone.addEventListener(type, (event) => {
+        event.preventDefault(); els.dropzone.classList.remove("dragging");
+      }));
+      els.dropzone.addEventListener("drop", (event) => {
+        const files = Array.from(event.dataTransfer?.files || []);
+        if (files.length > 1) { showError("한 번에 파일 하나만 올려 주세요."); return; }
+        handleFile(files[0]);
+      });
+      updateStoragePolicyText();
+      const sampleRequested = ["localhost", "127.0.0.1"].includes(location.hostname)
+        && new URLSearchParams(location.search).get("sample") === "1";
+      if (sampleRequested) loadSampleDataForTest();
+      else restorePersistentState();
+      updateTeacherUi();
+    })();
+  </script>
+</body>
+</html>

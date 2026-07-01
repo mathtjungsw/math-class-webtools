@@ -1104,6 +1104,14 @@ body.is-modal-open {
 .card-assignment-viewer .viewer-lines { fill: none; stroke: #d6b963; stroke-linecap: round; stroke-width: 5; }
 .card-assignment-viewer .viewer-check { fill: none; stroke: var(--orange); stroke-linecap: round; stroke-linejoin: round; stroke-width: 8; }
 
+.card-excel-personal-viewer .tool-visual { background: #eef8f1; }
+.card-excel-personal-viewer .excel-sheet { fill: white; stroke: var(--navy); stroke-width: 5; }
+.card-excel-personal-viewer .excel-grid { fill: none; stroke: #bed9c7; stroke-width: 4; }
+.card-excel-personal-viewer .excel-key { fill: var(--mint); }
+.card-excel-personal-viewer .excel-person { fill: #fff4cf; stroke: var(--navy); stroke-width: 5; }
+.card-excel-personal-viewer .excel-person-body { fill: var(--mint); stroke: var(--navy); stroke-linecap: round; stroke-linejoin: round; stroke-width: 5; }
+.card-excel-personal-viewer .excel-check { fill: none; stroke: var(--orange); stroke-linecap: round; stroke-linejoin: round; stroke-width: 8; }
+
 .site-footer {
   display: flex;
   align-items: center;
