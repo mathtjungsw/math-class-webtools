@@ -37,7 +37,9 @@
     .brand-copy strong, .brand-copy small { display: block; }
     .brand-copy strong { font-size: 15px; }
     .brand-copy small { color: var(--muted); font-size: 12px; }
+    .topbar-actions { display: flex; align-items: center; gap: 14px; }
     .back-link { color: var(--navy); font-size: 14px; font-weight: 800; text-decoration: none; }
+    .manual-link { padding: 6px 10px; border: 1px solid var(--line); border-radius: 9px; background: #fff; }
     main { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 44px 0 70px; }
     .hero {
       display: flex; align-items: end; justify-content: space-between; gap: 32px; margin-bottom: 28px;
@@ -73,6 +75,22 @@
     .storage-option strong, .storage-option small { display: block; }
     .storage-option small { margin-top: 2px; color: #47766d; }
     .reset-notice { padding: 10px 12px; border-radius: 10px; color: #145c4c; background: #fff; font-weight: 900; }
+    .manual-panel {
+      margin-bottom: 22px; overflow: hidden; border: 1px solid #cdd8ff; border-radius: 16px;
+      background: #fff; box-shadow: 0 8px 24px rgba(39,70,180,.07);
+    }
+    .manual-panel summary {
+      padding: 15px 18px; color: var(--blue-dark); background: var(--blue-soft);
+      cursor: pointer; font-size: 17px; font-weight: 900;
+    }
+    .manual-content { padding: 19px 22px 22px; }
+    .manual-content h2 { margin: 0 0 12px; color: var(--navy); font-size: 22px; }
+    .manual-steps { display: grid; gap: 9px; margin: 0; padding-left: 22px; }
+    .manual-steps li { padding-left: 4px; }
+    .manual-note {
+      margin: 16px 0 0; padding: 13px 15px; border-radius: 11px;
+      color: #145c4c; background: var(--mint-soft); font-weight: 800;
+    }
     .workflow {
       display: grid; grid-template-columns: repeat(6,1fr); gap: 9px; margin: 0 0 18px;
       padding: 0; list-style: none;
@@ -128,7 +146,8 @@
       margin-bottom: 18px; padding: 14px 16px; border: 1px solid #ffc9cc; border-radius: 12px;
       color: #8e252c; background: var(--red-soft); font-weight: 700;
     }
-    .result { display: grid; gap: 20px; }
+    .result { display: grid; min-width: 0; gap: 20px; }
+    .panel-body, .result > * { min-width: 0; }
     .file-summary {
       display: flex; align-items: center; gap: 16px; padding: 17px 18px;
       border: 1px solid var(--line); border-radius: 16px; background: #f8fafc;
@@ -168,6 +187,7 @@
     }
     .field small { display: block; margin-top: 6px; color: var(--muted); }
     .analysis-note {
+      grid-column: 1 / -1;
       padding: 14px 16px; border: 1px solid #f0d9ae; border-radius: 13px;
       color: #785018; background: var(--amber-soft); font-size: 14px;
     }
@@ -178,10 +198,16 @@
     .section-title span { color: var(--muted); font-size: 13px; }
     .column-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
     .column-list li {
-      padding: 8px 11px; border: 1px solid #cdd8ff; border-radius: 10px;
+      display: grid; flex: 1 1 220px; grid-template-columns: auto minmax(0,1fr); align-items: center;
+      gap: 7px; max-width: 360px; padding: 8px 11px; border: 1px solid #cdd8ff; border-radius: 10px;
       color: #2945a2; background: var(--blue-soft); font-size: 14px; font-weight: 850;
     }
-    .column-list small { margin-right: 7px; color: #7180b2; font-weight: 700; }
+    .column-list small { color: #7180b2; font-weight: 700; }
+    .column-title-input {
+      width: 100%; min-width: 0; padding: 6px 8px; border: 1px solid #bdcaf8; border-radius: 8px;
+      color: var(--navy); background: #fff; font-weight: 800;
+    }
+    .column-title-input:focus { outline: 2px solid rgba(52,87,213,.22); border-color: var(--blue); }
     .selection-settings { display: grid; grid-template-columns: minmax(230px,.7fr) minmax(0,1.3fr); gap: 15px; }
     .selection-panel { padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: #fafbfd; }
     .choice-toolbar {
@@ -261,7 +287,10 @@
       display: block; overflow-wrap: anywhere; color: var(--navy); font-size: 22px;
       line-height: 1.45; white-space: pre-wrap; word-break: break-word;
     }
-    .table-wrap { overflow: auto; max-height: 390px; border: 1px solid var(--line); border-radius: 14px; }
+    .table-wrap {
+      width: 100%; max-width: 100%; min-width: 0; max-height: 390px; overflow: auto;
+      border: 1px solid var(--line); border-radius: 14px;
+    }
     table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; white-space: nowrap; }
     th, td {
       max-width: 310px; overflow: hidden; padding: 11px 13px; border-right: 1px solid var(--line);
@@ -287,6 +316,8 @@
       .security-head { align-items: stretch; flex-direction: column; }
       .security-head .secondary { width: 100%; }
       .privacy-line { font-size: 17px; }
+      .topbar { align-items: flex-start; }
+      .topbar-actions { align-items: flex-end; flex-direction: column; gap: 5px; }
       .workflow, .control-grid, .stat-grid, .settings-summary, .selection-settings, .choice-grid, .mode-grid, .record-fields { grid-template-columns: 1fr; }
       .panel-head, .panel-body { padding: 18px; }
       .file-summary { align-items: flex-start; flex-wrap: wrap; }
@@ -306,7 +337,10 @@
       <span class="brand-mark" aria-hidden="true">X</span>
       <span class="brand-copy"><strong>엑셀 개인자료 조회기</strong><small>학교 업무용 웹툴</small></span>
     </a>
-    <a class="back-link" href="../../index.html#school-work">웹툴 모음으로</a>
+    <div class="topbar-actions">
+      <button id="manualBtn" class="back-link manual-link" type="button">설명서</button>
+      <a class="back-link" href="../../index.html#school-work">웹툴 모음으로</a>
+    </div>
   </header>
 
   <main>
@@ -337,6 +371,23 @@
       <div id="resetNotice" class="reset-notice hidden" role="status"></div>
     </section>
 
+    <details id="manualPanel" class="manual-panel">
+      <summary>엑셀 개인자료 조회기 사용 설명서</summary>
+      <div class="manual-content">
+        <h2>사용 순서</h2>
+        <ol class="manual-steps">
+          <li><b>파일 업로드</b> — XLSX, XLS, CSV 파일을 선택합니다. 자료는 서버로 전송되지 않습니다.</li>
+          <li><b>시트 선택</b> — 시트가 여러 개면 조회할 시트를 선택합니다. 빈 시트는 선택할 수 없습니다.</li>
+          <li><b>제목 행 확인</b> — 열 이름이 들어 있는 행 번호를 지정합니다.</li>
+          <li><b>열 이름 수정</b> — 열 제목 목록의 입력칸에서 화면에 사용할 이름을 바꿀 수 있습니다.</li>
+          <li><b>key 열 선택</b> — 학번, 이름처럼 개인을 찾을 기준 열을 고릅니다.</li>
+          <li><b>표시 열 선택</b> — 기본값은 전체 선택이며, 숨길 열의 체크를 해제하면 미리보기에도 즉시 반영됩니다.</li>
+          <li><b>표시 방식과 시작</b> — 순서대로 보기, key 직접 입력, key 목록 클릭 중 하나를 선택해 조회합니다.</li>
+        </ol>
+        <p class="manual-note">공용 PC에서는 사용을 마친 뒤 반드시 ‘자료 초기화’를 누르세요. 새로고침 유지 옵션은 기본적으로 꺼져 있습니다.</p>
+      </div>
+    </details>
+
     <div id="settingsView">
       <ol class="workflow" aria-label="설정 순서">
         <li class="active" data-step="1"><b>1</b> 파일 업로드</li>
@@ -349,7 +400,7 @@
 
       <section class="panel" aria-labelledby="upload-title">
       <div class="panel-head">
-        <div><h2 id="upload-title">엑셀 자료 불러오기</h2><p>파일의 첫 번째 시트를 브라우저 안에서 읽습니다.</p></div>
+        <div><h2 id="upload-title">엑셀 자료 불러오기</h2><p>파일의 모든 시트를 브라우저 안에서 읽고 선택할 수 있습니다.</p></div>
         <span id="statusPill" class="status-pill" role="status">파일을 기다리는 중</span>
       </div>
       <div class="panel-body">
@@ -372,6 +423,11 @@
             <div class="summary-actions"><button id="resetBtn" class="text-button" type="button">다른 파일 선택</button></div>
           </div>
           <div class="control-grid">
+            <div id="sheetField" class="field">
+              <label for="sheetSelect">시트 선택</label>
+              <select id="sheetSelect"></select>
+              <small>여러 시트가 있으면 조회할 시트를 선택하세요.</small>
+            </div>
             <div class="field">
               <label for="headerRowInput">제목 행 번호</label>
               <input id="headerRowInput" type="number" min="1" max="1" value="1" inputmode="numeric" />
@@ -383,7 +439,7 @@
           <div class="stat-grid" aria-label="파일 분석 결과">
             <div class="stat-card"><strong id="rowCount">0</strong><span>데이터 행</span></div>
             <div class="stat-card"><strong id="columnCount">0</strong><span>인식한 열</span></div>
-            <div class="stat-card"><strong id="sheetName">-</strong><span>첫 번째 시트</span></div>
+            <div class="stat-card"><strong id="sheetName">-</strong><span>선택한 시트</span></div>
           </div>
           <section class="settings-summary" aria-label="현재 선택 요약">
             <div class="summary-item"><small>key 열</small><strong id="summaryKeyColumn">미선택</strong></div>
@@ -510,12 +566,16 @@
       const state = {
         file: null,
         extension: "",
+        sheets: [],
+        currentSheetIndex: 0,
         rows: [],
         sheetName: "",
         headerIndex: 0,
         columns: [],
+        columnTitles: [],
         keyColumnIndex: null,
         displayColumnIndexes: new Set(),
+        displaySelectionInitialized: false,
         displayMode: "sequential",
         sequentialIndex: 0,
         viewerStarted: false,
@@ -528,8 +588,8 @@
       };
       const els = Object.fromEntries([
         "chooseFileBtn","fileInput","dropzone","result","errorBox","statusPill","fileType","fileName","stepBadge",
-        "clearDataBtn","keepOnRefreshCheckbox","storagePolicyText","resetNotice",
-        "fileMeta","resetBtn","headerRowInput","confirmHeaderBtn","analysisNote","rowCount","columnCount","sheetName",
+        "clearDataBtn","keepOnRefreshCheckbox","storagePolicyText","resetNotice","manualBtn","manualPanel",
+        "fileMeta","resetBtn","sheetField","sheetSelect","headerRowInput","confirmHeaderBtn","analysisNote","rowCount","columnCount","sheetName",
         "summaryKeyColumn","summaryDisplayCount","summaryDisplayMode","summaryDataRows",
         "columnSummary","columnList","keyColumnSelect","selectedCount","selectAllBtn","clearAllBtn",
         "confirmDisplayBtn",
@@ -585,9 +645,11 @@
             size: Number(state.file.size) || 0
           },
           extension: state.extension,
-          rows: state.rows,
+          sheets: state.sheets,
+          currentSheetIndex: state.currentSheetIndex,
           sheetName: state.sheetName,
           headerIndex: state.headerIndex,
+          columnTitles: state.columnTitles,
           keyColumnIndex: state.keyColumnIndex,
           displayColumnIndexes: [...state.displayColumnIndexes],
           displayMode: state.displayMode,
@@ -620,24 +682,43 @@
           removeStoredState();
           return;
         }
-        if (!saved || saved.version !== 1 || !Array.isArray(saved.rows) || !saved.rows.length) {
+        const restoredSheets = Array.isArray(saved?.sheets)
+          ? saved.sheets
+              .filter((sheet) => sheet && Array.isArray(sheet.rows))
+              .map((sheet, index) => ({
+                name: valueText(sheet.name) || `시트${index + 1}`,
+                rows: trimRows(sheet.rows)
+              }))
+          : (Array.isArray(saved?.rows)
+              ? [{ name: valueText(saved.sheetName) || "첫 번째 시트", rows: trimRows(saved.rows) }]
+              : []);
+        if (!saved || saved.version !== 1 || !restoredSheets.length || !restoredSheets.some(sheetHasData)) {
           removeStoredState();
           return;
         }
+        const requestedSheetIndex = Number.isInteger(saved.currentSheetIndex) ? saved.currentSheetIndex : 0;
+        const currentSheetIndex = sheetHasData(restoredSheets[requestedSheetIndex])
+          ? requestedSheetIndex
+          : restoredSheets.findIndex(sheetHasData);
+        const restoredCurrentSheet = restoredSheets[currentSheetIndex];
         Object.assign(state, {
           file: {
             name: valueText(saved.file?.name) || "복원된 자료",
             size: Number(saved.file?.size) || 0
           },
           extension: valueText(saved.extension) || "xlsx",
-          rows: saved.rows,
-          sheetName: valueText(saved.sheetName) || "첫 번째 시트",
+          sheets: restoredSheets,
+          currentSheetIndex,
+          rows: restoredCurrentSheet.rows,
+          sheetName: restoredCurrentSheet.name,
           headerIndex: Number.isInteger(saved.headerIndex) ? saved.headerIndex : 0,
           columns: [],
+          columnTitles: Array.isArray(saved.columnTitles) ? saved.columnTitles.map(valueText) : [],
           keyColumnIndex: Number.isInteger(saved.keyColumnIndex) ? saved.keyColumnIndex : null,
           displayColumnIndexes: new Set(
             Array.isArray(saved.displayColumnIndexes) ? saved.displayColumnIndexes.filter(Number.isInteger) : []
           ),
+          displaySelectionInitialized: true,
           displayMode: ["sequential", "direct", "list"].includes(saved.displayMode)
             ? saved.displayMode
             : "sequential",
@@ -743,7 +824,7 @@
         return Array.from({ length: columnCount }, (_, index) => ({
           index,
           letter: columnLetter(index),
-          title: valueText(headerRow[index]) || `열${index + 1}`
+          title: valueText(state.columnTitles[index]) || valueText(headerRow[index]) || `열${index + 1}`
         }));
       }
       function getDataRows() {
@@ -754,6 +835,55 @@
             sourceRowNumber: state.headerIndex + offset + 2
           }))
           .filter(({ row }) => !isRowEmpty(row));
+      }
+      function sheetHasData(sheet) {
+        return Boolean(
+          sheet
+          && Array.isArray(sheet.rows)
+          && sheet.rows.length
+          && !sheet.rows.every(isRowEmpty)
+          && getColumnCount(sheet.rows) > 0
+        );
+      }
+      function renderSheetSelector() {
+        const options = state.sheets.map((sheet, index) => {
+          const option = document.createElement("option");
+          option.value = String(index);
+          option.textContent = sheetHasData(sheet) ? sheet.name : `${sheet.name} (비어 있음)`;
+          option.disabled = !sheetHasData(sheet);
+          return option;
+        });
+        els.sheetSelect.replaceChildren(...options);
+        els.sheetSelect.value = String(state.currentSheetIndex);
+        els.sheetField.classList.toggle("hidden", state.sheets.length <= 1);
+      }
+      function selectSheet(index) {
+        const sheet = state.sheets[index];
+        if (!sheetHasData(sheet) || index === state.currentSheetIndex) return;
+        state.currentSheetIndex = index;
+        state.rows = sheet.rows;
+        state.sheetName = sheet.name;
+        state.headerIndex = 0;
+        state.columns = [];
+        state.columnTitles = [];
+        state.keyColumnIndex = null;
+        state.displayColumnIndexes = new Set();
+        state.displaySelectionInitialized = false;
+        state.sequentialIndex = 0;
+        state.viewerStarted = false;
+        state.activeListKey = null;
+        state.keyListFilter = "";
+        state.titleReviewed = false;
+        state.displayReviewed = false;
+        state.modeReviewed = false;
+        els.headerRowInput.max = String(state.rows.length);
+        els.headerRowInput.value = "1";
+        clearError();
+        hideStartMessage();
+        renderAnalysis();
+        els.statusPill.textContent = `“${state.sheetName}” 시트 선택`;
+        els.statusPill.classList.add("ready");
+        savePersistentState();
       }
       function hideViewer() {
         state.viewerStarted = false;
@@ -826,6 +956,7 @@
             state.displayReviewed = false;
             label.classList.toggle("selected", checkbox.checked);
             updateSelectedCount();
+            renderTable(selectedColumns(), getDataRows());
             hideStartMessage();
             savePersistentState();
           });
@@ -1021,25 +1152,51 @@
       function renderAnalysis() {
         const columnCount = getColumnCount(state.rows);
         const columns = buildColumns(columnCount);
+        state.columnTitles = columns.map((column) => column.title);
+        if (!state.displaySelectionInitialized) {
+          state.displayColumnIndexes = new Set(columns.map((column) => column.index));
+          state.displaySelectionInitialized = true;
+        }
         const dataRows = getDataRows();
         els.rowCount.textContent = dataRows.length.toLocaleString("ko-KR");
         els.columnCount.textContent = columnCount.toLocaleString("ko-KR");
         els.sheetName.textContent = state.sheetName;
         els.sheetName.title = state.sheetName;
+        renderSheetSelector();
         els.fileMeta.textContent =
-          `${formatBytes(state.file.size)} · 전체 ${state.rows.length.toLocaleString("ko-KR")}행 · 첫 번째 시트 “${state.sheetName}”`;
+          `${formatBytes(state.file.size)} · ${state.sheets.length.toLocaleString("ko-KR")}개 시트 · 현재 “${state.sheetName}” ${state.rows.length.toLocaleString("ko-KR")}행`;
         els.analysisNote.textContent =
           `${state.headerIndex + 1}행을 제목 행으로 사용하고, 그 아래 ${dataRows.length.toLocaleString("ko-KR")}행을 데이터로 처리합니다.`;
-        els.columnSummary.textContent = `${columns.length.toLocaleString("ko-KR")}개`;
+        els.columnSummary.textContent = `${columns.length.toLocaleString("ko-KR")}개 · 이름 수정 가능`;
         els.columnList.replaceChildren(...columns.map((column) => {
           const item = document.createElement("li");
           const letter = document.createElement("small");
           letter.textContent = `${column.letter}열`;
-          item.append(letter, document.createTextNode(column.title));
+          const input = document.createElement("input");
+          input.className = "column-title-input";
+          input.type = "text";
+          input.value = column.title;
+          input.setAttribute("aria-label", `${column.letter}열 이름`);
+          input.addEventListener("input", () => {
+            const nextTitle = valueText(input.value) || `열${column.index + 1}`;
+            state.columnTitles[column.index] = nextTitle;
+            column.title = nextTitle;
+            renderSelectionControls(columns);
+            renderTable(selectedColumns(), dataRows);
+            updateTeacherUi();
+          });
+          input.addEventListener("change", () => {
+            const nextTitle = valueText(input.value) || `열${column.index + 1}`;
+            input.value = nextTitle;
+            state.columnTitles[column.index] = nextTitle;
+            column.title = nextTitle;
+            savePersistentState();
+          });
+          item.append(letter, input);
           return item;
         }));
         renderSelectionControls(columns);
-        renderTable(columns, dataRows);
+        renderTable(selectedColumns(), dataRows);
         updateTeacherUi();
       }
       function updateHeaderRow(options = {}) {
@@ -1054,6 +1211,8 @@
         if (state.headerIndex !== rowNumber - 1) {
           state.keyColumnIndex = null;
           state.displayColumnIndexes = new Set();
+          state.displaySelectionInitialized = false;
+          state.columnTitles = [];
           state.titleReviewed = false;
           state.displayReviewed = false;
           state.modeReviewed = false;
@@ -1094,24 +1253,31 @@
           } else {
             workbook = XLSX.read(buffer, { type: "array", cellDates: false, cellText: true });
           }
-          const firstSheetName = workbook.SheetNames[0];
-          if (!firstSheetName) throw new Error("파일에서 첫 번째 시트를 찾지 못했습니다.");
-          const sheet = workbook.Sheets[firstSheetName];
-          const rows = trimRows(XLSX.utils.sheet_to_json(sheet, {
-            header: 1, defval: "", raw: false, blankrows: true
+          const sheets = workbook.SheetNames.map((name) => ({
+            name,
+            rows: trimRows(XLSX.utils.sheet_to_json(workbook.Sheets[name], {
+              header: 1, defval: "", raw: false, blankrows: true
+            }))
           }));
-          if (!rows.length || rows.every(isRowEmpty) || getColumnCount(rows) === 0) {
-            throw new Error("첫 번째 시트가 비어 있습니다. 내용이 있는 파일을 선택해 주세요.");
+          const currentSheetIndex = sheets.findIndex(sheetHasData);
+          if (currentSheetIndex < 0) {
+            throw new Error("내용이 있는 시트를 찾지 못했습니다. 자료가 들어 있는 파일을 선택해 주세요.");
           }
+          const currentSheet = sheets[currentSheetIndex];
+          const rows = currentSheet.rows;
           Object.assign(state, {
             file,
             extension,
+            sheets,
+            currentSheetIndex,
             rows,
-            sheetName: firstSheetName,
+            sheetName: currentSheet.name,
             headerIndex: 0,
             columns: [],
+            columnTitles: [],
             keyColumnIndex: null,
             displayColumnIndexes: new Set(),
+            displaySelectionInitialized: false,
             displayMode: "sequential",
             sequentialIndex: 0,
             viewerStarted: false,
@@ -1138,23 +1304,44 @@
       // 브라우저 자동 점검용 샘플: localhost에서 ?sample=1을 붙였을 때만 사용한다.
       // 중복 key, 빈 key, 긴 셀, 여러 열을 한 번에 확인할 수 있는 구조다.
       function loadSampleDataForTest() {
+        const extraHeaders = Array.from({ length: 16 }, (_, index) => `추가항목${index + 1}`);
+        const withExtras = (cells, prefix) => [
+          ...cells,
+          ...extraHeaders.map((_, index) => `${prefix} ${index + 1}`)
+        ];
         const rows = [
-          ["학번", "이름", "점수", "메모"],
-          ["1001", "김민수", "92", "일반 자료"],
-          ["1002", "중복학생", "85", "첫 번째 중복 key"],
-          ["1003", "중복학생", "78", "두 번째 중복 key"],
-          ["1004", "", "88", "이름이 비어 있는 자료"],
-          ["1005", "이서연", "95", "긴 문장도 카드 안에서 자연스럽게 줄바꿈되는지 확인하기 위한 테스트 문장입니다. 교사가 수업 중 화면을 좁게 조절해도 내용이 카드 바깥으로 넘치지 않아야 합니다."]
+          ["학번", "이름", "점수", "메모", ...extraHeaders],
+          withExtras(["1001", "김민수", "92", "일반 자료"], "자료"),
+          withExtras(["1002", "중복학생", "85", "첫 번째 중복 key"], "중복1"),
+          withExtras(["1003", "중복학생", "78", "두 번째 중복 key"], "중복2"),
+          withExtras(["1004", "", "88", "이름이 비어 있는 자료"], "빈 key"),
+          withExtras(["1005", "이서연", "95", "긴 문장도 카드 안에서 자연스럽게 줄바꿈되는지 확인하기 위한 테스트 문장입니다. 교사가 수업 중 화면을 좁게 조절해도 내용이 카드 바깥으로 넘치지 않아야 합니다."], "긴 내용")
+        ];
+        const sheets = [
+          { name: "학생자료", rows },
+          {
+            name: "상담자료",
+            rows: [
+              ["번호", "학생", "상담 상태"],
+              ["1", "김민수", "완료"],
+              ["2", "이서연", "예정"]
+            ]
+          },
+          { name: "빈 시트", rows: [] }
         ];
         Object.assign(state, {
           file: { name: "개인별-자료-점검용.xlsx", size: 4096 },
           extension: "xlsx",
+          sheets,
+          currentSheetIndex: 0,
           rows,
           sheetName: "학생자료",
           headerIndex: 0,
           columns: [],
+          columnTitles: [],
           keyColumnIndex: null,
           displayColumnIndexes: new Set(),
+          displaySelectionInitialized: false,
           displayMode: "sequential",
           sequentialIndex: 0,
           viewerStarted: false,
@@ -1181,12 +1368,16 @@
         Object.assign(state, {
           file: null,
           extension: "",
+          sheets: [],
+          currentSheetIndex: 0,
           rows: [],
           sheetName: "",
           headerIndex: 0,
           columns: [],
+          columnTitles: [],
           keyColumnIndex: null,
           displayColumnIndexes: new Set(),
+          displaySelectionInitialized: false,
           displayMode: "sequential",
           sequentialIndex: 0,
           viewerStarted: false,
@@ -1202,6 +1393,7 @@
         updateStoragePolicyText();
         els.headerRowInput.max = "1";
         els.headerRowInput.value = "1";
+        els.sheetSelect.replaceChildren();
         els.keyColumnSelect.value = "";
         els.displayColumnList.replaceChildren();
         els.columnList.replaceChildren();
@@ -1225,6 +1417,11 @@
       els.fileInput.addEventListener("change", (event) => handleFile(event.target.files?.[0]));
       els.resetBtn.addEventListener("click", () => reset());
       els.clearDataBtn.addEventListener("click", () => reset(true, { showNotice: true }));
+      els.manualBtn.addEventListener("click", () => {
+        els.manualPanel.open = true;
+        els.manualPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      els.sheetSelect.addEventListener("change", () => selectSheet(Number(els.sheetSelect.value)));
       els.keepOnRefreshCheckbox.addEventListener("change", () => {
         hideResetNotice();
         savePersistentState();
@@ -1243,6 +1440,7 @@
         if (state.keyColumnIndex != null) state.titleReviewed = true;
         state.displayReviewed = false;
         renderSelectionControls(state.columns);
+        renderTable(selectedColumns(), getDataRows());
         updateTeacherUi();
         savePersistentState();
       });
@@ -1250,6 +1448,7 @@
         state.displayColumnIndexes = new Set(state.columns.map((column) => column.index));
         state.displayReviewed = false;
         renderSelectionControls(state.columns);
+        renderTable(selectedColumns(), getDataRows());
         savePersistentState();
       });
       els.clearAllBtn.addEventListener("click", () => {
@@ -1258,6 +1457,7 @@
         );
         state.displayReviewed = false;
         renderSelectionControls(state.columns);
+        renderTable(selectedColumns(), getDataRows());
         savePersistentState();
       });
       els.confirmDisplayBtn.addEventListener("click", () => {
@@ -1374,6 +1574,10 @@
         && new URLSearchParams(location.search).get("sample") === "1";
       if (sampleRequested) loadSampleDataForTest();
       else restorePersistentState();
+      if (new URLSearchParams(location.search).get("manual") === "1") {
+        els.manualPanel.open = true;
+        els.manualPanel.scrollIntoView({ block: "start" });
+      }
       updateTeacherUi();
     })();
   </script>
