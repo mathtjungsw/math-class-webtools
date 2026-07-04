@@ -4,11 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="정기시험과 수행평가 점수로 환산점수, 총점, 석차, 석차등급, 성취도를 미리 계산하는 교사용 웹툴" />
-  <meta name="theme-color" content="#155eef" />
+  <meta name="theme-color" content="#111c35" />
   <title>성적 산출 미리 해보기 | 수학 수업 웹툴 모음</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23111c35'/%3E%3Cpath d='M16 44V20l16 12 16-12v24' fill='none' stroke='%235dd2b2' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E" />
   <script src="../excel-personal-viewer/vendor/xlsx.full.min.js"></script>
   <style>
+    @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
     :root {
       color-scheme: light;
       --blue-700:#174ea6;--blue-600:#155eef;--blue-500:#2970ff;--blue-100:#dbeafe;--blue-50:#eff6ff;
@@ -49,6 +50,99 @@
     footer{padding:25px;color:#8a96a8;text-align:center;font-size:10px}.toast{position:fixed;right:20px;bottom:20px;z-index:100;max-width:360px;padding:13px 16px;border-radius:10px;opacity:0;color:#fff;background:#183153;box-shadow:0 15px 35px rgba(8,28,61,.25);font-size:12px;pointer-events:none;transform:translateY(12px);transition:.2s}.toast.show{opacity:1;transform:none}
     @media(max-width:900px){.form-grid{grid-template-columns:repeat(2,1fr)}.component-fields{grid-template-columns:1.5fr 1fr 1fr 1fr}.component-fields .remove-component{grid-column:1/-1}.summary-cards{grid-template-columns:repeat(3,1fr)}.steps{grid-template-columns:repeat(3,1fr)}.filter-bar{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:650px){.topbar-inner,main,.hero-inner{width:min(100% - 24px,1280px)}.top-actions{gap:5px}.top-actions .label,.brand-copy span{display:none}.top-actions .btn{min-height:36px;padding:0 8px;white-space:nowrap;font-size:11px}.hero-inner{display:block;min-height:0;padding:34px 0}.privacy-badge{margin-top:25px}.hero h1{font-size:34px}.steps{grid-template-columns:1fr 1fr}.step-link:last-child{grid-column:1/-1}.panel-body,details.panel>summary{padding-left:14px;padding-right:14px}.form-grid,.upload-grid,.distribution{grid-template-columns:1fr}.component-fields{grid-template-columns:1fr 1fr}.component-fields .name-field{grid-column:1/-1}.mapping-grid{grid-template-columns:repeat(2,1fr)}.summary-cards{grid-template-columns:repeat(2,1fr)}.calculate-bar{align-items:stretch;flex-direction:column}.calculate-bar .btn{width:100%}.filter-bar{grid-template-columns:1fr}}
+
+    /* 2026 fresh UI */
+    :root{
+      --blue-700:#111c35;--blue-600:#ff6542;--blue-500:#ff7958;--blue-100:#ffe3da;--blue-50:#fff4ef;
+      --navy:#111c35;--text:#283249;--muted:#737b8e;--line:#e8e9f0;--surface:#fff;--bg:#f7f7fb;
+      --orange:#ff6b3d;--mint:#5dd2b2;
+      --green:#16876b;--green-bg:#eafaf5;--amber:#a46113;--amber-bg:#fff8e5;
+      --shadow:0 20px 60px rgba(28,38,68,.09);
+    }
+    body{
+      min-width:320px;
+      background:
+        radial-gradient(circle at 5% 18%,rgba(93,210,178,.09),transparent 22rem),
+        radial-gradient(circle at 96% 42%,rgba(255,107,61,.08),transparent 24rem),
+        #f7f7fb;
+      letter-spacing:-.012em;
+    }
+    .topbar{border-color:rgba(229,232,239,.78);background:rgba(247,247,251,.84);backdrop-filter:blur(20px)}
+    .topbar-inner{min-height:76px}
+    .brand-mark{width:44px;height:44px;border-radius:15px;background:var(--navy);box-shadow:0 10px 24px rgba(17,28,53,.17);color:var(--mint);font-size:20px}
+    .brand-copy strong{font-size:15px;font-weight:850}.brand-copy span{margin-top:2px;color:var(--orange);font-size:10px;font-weight:800}
+    .btn{min-height:44px;padding:0 18px;border-radius:14px;font-weight:800;transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
+    .btn:hover{transform:translateY(-2px)}
+    .btn-primary{background:var(--navy);box-shadow:0 10px 24px rgba(17,28,53,.16)}
+    .btn-primary:hover{background:#1c2946;box-shadow:0 13px 28px rgba(17,28,53,.22)}
+    .btn-secondary{border-color:#e2e4eb;color:#354058;background:rgba(255,255,255,.9)}
+    .btn-danger{border-color:#ffd4cb;color:#d4482b;background:#fff8f6}
+    .hero{position:relative;overflow:hidden;color:var(--navy);background:linear-gradient(135deg,#fff 0%,#f7f8ff 46%,#eefaf7 100%)}
+    .hero::before,.hero::after{position:absolute;border-radius:50%;content:"";filter:blur(1px)}
+    .hero::before{top:-150px;right:8%;width:390px;height:390px;background:rgba(93,210,178,.18)}
+    .hero::after{right:-90px;bottom:-190px;width:430px;height:430px;background:rgba(255,107,61,.12)}
+    .hero-inner{position:relative;z-index:1;min-height:350px;padding:64px 0}
+    .eyebrow{display:inline-flex;margin-bottom:14px;padding:7px 11px;border:1px solid #ffe0d7;border-radius:999px;color:#e9502f;background:#fff7f4;font-size:10px;letter-spacing:.12em}
+    .hero h1{max-width:680px;font-size:clamp(42px,5vw,66px);font-weight:900;line-height:1.08;letter-spacing:-.065em}
+    .hero h1 span{color:var(--orange)}
+    .hero-description{max-width:640px;margin-top:20px;color:#697187;font-size:16px;line-height:1.8}
+    .hero-chips{display:flex;margin-top:24px;gap:8px;flex-wrap:wrap}
+    .hero-chips span{padding:8px 12px;border:1px solid #e5e7ee;border-radius:999px;color:#445069;background:rgba(255,255,255,.78);box-shadow:0 5px 15px rgba(17,28,53,.04);font-size:11px;font-weight:750}
+    .privacy-badge{max-width:380px;padding:22px;border:1px solid rgba(255,255,255,.12);border-radius:24px;color:#fff;background:var(--navy);box-shadow:0 24px 60px rgba(17,28,53,.2);transform:rotate(1.2deg)}
+    .privacy-icon{width:46px;height:46px;border-radius:15px;color:var(--orange);background:#fff;font-size:19px}
+    .privacy-badge strong{font-size:14px}.privacy-badge p{margin-top:6px;color:#cbd1df;font-size:11px;line-height:1.65}
+    main{margin-top:34px}
+    main>.notice{border-color:#ccefe5;background:#effbf7;color:#35675c}
+    main>.notice strong{color:#176d59}
+    .steps{gap:10px;margin:24px 0}
+    .step-link{min-height:54px;padding:12px 15px;border-color:#e5e7ee;border-radius:16px;color:#566177;background:rgba(255,255,255,.86);box-shadow:0 6px 18px rgba(17,28,53,.035);font-size:11px;transition:.18s}
+    .step-link:hover{border-color:#ffb9a8;color:var(--navy);transform:translateY(-2px)}
+    .step-link b{width:28px;height:28px;color:#fff;background:var(--navy)}
+    details.panel{margin-top:18px;border-color:rgba(225,227,235,.9);border-radius:24px;background:rgba(255,255,255,.94);box-shadow:0 8px 28px rgba(17,28,53,.035)}
+    details.panel[open]{box-shadow:var(--shadow)}
+    details.panel>summary{min-height:88px;padding:22px 26px}
+    .step-no{width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,var(--orange),#ff8b69);box-shadow:0 9px 20px rgba(255,107,61,.24)}
+    .summary-copy strong{font-size:18px;font-weight:850}.summary-copy span{margin-top:2px;font-size:11px}
+    .panel-body{padding:4px 26px 28px;border-color:#f0f1f5}
+    .section-title{margin-top:24px;font-size:15px}
+    .form-grid{gap:16px}
+    .field>span{color:#4b566d;font-size:11px}
+    .field input,.field select,.field textarea,.filter-bar input,.filter-bar select{min-height:48px;padding:0 14px;border-color:#e0e3eb;border-radius:14px;background:#fbfbfd;font-size:12px;transition:.18s}
+    .field textarea{padding:13px}
+    .field input:focus,.field select:focus,.field textarea:focus,.filter-bar input:focus,.filter-bar select:focus{border-color:#ff9b82;background:#fff;box-shadow:0 0 0 4px rgba(255,107,61,.1)}
+    .notice{padding:17px 19px;border-color:#dfe8ff;border-radius:16px;color:#405675;background:#f4f7ff}
+    .notice strong{color:#243b60}
+    #modeGuide{border-color:#d7f1e9;background:#f1fbf8}
+    .component-card{padding:19px;border-color:#e6e7ee;border-radius:18px;background:linear-gradient(145deg,#fff,#fafaff)}
+    .type-pill{padding:5px 9px;color:#cf482a;background:#fff0eb}
+    .weight-summary{padding:15px 17px;border-radius:15px;background:#f4f5f9}
+    .upload-grid{gap:16px}
+    .upload-card{padding:19px;border-color:#e3e5ed;border-radius:19px;background:#fcfcfe}
+    .upload-card.loaded{border-color:#a9decf;background:#f6fffb}
+    .dropzone{min-height:112px;border:1.5px dashed #c8cedb;border-radius:16px;background:#fff;transition:.18s}
+    .dropzone:hover{border-color:var(--orange);background:#fff8f5}
+    .dropzone strong{color:#d94e2f;font-size:13px}
+    .calculate-bar{bottom:14px;padding:16px 18px;border:0;border-radius:20px;color:#fff;background:rgba(17,28,53,.95);box-shadow:0 18px 40px rgba(17,28,53,.24)}
+    .calculate-bar p{color:#bfc6d6}.calculate-bar strong{color:#fff;font-size:14px}
+    .calculate-bar .btn-primary{background:var(--orange);box-shadow:0 8px 20px rgba(255,107,61,.3)}
+    .summary-cards{gap:12px}.metric{padding:17px;border-color:#e7e8ee;border-radius:17px;background:linear-gradient(145deg,#fff,#f9faff)}
+    .metric:nth-child(1),.metric:nth-child(4){background:linear-gradient(145deg,#fff7f3,#fff)}
+    .metric:nth-child(2),.metric:nth-child(6){background:linear-gradient(145deg,#effbf7,#fff)}
+    .metric span{font-size:10px}.metric strong{font-size:23px;font-weight:900}
+    .result-tabs{gap:8px}.result-tab{padding:11px 15px;border:0;border-radius:12px}.result-tab.active{border:0;color:#fff;background:var(--navy)}
+    .table-wrap{border-color:#e3e5ec;border-radius:17px}.data-table th{padding:12px 9px;background:#f3f4f8}.data-table td{padding:11px 8px}.data-table tbody tr:hover{background:#fff7f4}
+    .grade-chip{color:#d84b2c;background:#fff0eb}.achievement-chip{color:#117a61;background:#e9faf5}
+    .sub-card{padding:19px;border-radius:18px}.bar-fill{background:linear-gradient(90deg,var(--orange),#ffb35c)}
+    .privacy-reminder{padding:16px;border-radius:15px}
+    footer{color:#8b92a4}
+    @media(max-width:650px){
+      .topbar-inner{min-height:68px}.brand-mark{width:40px;height:40px}
+      .hero-inner{padding:42px 0 46px}.hero h1{font-size:40px}.hero-description{font-size:14px}.hero-chips{margin-top:18px}
+      .privacy-badge{margin-top:28px;transform:none}.steps{gap:8px}.step-link{min-height:50px}
+      details.panel>summary{min-height:78px;padding:17px}.panel-body{padding:3px 16px 22px}
+      .step-no{width:38px;height:38px}.summary-copy strong{font-size:16px}
+      .component-card,.upload-card{padding:15px}.calculate-bar{border-radius:18px}
+    }
   </style>
 </head>
 <body>
@@ -65,9 +159,10 @@
   <section class="hero">
     <div class="hero-inner">
       <div>
-        <p class="eyebrow">SCHOOL GRADE PREVIEW</p>
-        <h1>성적 산출 미리 해보기</h1>
+        <p class="eyebrow">GRADE LAB · FOR TEACHERS</p>
+        <h1><span>성적 산출</span><br />미리 해보기</h1>
         <p class="hero-description">정기시험·수행평가 점수를 모아 학생별 환산점수, 총점, 석차, 석차등급과 성취도를 한 번에 확인하세요.</p>
+        <div class="hero-chips" aria-label="주요 기능"><span>5·9등급제</span><span>동점자 처리</span><span>성취도 분포</span><span>브라우저 보안 처리</span></div>
       </div>
       <div class="privacy-badge">
         <span class="privacy-icon">▣</span>
