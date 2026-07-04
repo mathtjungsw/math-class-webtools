@@ -1097,6 +1097,19 @@ body.is-modal-open {
   font-weight: 950;
 }
 
+.card-grade-preview .tool-visual { background: #edf3ff; }
+.card-grade-preview .grade-sheet { fill: white; stroke: var(--navy); stroke-width: 5; }
+.card-grade-preview .grade-grid { fill: none; stroke: #c9d6ee; stroke-linecap: round; stroke-width: 4; }
+.card-grade-preview .grade-chart { fill: none; stroke: var(--orange); stroke-linecap: round; stroke-linejoin: round; stroke-width: 7; }
+.card-grade-preview .grade-badges circle { fill: var(--mint); stroke: var(--navy); stroke-width: 5; }
+.card-grade-preview .grade-badges circle:last-of-type { fill: var(--yellow); }
+.card-grade-preview .grade-badges text {
+  fill: var(--navy);
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  font-size: 25px;
+  font-weight: 950;
+}
+
 .card-assignment-viewer .tool-visual { background: #eaf8f6; }
 .card-assignment-viewer .viewer-window { fill: white; stroke: var(--navy); stroke-width: 5; }
 .card-assignment-viewer .viewer-dividers { fill: none; stroke: #b9d8d1; stroke-linecap: round; stroke-width: 5; }
