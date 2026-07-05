@@ -119,9 +119,32 @@
     .hidden { display: none !important; }
 
     .layout {
+      --left-panel-width: 310px;
+      --right-panel-width: 330px;
+      --left-resizer-width: 7px;
+      --right-resizer-width: 7px;
       display: grid;
-      grid-template-columns: minmax(260px, 310px) 1fr minmax(285px, 330px);
+      grid-template-columns:
+        var(--left-panel-width)
+        var(--left-resizer-width)
+        minmax(0, 1fr)
+        var(--right-resizer-width)
+        var(--right-panel-width);
       min-height: 0;
+    }
+    .layout.left-collapsed {
+      --left-panel-width: 0px;
+      --left-resizer-width: 0px;
+    }
+    .layout.right-collapsed {
+      --right-panel-width: 0px;
+      --right-resizer-width: 0px;
+    }
+    .layout.left-collapsed .left,
+    .layout.left-collapsed #leftResizer,
+    .layout.right-collapsed .right,
+    .layout.right-collapsed #rightResizer {
+      display: none;
     }
 
     .left, .right {
@@ -131,10 +154,45 @@
       display: flex;
       flex-direction: column;
     }
+    .left { grid-column: 1; }
+    #leftResizer { grid-column: 2; }
+    .viewer { grid-column: 3; }
+    #rightResizer { grid-column: 4; }
     .right {
+      grid-column: 5;
       border-right: 0;
       border-left: 1px solid var(--line);
     }
+    .panel-resizer {
+      position: relative;
+      z-index: 4;
+      min-width: 0;
+      background: #f8fafc;
+      cursor: col-resize;
+      touch-action: none;
+    }
+    .panel-resizer::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      transform: translateX(-50%);
+      background: var(--line);
+      transition: width 0.15s ease, background 0.15s ease;
+    }
+    .panel-resizer:hover::after,
+    .panel-resizer:focus-visible::after,
+    body.panel-resizing .panel-resizer.active::after {
+      width: 4px;
+      background: var(--brand);
+    }
+    body.panel-resizing {
+      cursor: col-resize;
+      user-select: none;
+    }
+    body.panel-resizing iframe { pointer-events: none; }
     .panel-head {
       padding: 12px;
       border-bottom: 1px solid var(--line);
@@ -405,6 +463,8 @@
       body { overflow: auto; }
       .app { height: auto; min-height: 100vh; }
       .layout { grid-template-columns: 1fr; }
+      .panel-resizer { display: none; }
+      .left, .viewer, .right { grid-column: 1; }
       .left, .right { min-height: 360px; border-left: 0; border-right: 0; border-bottom: 1px solid var(--line); }
       .viewer { min-height: 680px; }
     }
@@ -435,6 +495,8 @@
         <button id="zoomOutBtn" class="small">축소</button>
         <button id="zoomResetBtn" class="small">기본</button>
         <button id="zoomInBtn" class="small">확대</button>
+        <button id="toggleLeftPanelBtn" class="small" aria-pressed="false">파일 목록 숨기기</button>
+        <button id="toggleRightPanelBtn" class="small" aria-pressed="false">채점 숨기기</button>
         <span id="zoomLabel" class="badge">배율 100%</span>
         <span id="collectionLabel" class="status">폴더나 파일을 열어 주세요.</span>
         <span class="spacer"></span>
@@ -442,8 +504,8 @@
       </div>
     </header>
 
-    <main class="layout">
-      <aside class="left">
+    <main id="mainLayout" class="layout">
+      <aside id="leftPanel" class="left">
         <div class="panel-head">
           <div class="panel-title">
             <span>파일 목록</span>
@@ -459,6 +521,8 @@
         </div>
         <div id="fileList" class="file-list"></div>
       </aside>
+
+      <div id="leftResizer" class="panel-resizer" role="separator" aria-label="파일 목록 폭 조절" aria-orientation="vertical" tabindex="0"></div>
 
       <section class="viewer">
         <div class="viewer-head">
@@ -476,7 +540,9 @@
         </div>
       </section>
 
-      <aside class="right">
+      <div id="rightResizer" class="panel-resizer" role="separator" aria-label="채점 패널 폭 조절" aria-orientation="vertical" tabindex="0"></div>
+
+      <aside id="rightPanel" class="right">
         <div class="panel-head">
           <div class="panel-title">
             <span>채점</span>
@@ -585,6 +651,10 @@
       originalObjectUrls: new Map(),
       pdfCacheByStem: new Map(),
       convertedPdfCache: new Map(),
+      leftPanelWidth: 310,
+      rightPanelWidth: 330,
+      leftPanelHidden: false,
+      rightPanelHidden: false,
     };
 
     const els = {
@@ -602,6 +672,8 @@
       zoomOutBtn: document.getElementById("zoomOutBtn"),
       zoomResetBtn: document.getElementById("zoomResetBtn"),
       zoomInBtn: document.getElementById("zoomInBtn"),
+      toggleLeftPanelBtn: document.getElementById("toggleLeftPanelBtn"),
+      toggleRightPanelBtn: document.getElementById("toggleRightPanelBtn"),
       zoomLabel: document.getElementById("zoomLabel"),
       collectionLabel: document.getElementById("collectionLabel"),
       progressLabel: document.getElementById("progressLabel"),
@@ -621,6 +693,11 @@
       totalCount: document.getElementById("totalCount"),
       doneCount: document.getElementById("doneCount"),
       unsupportedCount: document.getElementById("unsupportedCount"),
+      mainLayout: document.getElementById("mainLayout"),
+      leftPanel: document.getElementById("leftPanel"),
+      rightPanel: document.getElementById("rightPanel"),
+      leftResizer: document.getElementById("leftResizer"),
+      rightResizer: document.getElementById("rightResizer"),
       criteriaModal: document.getElementById("criteriaModal"),
       criteriaEditor: document.getElementById("criteriaEditor"),
       addCriteriaBtn: document.getElementById("addCriteriaBtn"),
@@ -1624,6 +1701,84 @@
       if (files.length) prepareFiles(files, "드롭파일");
     }
 
+    let activePanelResize = null;
+
+    function clampPanelWidth(side, width) {
+      const minWidth = side === "left" ? 220 : 250;
+      const oppositeWidth = side === "left"
+        ? (state.rightPanelHidden ? 0 : state.rightPanelWidth)
+        : (state.leftPanelHidden ? 0 : state.leftPanelWidth);
+      const available = els.mainLayout.clientWidth - oppositeWidth - 420 - 14;
+      const maxWidth = Math.max(minWidth, Math.min(600, available));
+      return Math.round(Math.max(minWidth, Math.min(maxWidth, width)));
+    }
+
+    function applyPanelLayout() {
+      els.mainLayout.style.setProperty("--left-panel-width", `${state.leftPanelHidden ? 0 : state.leftPanelWidth}px`);
+      els.mainLayout.style.setProperty("--right-panel-width", `${state.rightPanelHidden ? 0 : state.rightPanelWidth}px`);
+      els.mainLayout.classList.toggle("left-collapsed", state.leftPanelHidden);
+      els.mainLayout.classList.toggle("right-collapsed", state.rightPanelHidden);
+
+      els.toggleLeftPanelBtn.textContent = state.leftPanelHidden ? "파일 목록 열기" : "파일 목록 숨기기";
+      els.toggleRightPanelBtn.textContent = state.rightPanelHidden ? "채점 열기" : "채점 숨기기";
+      els.toggleLeftPanelBtn.setAttribute("aria-pressed", String(state.leftPanelHidden));
+      els.toggleRightPanelBtn.setAttribute("aria-pressed", String(state.rightPanelHidden));
+      els.leftResizer.setAttribute("aria-valuenow", String(state.leftPanelWidth));
+      els.rightResizer.setAttribute("aria-valuenow", String(state.rightPanelWidth));
+    }
+
+    function refreshPreviewAfterPanelChange() {
+      clearTimeout(refreshPreviewAfterPanelChange._timer);
+      refreshPreviewAfterPanelChange._timer = setTimeout(() => showCurrentFile(), 100);
+    }
+
+    function togglePanel(side) {
+      if (side === "left") state.leftPanelHidden = !state.leftPanelHidden;
+      else state.rightPanelHidden = !state.rightPanelHidden;
+      applyPanelLayout();
+      refreshPreviewAfterPanelChange();
+    }
+
+    function startPanelResize(side, event) {
+      if (event.button !== 0 || window.matchMedia("(max-width: 1100px)").matches) return;
+      event.preventDefault();
+      activePanelResize = { side, rect: els.mainLayout.getBoundingClientRect() };
+      document.body.classList.add("panel-resizing");
+      (side === "left" ? els.leftResizer : els.rightResizer).classList.add("active");
+    }
+
+    function movePanelResize(event) {
+      if (!activePanelResize) return;
+      const { side, rect } = activePanelResize;
+      const rawWidth = side === "left" ? event.clientX - rect.left : rect.right - event.clientX;
+      if (side === "left") state.leftPanelWidth = clampPanelWidth(side, rawWidth);
+      else state.rightPanelWidth = clampPanelWidth(side, rawWidth);
+      applyPanelLayout();
+    }
+
+    function finishPanelResize() {
+      if (!activePanelResize) return;
+      els.leftResizer.classList.remove("active");
+      els.rightResizer.classList.remove("active");
+      document.body.classList.remove("panel-resizing");
+      activePanelResize = null;
+      refreshPreviewAfterPanelChange();
+    }
+
+    function resizePanelWithKeyboard(side, event) {
+      if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const direction = event.key === "ArrowRight" ? 1 : -1;
+      if (side === "left") {
+        state.leftPanelWidth = clampPanelWidth(side, state.leftPanelWidth + direction * 20);
+      } else {
+        state.rightPanelWidth = clampPanelWidth(side, state.rightPanelWidth - direction * 20);
+      }
+      applyPanelLayout();
+      refreshPreviewAfterPanelChange();
+    }
+
     function bindEvents() {
       els.openFolderBtn.addEventListener("click", () => els.folderInput.click());
       els.openFilesBtn.addEventListener("click", () => els.fileInput.click());
@@ -1642,6 +1797,15 @@
       els.zoomOutBtn.addEventListener("click", () => { state.zoom = Math.max(0.3, state.zoom / 1.1); rerender(); });
       els.zoomResetBtn.addEventListener("click", () => { state.zoom = 1; rerender(); });
       els.zoomInBtn.addEventListener("click", () => { state.zoom = Math.min(5, state.zoom * 1.1); rerender(); });
+      els.toggleLeftPanelBtn.addEventListener("click", () => togglePanel("left"));
+      els.toggleRightPanelBtn.addEventListener("click", () => togglePanel("right"));
+      els.leftResizer.addEventListener("pointerdown", e => startPanelResize("left", e));
+      els.rightResizer.addEventListener("pointerdown", e => startPanelResize("right", e));
+      els.leftResizer.addEventListener("keydown", e => resizePanelWithKeyboard("left", e));
+      els.rightResizer.addEventListener("keydown", e => resizePanelWithKeyboard("right", e));
+      document.addEventListener("pointermove", movePanelResize);
+      document.addEventListener("pointerup", finishPanelResize);
+      document.addEventListener("pointercancel", finishPanelResize);
       els.searchInput.addEventListener("input", () => renderFileList(false));
       els.showOnlyUngraded.addEventListener("change", () => renderFileList(false));
       els.openOriginalBtn.addEventListener("click", openOriginal);
@@ -1674,10 +1838,14 @@
       }, { passive: false });
       window.addEventListener("resize", () => {
         clearTimeout(window._resizeTimer);
+        state.leftPanelWidth = clampPanelWidth("left", state.leftPanelWidth);
+        state.rightPanelWidth = clampPanelWidth("right", state.rightPanelWidth);
+        applyPanelLayout();
         window._resizeTimer = setTimeout(() => showCurrentFile(), 180);
       });
     }
 
+    applyPanelLayout();
     bindEvents();
     if (new URLSearchParams(location.search).get("manual") === "1") {
       els.manualModal.classList.remove("hidden");
