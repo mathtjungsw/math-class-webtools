@@ -120,7 +120,8 @@
     .upload-card{padding:19px;border-color:#e3e5ed;border-radius:19px;background:#fcfcfe}
     .upload-card.loaded{border-color:#a9decf;background:#f6fffb}
     .dropzone{min-height:112px;border:1.5px dashed #c8cedb;border-radius:16px;background:#fff;transition:.18s}
-    .dropzone:hover{border-color:var(--orange);background:#fff8f5}
+    .dropzone:hover,.dropzone.is-dragging{border-color:var(--orange);background:#fff3ee;box-shadow:inset 0 0 0 3px rgba(255,107,61,.08)}
+    .dropzone label{display:grid;width:100%;min-height:78px;place-content:center;cursor:pointer}
     .dropzone strong{color:#d94e2f;font-size:13px}
     .calculate-bar{bottom:14px;padding:16px 18px;border:0;border-radius:20px;color:#fff;background:rgba(17,28,53,.95);box-shadow:0 18px 40px rgba(17,28,53,.24)}
     .calculate-bar p{color:#bfc6d6}.calculate-bar strong{color:#fff;font-size:14px}
@@ -131,6 +132,18 @@
     .metric span{font-size:10px}.metric strong{font-size:23px;font-weight:900}
     .result-tabs{gap:8px}.result-tab{padding:11px 15px;border:0;border-radius:12px}.result-tab.active{border:0;color:#fff;background:var(--navy)}
     .table-wrap{border-color:#e3e5ec;border-radius:17px}.data-table th{padding:12px 9px;background:#f3f4f8}.data-table td{padding:11px 8px}.data-table tbody tr:hover{background:#fff7f4}
+    .result-toolbar{display:flex;margin-bottom:10px;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .zoom-controls{display:flex;align-items:center;gap:5px}.zoom-controls button,.column-picker>summary{display:inline-grid;min-height:36px;padding:0 12px;place-items:center;border:1px solid #e0e3eb;border-radius:11px;color:#445069;background:#fff;font-size:11px;font-weight:800;list-style:none;cursor:pointer}
+    .zoom-controls button{min-width:36px}.zoom-controls output{min-width:52px;text-align:center;color:var(--navy);font-size:11px;font-weight:850}
+    .column-picker{position:relative}.column-picker>summary::-webkit-details-marker{display:none}.column-options{position:absolute;z-index:15;top:42px;right:0;display:grid;width:260px;padding:12px;grid-template-columns:1fr 1fr;gap:7px;border:1px solid #e1e4eb;border-radius:15px;background:#fff;box-shadow:0 18px 45px rgba(17,28,53,.14)}
+    .column-options label{display:flex;min-height:32px;padding:5px 7px;align-items:center;gap:7px;border-radius:8px;color:#4d586e;font-size:10px}.column-options label:hover{background:#f5f6fa}.column-options input{accent-color:var(--orange)}
+    .column-options .reset-columns{grid-column:1/-1;min-height:32px;border:0;border-radius:9px;color:#d34e31;background:#fff1ec;font-size:10px;font-weight:800;cursor:pointer}
+    .table-zoom-target{width:100%;transform-origin:top left}.compact-results{width:100%;min-width:680px;table-layout:fixed;white-space:normal}
+    .compact-results th{line-height:1.25}.compact-results th span,.compact-results th small,.cell-stack strong,.cell-stack small{display:block}
+    .compact-results th span{color:#344058;font-size:9px}.compact-results th small{margin-top:3px;color:#8b93a4;font-size:7px;font-weight:650}
+    .compact-results td{overflow-wrap:anywhere;line-height:1.25}.cell-stack strong{color:#263149;font-size:10px}.cell-stack small{margin-top:3px;color:#8790a2;font-size:8px}
+    .compact-results [data-col="student"]{width:8%}.compact-results [data-col^="component-"]{width:8%}.compact-results [data-col="total"]{width:7%}.compact-results [data-col="rank"]{width:7%}.compact-results [data-col="midrank"]{width:8%}.compact-results [data-col="grade"],.compact-results [data-col="achievement"]{width:5.5%}.compact-results [data-col="notes"]{width:12%}
+    .column-hidden{display:none!important}
     .grade-chip{color:#d84b2c;background:#fff0eb}.achievement-chip{color:#117a61;background:#e9faf5}
     .sub-card{padding:19px;border-radius:18px}.bar-fill{background:linear-gradient(90deg,var(--orange),#ffb35c)}
     .privacy-reminder{padding:16px;border-radius:15px}
@@ -142,6 +155,7 @@
       details.panel>summary{min-height:78px;padding:17px}.panel-body{padding:3px 16px 22px}
       .step-no{width:38px;height:38px}.summary-copy strong{font-size:16px}
       .component-card,.upload-card{padding:15px}.calculate-bar{border-radius:18px}
+      .result-toolbar{align-items:stretch}.column-picker{flex:1}.column-picker>summary{width:100%}.zoom-controls{justify-content:flex-end}.column-options{position:fixed;top:auto;right:14px;bottom:14px;left:14px;width:auto;max-height:55vh;overflow:auto}
     }
   </style>
 </head>
@@ -240,6 +254,8 @@
   const pendingMatrices = new Map();
   let state = defaultState();
   let activeResultTab = "students";
+  let tableZoom = window.innerWidth <= 650 ? 0.65 : 1;
+  const hiddenResultColumns = new Set();
 
   function defaultState(){
     return {
@@ -336,14 +352,18 @@
     const grid=document.querySelector("#uploadGrid");
     grid.innerHTML=state.components.map(c=>{const values=Object.values(c.scores||{}),count=values.length,statusCount=values.filter(v=>num(v.rawScore)===null&&v.status).length;return `<article class="upload-card${count?" loaded":""}" data-id="${c.id}">
       <h3>${esc(c.name)} <span class="upload-status">${count?`${count}명 입력됨${statusCount?` · 결시표기 ${statusCount}명`:""}`:"점수 없음"}</span></h3>
-      <div class="dropzone"><label><strong>엑셀 파일 선택</strong><br />.xlsx 또는 .xls · 자동 형식 인식<input class="score-file" type="file" accept=".xlsx,.xls" /></label></div>
+      <div class="dropzone"><label><strong>엑셀 파일 선택 또는 드래그</strong><span>클릭하거나 파일을 이곳에 끌어다 놓으세요.</span><small>.xlsx 또는 .xls · 자동 형식 인식</small><input class="score-file" type="file" accept=".xlsx,.xls" /></label></div>
       <div class="upload-actions"><button class="btn btn-secondary btn-small manual-toggle" type="button">직접 붙여넣기</button><button class="btn btn-secondary btn-small mapping-toggle" type="button"${pendingMatrices.has(c.id)?"":" disabled"}>열 위치 지정</button>${count?'<button class="btn btn-danger btn-small clear-scores" type="button">점수 지우기</button>':""}</div>
       <div class="manual-box"><label class="field"><span>한 줄에 반, 번호, 이름(선택), 점수</span><textarea placeholder="2, 1, 홍길동, 95&#10;2, 2, 김웅천, 87&#10;3, 1, , 90"></textarea></label><button class="btn btn-primary btn-small apply-manual" type="button">붙여넣은 점수 적용</button></div>
       <div class="mapping-box"><p class="hint" style="margin-top:0">엑셀의 열 문자와 데이터 시작 행을 직접 지정합니다. 예: A, B, C, D</p><div class="mapping-grid"><label class="field"><span>시작 행</span><input data-map="startRow" value="2" /></label><label class="field"><span>반 열</span><input data-map="classCol" value="A" /></label><label class="field"><span>번호 열</span><input data-map="noCol" value="B" /></label><label class="field"><span>이름 열(선택)</span><input data-map="nameCol" value="C" /></label><label class="field"><span>점수 열</span><input data-map="scoreCol" value="D" /></label></div><button class="btn btn-primary btn-small apply-mapping" type="button" style="margin-top:9px">지정한 열로 읽기</button></div>
     </article>`}).join("");
     grid.querySelectorAll(".upload-card").forEach(card=>{
       const id=card.dataset.id,c=state.components.find(x=>x.id===id);
-      card.querySelector(".score-file").addEventListener("change",e=>{if(e.target.files[0])parseUploadedWorkbook(e.target.files[0],id)});
+      const dropzone=card.querySelector(".dropzone"),fileInput=card.querySelector(".score-file");
+      fileInput.addEventListener("change",e=>{if(e.target.files[0])parseUploadedWorkbook(e.target.files[0],id)});
+      ["dragenter","dragover"].forEach(type=>dropzone.addEventListener(type,e=>{e.preventDefault();e.stopPropagation();dropzone.classList.add("is-dragging")}));
+      ["dragleave","dragend"].forEach(type=>dropzone.addEventListener(type,e=>{e.preventDefault();e.stopPropagation();dropzone.classList.remove("is-dragging")}));
+      dropzone.addEventListener("drop",e=>{e.preventDefault();e.stopPropagation();dropzone.classList.remove("is-dragging");const file=e.dataTransfer?.files?.[0];if(!file)return;if(!/\.xlsx?$/i.test(file.name)){toast("엑셀 파일(.xlsx, .xls)만 올릴 수 있습니다.");return}parseUploadedWorkbook(file,id)});
       card.querySelector(".manual-toggle").addEventListener("click",()=>card.querySelector(".manual-box").classList.toggle("show"));
       card.querySelector(".mapping-toggle").addEventListener("click",()=>card.querySelector(".mapping-box").classList.toggle("show"));
       card.querySelector(".apply-manual").addEventListener("click",()=>applyManualScores(c,card.querySelector("textarea").value));
@@ -476,16 +496,29 @@
   function activateTab(){document.querySelectorAll(".result-tab").forEach(el=>el.classList.toggle("active",el.dataset.tab===activeResultTab));document.querySelectorAll(".tab-pane").forEach(el=>el.classList.toggle("active",el.dataset.pane===activeResultTab))}
   function studentTableMarkup(rows){
     const classes=[...new Set(rows.map(r=>r.classNo))].sort((a,b)=>a-b),grades=[...new Set(rows.map(r=>r.grade).filter(Boolean))].sort(),achs=[...new Set(rows.map(r=>r.achievement).filter(Boolean))].sort();
-    return `<div class="filter-bar"><select id="classFilter"><option value="">전체 반</option>${classes.map(v=>`<option>${v}</option>`).join("")}</select><select id="gradeFilter"><option value="">전체 등급</option>${grades.map(v=>`<option>${v}</option>`).join("")}</select><select id="achFilter"><option value="">전체 성취도</option>${achs.map(v=>`<option>${v}</option>`).join("")}</select><input id="studentSearch" placeholder="이름 또는 반-번호 검색" /><select id="sortMode"><option value="class">반·번호순</option><option value="score">총점 높은순</option></select></div><div id="studentTableHost">${tableMarkup(rows)}</div>`;
+    const columns=[["student","학생"],...state.components.map(c=>[`component-${c.id}`,c.name]),["total","총점"],["rank","석차"],["midrank","중간석차"],["grade","등급"],["achievement","성취도"],["notes","비고"]];
+    return `<div class="result-toolbar"><details class="column-picker"><summary>열 표시 설정</summary><div class="column-options">${columns.map(([key,label])=>`<label><input type="checkbox" data-column-toggle="${key}"${hiddenResultColumns.has(key)?"":" checked"} />${esc(label)}</label>`).join("")}<button class="reset-columns" type="button">모든 열 표시</button></div></details><div class="zoom-controls" aria-label="결과표 확대 축소"><button id="zoomOutBtn" type="button" aria-label="축소">−</button><output id="zoomValue">${Math.round(tableZoom*100)}%</output><button id="zoomInBtn" type="button" aria-label="확대">＋</button></div></div><div class="filter-bar"><select id="classFilter"><option value="">전체 반</option>${classes.map(v=>`<option>${v}</option>`).join("")}</select><select id="gradeFilter"><option value="">전체 등급</option>${grades.map(v=>`<option>${v}</option>`).join("")}</select><select id="achFilter"><option value="">전체 성취도</option>${achs.map(v=>`<option>${v}</option>`).join("")}</select><input id="studentSearch" placeholder="이름 또는 반-번호 검색" /><select id="sortMode"><option value="class">반·번호순</option><option value="score">총점 높은순</option></select></div><div id="studentTableHost">${tableMarkup(rows)}</div>`;
   }
   function tableMarkup(rows){
-    return `<div class="table-wrap"><table class="data-table"><thead><tr><th>반</th><th>번호</th><th>학생명</th>${state.components.map(c=>`<th>${esc(c.name)} 원점수</th><th>${esc(c.name)} 환산</th>`).join("")}<th>총점</th><th>원점수</th><th>석차</th><th>동석차</th><th>중간석차</th><th>중간석차백분율</th><th>등급</th><th>성취도</th><th>비고</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.classNo}</td><td>${r.studentNo}</td><td class="left">${esc(r.studentName)}</td>${state.components.map(c=>`<td class="score-cell">${r.raw[c.id]===null?`<span class="muted">${esc(r.rawStatus?.[c.id]||"빈칸")}</span>`:round2(r.raw[c.id])}</td><td class="score-cell">${round2(r.converted[c.id])}</td>`).join("")}<td class="score-cell"><strong>${round2(r.total).toFixed(2)}</strong></td><td>${r.integerScore}</td><td>${r.rank}</td><td>${r.tieCount}</td><td>${round2(r.midRank)}</td><td>${round2(r.midPct)}%</td><td>${r.grade?`<span class="grade-chip">${r.grade}</span>`:'<span class="muted">미산출</span>'}</td><td>${r.achievement?`<span class="achievement-chip">${r.achievement}</span>`:'<span class="muted">미산출</span>'}</td><td class="left">${esc(r.notes.join(", "))}</td></tr>`).join("")}</tbody></table></div>`;
+    return `<div class="table-wrap"><div class="table-zoom-target" style="zoom:${tableZoom}"><table class="data-table compact-results"><thead><tr><th data-col="student"><span>학생</span><small>반·번호 / 이름</small></th>${state.components.map(c=>`<th data-col="component-${c.id}"><span>${esc(c.name)}</span><small>원점수 / 환산</small></th>`).join("")}<th data-col="total"><span>총점</span><small>환산합 / 원점수</small></th><th data-col="rank"><span>석차</span><small>순위 / 동석차</small></th><th data-col="midrank"><span>중간석차</span><small>석차 / 백분율</small></th><th data-col="grade"><span>등급</span><small>석차등급</small></th><th data-col="achievement"><span>성취도</span><small>A~E</small></th><th data-col="notes"><span>비고</span><small>결시·확인사항</small></th></tr></thead><tbody>${rows.map(r=>`<tr><td data-col="student" class="cell-stack"><strong>${r.classNo}-${r.studentNo}</strong><small>${esc(r.studentName||"이름 없음")}</small></td>${state.components.map(c=>`<td data-col="component-${c.id}" class="cell-stack score-cell"><strong>${r.raw[c.id]===null?`<span class="muted">${esc(r.rawStatus?.[c.id]||"빈칸")}</span>`:round2(r.raw[c.id])}</strong><small>환산 ${round2(r.converted[c.id])}</small></td>`).join("")}<td data-col="total" class="cell-stack score-cell"><strong>${round2(r.total).toFixed(2)}</strong><small>원점수 ${r.integerScore}</small></td><td data-col="rank" class="cell-stack"><strong>${r.rank}위</strong><small>동석차 ${r.tieCount}명</small></td><td data-col="midrank" class="cell-stack"><strong>${round2(r.midRank)}</strong><small>${round2(r.midPct)}%</small></td><td data-col="grade">${r.grade?`<span class="grade-chip">${r.grade}</span>`:'<span class="muted">미산출</span>'}</td><td data-col="achievement">${r.achievement?`<span class="achievement-chip">${r.achievement}</span>`:'<span class="muted">미산출</span>'}</td><td data-col="notes" class="left">${esc(r.notes.join(", "))}</td></tr>`).join("")}</tbody></table></div></div>`;
+  }
+  function applyResultTablePreferences(){
+    document.querySelectorAll("[data-col]").forEach(el=>el.classList.toggle("column-hidden",hiddenResultColumns.has(el.dataset.col)));
+    document.querySelectorAll(".table-zoom-target").forEach(el=>el.style.zoom=String(tableZoom));
+    const value=document.querySelector("#zoomValue");if(value)value.textContent=`${Math.round(tableZoom*100)}%`;
+  }
+  function bindResultTableControls(){
+    document.querySelectorAll("[data-column-toggle]").forEach(input=>input.addEventListener("change",()=>{input.checked?hiddenResultColumns.delete(input.dataset.columnToggle):hiddenResultColumns.add(input.dataset.columnToggle);applyResultTablePreferences()}));
+    document.querySelector(".reset-columns")?.addEventListener("click",()=>{hiddenResultColumns.clear();document.querySelectorAll("[data-column-toggle]").forEach(input=>input.checked=true);applyResultTablePreferences()});
+    document.querySelector("#zoomOutBtn")?.addEventListener("click",()=>{tableZoom=Math.max(.5,Math.round((tableZoom-.1)*100)/100);applyResultTablePreferences()});
+    document.querySelector("#zoomInBtn")?.addEventListener("click",()=>{tableZoom=Math.min(1.3,Math.round((tableZoom+.1)*100)/100);applyResultTablePreferences()});
+    applyResultTablePreferences();
   }
   function bindFilters(){
-    const host=document.querySelector("#studentTableHost");if(!host)return;["classFilter","gradeFilter","achFilter","studentSearch","sortMode"].forEach(id=>document.querySelector("#"+id).addEventListener(id==="studentSearch"?"input":"change",()=>{
+    const host=document.querySelector("#studentTableHost");if(!host)return;bindResultTableControls();["classFilter","gradeFilter","achFilter","studentSearch","sortMode"].forEach(id=>document.querySelector("#"+id).addEventListener(id==="studentSearch"?"input":"change",()=>{
       const cls=document.querySelector("#classFilter").value,grade=document.querySelector("#gradeFilter").value,ach=document.querySelector("#achFilter").value,q=document.querySelector("#studentSearch").value.trim().toLowerCase(),sort=document.querySelector("#sortMode").value;
       let rows=state.results.filter(r=>(!cls||String(r.classNo)===cls)&&(!grade||String(r.grade)===grade)&&(!ach||r.achievement===ach)&&(!q||`${r.studentName} ${r.classNo}-${r.studentNo}`.toLowerCase().includes(q)));
-      rows=[...rows].sort(sort==="score"?(a,b)=>b.total-a.total||a.classNo-b.classNo||a.studentNo-b.studentNo:(a,b)=>a.classNo-b.classNo||a.studentNo-b.studentNo);host.innerHTML=tableMarkup(rows);
+      rows=[...rows].sort(sort==="score"?(a,b)=>b.total-a.total||a.classNo-b.classNo||a.studentNo-b.studentNo:(a,b)=>a.classNo-b.classNo||a.studentNo-b.studentNo);host.innerHTML=tableMarkup(rows);applyResultTablePreferences();
     }));
   }
   function gradeSummaryMarkup(rows){
