@@ -944,6 +944,21 @@ body.is-modal-open {
 .card-sentiment .node { fill: var(--mint); stroke: var(--navy); stroke-width: 4; }
 
 .card-trend .tool-visual { background: #edf2ff; }
+.card-portfolio .tool-visual { background: #e8f6ef; }
+.card-portfolio .portfolio-donut circle:first-child { fill: none; stroke: #5dd2b2; stroke-width: 20; }
+.card-portfolio .portfolio-donut path:nth-of-type(1) { fill: none; stroke: var(--blue); stroke-width: 20; }
+.card-portfolio .portfolio-donut path:nth-of-type(2) { fill: none; stroke: var(--yellow); stroke-width: 20; }
+.card-portfolio .portfolio-donut path:nth-of-type(3) { fill: none; stroke: var(--orange); stroke-width: 20; }
+.card-portfolio .portfolio-donut circle:last-child { fill: white; stroke: var(--navy); stroke-width: 4; }
+.card-portfolio .portfolio-chart path:first-child { fill: none; stroke: #a9b7b1; stroke-width: 3; }
+.card-portfolio .portfolio-chart path:nth-child(2) {
+  fill: none;
+  stroke: var(--navy);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 6;
+}
+.card-portfolio .portfolio-chart circle { fill: var(--mint); stroke: var(--navy); stroke-width: 3; }
 .card-trend .axis { fill: none; stroke: var(--navy); stroke-linecap: round; stroke-width: 5; }
 .card-trend .trend-grid { fill: none; stroke: #cfd9ee; stroke-width: 2; }
 .card-trend .trend-line { stroke: var(--orange); stroke-linecap: round; stroke-width: 6; }

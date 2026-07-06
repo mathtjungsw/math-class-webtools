@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="경제 수학·실용 경제 융합 수업을 위한 투자 포트폴리오 시뮬레이션" />
+    <title>PORTFOLIO LAB — 수학과 함께하는 투자 포트폴리오</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="noise" aria-hidden="true"></div>
+    <header class="topbar">
+      <a class="brand" href="../../index.html" aria-label="수학 수업 웹툴 모음으로 돌아가기">
+        <span class="brand-symbol">PL</span>
+        <span><strong>PORTFOLIO LAB</strong><small>ECON × MATH</small></span>
+      </a>
+      <nav class="top-actions" aria-label="주요 기능">
+        <button class="ghost-button" type="button" data-open-guide>
+          <span aria-hidden="true">⌁</span> 수업 가이드
+        </button>
+        <button class="ghost-button save-state-button" type="button" data-save>
+          <span aria-hidden="true">↓</span> 저장
+        </button>
+        <button class="pdf-button" type="button" data-print>
+          <span aria-hidden="true">▣</span> 보고서 PDF
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="kicker"><span>MISSION 01</span> 교실 속 투자 전략 연구소</p>
+          <h1>숫자로 설계하고,<br /><em>사건으로 검증하라.</em></h1>
+          <p>
+            한정된 자금을 주식·채권·현금·금에 배분한 뒤, 실제 역사적 충격을 통과시켜 보세요.
+            “얼마나 벌었나”보다 “왜 그렇게 선택했나”가 더 중요한 실험입니다.
+          </p>
+          <div class="hero-actions">
+            <button class="primary-button" type="button" data-jump="design">포트폴리오 설계 시작 <span>→</span></button>
+            <button class="text-button" type="button" data-load>저장한 활동 불러오기</button>
+          </div>
+          <div class="hero-meta">
+            <span><b>5</b> 자산군</span><i></i><span><b>6</b> 역사 시나리오</span><i></i><span><b>4</b> 수학 지표</span>
+          </div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="market-ticker"><span>SIMULATION MARKET</span><b data-ticker-value>+8.42%</b></div>
+          <svg class="hero-chart" viewBox="0 0 620 360" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="heroFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#65e0be" stop-opacity=".35" />
+                <stop offset="1" stop-color="#65e0be" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+            <g class="hero-grid">
+              <path d="M0 60H620M0 130H620M0 200H620M0 270H620" />
+              <path d="M80 0V360M200 0V360M320 0V360M440 0V360M560 0V360" />
+            </g>
+            <path class="hero-area" d="M0 290C45 280 74 226 116 244S183 318 230 251S306 154 348 181S416 242 463 164S539 61 620 80V360H0Z" />
+            <path class="hero-line" d="M0 290C45 280 74 226 116 244S183 318 230 251S306 154 348 181S416 242 463 164S539 61 620 80" />
+          </svg>
+          <div class="float-card float-risk"><small>예상 위험</small><strong data-hero-risk>8.7%</strong><span>표준편차 σ</span></div>
+          <div class="float-card float-return"><small>기대수익</small><strong data-hero-return>5.6%</strong><span>가중평균 E(R)</span></div>
+          <div class="hero-stamp">NOT<br />LUCK,<br /><b>LOGIC.</b></div>
+        </div>
+      </section>
+
+      <div class="progress-shell">
+        <ol class="progress-nav" aria-label="활동 단계">
+          <li class="is-active"><button type="button" data-jump="design"><b>01</b><span>설계</span></button></li>
+          <li><button type="button" data-jump="scenario"><b>02</b><span>충격 실험</span></button></li>
+          <li><button type="button" data-jump="analysis"><b>03</b><span>분석</span></button></li>
+          <li><button type="button" data-jump="report"><b>04</b><span>보고서</span></button></li>
+        </ol>
+      </div>
+
+      <section class="section section-design" id="design" data-step="design">
+        <div class="section-heading">
+          <div>
+            <span class="section-number">01 / DESIGN</span>
+            <h2>나만의 자산 배분을 설계하세요.</h2>
+          </div>
+          <p>슬라이더를 움직이면 나머지 자산이 자동 조정되어 합계가 항상 100%를 유지합니다.</p>
+        </div>
+
+        <div class="profile-strip">
+          <label>이름 또는 모둠명<input id="studentName" type="text" maxlength="30" placeholder="예: 3학년 2반 균형투자팀" /></label>
+          <label>초기 투자금<div class="input-with-unit"><input id="initialCapital" type="number" min="100" max="100000" step="100" value="1000" /><span>만원</span></div></label>
+          <fieldset>
+            <legend>투자 성향</legend>
+            <div class="segmented" data-risk-profile>
+              <button type="button" data-profile="stable">안정형</button>
+              <button class="is-selected" type="button" data-profile="balanced">균형형</button>
+              <button type="button" data-profile="growth">성장형</button>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="design-grid">
+          <div class="allocation-panel panel">
+            <div class="panel-head">
+              <div><span class="eyebrow">ASSET MIXER</span><h3>자산 배분 믹서</h3></div>
+              <div class="total-badge"><span>합계</span><strong data-total-weight>100%</strong></div>
+            </div>
+
+            <div class="preset-row" aria-label="포트폴리오 예시">
+              <span>빠른 설계</span>
+              <button type="button" data-preset="stable">방어형</button>
+              <button type="button" data-preset="balanced">균형형</button>
+              <button type="button" data-preset="growth">성장형</button>
+              <button type="button" data-preset="random">🎲 랜덤</button>
+            </div>
+
+            <div class="asset-controls" data-asset-controls></div>
+            <div class="allocation-help"><span>TIP</span> 높은 기대수익에는 보통 더 큰 변동성이 따라옵니다. 서로 다르게 움직이는 자산을 섞으면 위험이 달라집니다.</div>
+          </div>
+
+          <aside class="dashboard-panel panel">
+            <div class="panel-head">
+              <div><span class="eyebrow">LIVE DASHBOARD</span><h3>실시간 포트폴리오 진단</h3></div>
+              <span class="live-pill"><i></i> LIVE</span>
+            </div>
+            <div class="donut-wrap">
+              <div class="donut" data-donut><div><strong>100%</strong><span>투자 완료</span></div></div>
+              <div class="donut-legend" data-donut-legend></div>
+            </div>
+            <div class="metric-grid">
+              <article><span>기대수익률 <button class="info-dot" type="button" data-tooltip="각 자산의 기대수익률에 투자 비중을 곱해 더한 값입니다.">?</button></span><strong class="positive" data-expected-return>0%</strong><small>E(Rₚ) = ΣwᵢE(Rᵢ)</small></article>
+              <article><span>예상 위험 <button class="info-dot" type="button" data-tooltip="수익률의 흔들림을 나타내는 연환산 표준편차입니다.">?</button></span><strong data-expected-risk>0%</strong><small>σₚ = √(wᵀΣw)</small></article>
+              <article><span>분산 효과</span><strong data-diversification>0점</strong><small>자산 분산·상관관계 기반</small></article>
+              <article><span>위험 대비 수익</span><strong data-sharpe>0.00</strong><small>(E(Rₚ)-R𝒇) / σₚ</small></article>
+            </div>
+            <div class="coach-card" data-coach>
+              <span class="coach-icon">✦</span>
+              <div><b>수학 코치</b><p>자산 비중을 조정하면 진단이 시작됩니다.</p></div>
+            </div>
+          </aside>
+        </div>
+
+        <div class="math-lab panel">
+          <div class="panel-head">
+            <div><span class="eyebrow">MATH LENS</span><h3>수학 렌즈로 한 단계 더 보기</h3></div>
+            <div class="math-tabs" role="tablist">
+              <button class="is-active" type="button" data-math-tab="formula">가중평균</button>
+              <button type="button" data-math-tab="correlation">상관관계</button>
+              <button type="button" data-math-tab="frontier">효율적 경계</button>
+            </div>
+          </div>
+          <div class="math-view is-active" data-math-view="formula">
+            <div class="formula-card">
+              <span>포트폴리오 기대수익률</span>
+              <div class="formula-main">E(R<sub>p</sub>) = w₁r₁ + w₂r₂ + ··· + w₅r₅</div>
+              <div class="formula-live" data-formula-live></div>
+            </div>
+            <div class="formula-explain">
+              <b>왜 단순 평균이 아닐까요?</b>
+              <p>각 자산에 넣은 돈의 크기가 다르므로 투자 비중 <i>w</i>를 곱한 가중평균을 사용합니다. 비중의 합은 반드시 1(100%)입니다.</p>
+              <div class="weight-proof"><span>Σwᵢ</span><strong data-weight-proof>1.00</strong><em>= 100%</em></div>
+            </div>
+          </div>
+          <div class="math-view" data-math-view="correlation">
+            <div class="correlation-map" data-correlation-map></div>
+            <div class="formula-explain">
+              <b>상관계수 ρ를 읽는 법</b>
+              <p>+1에 가까우면 같은 방향, -1에 가까우면 반대 방향으로 움직입니다. 상관관계가 낮은 자산을 섞으면 한 자산의 하락을 다른 자산이 완충할 수 있습니다.</p>
+              <div class="correlation-scale"><span>-1 반대</span><i></i><span>0 무관</span><i></i><span>+1 같은 방향</span></div>
+            </div>
+          </div>
+          <div class="math-view frontier-view" data-math-view="frontier">
+            <div class="frontier-chart">
+              <svg data-frontier-svg viewBox="0 0 720 300" role="img" aria-label="위험과 기대수익률 산점도"></svg>
+            </div>
+            <div class="formula-explain">
+              <b>같은 위험이라면 더 높은 수익을</b>
+              <p>점 하나는 하나의 포트폴리오입니다. 위쪽·왼쪽에 가까울수록 같은 위험에서 높은 기대수익을 기대할 수 있습니다. 별표가 현재 설계입니다.</p>
+              <button class="small-action" type="button" data-generate-frontier>무작위 포트폴리오 80개 다시 만들기</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-scenario" id="scenario" data-step="scenario">
+        <div class="section-heading">
+          <div><span class="section-number">02 / STRESS TEST</span><h2>역사의 충격 속으로 들어가세요.</h2></div>
+          <p>아래 수치는 역사적 흐름을 학습용으로 단순화한 모의 수익률입니다. 실제 투자 성과를 재현하거나 예측하지 않습니다.</p>
+        </div>
+
+        <div class="scenario-grid" data-scenario-grid></div>
+
+        <div class="simulation-console panel">
+          <div class="sim-top">
+            <div>
+              <span class="eyebrow">HISTORICAL REPLAY</span>
+              <h3 data-sim-title>2008 글로벌 금융위기</h3>
+              <p data-sim-description></p>
+            </div>
+            <div class="sim-settings">
+              <label>운용 규칙<select id="rebalanceRule"><option value="choice">매 시점 직접 선택</option><option value="always">항상 리밸런싱</option><option value="hold">끝까지 유지</option></select></label>
+              <button class="primary-button" type="button" data-start-simulation>시뮬레이션 시작 <span>▶</span></button>
+            </div>
+          </div>
+
+          <div class="sim-dashboard">
+            <div class="chart-card">
+              <div class="chart-toolbar">
+                <div><span class="chart-dot portfolio"></span>내 포트폴리오 <span class="chart-dot benchmark"></span>현금 보유</div>
+                <strong data-sim-period>시작 전</strong>
+              </div>
+              <svg class="performance-chart" data-performance-chart viewBox="0 0 900 330" preserveAspectRatio="none" role="img" aria-label="포트폴리오 가치 변화 그래프"></svg>
+            </div>
+            <div class="sim-side">
+              <article class="value-card"><span>현재 자산</span><strong data-current-value>1,000만원</strong><small data-profit-value>수익 0만원</small></article>
+              <div class="gauge-card">
+                <div class="gauge-head"><span>위기 체감도</span><b data-stress-label>대기</b></div>
+                <div class="stress-gauge"><i data-stress-gauge></i></div>
+                <small>최대 낙폭 <b data-max-drawdown>0.0%</b></small>
+              </div>
+              <div class="mission-card"><span>TODAY'S MISSION</span><b data-mission-title>위기 속 원칙을 지켜라</b><p data-mission-text>시뮬레이션을 시작하면 미션이 공개됩니다.</p></div>
+            </div>
+          </div>
+
+          <div class="event-deck">
+            <div class="timeline" data-event-timeline></div>
+            <div class="event-stage" data-event-stage>
+              <div class="event-empty"><span>◌</span><b>시장 개장 전</b><p>시나리오와 운용 규칙을 확인한 뒤 시뮬레이션을 시작하세요.</p></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-analysis" id="analysis" data-step="analysis">
+        <div class="section-heading">
+          <div><span class="section-number">03 / ANALYZE</span><h2>결과보다 과정을 해석하세요.</h2></div>
+          <p>좋은 전략은 미래를 맞히는 전략이 아니라, 목표와 위험 허용 범위에 맞고 설명 가능한 전략입니다.</p>
+        </div>
+
+        <div class="analysis-grid">
+          <div class="scoreboard panel">
+            <div class="panel-head"><div><span class="eyebrow">RESULT BOARD</span><h3>시뮬레이션 성적표</h3></div><span class="grade-badge" data-grade>READY</span></div>
+            <div class="result-metrics">
+              <article><span>누적 수익률</span><strong data-result-return>—</strong><small>전체 기간 수익</small></article>
+              <article><span>최대 낙폭</span><strong data-result-drawdown>—</strong><small>고점 대비 최대 하락</small></article>
+              <article><span>변동성</span><strong data-result-volatility>—</strong><small>기간 수익률 표준편차</small></article>
+              <article><span>회복력</span><strong data-result-resilience>—</strong><small>최저점 이후 회복 비율</small></article>
+            </div>
+            <div class="decision-log">
+              <div class="decision-log-head"><b>나의 의사결정 기록</b><span data-decision-count>0개의 선택</span></div>
+              <div data-decision-log><p class="empty-log">시뮬레이션을 완료하면 선택의 흔적이 이곳에 남습니다.</p></div>
+            </div>
+          </div>
+
+          <div class="concept-check panel">
+            <div class="panel-head"><div><span class="eyebrow">QUICK CHECK</span><h3>3분 개념 체크</h3></div><span data-quiz-score>0 / 3</span></div>
+            <div class="quiz-list" data-quiz-list>
+              <fieldset data-answer="b">
+                <legend><b>1</b> 두 자산의 상관계수가 -1에 가까울수록?</legend>
+                <label><input type="radio" name="q1" value="a" /> 항상 수익률이 커진다</label>
+                <label><input type="radio" name="q1" value="b" /> 서로 반대로 움직여 위험 완충 가능성이 커진다</label>
+                <label><input type="radio" name="q1" value="c" /> 기대수익률이 같아진다</label>
+                <p class="quiz-feedback"></p>
+              </fieldset>
+              <fieldset data-answer="c">
+                <legend><b>2</b> 최대 낙폭(MDD)이 뜻하는 것은?</legend>
+                <label><input type="radio" name="q2" value="a" /> 가장 많이 오른 기간의 수익률</label>
+                <label><input type="radio" name="q2" value="b" /> 평균 수익률과 무위험 수익률의 차이</label>
+                <label><input type="radio" name="q2" value="c" /> 고점에서 저점까지 가장 크게 하락한 비율</label>
+                <p class="quiz-feedback"></p>
+              </fieldset>
+              <fieldset data-answer="a">
+                <legend><b>3</b> 리밸런싱을 가장 잘 설명한 것은?</legend>
+                <label><input type="radio" name="q3" value="a" /> 변한 비중을 처음 목표 비중으로 되돌리는 것</label>
+                <label><input type="radio" name="q3" value="b" /> 수익이 난 자산에 모든 돈을 옮기는 것</label>
+                <label><input type="radio" name="q3" value="c" /> 미래 수익률을 정확히 예측하는 것</label>
+                <p class="quiz-feedback"></p>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+
+        <div class="reflection-strip panel">
+          <div><span>생각 열기</span><h3>“가장 높은 수익률”이 항상 “가장 합리적인 전략”일까요?</h3></div>
+          <textarea id="reflectionQuick" rows="3" placeholder="위험, 목표, 투자 기간, 심리적 부담 중 두 가지 이상을 사용해 2~3문장으로 답해 보세요."></textarea>
+        </div>
+      </section>
+
+      <section class="section section-report" id="report" data-step="report">
+        <div class="section-heading">
+          <div><span class="section-number">04 / REPORT</span><h2>나의 전략을 근거로 완성하세요.</h2></div>
+          <p>시뮬레이션 결과와 현재 자산 배분이 자동으로 연결됩니다. 초안을 만든 뒤 반드시 자신의 말로 다듬으세요.</p>
+        </div>
+
+        <div class="report-workspace">
+          <div class="report-editor panel">
+            <div class="panel-head">
+              <div><span class="eyebrow">WRITING STUDIO</span><h3>활동 보고서 작성</h3></div>
+              <button class="small-action" type="button" data-autofill>✦ 결과로 초안 만들기</button>
+            </div>
+            <label>1. 투자 목표와 전략
+              <textarea id="reportGoal" rows="5" placeholder="나의 투자 목표, 기간, 투자 성향을 설명하세요."></textarea>
+            </label>
+            <label>2. 자산 배분의 수학적 근거
+              <textarea id="reportMath" rows="6" placeholder="가중평균, 표준편차, 상관관계 중 두 개 이상을 활용하세요."></textarea>
+            </label>
+            <label>3. 역사적 사건 속 의사결정 분석
+              <textarea id="reportScenario" rows="6" placeholder="어떤 사건에서 어떤 선택을 했고, 결과가 어떻게 달라졌는지 쓰세요."></textarea>
+            </label>
+            <label>4. 한계와 개선 방향
+              <textarea id="reportReflection" rows="5" placeholder="이 모형의 한계와 다음 투자 전략에서 바꾸고 싶은 점을 쓰세요."></textarea>
+            </label>
+            <div class="evidence-check">
+              <span>보고서 근거 체크</span>
+              <label><input type="checkbox" data-evidence="weight" /> 자산 비중</label>
+              <label><input type="checkbox" data-evidence="return" /> 수익률 수치</label>
+              <label><input type="checkbox" data-evidence="risk" /> 위험 지표</label>
+              <label><input type="checkbox" data-evidence="limits" /> 모형의 한계</label>
+            </div>
+          </div>
+
+          <aside class="report-preview panel" data-report-preview>
+            <div class="paper">
+              <header>
+                <span>ECONOMIC MATHEMATICS × PRACTICAL ECONOMICS</span>
+                <h3>투자 포트폴리오 분석 보고서</h3>
+                <div><b data-preview-name>이름 또는 모둠명</b><time data-preview-date></time></div>
+              </header>
+              <section class="paper-summary">
+                <div class="mini-donut" data-preview-donut></div>
+                <div><span>나의 포트폴리오</span><p data-preview-allocation></p></div>
+                <dl><div><dt>기대수익</dt><dd data-preview-return>—</dd></div><div><dt>예상위험</dt><dd data-preview-risk>—</dd></div></dl>
+              </section>
+              <section><h4>01. 투자 목표와 전략</h4><p data-preview-goal>작성한 내용이 이곳에 표시됩니다.</p></section>
+              <section><h4>02. 자산 배분의 수학적 근거</h4><p data-preview-math>작성한 내용이 이곳에 표시됩니다.</p></section>
+              <section><h4>03. 역사적 사건 속 의사결정</h4><p data-preview-scenario>작성한 내용이 이곳에 표시됩니다.</p></section>
+              <section><h4>04. 한계와 개선 방향</h4><p data-preview-reflection>작성한 내용이 이곳에 표시됩니다.</p></section>
+              <footer><span>이 보고서는 교육용 시뮬레이션 결과이며 실제 투자 권유가 아닙니다.</span><b>PORTFOLIO LAB</b></footer>
+            </div>
+            <button class="pdf-button wide" type="button" data-print>보고서를 PDF로 저장 <span>↗</span></button>
+            <small class="print-hint">버튼을 누른 뒤 인쇄 창에서 ‘PDF로 저장’을 선택하세요.</small>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div><b>PORTFOLIO LAB</b><span>경제 수학 × 실용 경제 융합 수업</span></div>
+      <p>과거의 수익률은 미래의 결과를 보장하지 않습니다. 모든 데이터는 개념 학습을 위해 단순화한 모의 자료입니다.</p>
+    </footer>
+
+    <div class="modal" data-guide-modal hidden>
+      <div class="modal-backdrop" data-close-guide></div>
+      <section class="guide-dialog" role="dialog" aria-modal="true" aria-labelledby="guideTitle" tabindex="-1">
+        <button class="modal-close" type="button" data-close-guide aria-label="닫기">×</button>
+        <span class="eyebrow">TEACHER GUIDE</span>
+        <h2 id="guideTitle">수업 운영 가이드</h2>
+        <div class="guide-flow">
+          <article><b>도입 · 10분</b><span>수익과 위험의 관계 예상하기</span><p>“수익률이 가장 높은 자산 하나만 사면 왜 안 될까?”를 먼저 묻고 학생의 직관을 수집합니다.</p></article>
+          <article><b>탐구 · 20분</b><span>포트폴리오 설계와 수학 렌즈</span><p>모둠별 성향을 정한 뒤, 가중평균과 상관계수를 근거로 비중을 설계합니다.</p></article>
+          <article><b>실험 · 20분</b><span>역사적 충격과 의사결정</span><p>같은 초기 포트폴리오로 다른 위기를 실행하거나, 같은 위기에서 서로 다른 전략을 비교합니다.</p></article>
+          <article><b>정리 · 15분</b><span>분석과 보고서</span><p>수익률·최대 낙폭·변동성을 근거로 전략을 평가하고 PDF 보고서를 제출합니다.</p></article>
+        </div>
+        <div class="guide-tips">
+          <div><b>핵심 성취</b><p>가중평균 계산 · 분산과 표준편차 해석 · 상관관계와 분산투자 · 합리적 금융 의사결정</p></div>
+          <div><b>추천 비교</b><p>① 성장형 vs 안정형 ② 유지 vs 리밸런싱 ③ 한 위기의 수익률 vs 최대 낙폭</p></div>
+          <div><b>평가 관점</b><p>결과의 높고 낮음보다 수학적 근거, 일관된 원칙, 한계 인식에 높은 점수를 주세요.</p></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="toast" role="status" aria-live="polite" data-toast></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
