@@ -1,4 +1,10 @@
 const MANUAL_GITHUB_REPOSITORY_URL = "https://github.com/mathtjungsw/math-class-webtools";
+const MIN_PDF_BUSY_MS = 500;
+const KOREAN_FONT_URL = "../sentiment-ai/fonts/NanumGothic-Regular.ttf";
+const KOREAN_FONT_FILE = "NanumGothic-Regular.ttf";
+const KOREAN_FONT_NAME = "NanumGothicTrendlineReport";
+
+let koreanFontBase64Promise = null;
 
 const samples = {
   study: {
@@ -578,40 +584,68 @@ function makeGraphImageWithTrend() {
   return image;
 }
 
-function buildReport() {
+function getReportData() {
   if (!state.model) {
+    return null;
+  }
+
+  const { valid } = getValidData();
+  const names = getAxisNames();
+
+  return {
+    title: els.reportTopic.value.trim() || "데이터의 경향성을 이용한 예측 탐구",
+    createdDate: new Intl.DateTimeFormat("ko-KR", { dateStyle: "long" }).format(new Date()),
+    purpose: els.reportPurpose.value.trim() || "작성하지 않음",
+    dataDescription: els.reportDataDescription.value.trim() || "작성하지 않음",
+    interpretation: els.reportInterpretation.value.trim() || buildInterpretation(),
+    predictionSummary: els.reportPredictionSummary.value.trim() || getPredictionSummary(),
+    learned: els.reportLearned.value.trim() || "작성하지 않음",
+    question: els.reportQuestion.value.trim() || "작성하지 않음",
+    xName: names.x,
+    yName: names.y,
+    data: valid,
+    model: { ...state.model },
+    equation: formatEquation(),
+    chartImage: makeGraphImageWithTrend(),
+    history: state.history.map((record) => ({ ...record })),
+  };
+}
+
+function buildReport() {
+  const reportData = getReportData();
+
+  if (!reportData) {
     showStatus("보고서를 만들려면 먼저 추세선을 계산해 주세요.", "error");
     return false;
   }
-  const { valid } = getValidData();
-  const names = getAxisNames();
+
+  const { data, history } = reportData;
   const chartImage = makeGraphImageWithTrend();
-  const dataRows = valid.map((point, index) => `<tr><td>${index + 1}</td><td>${formatNumber(point.x, 4)}</td><td>${formatNumber(point.y, 4)}</td></tr>`).join("");
-  const historyRows = state.history.map((record, index) => `<tr><td>${index + 1}</td><td>${formatNumber(record.x)}</td><td>${formatNumber(record.y, 2)}</td><td>${escapeHtml(record.equation)}</td><td>${escapeHtml(formatDateTime(record.createdAt))}</td></tr>`).join("");
-  const text = (element, fallback = "작성하지 않음") => escapeHtml(element.value.trim() || fallback);
+  const dataRows = data.map((point, index) => `<tr><td>${index + 1}</td><td>${formatNumber(point.x, 4)}</td><td>${formatNumber(point.y, 4)}</td></tr>`).join("");
+  const historyRows = history.map((record, index) => `<tr><td>${index + 1}</td><td>${formatNumber(record.x)}</td><td>${formatNumber(record.y, 2)}</td><td>${escapeHtml(record.equation)}</td><td>${escapeHtml(formatDateTime(record.createdAt))}</td></tr>`).join("");
 
   els.reportDocument.innerHTML = `
     <header class="report-header">
-      <h1>${text(els.reportTopic, "데이터의 경향성을 이용한 예측 탐구")}</h1>
-      <p>작성 날짜 · ${escapeHtml(new Intl.DateTimeFormat("ko-KR", { dateStyle: "long" }).format(new Date()))}</p>
+      <h1>${escapeHtml(reportData.title)}</h1>
+      <p>작성 날짜 · ${escapeHtml(reportData.createdDate)}</p>
     </header>
     <h2>1. 탐구 개요</h2>
-    <h3>탐구 목적</h3><p>${text(els.reportPurpose)}</p>
-    <h3>자료 설명</h3><p>${text(els.reportDataDescription)}</p>
-    <h3>분석 변수</h3><p>x축: ${escapeHtml(names.x)} / y축: ${escapeHtml(names.y)}</p>
+    <h3>탐구 목적</h3><p>${escapeHtml(reportData.purpose)}</p>
+    <h3>자료 설명</h3><p>${escapeHtml(reportData.dataDescription)}</p>
+    <h3>분석 변수</h3><p>x축: ${escapeHtml(reportData.xName)} / y축: ${escapeHtml(reportData.yName)}</p>
     <h2>2. 입력 데이터</h2>
-    <table><thead><tr><th>번호</th><th>${escapeHtml(names.x)}</th><th>${escapeHtml(names.y)}</th></tr></thead><tbody>${dataRows}</tbody></table>
+    <table><thead><tr><th>번호</th><th>${escapeHtml(reportData.xName)}</th><th>${escapeHtml(reportData.yName)}</th></tr></thead><tbody>${dataRows}</tbody></table>
     <h2>3. 산점도와 추세선</h2>
     <img class="report-chart" src="${chartImage}" alt="입력 데이터 산점도와 직선 추세선" />
-    <div class="report-equation">${escapeHtml(formatEquation())}</div>
-    <p class="report-note">기울기 a = ${formatNumber(state.model.slope, 4)} · y절편 b = ${formatNumber(state.model.intercept, 4)} · 데이터 수 n = ${state.model.n} · 결정계수 R² = ${formatNumber(state.model.rSquared, 4)}</p>
-    <h3>추세선 해석</h3><p>${text(els.reportInterpretation, buildInterpretation())}</p>
+    <div class="report-equation">${escapeHtml(reportData.equation)}</div>
+    <p class="report-note">기울기 a = ${formatNumber(reportData.model.slope, 4)} · y절편 b = ${formatNumber(reportData.model.intercept, 4)} · 데이터 수 n = ${reportData.model.n} · 결정계수 R² = ${formatNumber(reportData.model.rSquared, 4)}</p>
+    <h3>추세선 해석</h3><p>${escapeHtml(reportData.interpretation)}</p>
     <h2>4. 예측 기록</h2>
     <table><thead><tr><th>번호</th><th>예측 x</th><th>예측 y</th><th>사용한 식</th><th>예측 시간</th></tr></thead><tbody>${historyRows || '<tr><td colspan="5">예측 기록 없음</td></tr>'}</tbody></table>
-    <h3>예측 결과 정리</h3><p>${text(els.reportPredictionSummary, getPredictionSummary())}</p>
+    <h3>예측 결과 정리</h3><p>${escapeHtml(reportData.predictionSummary)}</p>
     <h2>5. 탐구를 마치며</h2>
-    <h3>배운 점</h3><p>${text(els.reportLearned)}</p>
-    <h3>더 알고 싶은 점</h3><p>${text(els.reportQuestion)}</p>
+    <h3>배운 점</h3><p>${escapeHtml(reportData.learned)}</p>
+    <h3>더 알고 싶은 점</h3><p>${escapeHtml(reportData.question)}</p>
     <p class="report-note">추세선은 현재 데이터의 전체적인 경향을 보여 주는 수학적 모델입니다. 데이터 범위를 크게 벗어난 예측은 실제 결과와 다를 수 있습니다.</p>
   `;
   els.reportPreviewShell.hidden = false;
@@ -623,6 +657,263 @@ function waitForPaint() {
   return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 }
 
+function arrayBufferToBase64(arrayBuffer) {
+  const bytes = new Uint8Array(arrayBuffer);
+  const chunkSize = 0x8000;
+  let binary = "";
+
+  for (let index = 0; index < bytes.length; index += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+  }
+
+  return window.btoa(binary);
+}
+
+function loadKoreanFontBase64() {
+  if (!koreanFontBase64Promise) {
+    koreanFontBase64Promise = fetch(KOREAN_FONT_URL)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("한국어 PDF 폰트를 불러오지 못했습니다.");
+        }
+
+        return response.arrayBuffer();
+      })
+      .then(arrayBufferToBase64);
+  }
+
+  return koreanFontBase64Promise;
+}
+
+function createTextReportPdf(reportData) {
+  const jsPdfConstructor = window.jspdf?.jsPDF;
+
+  if (!jsPdfConstructor) {
+    throw new Error("PDF 생성 라이브러리를 불러오지 못했습니다.");
+  }
+
+  return loadKoreanFontBase64().then((fontBase64) => {
+    const doc = new jsPdfConstructor({
+      format: "a4",
+      unit: "pt",
+    });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 42;
+    const contentWidth = pageWidth - margin * 2;
+    const bottomLimit = pageHeight - margin;
+    let pageNumber = 1;
+    let y = margin;
+
+    doc.addFileToVFS(KOREAN_FONT_FILE, fontBase64);
+    doc.addFont(KOREAN_FONT_FILE, KOREAN_FONT_NAME, "normal");
+    doc.setFont(KOREAN_FONT_NAME, "normal");
+
+    function drawFooter() {
+      doc.setFont(KOREAN_FONT_NAME, "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(120, 128, 122);
+      doc.text(`${pageNumber}`, pageWidth / 2, pageHeight - 20, { align: "center" });
+    }
+
+    function addPage() {
+      drawFooter();
+      doc.addPage();
+      pageNumber += 1;
+      y = margin;
+      writeText(`${reportData.title} · ${pageNumber}쪽`, {
+        fontSize: 9,
+        color: [104, 113, 104],
+        gap: 12,
+      });
+    }
+
+    function ensureSpace(space) {
+      if (y + space > bottomLimit) {
+        addPage();
+      }
+    }
+
+    function writeText(text, options = {}) {
+      const fontSize = options.fontSize || 11;
+      const lineHeight = options.lineHeight || fontSize * 1.55;
+      const color = options.color || [32, 36, 31];
+      const gap = options.gap ?? 6;
+      const x = options.x || margin;
+      const maxWidth = options.maxWidth || contentWidth;
+      const lines = doc.splitTextToSize(String(text || " "), maxWidth);
+
+      doc.setFont(KOREAN_FONT_NAME, "normal");
+      doc.setFontSize(fontSize);
+      doc.setTextColor(...color);
+
+      lines.forEach((line) => {
+        ensureSpace(lineHeight + gap);
+        doc.text(line || " ", x, y);
+        y += lineHeight;
+      });
+
+      y += gap;
+    }
+
+    function writeSectionTitle(title) {
+      ensureSpace(42);
+      y += 8;
+      doc.setDrawColor(217, 225, 219);
+      doc.setLineWidth(1);
+      doc.line(margin, y + 18, pageWidth - margin, y + 18);
+      writeText(title, {
+        fontSize: 15,
+        lineHeight: 20,
+        color: [20, 87, 59],
+        gap: 12,
+      });
+    }
+
+    function writeSubTitle(title) {
+      writeText(title, {
+        fontSize: 12,
+        lineHeight: 17,
+        color: [34, 49, 40],
+        gap: 4,
+      });
+    }
+
+    function writeInfoBox(text) {
+      const boxPadding = 10;
+      const fontSize = 11;
+      const lineHeight = fontSize * 1.55;
+      const lines = doc.splitTextToSize(String(text || " "), contentWidth - boxPadding * 2);
+      const boxHeight = lines.length * lineHeight + boxPadding * 2;
+
+      ensureSpace(boxHeight + 8);
+      doc.setFillColor(238, 247, 242);
+      doc.setDrawColor(205, 225, 213);
+      doc.roundedRect(margin, y, contentWidth, boxHeight, 5, 5, "FD");
+      doc.setFont(KOREAN_FONT_NAME, "normal");
+      doc.setFontSize(fontSize);
+      doc.setTextColor(20, 87, 59);
+      doc.text(lines, margin + boxPadding, y + boxPadding + fontSize);
+      y += boxHeight + 10;
+    }
+
+    function writeTable(headers, rows, columnWidths) {
+      const fontSize = 9;
+      const lineHeight = 13;
+      const cellPadding = 5;
+      const widths = columnWidths || headers.map(() => contentWidth / headers.length);
+
+      function drawRow(cells, isHeader = false) {
+        const splitCells = cells.map((cell, index) => {
+          const maxWidth = widths[index] - cellPadding * 2;
+          return doc.splitTextToSize(String(cell ?? ""), Math.max(20, maxWidth));
+        });
+        const rowHeight = Math.max(...splitCells.map((lines) => lines.length * lineHeight)) + cellPadding * 2;
+
+        ensureSpace(rowHeight + 2);
+        let x = margin;
+
+        splitCells.forEach((lines, index) => {
+          doc.setFillColor(isHeader ? 247 : 255, isHeader ? 250 : 255, isHeader ? 248 : 255);
+          doc.setDrawColor(222, 230, 225);
+          doc.rect(x, y, widths[index], rowHeight, "FD");
+          doc.setFont(KOREAN_FONT_NAME, "normal");
+          doc.setFontSize(fontSize);
+          doc.setTextColor(isHeader ? 54 : 31, isHeader ? 68 : 44, isHeader ? 58 : 36);
+          doc.text(lines, x + cellPadding, y + cellPadding + fontSize);
+          x += widths[index];
+        });
+
+        y += rowHeight;
+      }
+
+      drawRow(headers, true);
+      rows.forEach((row) => drawRow(row));
+      y += 10;
+    }
+
+    function writeChartImage() {
+      if (!reportData.chartImage) {
+        return;
+      }
+
+      const imageWidth = contentWidth;
+      const imageHeight = imageWidth * 0.54;
+      ensureSpace(imageHeight + 16);
+      doc.setDrawColor(222, 230, 225);
+      doc.rect(margin, y, imageWidth, imageHeight);
+      doc.addImage(reportData.chartImage, "PNG", margin, y, imageWidth, imageHeight, undefined, "FAST");
+      y += imageHeight + 12;
+    }
+
+    doc.setFillColor(31, 122, 82);
+    doc.rect(0, 0, pageWidth, 10, "F");
+    writeText(reportData.title, {
+      fontSize: 22,
+      lineHeight: 30,
+      color: [23, 35, 29],
+      gap: 8,
+    });
+    writeText(`작성 날짜 · ${reportData.createdDate}`, {
+      fontSize: 10,
+      color: [104, 113, 104],
+      gap: 18,
+    });
+
+    writeSectionTitle("1. 탐구 개요");
+    writeSubTitle("탐구 목적");
+    writeText(reportData.purpose);
+    writeSubTitle("자료 설명");
+    writeText(reportData.dataDescription);
+    writeSubTitle("분석 변수");
+    writeText(`x축: ${reportData.xName} / y축: ${reportData.yName}`);
+
+    writeSectionTitle("2. 입력 데이터");
+    writeTable(
+      ["번호", reportData.xName, reportData.yName],
+      reportData.data.map((point, index) => [index + 1, formatNumber(point.x, 4), formatNumber(point.y, 4)]),
+      [54, (contentWidth - 54) / 2, (contentWidth - 54) / 2],
+    );
+
+    writeSectionTitle("3. 산점도와 추세선");
+    writeChartImage();
+    writeInfoBox(reportData.equation);
+    writeText(
+      `기울기 a = ${formatNumber(reportData.model.slope, 4)} / y절편 b = ${formatNumber(reportData.model.intercept, 4)} / 데이터 수 n = ${reportData.model.n} / 결정계수 R² = ${formatNumber(reportData.model.rSquared, 4)}`,
+      { fontSize: 10, color: [66, 85, 74] },
+    );
+    writeSubTitle("추세선 해석");
+    writeText(reportData.interpretation);
+
+    writeSectionTitle("4. 예측 기록");
+    writeTable(
+      ["번호", "예측 x", "예측 y", "사용한 식", "예측 시간"],
+      reportData.history.length
+        ? reportData.history.map((record, index) => [
+            index + 1,
+            formatNumber(record.x),
+            formatNumber(record.y, 2),
+            record.equation,
+            formatDateTime(record.createdAt),
+          ])
+        : [["-", "-", "-", "예측 기록 없음", "-"]],
+      [42, 70, 70, 145, contentWidth - 327],
+    );
+    writeSubTitle("예측 결과 정리");
+    writeText(reportData.predictionSummary);
+
+    writeSectionTitle("5. 탐구를 마치며");
+    writeSubTitle("배운 점");
+    writeText(reportData.learned);
+    writeSubTitle("더 알고 싶은 점");
+    writeText(reportData.question);
+    writeInfoBox("추세선은 현재 데이터의 전체적인 경향을 보여 주는 수학적 모델입니다. 데이터 범위를 크게 벗어난 예측은 실제 결과와 다를 수 있습니다.");
+
+    drawFooter();
+    return doc;
+  });
+}
+
 function setPdfBusy(isBusy) {
   els.downloadPdfButton.disabled = isBusy;
   els.buildReportButton.disabled = isBusy;
@@ -630,58 +921,37 @@ function setPdfBusy(isBusy) {
   els.downloadPdfButton.textContent = isBusy ? "생성 중…" : "PDF로 다운로드";
 }
 
-// 긴 보고서는 A4 한 페이지 높이에 맞춰 캔버스를 여러 조각으로 잘라 넣는다.
-// 이 방식은 페이지 경계에서 전체 그래프가 잘려 사라지는 문제를 줄이고 여러 페이지 저장을 지원한다.
+// 보고서 PDF는 화면 전체를 캡처하지 않고 jsPDF의 text/table 그리기 기능으로 만든다.
+// 그래서 제목, 본문, 표의 문자는 PDF 안에서 선택하고 복사할 수 있으며,
+// 그래프만 캔버스 이미지를 삽입한다.
 async function downloadPdf() {
-  if (!window.html2canvas || !window.jspdf?.jsPDF) {
-    showStatus("PDF 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.", "error");
+  const reportData = getReportData();
+
+  if (!reportData) {
+    showStatus("PDF를 만들려면 먼저 추세선을 계산해 주세요.", "error");
     return;
   }
-  if (!buildReport()) return;
+
   setPdfBusy(true);
+  const busyStartedAt = Date.now();
 
   try {
     await waitForPaint();
-    const canvas = await window.html2canvas(els.reportDocument, {
-      scale: 2,
-      backgroundColor: "#ffffff",
-      useCORS: true,
-      logging: false,
-    });
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF("p", "mm", "a4");
-    const margin = 8;
-    const pageWidth = 210;
-    const pageHeight = 297;
-    const contentWidth = pageWidth - margin * 2;
-    const contentHeight = pageHeight - margin * 2;
-    const pixelsPerPage = Math.floor((contentHeight / contentWidth) * canvas.width);
-    let sourceY = 0;
-    let page = 0;
-
-    while (sourceY < canvas.height) {
-      const sliceHeight = Math.min(pixelsPerPage, canvas.height - sourceY);
-      const slice = document.createElement("canvas");
-      slice.width = canvas.width;
-      slice.height = sliceHeight;
-      const sliceContext = slice.getContext("2d");
-      sliceContext.fillStyle = "#ffffff";
-      sliceContext.fillRect(0, 0, slice.width, slice.height);
-      sliceContext.drawImage(canvas, 0, sourceY, canvas.width, sliceHeight, 0, 0, canvas.width, sliceHeight);
-      if (page > 0) pdf.addPage();
-      const renderedHeight = (sliceHeight * contentWidth) / canvas.width;
-      pdf.addImage(slice.toDataURL("image/jpeg", 0.96), "JPEG", margin, margin, contentWidth, renderedHeight);
-      sourceY += sliceHeight;
-      page += 1;
-    }
-
+    const pdf = await createTextReportPdf(reportData);
+    const pageCount = pdf.getNumberOfPages();
     const date = new Date().toISOString().slice(0, 10);
     pdf.save(`추세선_탐구보고서_${date}.pdf`);
-    showStatus(`보고서를 ${page}쪽 PDF로 저장했습니다.`);
+    showStatus(`선택 가능한 텍스트 PDF를 ${pageCount}쪽으로 저장했습니다.`);
   } catch (error) {
     console.error(error);
-    showStatus("PDF를 만드는 중 문제가 생겼습니다. 잠시 후 다시 시도해 주세요.", "error");
+    showStatus(error.message || "PDF를 만드는 중 문제가 생겼습니다. 잠시 후 다시 시도해 주세요.", "error");
   } finally {
+    const remainingBusyMs = MIN_PDF_BUSY_MS - (Date.now() - busyStartedAt);
+
+    if (remainingBusyMs > 0) {
+      await new Promise((resolve) => window.setTimeout(resolve, remainingBusyMs));
+    }
+
     setPdfBusy(false);
   }
 }
