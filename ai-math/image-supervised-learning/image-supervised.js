@@ -3,6 +3,9 @@ const MIN_IMAGES_PER_CLASS = 5;
 const CAPTURE_SIZE = 224;
 const MAX_PDF_THUMBNAILS_PER_CLASS = 5;
 const MOBILENET_CONFIG = { version: 2, alpha: 1.0 };
+const PDF_FONT_URL = "./assets/fonts/NotoSansKR-VF.ttf";
+const PDF_FONT_NAME = "NotoSansKR";
+let pdfFontBase64Promise = null;
 
 // 앱 전체 상태는 브라우저 메모리에만 보관한다.
 // 이미지와 예측 기록을 서버로 보내지 않기 때문에 수업 중 학생 기기 안에서 활동이 끝난다.
@@ -1262,190 +1265,357 @@ function buildAutoSummary() {
   return `이 활동에서는 총 ${classCount}개의 클래스를 분류하는 이미지 인공지능 모델을 만들었다. 총 ${totalImages}장의 이미지를 수집하여 학습하였고, 학습 후 ${predictionCount}번의 예측 활동을 수행하였다.`;
 }
 
-// html2canvas가 읽을 수 있도록 보고서 전용 DOM을 잠깐 만든 뒤,
-// jsPDF에 이미지로 넣어 학생이 바로 저장할 수 있는 PDF 파일을 만든다.
-function makePdfReportElement() {
-  const report = document.createElement("article");
-  report.className = "pdf-report";
-  report.style.position = "fixed";
-  report.style.left = "-10000px";
-  report.style.top = "0";
-  report.setAttribute("aria-hidden", "true");
-
-  const generatedAt = new Date();
-  const trainingInfo = state.trainingInfo || {
-    epochs: Number(els.epochInput.value) || 20,
-    batchSize: Number(els.batchSizeInput.value) || 16,
-    classCount: state.classes.length,
-    totalImages: getTotalImageCount(),
-    classStats: state.classes.map((classItem) => ({
-      name: getClassName(classItem),
-      count: classItem.samples.length,
-    })),
-  };
-
-  const topic = els.reportTopic.value.trim() || "작성하지 않음";
-  const rows = trainingInfo.classStats
-    .map((item) => `<tr><td>${escapeHtml(item.name)}</td><td>${item.count}장</td></tr>`)
-    .join("");
-
-  const classBlocks = state.classes
-    .map((classItem) => {
-      const thumbs = classItem.samples
-        .slice(0, MAX_PDF_THUMBNAILS_PER_CLASS)
-        .map((sample) => `<img src="${sample.dataUrl}" alt="${escapeHtml(getClassName(classItem))} 대표 이미지" />`)
-        .join("");
-
-      return `
-        <h3>${escapeHtml(getClassName(classItem))} · ${classItem.samples.length}장</h3>
-        <div class="pdf-thumb-row">${thumbs || "대표 이미지 없음"}</div>
-      `;
-    })
-    .join("");
-
-  const historyRows = state.predictionHistory
-    .map((item) => {
-      const probabilityText = item.probabilities
-        .map((probability) => `${escapeHtml(probability.className)} ${formatProbability(probability.probability)}`)
-        .join("<br />");
-
-      return `
-        <tr>
-          <td>${item.number}</td>
-          <td>${escapeHtml(formatDateTime(item.createdAt))}</td>
-          <td><img class="pdf-history-image" src="${item.imageDataUrl}" alt="${item.number}번 예측 이미지" /></td>
-          <td>${escapeHtml(item.topClass)}</td>
-          <td>${probabilityText}</td>
-          <td>${escapeHtml(item.method)}</td>
-        </tr>
-      `;
-    })
-    .join("");
-
-  report.innerHTML = `
-    <h1>이미지 지도학습 인공지능 활동 보고서</h1>
-
-    <h2>1. 기본 정보</h2>
-    <table>
-      <tbody>
-        <tr><th>주제</th><td>${escapeHtml(topic)}</td></tr>
-        <tr><th>생성 일시</th><td>${escapeHtml(formatDateTime(generatedAt))}</td></tr>
-        <tr><th>클래스 수</th><td>${trainingInfo.classCount}개</td></tr>
-        <tr><th>총 학습 이미지 수</th><td>${trainingInfo.totalImages}장</td></tr>
-        <tr><th>학습 설정값</th><td>epoch ${trainingInfo.epochs}, batch size ${trainingInfo.batchSize}</td></tr>
-      </tbody>
-    </table>
-
-    <h2>2. 학습 데이터 구성</h2>
-    <table>
-      <thead>
-        <tr><th>클래스 이름</th><th>이미지 수</th></tr>
-      </thead>
-      <tbody>${rows || "<tr><td colspan=\"2\">학습 데이터 없음</td></tr>"}</tbody>
-    </table>
-    ${classBlocks || "<p>수집된 대표 이미지가 없습니다.</p>"}
-
-    <h2>3. 예측 활동 기록</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>번호</th>
-          <th>예측 시간</th>
-          <th>이미지</th>
-          <th>최종 예측 클래스</th>
-          <th>클래스별 확률</th>
-          <th>예측 방식</th>
-        </tr>
-      </thead>
-      <tbody>${historyRows || "<tr><td colspan=\"6\">예측 기록 없음</td></tr>"}</tbody>
-    </table>
-
-    <h2>4. 학생 작성 내용</h2>
-    <h3>인공지능 활용 방안</h3>
-    <p>${escapeHtml(els.reportUseCase.value.trim() || "작성하지 않음")}</p>
-    <h3>잘된 점</h3>
-    <p>${escapeHtml(els.reportStrength.value.trim() || "작성하지 않음")}</p>
-    <h3>한계점 및 개선점</h3>
-    <p>${escapeHtml(els.reportLimit.value.trim() || "작성하지 않음")}</p>
-    <h3>배운 점 및 느낀 점</h3>
-    <p>${escapeHtml(els.reportReflection.value.trim() || "작성하지 않음")}</p>
-
-    <h2>5. 자동 정리 문장</h2>
-    <p>${escapeHtml(buildAutoSummary())}</p>
-  `;
-
-  return report;
-}
-
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;")
-    .replaceAll("\n", "<br />");
-}
-
 function setPdfBusy(isBusy) {
   els.generatePdfButton.disabled = isBusy;
   els.generatePdfButton.textContent = isBusy ? "생성 중..." : "보고서 PDF 생성";
   els.pdfProgress.hidden = !isBusy;
 }
 
-function waitForPaint() {
-  return new Promise((resolve) => {
-    window.requestAnimationFrame(() => window.requestAnimationFrame(resolve));
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  const chunkSize = 0x8000;
+  const chunks = [];
+
+  for (let index = 0; index < bytes.length; index += chunkSize) {
+    const chunk = bytes.subarray(index, index + chunkSize);
+    chunks.push(String.fromCharCode(...chunk));
+  }
+
+  return window.btoa(chunks.join(""));
+}
+
+async function loadPdfFontBase64() {
+  if (!pdfFontBase64Promise) {
+    pdfFontBase64Promise = fetch(PDF_FONT_URL)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("한국어 PDF 폰트 파일을 불러오지 못했습니다.");
+        }
+
+        return response.arrayBuffer();
+      })
+      .then(arrayBufferToBase64);
+  }
+
+  return pdfFontBase64Promise;
+}
+
+async function prepareTextPdf() {
+  if (!window.jspdf?.jsPDF) {
+    throw new Error("PDF 생성 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.");
+  }
+
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({
+    orientation: "p",
+    unit: "mm",
+    format: "a4",
+    compress: true,
+    putOnlyUsedFonts: true,
   });
+  const fontBase64 = await loadPdfFontBase64();
+
+  pdf.addFileToVFS("NotoSansKR-VF.ttf", fontBase64);
+  pdf.addFont("NotoSansKR-VF.ttf", PDF_FONT_NAME, "normal");
+  pdf.setFont(PDF_FONT_NAME, "normal");
+  pdf.setLanguage("ko-KR");
+
+  return pdf;
+}
+
+function getReportTrainingInfo() {
+  return state.trainingInfo || {
+    epochs: Number(els.epochInput.value) || 20,
+    batchSize: Number(els.batchSizeInput.value) || 16,
+    classCount: state.classes.length,
+    totalImages: getTotalImageCount(),
+    classStats: state.classes.map((classItem) => ({
+      id: classItem.id,
+      name: getClassName(classItem),
+      count: classItem.samples.length,
+    })),
+  };
+}
+
+function getReportText(value) {
+  const text = String(value || "").trim();
+
+  return text || "작성하지 않음";
+}
+
+function makeTextPdfWriter(pdf) {
+  const page = {
+    width: pdf.internal.pageSize.getWidth(),
+    height: pdf.internal.pageSize.getHeight(),
+    margin: 16,
+    y: 18,
+    footer: 1,
+  };
+  const contentWidth = page.width - page.margin * 2;
+
+  function drawFooter() {
+    pdf.setFont(PDF_FONT_NAME, "normal");
+    pdf.setFontSize(8);
+    pdf.setTextColor(130, 139, 132);
+    pdf.text(String(page.footer), page.width / 2, page.height - 8, { align: "center" });
+  }
+
+  function addPage() {
+    drawFooter();
+    pdf.addPage();
+    page.footer += 1;
+    page.y = 18;
+  }
+
+  function ensureSpace(height) {
+    if (page.y + height <= page.height - 18) {
+      return;
+    }
+
+    addPage();
+  }
+
+  function textLines(text, maxWidth = contentWidth) {
+    return pdf.splitTextToSize(String(text || ""), maxWidth);
+  }
+
+  function writeText(text, options = {}) {
+    const fontSize = options.fontSize || 10;
+    const lineHeight = options.lineHeight || fontSize * 0.52;
+    const gap = options.gap ?? 2;
+    const color = options.color || [31, 39, 34];
+    const x = options.x || page.margin;
+    const maxWidth = options.maxWidth || contentWidth;
+    const lines = textLines(text, maxWidth);
+
+    pdf.setFont(PDF_FONT_NAME, "normal");
+    pdf.setFontSize(fontSize);
+    pdf.setTextColor(...color);
+    ensureSpace(lines.length * lineHeight + gap);
+    pdf.text(lines, x, page.y);
+    page.y += lines.length * lineHeight + gap;
+  }
+
+  function title(text) {
+    writeText(text, {
+      fontSize: 19,
+      lineHeight: 9.5,
+      gap: 7,
+      color: [31, 39, 34],
+    });
+  }
+
+  function section(text) {
+    ensureSpace(16);
+    page.y += 2;
+    pdf.setDrawColor(217, 226, 219);
+    pdf.line(page.margin, page.y, page.width - page.margin, page.y);
+    page.y += 7;
+    writeText(text, {
+      fontSize: 13,
+      lineHeight: 6.5,
+      gap: 3,
+      color: [33, 122, 85],
+    });
+  }
+
+  function keyValue(label, value) {
+    const labelWidth = 38;
+    const valueX = page.margin + labelWidth + 3;
+    const valueWidth = contentWidth - labelWidth - 3;
+    const valueLines = textLines(value, valueWidth);
+    const rowHeight = Math.max(8, valueLines.length * 5.2 + 3);
+
+    ensureSpace(rowHeight);
+    pdf.setFillColor(237, 245, 240);
+    pdf.rect(page.margin, page.y - 4.2, labelWidth, rowHeight, "F");
+    pdf.setDrawColor(217, 226, 219);
+    pdf.rect(page.margin, page.y - 4.2, contentWidth, rowHeight, "S");
+    pdf.line(valueX - 3, page.y - 4.2, valueX - 3, page.y - 4.2 + rowHeight);
+    pdf.setFontSize(9);
+    pdf.setTextColor(31, 39, 34);
+    pdf.text(String(label), page.margin + 2, page.y);
+    pdf.text(valueLines, valueX, page.y);
+    page.y += rowHeight;
+  }
+
+  function bullet(text) {
+    writeText(`- ${text}`, {
+      fontSize: 9.5,
+      lineHeight: 5.2,
+      gap: 1.2,
+    });
+  }
+
+  function image(dataUrl, x, y, width, height) {
+    try {
+      pdf.addImage(dataUrl, undefined, x, y, width, height);
+      return true;
+    } catch (error) {
+      console.warn("PDF 이미지 추가 실패", error);
+      return false;
+    }
+  }
+
+  function imageRow(samples, options = {}) {
+    const size = options.size || 18;
+    const gap = options.gap || 3;
+    const maxCount = Math.min(samples.length, Math.floor(contentWidth / (size + gap)));
+
+    if (maxCount === 0) {
+      bullet("대표 이미지 없음");
+      return;
+    }
+
+    ensureSpace(size + 4);
+    samples.slice(0, maxCount).forEach((sample, index) => {
+      const x = page.margin + index * (size + gap);
+      image(sample.dataUrl, x, page.y, size, size);
+    });
+    page.y += size + 5;
+  }
+
+  function finish() {
+    drawFooter();
+  }
+
+  return {
+    page,
+    title,
+    section,
+    keyValue,
+    bullet,
+    writeText,
+    image,
+    imageRow,
+    ensureSpace,
+    finish,
+  };
+}
+
+function writeTextPdfReport(pdf) {
+  const generatedAt = new Date();
+  const trainingInfo = getReportTrainingInfo();
+  const writer = makeTextPdfWriter(pdf);
+
+  writer.title("이미지 지도학습 인공지능 활동 보고서");
+
+  writer.section("1. 기본 정보");
+  writer.keyValue("주제", getReportText(els.reportTopic.value));
+  writer.keyValue("생성 일시", formatDateTime(generatedAt));
+  writer.keyValue("클래스 수", `${trainingInfo.classCount}개`);
+  writer.keyValue("총 학습 이미지 수", `${trainingInfo.totalImages}장`);
+  writer.keyValue(
+    "학습 설정값",
+    `epoch ${trainingInfo.epochs}, batch size ${trainingInfo.batchSize}${trainingInfo.featureDim ? `, feature ${trainingInfo.featureDim}차원` : ""}`,
+  );
+
+  writer.section("2. 학습 데이터 구성");
+  if (trainingInfo.classStats.length === 0) {
+    writer.bullet("학습 데이터 없음");
+  } else {
+    trainingInfo.classStats.forEach((item) => {
+      writer.bullet(`${item.name}: ${item.count}장`);
+    });
+  }
+
+  state.classes.forEach((classItem) => {
+    writer.writeText(`${getClassName(classItem)} 대표 이미지`, {
+      fontSize: 10.5,
+      lineHeight: 5.8,
+      gap: 1,
+      color: [31, 39, 34],
+    });
+    writer.imageRow(classItem.samples.slice(0, MAX_PDF_THUMBNAILS_PER_CLASS));
+  });
+
+  writer.section("3. 예측 활동 기록");
+  if (state.predictionHistory.length === 0) {
+    writer.bullet("예측 기록 없음");
+  } else {
+    state.predictionHistory.forEach((item) => {
+      writer.ensureSpace(30);
+      writer.writeText(`${item.number}. ${formatDateTime(item.createdAt)} · ${item.method}`, {
+        fontSize: 9.5,
+        lineHeight: 5,
+        gap: 1,
+        color: [102, 113, 104],
+      });
+
+      const imageY = writer.page.y;
+      const hasImage = writer.image(item.imageDataUrl, writer.page.margin, imageY, 18, 18);
+      const textX = hasImage ? writer.page.margin + 22 : writer.page.margin;
+      const textWidth = hasImage ? writer.page.width - writer.page.margin * 2 - 22 : writer.page.width - writer.page.margin * 2;
+      const probabilityText = item.probabilities
+        .map((probability) => `${probability.className} ${formatProbability(probability.probability)}`)
+        .join(", ");
+
+      writer.writeText(`최종 예측 클래스: ${item.topClass}`, {
+        x: textX,
+        maxWidth: textWidth,
+        fontSize: 9.5,
+        lineHeight: 5,
+        gap: 1,
+      });
+      writer.writeText(`클래스별 확률: ${probabilityText}`, {
+        x: textX,
+        maxWidth: textWidth,
+        fontSize: 9.5,
+        lineHeight: 5,
+        gap: 3,
+      });
+      writer.page.y = Math.max(writer.page.y, imageY + 21);
+    });
+  }
+
+  writer.section("4. 학생 작성 내용");
+  writer.writeText("인공지능 활용 방안", {
+    fontSize: 10.5,
+    lineHeight: 5.8,
+    gap: 1,
+    color: [33, 122, 85],
+  });
+  writer.writeText(getReportText(els.reportUseCase.value), { fontSize: 9.5, lineHeight: 5.3, gap: 4 });
+  writer.writeText("잘된 점", {
+    fontSize: 10.5,
+    lineHeight: 5.8,
+    gap: 1,
+    color: [33, 122, 85],
+  });
+  writer.writeText(getReportText(els.reportStrength.value), { fontSize: 9.5, lineHeight: 5.3, gap: 4 });
+  writer.writeText("한계점 및 개선점", {
+    fontSize: 10.5,
+    lineHeight: 5.8,
+    gap: 1,
+    color: [33, 122, 85],
+  });
+  writer.writeText(getReportText(els.reportLimit.value), { fontSize: 9.5, lineHeight: 5.3, gap: 4 });
+  writer.writeText("배운 점 및 느낀 점", {
+    fontSize: 10.5,
+    lineHeight: 5.8,
+    gap: 1,
+    color: [33, 122, 85],
+  });
+  writer.writeText(getReportText(els.reportReflection.value), { fontSize: 9.5, lineHeight: 5.3, gap: 4 });
+
+  writer.section("5. 자동 정리 문장");
+  writer.writeText(buildAutoSummary(), { fontSize: 10, lineHeight: 5.6, gap: 2 });
+  writer.finish();
 }
 
 async function generatePdf() {
-  if (!window.html2canvas || !window.jspdf?.jsPDF) {
-    showStatus("PDF 생성 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.", "error");
-    return;
-  }
-
   setPdfBusy(true);
 
   try {
-    await waitForPaint();
-    const report = makePdfReportElement();
-    document.body.append(report);
-
-    const canvas = await html2canvas(report, {
-      scale: 2,
-      backgroundColor: "#ffffff",
-      useCORS: true,
-    });
-
-    report.remove();
-
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pageWidth = 210;
-    const pageHeight = 297;
-    const imageWidth = pageWidth;
-    const imageHeight = (canvas.height * imageWidth) / canvas.width;
-    const imageData = canvas.toDataURL("image/png");
-    let heightLeft = imageHeight;
-    let position = 0;
-
-    pdf.addImage(imageData, "PNG", 0, position, imageWidth, imageHeight);
-    heightLeft -= pageHeight;
-
-    while (heightLeft > 0) {
-      position = heightLeft - imageHeight;
-      pdf.addPage();
-      pdf.addImage(imageData, "PNG", 0, position, imageWidth, imageHeight);
-      heightLeft -= pageHeight;
-    }
-
+    const pdf = await prepareTextPdf();
+    writeTextPdfReport(pdf);
     const dateText = new Date().toISOString().slice(0, 10);
+
     pdf.save(`이미지지도학습_활동보고서_${dateText}.pdf`);
-    showStatus("보고서 PDF를 생성했습니다.", "success");
+    showStatus("텍스트 선택이 가능한 보고서 PDF를 생성했습니다.", "success");
   } catch (error) {
     console.error(error);
-    showStatus("보고서 PDF를 생성하는 중 문제가 생겼습니다. 예측 기록이 너무 많다면 일부를 정리한 뒤 다시 시도해 주세요.", "error");
+    showStatus(error.message || "보고서 PDF를 생성하는 중 문제가 생겼습니다.", "error");
   } finally {
     setPdfBusy(false);
   }
