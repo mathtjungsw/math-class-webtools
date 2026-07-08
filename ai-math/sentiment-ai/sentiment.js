@@ -1,6 +1,9 @@
 const MANUAL_GITHUB_REPOSITORY_URL = "https://github.com/mathtjungsw/math-class-webtools";
 const MIN_SENTENCE_COUNT = 10;
 const MIN_PDF_BUSY_MS = 600;
+const KOREAN_FONT_URL = "./fonts/NanumGothic-Regular.ttf";
+const KOREAN_FONT_FILE = "NanumGothic-Regular.ttf";
+const KOREAN_FONT_NAME = "NanumGothicReport";
 
 // 단어 기반 모델에서는 감정과 직접 관련이 약한 흔한 말을 제외한다.
 // 예를 들어 "오늘", "수업", "문제"는 긍정/부정 양쪽 문장에 모두 자주 나올 수 있으므로
@@ -93,6 +96,8 @@ const state = {
   model: null,
   predictionHistory: [],
 };
+
+let koreanFontBase64Promise = null;
 
 const els = {
   positiveRows: document.querySelector("#positiveRows"),
@@ -1211,6 +1216,262 @@ function downloadBlob(blob, fileName) {
   URL.revokeObjectURL(url);
 }
 
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  const chunkSize = 0x8000;
+  let binary = "";
+
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.subarray(i, i + chunkSize);
+    binary += String.fromCharCode(...chunk);
+  }
+
+  return window.btoa(binary);
+}
+
+async function loadKoreanFontBase64() {
+  if (!koreanFontBase64Promise) {
+    koreanFontBase64Promise = fetch(KOREAN_FONT_URL)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("보고서 PDF용 한글 폰트를 불러오지 못했습니다.");
+        }
+
+        return response.arrayBuffer();
+      })
+      .then(arrayBufferToBase64);
+  }
+
+  return koreanFontBase64Promise;
+}
+
+function createTextReportPdf(reportData) {
+  const jsPdfConstructor = window.jspdf?.jsPDF;
+
+  if (!jsPdfConstructor) {
+    throw new Error("PDF 생성 라이브러리를 불러오지 못했습니다.");
+  }
+
+  return loadKoreanFontBase64().then((fontBase64) => {
+    const doc = new jsPdfConstructor({
+      format: "a4",
+      unit: "pt",
+    });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 42;
+    const contentWidth = pageWidth - margin * 2;
+    let y = margin;
+    let pageNumber = 1;
+
+    doc.addFileToVFS(KOREAN_FONT_FILE, fontBase64);
+    doc.addFont(KOREAN_FONT_FILE, KOREAN_FONT_NAME, "normal");
+    doc.setFont(KOREAN_FONT_NAME, "normal");
+
+    function drawFooter() {
+      doc.setFont(KOREAN_FONT_NAME, "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(120, 120, 120);
+      doc.text(String(pageNumber), pageWidth / 2, pageHeight - 22, {
+        align: "center",
+      });
+    }
+
+    function addPage() {
+      drawFooter();
+      doc.addPage();
+      pageNumber += 1;
+      y = margin;
+      writeText(`감성 분석 인공지능 만들기 실습 보고서 · ${pageNumber}쪽`, {
+        fontSize: 10,
+        color: [104, 113, 104],
+        gap: 10,
+      });
+    }
+
+    function ensureSpace(space) {
+      if (y + space > pageHeight - margin) {
+        addPage();
+      }
+    }
+
+    function writeText(text, options = {}) {
+      const fontSize = options.fontSize || 12;
+      const lineHeight = options.lineHeight || fontSize * 1.55;
+      const color = options.color || [32, 36, 31];
+      const gap = options.gap ?? 6;
+      const x = options.x || margin;
+      const maxWidth = options.maxWidth || contentWidth;
+      const value = String(text || "");
+      const lines = value
+        ? doc.splitTextToSize(value, maxWidth)
+        : [""];
+
+      doc.setFont(KOREAN_FONT_NAME, "normal");
+      doc.setFontSize(fontSize);
+      doc.setTextColor(...color);
+
+      lines.forEach((line) => {
+        ensureSpace(lineHeight + gap);
+        doc.text(line || " ", x, y);
+        y += lineHeight;
+      });
+
+      y += gap;
+    }
+
+    function writeSectionTitle(title) {
+      ensureSpace(44);
+      y += 8;
+      doc.setDrawColor(217, 225, 219);
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 20;
+      writeText(title, {
+        fontSize: 17,
+        lineHeight: 24,
+        color: [35, 124, 85],
+        gap: 8,
+      });
+    }
+
+    function writeList(items, emptyText) {
+      if (items.length === 0) {
+        writeText(emptyText, {
+          color: [104, 113, 104],
+        });
+        return;
+      }
+
+      items.forEach((item, index) => {
+        writeText(`${index + 1}. ${item}`, {
+          fontSize: 11,
+          lineHeight: 17,
+          gap: 2,
+        });
+      });
+    }
+
+    function writePredictionList(items) {
+      if (items.length === 0) {
+        writeText("아직 누적된 예측 결과가 없습니다.", {
+          color: [104, 113, 104],
+        });
+        return;
+      }
+
+      items.forEach((item, index) => {
+        ensureSpace(84);
+        writeText(`${index + 1}. ${item.label} 예측`, {
+          fontSize: 13,
+          lineHeight: 19,
+          color: item.label === "긍정" ? [35, 124, 85] : [189, 74, 79],
+          gap: 1,
+        });
+        writeText(`문장: ${item.sentence}`, {
+          fontSize: 11,
+          lineHeight: 17,
+          gap: 1,
+        });
+        writeText(`점수: 긍정 ${formatPercent(item.positivePercent)}, 부정 ${formatPercent(item.negativePercent)}`, {
+          fontSize: 11,
+          lineHeight: 17,
+          gap: 1,
+        });
+        writeText(`이유: ${item.reason}`, {
+          fontSize: 10,
+          lineHeight: 16,
+          color: [104, 113, 104],
+          gap: 5,
+        });
+      });
+    }
+
+    writeText("감성 분석 인공지능 만들기 실습 보고서", {
+      fontSize: 22,
+      lineHeight: 30,
+      color: [32, 36, 31],
+      gap: 8,
+    });
+    writeText(`생성일: ${formatDateTime(reportData.generatedAt)}`, {
+      fontSize: 11,
+      lineHeight: 17,
+      color: [104, 113, 104],
+      gap: 2,
+    });
+    writeText(
+      reportData.modelReady
+        ? "모델 상태: 학습 완료"
+        : "모델 상태: 학습 전 또는 다시 학습 필요",
+      {
+        fontSize: 11,
+        lineHeight: 17,
+        color: reportData.modelReady ? [35, 124, 85] : [138, 83, 0],
+        gap: 8,
+      },
+    );
+
+    writeSectionTitle("1. 학습 데이터 정리");
+    writeText(`긍정 데이터: ${reportData.positiveSentences.length}개`, {
+      fontSize: 12,
+      lineHeight: 18,
+      color: [35, 124, 85],
+    });
+    writeList(reportData.positiveSentences, "입력된 긍정 데이터가 없습니다.");
+    y += 6;
+    writeText(`부정 데이터: ${reportData.negativeSentences.length}개`, {
+      fontSize: 12,
+      lineHeight: 18,
+      color: [189, 74, 79],
+    });
+    writeList(reportData.negativeSentences, "입력된 부정 데이터가 없습니다.");
+
+    writeSectionTitle("2. 예측 결과 정리");
+    writeText(`누적 예측 결과: ${reportData.predictionHistory.length}개`, {
+      fontSize: 12,
+      lineHeight: 18,
+    });
+    writePredictionList(reportData.predictionHistory);
+
+    writeSectionTitle("3. 소감문");
+    writeText("활동 요약", {
+      fontSize: 13,
+      lineHeight: 19,
+      color: [32, 36, 31],
+      gap: 1,
+    });
+    writeText(reportData.reflections.activitySummary || "작성하지 않음", {
+      fontSize: 11,
+      lineHeight: 17,
+      color: [104, 113, 104],
+    });
+    writeText("배운 점", {
+      fontSize: 13,
+      lineHeight: 19,
+      color: [32, 36, 31],
+      gap: 1,
+    });
+    writeText(reportData.reflections.learnedPoint || "작성하지 않음", {
+      fontSize: 11,
+      lineHeight: 17,
+      color: [104, 113, 104],
+    });
+    writeText("더 알고 싶은 점", {
+      fontSize: 13,
+      lineHeight: 19,
+      color: [32, 36, 31],
+      gap: 1,
+    });
+    writeText(reportData.reflections.futureQuestion || "작성하지 않음", {
+      fontSize: 11,
+      lineHeight: 17,
+      color: [104, 113, 104],
+    });
+
+    drawFooter();
+    return doc;
+  });
+}
+
 function setPdfBusy(isBusy) {
   els.generatePdfButton.disabled = isBusy;
   els.refreshReportButton.disabled = isBusy;
@@ -1252,12 +1513,11 @@ async function generateReportPdf() {
     // 상태 문구와 시계 애니메이션이 먼저 화면에 그려진 뒤 무거운 작업을 시작하도록 두 프레임을 기다린다.
     await waitForPdfStatusPaint();
 
-    const reportData = getReportData();
-    const canvases = createReportCanvases(reportData);
-    const pdfBlob = buildPdfFromCanvases(canvases);
     const dateText = new Date().toISOString().slice(0, 10);
+    const reportData = getReportData();
+    const pdfDocument = await createTextReportPdf(reportData);
 
-    downloadBlob(pdfBlob, `sentiment-ai-report-${dateText}.pdf`);
+    pdfDocument.save(`sentiment-ai-report-${dateText}.pdf`);
     showStatus("보고서 PDF를 생성했습니다.", "success");
   } catch (error) {
     console.error(error);
