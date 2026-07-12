@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f7f8f3" />
+    <title>삼각형 그리기 게임 | 수학 수업 웹툴 모음</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="back-link" href="../../index.html#math-game" aria-label="수학 게임 목록으로 돌아가기">
+        <span aria-hidden="true">←</span>
+        <span>수학 게임</span>
+      </a>
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">△</span>
+        <span><strong>삼각형 그리기</strong><small>각의 크기와 전략 게임</small></span>
+      </div>
+      <div class="header-actions">
+        <button class="ghost-button" id="rulesButton" type="button">규칙</button>
+        <button class="danger-button" id="newGameButton" type="button">새 게임</button>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section class="hero-panel" id="heroPanel" aria-labelledby="pageTitle">
+        <div>
+          <p class="eyebrow">수학게임 · 삼각형의 분류</p>
+          <h1 id="pageTitle">주사위 4개로 만드는<br />삼각형 점령전</h1>
+          <p>
+            숫자 주사위 3개와 종류 주사위 1개를 굴립니다. 나온 눈의 수가 적힌 점 3개를 골라,
+            지정된 종류의 삼각형을 만듭니다. 이미 그어진 선을 지나가면 탈락,
+            더 만들 수 없다고 판단하면 기권할 수 있습니다.
+          </p>
+        </div>
+        <div class="angle-card" aria-label="삼각형 종류 안내">
+          <span>예각</span>
+          <span>직각</span>
+          <span>둔각</span>
+        </div>
+      </section>
+
+      <section class="setup-panel" id="setupPanel" aria-labelledby="setupTitle">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">게임 준비</p>
+            <h2 id="setupTitle">참가자 수를 선택하세요</h2>
+          </div>
+          <span class="status-chip">2~6명</span>
+        </div>
+
+        <div class="setup-grid">
+          <label class="field-card">
+            <span>참가자 수</span>
+            <select id="playerCount">
+              <option value="2">2명</option>
+              <option value="3">3명</option>
+              <option value="4" selected>4명</option>
+              <option value="5">5명</option>
+              <option value="6">6명</option>
+            </select>
+          </label>
+          <label class="field-card">
+            <span>선 색상</span>
+            <select id="colorMode">
+              <option value="player" selected>참가자별 색상</option>
+              <option value="type">삼각형 종류별 색상</option>
+            </select>
+          </label>
+          <button class="primary-button" id="startButton" type="button">게임 시작</button>
+        </div>
+      </section>
+
+      <section class="game-layout" id="gamePanel" hidden>
+        <aside class="side-panel" aria-label="게임 진행">
+          <div class="turn-card">
+            <span class="mini-label">현재 차례</span>
+            <strong id="turnPlayer">-</strong>
+            <p id="turnMessage">주사위를 굴려 주세요.</p>
+          </div>
+
+          <div class="dice-panel">
+            <div class="dice-row" id="diceRow" aria-label="주사위 결과"></div>
+            <button class="primary-button" id="rollButton" type="button">주사위 굴리기</button>
+          </div>
+
+          <div class="selection-card">
+            <span class="mini-label">선택한 점</span>
+            <div class="selection-slots" id="selectionSlots"></div>
+            <p id="selectionHint">주사위를 굴리면 선택할 수 있는 점이 켜집니다.</p>
+            <div class="button-row">
+              <button class="ghost-button" id="clearSelectionButton" type="button">선택 지우기</button>
+              <button class="ghost-button" id="hintButton" type="button">가능한 수 보기</button>
+            </div>
+          </div>
+
+          <div class="action-grid">
+            <button class="primary-button" id="confirmButton" type="button" disabled>삼각형 확정</button>
+            <button class="danger-button" id="giveUpButton" type="button">기권</button>
+          </div>
+
+          <div class="score-card">
+            <div class="section-heading compact">
+              <h2>참가자 현황</h2>
+              <span id="roundCount">0개 완성</span>
+            </div>
+            <ol class="player-list" id="playerList"></ol>
+          </div>
+        </aside>
+
+        <section class="board-panel" aria-label="삼각형 그리기 게임판">
+          <div class="board-toolbar">
+            <div>
+              <span class="mini-label">게임판</span>
+              <strong id="boardStatus">점을 선택하세요</strong>
+            </div>
+            <div class="zoom-controls" aria-label="게임판 확대 축소">
+              <button class="icon-button" id="zoomOutButton" type="button" aria-label="축소">−</button>
+              <button class="icon-button" id="zoomResetButton" type="button" aria-label="원래 크기">⌂</button>
+              <button class="icon-button" id="zoomInButton" type="button" aria-label="확대">+</button>
+            </div>
+          </div>
+          <div class="board-scroll" id="boardScroll">
+            <svg id="gameBoard" class="game-board" role="img" aria-label="숫자가 표시된 삼각형 그리기 게임판"></svg>
+          </div>
+        </section>
+
+        <aside class="history-panel" aria-label="완성 기록">
+          <div class="section-heading compact">
+            <h2>완성 기록</h2>
+            <span id="historyCount">0</span>
+          </div>
+          <ul class="history-list" id="historyList"></ul>
+        </aside>
+      </section>
+    </main>
+
+    <dialog class="rules-dialog" id="rulesDialog">
+      <form method="dialog">
+        <div class="dialog-header">
+          <h2>게임 규칙</h2>
+          <button class="icon-button" type="submit" aria-label="닫기">×</button>
+        </div>
+        <ol>
+          <li>2~6명이 순서대로 숫자 주사위 3개와 종류 주사위 1개를 굴립니다.</li>
+          <li>숫자 주사위의 눈과 같은 숫자가 적힌 점 3개를 선택합니다.</li>
+          <li>종류 주사위가 정한 예각·직각·둔각삼각형만 확정할 수 있습니다.</li>
+          <li>선택한 점이 일직선이면 삼각형이 아니므로 확정할 수 없습니다.</li>
+          <li>새 삼각형의 변은 이미 만들어진 삼각형의 선을 지나갈 수 없습니다.</li>
+          <li>선을 지나가게 확정하려 하면 해당 참가자는 탈락합니다.</li>
+          <li>더 만들 수 없다고 판단하면 기권할 수 있습니다.</li>
+        </ol>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
