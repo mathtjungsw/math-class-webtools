@@ -107,6 +107,7 @@ button, label { -webkit-tap-highlight-color: transparent; }
 .segmented input { position: absolute; opacity: 0; pointer-events: none; }
 .segmented span { display: flex; flex-direction: column; gap: 3px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; cursor: pointer; }
 .segmented b { font: 700 13px Outfit, sans-serif; }
+.segmented em { margin-left: 4px; padding: 2px 5px; border-radius: 99px; color: white; background: var(--blue); font: 700 8px "Noto Sans KR", sans-serif; font-style: normal; vertical-align: 2px; }
 .segmented small { color: var(--muted); font-size: 9px; }
 .segmented input:checked + span { border-color: var(--blue); color: var(--blue); background: var(--blue-soft); box-shadow: inset 0 0 0 1px var(--blue); }
 .segmented input:focus-visible + span { outline: 3px solid rgba(40,88,215,.22); }
@@ -114,6 +115,9 @@ button, label { -webkit-tap-highlight-color: transparent; }
 .calculation-box span { color: var(--muted); font-size: 10px; }
 .calculation-box strong { margin: 5px 0; font: 700 20px Outfit, sans-serif; }
 .calculation-box small { color: var(--muted); font-size: 9px; }
+.calculation-box details { margin-top: 7px; color: var(--muted); font-size: 9px; }
+.calculation-box summary { cursor: pointer; }
+.calculation-box code { display: block; margin-top: 5px; font-family: inherit; }
 
 .progress-panel { margin-bottom: 22px; padding: 22px; border-radius: 12px; background: var(--soft); }
 .progress-summary, .progress-summary > div { display: flex; align-items: center; justify-content: space-between; }

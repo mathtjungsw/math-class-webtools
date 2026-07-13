@@ -27,6 +27,7 @@ const elements = {
   targetSize: document.querySelector("#targetSize"),
   codecField: document.querySelector("#codecField"),
   bitrateValue: document.querySelector("#bitrateValue"),
+  bitrateTechnical: document.querySelector("#bitrateTechnical"),
   stageMessage: document.querySelector("#stageMessage"),
   progressPanel: document.querySelector("#progressPanel"),
   stageLabel: document.querySelector("#stageLabel"),
@@ -103,7 +104,7 @@ async function checkServer() {
     const status = await api("/api/status");
     state.serverReady = status.ready;
     elements.serverPill.className = `server-pill ${status.ready ? "ready" : "error"}`;
-    elements.serverPill.querySelector("span").textContent = status.ready ? "FFmpeg 연결됨" : "FFmpeg 설치 필요";
+    elements.serverPill.querySelector("span").textContent = status.ready ? "압축 준비 완료" : "첫 실행 준비 필요";
     elements.ffmpegNotice.hidden = status.ready;
     elements.dropZone.classList.toggle("disabled", !status.ready);
   } catch (_error) {
@@ -116,7 +117,8 @@ async function checkServer() {
 
 function calculateBitrate() {
   if (!state.job?.original) {
-    elements.bitrateValue.textContent = "— kbps";
+    elements.bitrateValue.textContent = "영상 선택 후 자동 설정";
+    elements.bitrateTechnical.textContent = "—";
     return null;
   }
   const targetMB = Number(elements.targetSize.value);
@@ -124,7 +126,8 @@ function calculateBitrate() {
   const safeBits = targetMB * 1024 * 1024 * 0.97 * 8;
   const audioBits = 128000 * duration;
   const bitrate = Math.floor((safeBits - audioBits) / duration / 1000);
-  elements.bitrateValue.textContent = bitrate >= 100 ? `${bitrate.toLocaleString("ko-KR")} kbps` : "목표 용량이 너무 작음";
+  elements.bitrateValue.textContent = bitrate >= 100 ? "영상에 맞게 자동 설정됨" : "원하는 크기를 조금 늘려주세요";
+  elements.bitrateTechnical.textContent = bitrate >= 100 ? `영상 ${bitrate.toLocaleString("ko-KR")} kbps · 음성 128 kbps · 2단계 압축` : "계산할 수 없음";
   return bitrate;
 }
 
@@ -142,7 +145,7 @@ function setReady(job) {
   elements.targetSize.disabled = false;
   elements.codecField.disabled = false;
   elements.startButton.disabled = false;
-  elements.stageMessage.textContent = "설정을 확인한 뒤 압축 시작을 눌러 주세요.";
+  elements.stageMessage.textContent = "원하는 크기를 확인한 뒤 시작 버튼을 눌러 주세요.";
   calculateBitrate();
 }
 
@@ -217,7 +220,7 @@ function resetSelection({ release = false } = {}) {
   elements.cancelButton.hidden = true;
   elements.progressPanel.hidden = true;
   elements.resultCard.hidden = true;
-  elements.stageMessage.textContent = "영상을 선택하면 압축을 시작할 수 있습니다.";
+  elements.stageMessage.textContent = "영상을 선택하면 시작할 수 있습니다.";
   calculateBitrate();
 }
 

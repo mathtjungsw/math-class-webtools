@@ -250,7 +250,7 @@ async function encodeAttempt(job, videoBitrateKbps, attempt) {
 
   try {
     updateJob(job, {
-      stage: attempt === 1 ? "1차 분석 인코딩" : "재압축: 1차 분석 인코딩",
+      stage: attempt === 1 ? "영상 분석 중 (1/2)" : "다시 맞추는 중: 영상 분석 (1/2)",
       progress: 0,
       etaSeconds: null,
       message: attempt === 1 ? "영상의 비트 배분을 분석하고 있습니다." : "목표 크기에 맞춰 다시 분석하고 있습니다."
@@ -263,7 +263,7 @@ async function encodeAttempt(job, videoBitrateKbps, attempt) {
     );
 
     updateJob(job, {
-      stage: attempt === 1 ? "2차 최종 인코딩" : "재압축: 2차 최종 인코딩",
+      stage: attempt === 1 ? "제출용 영상 만드는 중 (2/2)" : "다시 맞추는 중: 영상 만들기 (2/2)",
       message: "최종 영상 파일을 만들고 있습니다.",
       etaSeconds: null
     });
@@ -317,7 +317,7 @@ async function processJob(job) {
     );
     job.settings.videoBitrateKbps = videoBitrateKbps;
     updateJob(job, {
-      stage: "목표 용량 초과 — 자동 재압축",
+      stage: "크기를 다시 맞추고 있습니다",
       progress: 0,
       etaSeconds: null,
       message: "결과가 목표보다 커서 비트레이트를 낮춰 한 번 더 압축합니다."
