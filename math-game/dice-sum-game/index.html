@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#fff7e8" />
+    <meta name="description" content="2~4명의 학생이 주사위 눈의 합을 예측해 칸을 배치하고, 반복 실험으로 확률분포를 탐구하는 수학 게임" />
+    <title>주사위 눈 합 게임 | 확률분포 전략 실험실</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="back-link" href="../../index.html#math-game"><span aria-hidden="true">←</span> 수학 게임</a>
+      <div class="top-actions">
+        <button class="quiet-button" id="openRulesButton" type="button">게임 규칙</button>
+        <a class="quiet-button guide-link" href="./assets/dice-sum-game-guide.pdf" download="주사위 눈 합 게임 설명서.pdf">설명서</a>
+        <a class="download-button" href="./assets/dice-sum-worksheet.pdf" download="주사위 눈 합 게임 활동지.pdf">활동지 PDF <span aria-hidden="true">↓</span></a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">확률분포 × 예측 × 전략</p>
+          <h1>어떤 합에<br /><em>20칸</em>을 걸겠어요?</h1>
+          <p class="hero-description">2~4명의 학생이 먼저 분포를 예측해 칸을 채웁니다. 주사위를 던질 때마다 해당 합의 칸에 자동으로 X가 표시되고, 모든 칸을 먼저 지우면 승리합니다.</p>
+          <div class="hero-pills" aria-label="주요 기능">
+            <span>2–4인용</span><span>주사위 1–4개</span><span>최대 10묶음 투척</span><span>대량 시뮬레이션</span>
+          </div>
+        </div>
+        <div class="hero-stage" aria-hidden="true">
+          <div class="floating-die die-a"><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="floating-die die-b"><i></i><i></i><i></i></div>
+          <div class="mini-chart">
+            <span style="--h: 20%"></span><span style="--h: 38%"></span><span style="--h: 62%"></span><span style="--h: 92%"></span><span style="--h: 63%"></span><span style="--h: 36%"></span><span style="--h: 18%"></span>
+          </div>
+          <p>많이 던질수록<br /><strong>분포의 모양</strong>이 보인다!</p>
+        </div>
+      </section>
+
+      <nav class="tab-list" aria-label="학습 모드">
+        <button class="tab is-active" type="button" data-tab="game" aria-selected="true"><span>01</span><strong>대결하기</strong><small>2~4명의 전략 게임</small></button>
+        <button class="tab" type="button" data-tab="simulation" aria-selected="false"><span>02</span><strong>실험하기</strong><small>반복할수록 보이는 분포</small></button>
+        <button class="tab" type="button" data-tab="lesson" aria-selected="false"><span>03</span><strong>수업자료</strong><small>규칙과 활동지</small></button>
+      </nav>
+
+      <section class="tab-panel is-active" id="gamePanel" data-panel="game">
+        <div class="panel-heading">
+          <div><p class="eyebrow">ROUND SETUP</p><h2>게임판을 준비해요</h2></div>
+          <p>각 표에서 칸을 눌러 합계 <strong id="targetInHeading">20칸</strong>을 아래부터 채우세요.</p>
+        </div>
+
+        <section class="setup-strip" aria-label="게임 설정">
+          <label><span>참가 학생</span><select id="playerCount"><option value="2" selected>2명</option><option value="3">3명</option><option value="4">4명</option></select></label>
+          <label><span>주사위 개수</span><select id="diceCount"><option value="1">1개</option><option value="2" selected>2개</option><option value="3">3개</option><option value="4">4개</option></select></label>
+          <label><span>채울 칸 수</span><select id="tokenTarget"><option value="10">10칸</option><option value="15">15칸</option><option value="20" selected>20칸</option><option value="25">25칸</option><option value="30">30칸</option></select></label>
+          <label><span>한 번에</span><select id="bundleCount"><option value="1" selected>1묶음</option><option value="2">2묶음</option><option value="3">3묶음</option><option value="4">4묶음</option><option value="5">5묶음</option><option value="6">6묶음</option><option value="7">7묶음</option><option value="8">8묶음</option><option value="9">9묶음</option><option value="10">10묶음</option></select></label>
+          <div class="range-note"><strong id="sumRangeText">2부터 12까지</strong><span>가능한 눈의 합</span></div>
+          <button class="reset-link" id="resetSetupButton" type="button">배치 모두 지우기</button>
+        </section>
+
+        <div class="players-grid" id="playersGrid"></div>
+
+        <section class="game-console" aria-live="polite">
+          <div class="roll-result">
+            <div class="dice-row" id="diceRow" aria-label="주사위 결과"></div>
+            <div><p id="rollCaption">참가 학생이 칸을 모두 채우면 시작할 수 있어요.</p><strong id="sumDisplay">준비 중</strong></div>
+          </div>
+          <div class="console-actions">
+            <button class="primary-button" id="lockButton" type="button" disabled>전략 확정하기</button>
+            <button class="roll-button" id="rollButton" type="button" disabled><span aria-hidden="true">◆</span> <span id="rollButtonText">1묶음 던지기</span></button>
+            <button class="secondary-button" id="rematchButton" type="button" disabled>같은 전략으로 다시</button>
+          </div>
+          <div class="game-stats"><span>누적 투척 <strong id="rollCount">0묶음</strong></span><span>최근 합 <strong id="recentSums">–</strong></span></div>
+        </section>
+
+        <section class="history-card" aria-labelledby="historyTitle">
+          <div class="history-heading"><div><p class="eyebrow">ROLL LOG</p><h3 id="historyTitle">던진 기록</h3></div><span>각 묶음의 주사위 눈과 합을 순서대로 기록합니다.</span></div>
+          <div class="throw-history is-empty" id="throwHistory"><p>아직 던진 기록이 없습니다.</p></div>
+        </section>
+      </section>
+
+      <section class="tab-panel" id="simulationPanel" data-panel="simulation" hidden>
+        <div class="panel-heading">
+          <div><p class="eyebrow">SIMULATION LAB</p><h2>많이 던지면 어떤 모양이 될까?</h2></div>
+          <p>주황 막대는 실험값, 점선은 수학적으로 계산한 확률입니다.</p>
+        </div>
+        <section class="simulation-controls">
+          <label><span>주사위 개수</span><select id="simulationDiceCount"><option value="1">1개</option><option value="2" selected>2개</option><option value="3">3개</option><option value="4">4개</option></select></label>
+          <label><span>추가 시행</span><select id="simulationBatch"><option value="10">10회</option><option value="100">100회</option><option value="1000" selected>1,000회</option><option value="10000">10,000회</option><option value="100000">100,000회</option></select></label>
+          <button class="primary-button" id="runSimulationButton" type="button">실험 시작</button>
+          <button class="secondary-button" id="resetSimulationButton" type="button">초기화</button>
+        </section>
+
+        <section class="chart-card" aria-labelledby="chartTitle">
+          <div class="chart-header"><div><p>누적 시행 <strong id="simulationTotal">0</strong>회</p><h3 id="chartTitle">주사위 2개 눈의 합 분포</h3></div><div class="legend"><span><i class="observed-key"></i>실험</span><span><i class="theory-key"></i>이론</span></div></div>
+          <div class="distribution-chart" id="distributionChart"></div>
+          <div class="progress-track"><span id="simulationProgress"></span></div>
+        </section>
+
+        <div class="insight-grid">
+          <article><span>기댓값</span><strong id="expectedMean">7</strong><p>주사위 하나의 평균 3.5 × 개수</p></article>
+          <article><span>가장 가능성 큰 합</span><strong id="mostLikelySum">7</strong><p id="mostLikelyDetail">이론 확률 16.7%</p></article>
+          <article class="wide-insight"><span>관찰 포인트</span><strong id="shapeInsight">가운데가 높고 좌우가 대칭인 모양</strong><p>시행 횟수를 늘리며 주황 막대가 점선에 가까워지는지 살펴보세요.</p></article>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="lessonPanel" data-panel="lesson" hidden>
+        <div class="panel-heading">
+          <div><p class="eyebrow">TEACHING GUIDE</p><h2>게임에서 분포의 발견으로</h2></div>
+          <p>원고의 수업 흐름과 활동지를 웹 수업에 맞게 정리했습니다.</p>
+        </div>
+        <div class="lesson-grid">
+          <article class="rules-card">
+            <p class="card-number">게임 규칙</p>
+            <ol><li><b>예측하기</b><span>각자 숫자 위에 정해진 수만큼 칸을 채웁니다. 반드시 아래 칸부터 채웁니다.</span></li><li><b>던지고 지우기</b><span>주사위 눈의 합에 해당하는 줄의 채운 칸 하나에 X를 표시합니다.</span></li><li><b>먼저 끝내기</b><span>자신이 채운 모든 칸에 먼저 X가 표시된 학생이 승리합니다.</span></li></ol>
+          </article>
+          <article class="rounds-card">
+            <p class="card-number">추천 수업 흐름</p>
+            <div class="round-list"><span><b>1</b>주사위 1개<br /><small>균등분포와 작은 표본의 오차</small></span><span><b>2</b>주사위 2개<br /><small>합의 경우의 수와 삼각형 분포</small></span><span><b>3</b>주사위 3개<br /><small>가운데로 모이는 분포</small></span><span><b>4</b>주사위 4개<br /><small>종 모양과 중심극한정리의 맥락</small></span></div>
+          </article>
+          <article class="worksheet-card">
+            <div><p class="card-number">학생 활동지 · 설명서</p><h3>종이 활동과 함께 사용하세요</h3><p>활동지는 제목 영역 없이 라운드 1부터 바로 시작합니다. 설명서에는 2~4명 설정, 여러 묶음 투척, 기록 확인과 수업 운영 방법을 담았습니다.</p></div>
+            <div class="resource-downloads"><a class="worksheet-download" href="./assets/dice-sum-worksheet.pdf" download="주사위 눈 합 게임 활동지.pdf"><span aria-hidden="true">PDF</span><strong>활동지 내려받기</strong><small>A4 · 2쪽</small></a><a class="worksheet-download guide-download" href="./assets/dice-sum-game-guide.pdf" download="주사위 눈 합 게임 설명서.pdf"><span aria-hidden="true">GUIDE</span><strong>설명서 내려받기</strong><small>A4 · 2쪽</small></a></div>
+          </article>
+          <article class="question-card"><p class="card-number">생각을 여는 질문</p><ul><li>가장 자주 나올 것 같은 합에 20칸을 모두 놓으면 유리할까?</li><li>계산한 확률에 비례해 칸을 놓는 전략은 실제로도 잘 작동할까?</li><li>시행 횟수가 적을 때와 많을 때 그래프는 어떻게 달라질까?</li><li>주사위 개수가 늘어날수록 분포의 모양은 어떻게 변할까?</li></ul></article>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="rulesDialog">
+      <form method="dialog" class="dialog-card"><button class="dialog-close" value="close" aria-label="닫기">×</button><p class="eyebrow">HOW TO PLAY</p><h2>주사위 눈 합 게임</h2><ol><li>참가 학생을 2~4명으로 정하고, 각자의 표에서 정해진 수만큼 칸을 채웁니다.</li><li>같은 열에서는 아래 칸부터 차례로 채워야 합니다.</li><li>전략을 확정한 뒤 한 번에 던질 주사위 묶음을 1~10개로 정합니다.</li><li>각 묶음의 눈의 합에 해당하는 열에서 모든 학생의 칸 하나가 자동으로 X 표시됩니다.</li><li>여러 묶음은 기록에 표시된 순서대로 처리하며, 모든 칸을 먼저 X로 바꾼 학생이 승리합니다.</li></ol><a class="dialog-guide-link" href="./assets/dice-sum-game-guide.pdf" target="_blank">전체 설명서 PDF 보기</a><button class="primary-button" value="close">게임으로 돌아가기</button></form>
+    </dialog>
+
+    <dialog id="winnerDialog">
+      <form method="dialog" class="dialog-card winner-card"><div class="winner-burst" aria-hidden="true">★</div><p class="eyebrow">GAME OVER</p><h2 id="winnerTitle">학생 1 승리!</h2><p id="winnerMessage"></p><button class="primary-button" id="dialogRematchButton" value="close">같은 전략으로 다시</button><button class="secondary-button" id="dialogNewStrategyButton" value="close">새 전략 짜기</button></form>
+    </dialog>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
