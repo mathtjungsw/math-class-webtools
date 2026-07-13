@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="FFmpeg 2-pass 인코딩으로 동영상을 목표 용량 이하로 줄이는 로컬 웹툴" />
+    <title>동영상 용량 줄이기 | 학교 업무용 웹툴</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="../../../index.html" aria-label="수학 수업 웹툴 모음으로 돌아가기">
+        <span class="brand-mark" aria-hidden="true">M</span>
+        <span><strong>수학 수업 웹툴 모음</strong><small>학교 업무용 웹툴</small></span>
+      </a>
+      <div class="server-pill" id="serverPill"><i></i><span>FFmpeg 확인 중</span></div>
+    </header>
+
+    <main class="app-shell">
+      <section class="intro">
+        <div>
+          <p class="eyebrow">VIDEO SIZE COMPRESSOR</p>
+          <h1>동영상 용량 줄이기</h1>
+          <p>업로드 제한에 걸리는 영상을 목표 크기 아래로 정확하고 안전하게 줄입니다.</p>
+        </div>
+        <div class="target-badge" aria-label="기본 목표 용량">
+          <span>기본 목표</span>
+          <strong>490<small> MB</small></strong>
+        </div>
+      </section>
+
+      <section class="notice error-notice" id="ffmpegNotice" hidden role="alert">
+        <div class="notice-icon">!</div>
+        <div>
+          <strong>FFmpeg를 찾지 못했습니다</strong>
+          <p>아래 설치 안내를 확인한 뒤 이 서버 창을 닫고 다시 실행해 주세요.</p>
+          <details>
+            <summary>Windows 설치 방법 보기</summary>
+            <ol>
+              <li><a href="https://www.gyan.dev/ffmpeg/builds/" target="_blank" rel="noreferrer">FFmpeg Windows builds</a>에서 <b>release essentials</b> ZIP 파일을 받습니다.</li>
+              <li>압축을 풀고 폴더 안의 <code>bin</code> 경로를 Windows 환경 변수 <b>Path</b>에 추가합니다.</li>
+              <li>PowerShell을 새로 열어 <code>ffmpeg -version</code>이 표시되는지 확인합니다.</li>
+              <li>이 프로젝트에서 다시 <code>npm start</code>를 실행합니다.</li>
+            </ol>
+          </details>
+        </div>
+      </section>
+
+      <section class="workspace-card">
+        <div class="step-heading">
+          <span>01</span>
+          <div><h2>영상 불러오기</h2><p>파일은 외부로 전송되지 않고 이 PC에서만 처리됩니다.</p></div>
+        </div>
+
+        <label class="drop-zone" id="dropZone" for="fileInput" tabindex="0">
+          <input id="fileInput" type="file" accept="video/*,.mkv,.mov,.avi,.wmv,.m4v,.webm" hidden />
+          <span class="upload-icon" aria-hidden="true"><i></i></span>
+          <strong>영상 파일을 여기에 놓으세요</strong>
+          <span>또는 <b>파일 선택</b></span>
+          <small>MP4, MOV, MKV, AVI 등 · 최대 20GB</small>
+        </label>
+
+        <div class="upload-status" id="uploadStatus" hidden>
+          <div><span id="uploadLabel">영상을 불러오는 중입니다</span><strong id="uploadPercent">0%</strong></div>
+          <div class="mini-progress"><i id="uploadBar"></i></div>
+          <button class="text-button" id="uploadCancelButton" type="button">불러오기 취소</button>
+        </div>
+
+        <div class="file-card" id="fileCard" hidden>
+          <div class="file-symbol" aria-hidden="true">▶</div>
+          <div class="file-main"><strong id="fileName">-</strong><span id="fileCodec">-</span></div>
+          <dl class="file-meta">
+            <div><dt>원본 용량</dt><dd id="fileSize">-</dd></div>
+            <div><dt>재생시간</dt><dd id="fileDuration">-</dd></div>
+            <div><dt>해상도</dt><dd id="fileResolution">-</dd></div>
+          </dl>
+          <button class="icon-button" id="replaceButton" type="button" aria-label="다른 파일 선택">다시 선택</button>
+        </div>
+      </section>
+
+      <section class="workspace-card settings-card" id="settingsCard" aria-disabled="true">
+        <div class="step-heading">
+          <span>02</span>
+          <div><h2>압축 설정</h2><p>목표 크기의 3%를 안전 여유로 남겨 계산합니다.</p></div>
+        </div>
+        <div class="settings-grid">
+          <div class="field-group target-field">
+            <label for="targetSize">목표 용량</label>
+            <div class="number-input"><input id="targetSize" type="number" min="5" max="20000" step="1" value="490" disabled /><span>MB</span></div>
+            <small>예: 500MB 제한이면 490MB 권장</small>
+          </div>
+          <fieldset class="field-group codec-field" disabled id="codecField">
+            <legend>영상 인코더</legend>
+            <div class="segmented">
+              <label><input type="radio" name="codec" value="h264" checked /><span><b>H.264</b><small>빠르고 호환성 높음</small></span></label>
+              <label><input type="radio" name="codec" value="h265" /><span><b>H.265</b><small>더 작지만 오래 걸림</small></span></label>
+            </div>
+          </fieldset>
+          <div class="calculation-box">
+            <span>자동 계산 영상 비트레이트</span>
+            <strong id="bitrateValue">— kbps</strong>
+            <small>AAC 오디오 128kbps 포함 · 2-pass</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="workspace-card progress-card" id="progressCard">
+        <div class="step-heading">
+          <span>03</span>
+          <div><h2>압축 실행</h2><p id="stageMessage">영상을 선택하면 압축을 시작할 수 있습니다.</p></div>
+        </div>
+        <div class="progress-panel" id="progressPanel" hidden>
+          <div class="progress-summary"><div><span id="stageLabel">준비 중</span><strong id="etaLabel">남은 시간 계산 중</strong></div><b id="progressPercent">0%</b></div>
+          <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressTrack"><i id="progressBar"></i></div>
+          <p>창을 닫거나 새로고침하지 마세요. 영상 길이에 따라 시간이 걸릴 수 있습니다.</p>
+        </div>
+        <div class="action-row">
+          <button class="primary-button" id="startButton" type="button" disabled><span>압축 시작</span><b aria-hidden="true">→</b></button>
+          <button class="danger-button" id="cancelButton" type="button" hidden>압축 중지</button>
+        </div>
+      </section>
+
+      <section class="result-card" id="resultCard" hidden aria-live="polite">
+        <div class="success-mark" aria-hidden="true">✓</div>
+        <div class="result-copy"><p>압축이 완료되었습니다</p><h2 id="resultSize">-</h2><span id="resultCompare">-</span></div>
+        <a class="download-button" id="downloadButton" href="#"><span>결과 파일 다운로드</span><b aria-hidden="true">↓</b></a>
+      </section>
+
+      <section class="notice inline-error" id="errorNotice" hidden role="alert">
+        <div class="notice-icon">!</div>
+        <div><strong>작업을 완료하지 못했습니다</strong><p id="errorMessage">-</p></div>
+      </section>
+
+      <footer>
+        <p><b>내 PC에서 안전하게 처리</b> · 업로드된 파일은 외부 서버로 전송되지 않습니다.</p>
+        <p>결과 파일은 다운로드 후 자동으로 삭제됩니다.</p>
+      </footer>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>
