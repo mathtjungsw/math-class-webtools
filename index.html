@@ -60,8 +60,8 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 12 10 0m-4-4 4 4-4 4" /></svg>
           </a>
           <dl class="hero-stats" aria-label="웹툴 현황">
-            <div><dt>25</dt><dd>개의 웹툴</dd></div>
-            <div><dt>6</dt><dd>개의 주제</dd></div>
+            <div><dt>29</dt><dd>개의 웹툴</dd></div>
+            <div><dt>7</dt><dd>개의 주제</dd></div>
             <div><dt>100%</dt><dd>브라우저 실행</dd></div>
           </dl>
         </div>
@@ -98,7 +98,10 @@
 
         <div class="filter-bar" role="tablist" aria-label="웹툴 주제 필터">
           <button class="filter-button is-active" type="button" role="tab" aria-selected="true" data-filter="all">
-            전체 <span>28</span>
+            전체 <span>29</span>
+          </button>
+          <button class="filter-button" type="button" role="tab" aria-selected="false" data-filter="middle-school">
+            중학교 수학 <span>1</span>
           </button>
           <button class="filter-button" type="button" role="tab" aria-selected="false" data-filter="common-math1">
             공통수학1 <span>1</span>
@@ -121,6 +124,29 @@
         </div>
 
         <div class="tool-grid" aria-live="polite">
+          <article class="tool-card card-coordinate-golf" data-tool-category="middle-school">
+            <div class="tool-visual" aria-hidden="true">
+              <div class="golf-grid-preview">
+                <i class="golf-axis-x"></i><i class="golf-axis-y"></i>
+                <span class="golf-preview-ball"></span>
+                <span class="golf-preview-path"></span>
+                <span class="golf-preview-hole"><b></b></span>
+              </div>
+            </div>
+            <div class="tool-content">
+              <div class="tool-tags"><span>좌표평면 · 순서쌍 · 이동</span><small>중학교 수학</small></div>
+              <h3>좌표평면 미니골프</h3>
+              <p>공과 홀의 좌표를 읽고 직선의 식이나 이동 명령을 입력해 공을 홀에 넣으며 좌표와 이동을 익힙니다.</p>
+              <div class="tool-footer">
+                <span>12개 미션 · 자유 문제 만들기</span>
+                <div class="tool-actions">
+                  <a class="guide-link" href="./middle-school/coordinate-minigolf/index.html?manual=1" aria-label="좌표평면 미니골프 설명서 열기">설명서</a>
+                  <a href="./middle-school/coordinate-minigolf/index.html" aria-label="좌표평면 미니골프 시작하기">시작하기 <b aria-hidden="true">→</b></a>
+                </div>
+              </div>
+            </div>
+          </article>
+
           <article class="tool-card card-motion-shot" data-tool-category="common-math1">
             <div class="tool-visual" aria-hidden="true">
               <svg viewBox="0 0 420 210">

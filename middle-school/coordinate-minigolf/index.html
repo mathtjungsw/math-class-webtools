@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#102a2e" />
+    <meta
+      name="description"
+      content="좌표평면에서 직선의 식과 이동 명령으로 공을 홀에 넣는 인터랙티브 수학 미니골프"
+    />
+    <title>좌표평면 미니골프</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="brand" href="../../index.html#middle-school" aria-label="중학교 수학 웹툴 목록으로 돌아가기">
+        <span class="brand-ball" aria-hidden="true"></span>
+        <span><strong>좌표평면 미니골프</strong><small>직선의 식 · 평행이동</small></span>
+      </a>
+      <div class="header-actions">
+        <button class="quiet-button" id="soundButton" type="button" aria-pressed="true">소리 켬</button>
+        <button class="quiet-button" id="guideButton" type="button">수업 설명서</button>
+        <button class="reset-button" id="resetButton" type="button">처음부터</button>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section class="intro" aria-labelledby="pageTitle">
+        <div>
+          <p class="eyebrow">COORDINATE GOLF CLUB</p>
+          <h1 id="pageTitle">식을 읽고, 방향을 정해<br /><em>홀인원!</em></h1>
+          <p class="intro-copy">공과 홀의 좌표를 살펴보세요. 정확한 직선의 식을 만들거나 이동 명령을 이어 붙이면 공이 그대로 움직입니다.</p>
+        </div>
+        <div class="score-summary" aria-label="현재 기록">
+          <div><span>완료</span><strong id="solvedCount">0</strong><small>/ 12</small></div>
+          <div><span>도전</span><strong id="attemptCount">0</strong><small>회</small></div>
+          <div><span>별</span><strong id="starCount">0</strong><small>개</small></div>
+        </div>
+      </section>
+
+      <nav class="mode-switch" aria-label="게임 방식">
+        <button class="mode-button is-active" type="button" data-mode="line" aria-pressed="true">
+          <span class="mode-number">01</span><span><strong>직선의 식</strong><small>y = ax + b 또는 x = c</small></span>
+        </button>
+        <button class="mode-button" type="button" data-mode="command" aria-pressed="false">
+          <span class="mode-number">02</span><span><strong>이동 명령</strong><small>(x, y)만큼 차례로 이동</small></span>
+        </button>
+      </nav>
+
+      <section class="game-layout">
+        <aside class="control-panel" aria-label="게임 조작">
+          <div class="mission-heading">
+            <div>
+              <p class="eyebrow">MISSION <span id="missionNumber">01</span></p>
+              <h2 id="missionTitle">첫 번째 티샷</h2>
+            </div>
+            <span class="difficulty" id="difficulty">입문</span>
+          </div>
+
+          <div class="level-track" id="levelTrack" aria-label="미션 선택"></div>
+
+          <div class="mission-card">
+            <p id="missionDescription">두 점을 지나는 직선을 찾아 한 번에 홀에 넣어 보세요.</p>
+            <dl class="coordinate-list">
+              <div><dt>공</dt><dd id="ballCoordinate">(-4, -2)</dd></div>
+              <div><dt>홀</dt><dd id="holeCoordinate">(4, 2)</dd></div>
+            </dl>
+          </div>
+
+          <section id="lineControls" class="input-section" aria-labelledby="lineInputTitle">
+            <div class="section-label"><h3 id="lineInputTitle">직선 입력</h3><span>분수도 가능해요</span></div>
+            <label class="select-field">
+              <span>식의 종류</span>
+              <select id="lineType">
+                <option value="slope">y = ax + b</option>
+                <option value="vertical">x = c</option>
+              </select>
+            </label>
+            <div class="equation-builder" id="slopeBuilder">
+              <span>y =</span>
+              <label><span class="sr-only">기울기 a</span><input id="slopeInput" inputmode="decimal" placeholder="a" autocomplete="off" /></label>
+              <span>x +</span>
+              <label><span class="sr-only">y절편 b</span><input id="interceptInput" inputmode="decimal" placeholder="b" autocomplete="off" /></label>
+            </div>
+            <div class="equation-builder is-vertical" id="verticalBuilder" hidden>
+              <span>x =</span>
+              <label><span class="sr-only">상수 c</span><input id="constantInput" inputmode="decimal" placeholder="c" autocomplete="off" /></label>
+            </div>
+            <p class="input-help">예: <b>-0.5</b>, <b>1/2</b>, <b>-3</b></p>
+            <button class="primary-button" id="shootButton" type="button"><span aria-hidden="true">●</span> 공 치기</button>
+          </section>
+
+          <section id="commandControls" class="input-section" aria-labelledby="commandInputTitle" hidden>
+            <div class="section-label"><h3 id="commandInputTitle">이동 명령 만들기</h3><span id="commandLimit">최대 3개</span></div>
+            <div class="vector-builder">
+              <label><span>가로 x</span><input id="deltaXInput" type="number" step="1" min="-12" max="12" value="0" /></label>
+              <label><span>세로 y</span><input id="deltaYInput" type="number" step="1" min="-12" max="12" value="0" /></label>
+              <button class="add-button" id="addCommandButton" type="button" aria-label="이동 명령 추가">추가</button>
+            </div>
+            <p class="input-help"><b>(3, -2)</b>는 오른쪽 3, 아래쪽 2만큼 이동해요.</p>
+            <ol class="command-list" id="commandList" aria-label="이동 명령 목록"></ol>
+            <div class="command-actions">
+              <button class="quiet-button" id="clearCommandsButton" type="button">모두 지우기</button>
+              <button class="primary-button" id="runCommandsButton" type="button">명령 실행</button>
+            </div>
+          </section>
+
+          <div class="feedback" id="feedback" role="status" aria-live="polite">
+            <span class="feedback-icon" aria-hidden="true">?</span>
+            <p><strong>좌표를 먼저 살펴보세요.</strong><span>격자의 한 칸은 1입니다.</span></p>
+          </div>
+
+          <div class="support-actions">
+            <button class="text-button" id="hintButton" type="button">힌트 보기</button>
+            <button class="text-button" id="sandboxButton" type="button" aria-pressed="false">자유 배치</button>
+          </div>
+        </aside>
+
+        <section class="board-panel" aria-label="좌표평면 게임판">
+          <div class="board-toolbar">
+            <div class="legend" aria-label="범례"><span><i class="ball-key"></i>공</span><span><i class="hole-key"></i>홀</span><span id="obstacleLegend"><i class="obstacle-key"></i>장애물</span></div>
+            <div class="board-message" id="boardMessage">공을 홀까지 보내 보세요</div>
+            <button class="icon-button" id="replayButton" type="button" aria-label="공 위치 되돌리기" title="공 위치 되돌리기">↺</button>
+          </div>
+          <div class="canvas-wrap" id="canvasWrap">
+            <canvas id="courseCanvas" role="img" aria-label="x축과 y축이 있는 좌표평면. 공과 홀의 위치가 표시됩니다."></canvas>
+            <div class="sandbox-note" id="sandboxNote" hidden><b>공을 놓을 칸을 클릭하세요</b><span>그다음 홀 위치를 선택합니다.</span></div>
+            <div class="success-card" id="successCard" hidden>
+              <span class="success-stars" id="successStars">★★★</span>
+              <strong>홀인원!</strong>
+              <p id="successMessage">정확한 직선이에요.</p>
+              <button class="primary-button" id="nextButton" type="button">다음 미션</button>
+            </div>
+          </div>
+          <div class="course-footer">
+            <p id="equationPreview">입력한 식이 여기에 표시됩니다.</p>
+            <span>격자 범위 −6 ≤ x, y ≤ 6</span>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <dialog class="guide-dialog" id="guideDialog">
+      <form method="dialog">
+        <header><div><p class="eyebrow">CLASS GUIDE</p><h2>좌표평면 미니골프 설명서</h2></div><button class="icon-button" type="submit" aria-label="닫기">×</button></header>
+        <div class="guide-grid">
+          <article><span>01</span><h3>좌표 읽기</h3><p>공과 홀의 x좌표, y좌표 차이를 확인합니다.</p></article>
+          <article><span>02</span><h3>방법 정하기</h3><p>직선의 식을 입력하거나 이동 벡터를 순서대로 추가합니다.</p></article>
+          <article><span>03</span><h3>실행하고 수정하기</h3><p>공의 경로를 보고 식이나 명령을 고쳐 다시 도전합니다.</p></article>
+        </div>
+        <div class="manual-sections">
+          <section class="manual-section">
+            <h3>학습 목표</h3>
+            <ul>
+              <li>좌표평면에서 순서쌍 <b>(x, y)</b>의 위치를 읽고 나타낼 수 있습니다.</li>
+              <li>두 점의 좌표 변화량을 이용해 직선의 기울기와 식을 구할 수 있습니다.</li>
+              <li>점의 이동을 <b>(가로 변화량, 세로 변화량)</b>으로 표현할 수 있습니다.</li>
+            </ul>
+          </section>
+          <section class="manual-section">
+            <h3>① 직선의 식 모드</h3>
+            <ol>
+              <li>공과 홀의 좌표로 <b>기울기 a</b>를 계산합니다.</li>
+              <li>한 점을 <b>y = ax + b</b>에 대입해 y절편 b를 찾습니다.</li>
+              <li>수직선이라면 식의 종류를 <b>x = c</b>로 바꿉니다.</li>
+              <li>소수나 <b>1/2</b> 같은 분수로 입력한 뒤 ‘공 치기’를 누릅니다.</li>
+            </ol>
+          </section>
+          <section class="manual-section">
+            <h3>② 이동 명령 모드</h3>
+            <ol>
+              <li>오른쪽·위쪽 이동은 양수, 왼쪽·아래쪽 이동은 음수입니다.</li>
+              <li>가로 x와 세로 y의 이동량을 입력하고 ‘추가’를 누릅니다.</li>
+              <li>점선 경로가 장애물을 지나는지 확인한 뒤 명령을 실행합니다.</li>
+              <li>각 명령은 앞 명령이 끝난 위치에서 이어서 시작합니다.</li>
+            </ol>
+          </section>
+          <section class="manual-section teacher-note">
+            <h3>교사용 수업 활용</h3>
+            <ul>
+              <li><b>도입:</b> 1번 미션을 함께 풀며 x와 y의 변화량을 말로 표현합니다.</li>
+              <li><b>개별 활동:</b> 힌트 없이 도전하고, 실패한 경로의 원인을 식으로 설명하게 합니다.</li>
+              <li><b>모둠 활동:</b> ‘자유 배치’로 문제를 만든 뒤 다른 모둠과 교환합니다.</li>
+              <li><b>평가:</b> 별 3개는 첫 시도, 2개는 3회 이내, 1개는 4회 이상 성공입니다.</li>
+            </ul>
+          </section>
+        </div>
+        <p class="guide-tip"><b>자유 배치</b>를 누르면 게임판에서 공과 홀을 직접 놓아 새로운 문제를 만들 수 있습니다. 설명서만 바로 열려면 주소 끝에 <b>?manual=1</b>을 붙이세요.</p>
+      </form>
+    </dialog>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
