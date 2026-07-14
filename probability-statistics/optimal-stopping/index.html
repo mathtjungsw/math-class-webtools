@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="비서 문제를 통해 최적 멈춤 이론의 37% 법칙을 직접 조작하고 반복 실험하는 확률과 통계 웹툴" />
+    <title>내 짝은 몇 번째일까? | 최적 멈춤 LAB</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="../../index.html" aria-label="수학 수업 웹툴 모음으로 돌아가기">
+        <span class="brand-mark" aria-hidden="true">%</span>
+        <span><strong>최적 멈춤 LAB</strong><small>확률과 통계 · 의사결정</small></span>
+      </a>
+      <div class="top-actions">
+        <span class="status-dot"><i></i> 모든 계산은 이 기기에서</span>
+        <button class="header-tool-button" type="button" data-open-guide>사용 설명서</button>
+        <button class="header-tool-button report-open-button" type="button" data-open-report>활동 보고서</button>
+        <a class="back-link" href="../../index.html">도구 모음 <span aria-hidden="true">↗</span></a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">THE SECRETARY PROBLEM</p>
+          <h1>내 짝은<br /><em>몇 번째</em>일까?</h1>
+          <p class="hero-lead">한 번 지나간 사람은 다시 선택할 수 없습니다. 몇 명까지 관찰한 뒤 멈춰야 전체 1위를 만날 가능성이 가장 클까요?</p>
+          <div class="hero-actions">
+            <button class="primary-button" type="button" data-scroll-lab>직접 실험하기 <span aria-hidden="true">↓</span></button>
+            <button class="text-button" type="button" data-reset-optimal>37% 전략으로 맞추기</button>
+          </div>
+        </div>
+        <div class="theorem-card" aria-live="polite">
+          <div class="theorem-top"><span>오늘의 전략 카드</span><b>1/e</b></div>
+          <div class="theorem-number"><strong data-hero-sample>37</strong><span data-hero-total>/ 100명</span></div>
+          <div class="theorem-rule">
+            <span class="sample-swatch"></span>
+            <p><b data-hero-sample-copy>앞의 37명</b>은 관찰만 하고,<br />그 뒤 처음 나타난 <b>새로운 1위</b>를 선택</p>
+          </div>
+          <div class="theorem-chance"><span>전체 1위를 고를 이론 확률</span><strong data-hero-prob>37.10%</strong></div>
+          <div class="scribble" aria-hidden="true">약 37%</div>
+        </div>
+      </section>
+
+      <section class="control-dock" aria-labelledby="control-title">
+        <div class="dock-heading">
+          <span>01</span>
+          <div><p>실험 조건</p><h2 id="control-title">무대를 바꿔 보세요</h2></div>
+        </div>
+        <div class="control-grid">
+          <label class="range-control">
+            <span><b>전체 인원</b><output data-total-output>100명</output></span>
+            <input type="range" min="5" max="500" value="100" step="1" data-total-range />
+            <span class="range-ends"><i>5</i><i>500</i></span>
+          </label>
+          <label class="number-control">
+            <span>직접 입력</span>
+            <div><button type="button" data-total-step="-10" aria-label="인원 10명 줄이기">−</button><input type="number" min="5" max="500" value="100" data-total-input aria-label="전체 인원" /><button type="button" data-total-step="10" aria-label="인원 10명 늘리기">+</button></div>
+          </label>
+          <label class="range-control threshold-control">
+            <span><b>먼저 관찰할 인원</b><output data-sample-output>37명 · 37.0%</output></span>
+            <input type="range" min="0" max="99" value="37" step="1" data-sample-range />
+            <span class="range-ends"><i>바로 선택</i><i>끝까지 관찰</i></span>
+          </label>
+          <label class="number-control">
+            <span>관찰 인원</span>
+            <div><button type="button" data-sample-step="-1" aria-label="관찰 인원 한 명 줄이기">−</button><input type="number" min="0" max="99" value="37" data-sample-input aria-label="먼저 관찰할 인원" /><button type="button" data-sample-step="1" aria-label="관찰 인원 한 명 늘리기">+</button></div>
+          </label>
+        </div>
+        <div class="preset-row" aria-label="관찰 전략 빠른 선택">
+          <span>빠른 전략</span>
+          <button type="button" data-preset="0">첫눈에 결정</button>
+          <button type="button" data-preset="0.1">10% 관찰</button>
+          <button class="is-recommended" type="button" data-preset="optimal">1/e 최적점</button>
+          <button type="button" data-preset="0.5">절반 관찰</button>
+          <button type="button" data-preset="0.8">80% 관찰</button>
+        </div>
+      </section>
+
+      <section class="snapshot" aria-label="현재 전략 요약">
+        <article><span>관찰 구간</span><strong data-stat-sample>1–37번</strong><small>선택하지 않고 기준을 세웁니다</small></article>
+        <article><span>선택 구간</span><strong data-stat-select>38–100번</strong><small>처음 만나는 새로운 1위를 선택합니다</small></article>
+        <article class="accent-stat"><span>이론 성공률</span><strong data-stat-prob>37.10%</strong><small data-stat-delta>최적 전략과 같습니다</small></article>
+        <article><span>최적 관찰 인원</span><strong data-stat-optimal>37명</strong><small data-stat-optimal-prob>최대 37.10%</small></article>
+      </section>
+
+      <section class="strategy-map" aria-labelledby="strategy-title">
+        <div class="section-heading">
+          <div><p class="section-kicker">STRATEGY MAP</p><h2 id="strategy-title">어디에서 멈출지 선을 움직여 보세요</h2></div>
+          <p>차트 위를 누르거나 드래그하면 관찰 인원이 바뀝니다. 꼭짓점이 이론상 가장 유리한 지점입니다.</p>
+        </div>
+        <div class="chart-shell">
+          <canvas data-strategy-chart role="img" aria-label="관찰 인원에 따른 전체 1위 선택 확률 그래프"></canvas>
+          <div class="chart-tooltip" data-chart-tooltip hidden></div>
+          <div class="chart-legend"><span><i class="line-current"></i>이론 성공률</span><span><i class="dot-current"></i>현재 전략</span><span><i class="dot-optimal"></i>최적점</span></div>
+        </div>
+      </section>
+
+      <section class="lab-section" id="lab" aria-labelledby="lab-title">
+        <div class="section-heading lab-heading">
+          <div><p class="section-kicker">ONE-BY-ONE LAB</p><h2 id="lab-title">한 명씩 만나 보기</h2></div>
+          <div class="mode-switch" role="group" aria-label="진행 방식">
+            <button class="is-active" type="button" data-mode="auto">37% 규칙 자동 적용</button>
+            <button type="button" data-mode="manual">내가 직접 결정</button>
+          </div>
+        </div>
+
+        <div class="lab-grid">
+          <aside class="lab-sidebar">
+            <div class="seed-box">
+              <label for="seed-input">실험 번호</label>
+              <div><input id="seed-input" type="number" value="372100" min="1" max="999999999" data-seed-input /><button type="button" data-random-seed aria-label="무작위 실험 번호 만들기">↻</button></div>
+              <small>같은 번호는 같은 만남 순서를 만듭니다.</small>
+            </div>
+            <button class="new-sequence-button" type="button" data-new-sequence>새 순서 만들기</button>
+            <label class="toggle-row"><span><b>실제 순위 공개</b><small>정보 제한을 풀고 패턴 보기</small></span><input type="checkbox" data-reveal-toggle /></label>
+            <label class="speed-control"><span><b>자동 진행 속도</b><output data-speed-output>보통</output></span><input type="range" min="1" max="4" value="2" data-speed-range /></label>
+            <div class="rule-note"><b>선택 규칙</b><p data-rule-note>37명은 무조건 보내고, 38번째부터 앞선 모두보다 좋은 사람이 나타나면 즉시 선택합니다.</p></div>
+          </aside>
+
+          <div class="candidate-stage">
+            <div class="stage-progress"><span data-progress-copy>아직 아무도 만나지 않았습니다</span><b data-progress-count>0 / 100</b></div>
+            <div class="progress-track"><i data-progress-fill></i><span data-threshold-marker title="관찰 구간 끝"></span></div>
+
+            <div class="current-candidate" data-current-card>
+              <div class="candidate-avatar" data-avatar><span>?</span></div>
+              <div class="candidate-copy">
+                <p data-current-phase>준비 완료</p>
+                <h3 data-current-title>첫 번째 만남을 시작해 보세요</h3>
+                <div class="candidate-badges" data-current-badges><span>전체 100명</span><span>관찰 37명</span></div>
+                <p class="candidate-description" data-current-description>실제 순위는 선택을 마칠 때까지 숨겨집니다. 만난 사람들 사이의 상대 순위만 알 수 있습니다.</p>
+              </div>
+              <div class="candidate-rank"><span>현재까지</span><strong data-relative-rank>—</strong></div>
+            </div>
+
+            <div class="decision-buttons">
+              <button class="secondary-button" type="button" data-pass disabled>이 사람은 보내기</button>
+              <button class="select-button" type="button" data-select disabled>이 사람 선택!</button>
+              <button class="primary-button next-button" type="button" data-next>첫 만남 시작</button>
+              <button class="secondary-button" type="button" data-auto-run>자동 진행</button>
+            </div>
+
+            <div class="result-panel" data-result-panel hidden>
+              <div data-result-icon>✓</div><div><p data-result-label>선택 완료</p><h3 data-result-title></h3><p data-result-copy></p></div><button type="button" data-new-sequence>다시 도전</button>
+            </div>
+
+            <div class="candidate-strip-wrap">
+              <div class="strip-heading"><b>만남 순서</b><span><i class="sample-key"></i>관찰 <i class="select-key"></i>선택 가능 <i class="record-key"></i>새 기록</span></div>
+              <div class="candidate-strip" data-candidate-strip aria-label="전체 만남 순서"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="batch-section" aria-labelledby="batch-title">
+        <div class="section-heading">
+          <div><p class="section-kicker">MONTE CARLO LAB</p><h2 id="batch-title">같은 전략을 여러 번 돌려 보기</h2></div>
+          <p>시행 횟수가 커질수록 실험값이 이론값에 가까워지는지 확인해 보세요.</p>
+        </div>
+        <div class="batch-grid">
+          <div class="batch-controls">
+            <p>반복 횟수</p>
+            <div class="trial-buttons" role="group" aria-label="반복 횟수">
+              <button type="button" data-trials="100">100번</button>
+              <button class="is-active" type="button" data-trials="1000">1,000번</button>
+              <button type="button" data-trials="10000">1만 번</button>
+              <button type="button" data-trials="100000">10만 번</button>
+            </div>
+            <label class="prediction-input"><span>실험 전 나의 예상</span><div><input type="number" min="0" max="100" step="0.1" value="50" data-prediction /><b>%</b></div></label>
+            <button class="run-batch-button" type="button" data-run-batch>반복 실험 시작</button>
+            <div class="batch-progress" data-batch-progress hidden><i></i><span>계산 중…</span></div>
+          </div>
+          <div class="batch-results">
+            <article><span>성공 횟수</span><strong data-batch-success>—</strong><small data-batch-total>실험 전</small></article>
+            <article class="result-rate"><span>실험 성공률</span><strong data-batch-rate>—</strong><small data-batch-ci>95% 오차 범위가 표시됩니다</small></article>
+            <article><span>이론값과 차이</span><strong data-batch-gap>—</strong><small data-batch-prediction>예상값 50.0%</small></article>
+            <div class="comparison-meter">
+              <div><span>실험값</span><b data-meter-experiment>0%</b></div><div class="meter-track"><i data-meter-fill></i><em data-meter-theory title="이론값"></em></div><p><span>0%</span><span>세로선 = 이론값 <b data-meter-theory-copy>37.10%</b></span><span>100%</span></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="cases-section" aria-labelledby="cases-title">
+        <div class="section-heading">
+          <div><p class="section-kicker">COUNTING CASES</p><h2 id="cases-title">경우의 수로 다시 보기</h2></div>
+          <button class="outline-button" type="button" data-open-exact>긴 숫자 전체 보기</button>
+        </div>
+        <div class="cases-grid">
+          <article><span>가능한 모든 만남 순서</span><strong data-cases-total>100!</strong><code data-cases-total-value>9.332621544… × 10¹⁵⁷</code><small>100명의 순위가 놓이는 모든 순열</small></article>
+          <article class="success-case"><span>현재 전략이 성공하는 순서</span><strong data-cases-win-label>성공 경우</strong><code data-cases-win>계산 중</code><small data-cases-win-percent>전체의 37.10%</small></article>
+          <article><span>현재 전략이 실패하는 순서</span><strong>실패 경우</strong><code data-cases-lose>계산 중</code><small data-cases-lose-percent>전체의 62.90%</small></article>
+        </div>
+        <div class="formula-board">
+          <div class="formula-main"><span>성공 확률</span><strong data-formula>37/100 × (1/37 + 1/38 + … + 1/99)</strong><b data-formula-result>= 0.3710</b></div>
+          <div class="formula-explain">
+            <p><i>①</i><span><b>전체 1위가 선택 구간의 k번째에 등장</b><br />각 위치에 올 확률은 1/N</span></p>
+            <p><i>②</i><span><b>그 전 최고가 관찰 구간 안에 존재</b><br />확률은 r/(k−1)</span></p>
+            <p><i>③</i><span><b>가능한 모든 k를 더함</b><br />k = r+1부터 N까지 합산</span></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-note">
+        <div><span>수업 질문</span><h2>성공률을 가장 높였는데도<br />왜 약 63%는 실패할까요?</h2></div>
+        <p>‘최적’은 반드시 성공한다는 뜻이 아니라, 같은 정보와 규칙 안에서 성공 가능성을 가장 크게 만든다는 뜻입니다. 인원 수를 10명, 50명, 200명으로 바꾸어도 최적 관찰 비율이 어디로 모이는지 확인해 보세요.</p>
+      </section>
+    </main>
+
+    <dialog class="exact-dialog" data-exact-dialog>
+      <div class="dialog-header"><div><span>EXACT COUNT</span><h2>정확한 경우의 수</h2></div><button type="button" data-close-exact aria-label="닫기">×</button></div>
+      <p>아래 수는 반올림하지 않은 정수입니다. 인원이 많으면 매우 길어질 수 있습니다.</p>
+      <section><b>전체 순서 N!</b><pre data-exact-total></pre><button type="button" data-copy="total">전체 순서 복사</button></section>
+      <section><b>성공하는 순서</b><pre data-exact-win></pre><button type="button" data-copy="win">성공 경우 복사</button></section>
+      <section><b>실패하는 순서</b><pre data-exact-lose></pre><button type="button" data-copy="lose">실패 경우 복사</button></section>
+    </dialog>
+
+    <dialog class="guide-dialog" data-guide-dialog aria-labelledby="guide-dialog-title">
+      <div class="dialog-header guide-dialog-header">
+        <div><span>USER GUIDE</span><h2 id="guide-dialog-title">최적 멈춤 LAB 사용 설명서</h2></div>
+        <button type="button" data-close-guide aria-label="설명서 닫기">×</button>
+      </div>
+      <div class="guide-dialog-body">
+        <section class="guide-intro">
+          <div><span>수업 목표</span><h3>‘가장 좋은 순간’은<br />어떻게 결정할까?</h3></div>
+          <p>한 번 지나간 선택으로 돌아갈 수 없는 비서 문제를 통해, 관찰과 결정 사이의 균형을 확률·순열·반복 실험으로 탐구합니다.</p>
+        </section>
+        <section class="guide-steps" aria-labelledby="guide-step-title">
+          <h3 id="guide-step-title">4단계 사용법</h3>
+          <ol>
+            <li><i>1</i><div><b>조건 정하기</b><p>전체 인원 N과 먼저 관찰할 인원 r을 정합니다. 처음에는 기본값 100명과 37명을 권장합니다.</p></div></li>
+            <li><i>2</i><div><b>그래프 탐색하기</b><p>전략 지도를 누르거나 드래그하며 성공 확률이 가장 높은 꼭짓점을 찾아봅니다.</p></div></li>
+            <li><i>3</i><div><b>한 명씩 만나기</b><p>실제 순위를 숨긴 채 앞의 r명은 보내고, 이후 처음 등장한 새로운 1위를 선택합니다.</p></div></li>
+            <li><i>4</i><div><b>반복하고 기록하기</b><p>1천 번 이상 반복해 실험값과 이론값을 비교한 뒤 ‘활동 보고서’에 생각을 정리합니다.</p></div></li>
+          </ol>
+        </section>
+        <section class="guide-theory">
+          <div><span>핵심 원리</span><h3>약 37%를 관찰하는 이유</h3><p>관찰이 너무 짧으면 비교 기준이 약하고, 너무 길면 좋은 사람을 이미 지나칠 가능성이 커집니다. N이 커질수록 가장 유리한 관찰 비율은 1/e ≈ 0.3679에 가까워집니다.</p></div>
+          <div class="guide-formula"><b>P(r)</b><strong>r/N · Σ 1/(k−1)</strong><small>k = r+1, …, N</small></div>
+        </section>
+        <section class="guide-tips">
+          <article><span>교사용 진행 팁</span><p>먼저 10명으로 순서를 눈으로 따라간 뒤 100명으로 확대하세요. ‘최적’이어도 약 63% 실패한다는 점을 마지막 토론 질문으로 활용하면 좋습니다.</p></article>
+          <article><span>모형의 주의점</span><p>실제 사람의 가치를 순위 매기는 활동이 아닙니다. 모든 순서가 같은 가능성으로 나타나며, 순위가 명확한 가상 후보나 카드 상황을 가정한 수학 모형입니다.</p></article>
+        </section>
+        <div class="guide-footer"><button class="primary-button" type="button" data-guide-start>설명서를 닫고 실험 시작</button><button class="outline-button" type="button" data-guide-report>보고서 먼저 열기</button></div>
+      </div>
+    </dialog>
+
+    <dialog class="report-dialog" data-report-dialog aria-labelledby="report-dialog-title">
+      <form class="report-sheet" data-report-form>
+        <div class="report-header">
+          <div><span>OPTIMAL STOPPING LAB</span><h2 id="report-dialog-title">최적 멈춤 이론 활동 보고서</h2><p>내 짝은 몇 번째일까?</p></div>
+          <button class="report-close" type="button" data-close-report aria-label="보고서 닫기">×</button>
+        </div>
+
+        <section class="student-info">
+          <label><span>학년·반</span><input type="text" data-report-field="className" placeholder="예: 2학년 3반" /></label>
+          <label><span>번호</span><input type="text" inputmode="numeric" data-report-field="studentNumber" placeholder="예: 17" /></label>
+          <label><span>이름</span><input type="text" data-report-field="studentName" placeholder="이름" /></label>
+          <label><span>활동일</span><input type="date" data-report-field="activityDate" /></label>
+        </section>
+
+        <section class="report-section">
+          <div class="report-section-title"><i>01</i><div><span>HYPOTHESIS</span><h3>실험 전 예상</h3></div></div>
+          <div class="report-two-column">
+            <label><span>100명이라면 몇 명을 먼저 관찰하겠습니까?</span><div class="unit-input"><input type="number" min="0" max="500" data-report-field="predictedSample" placeholder="예: 50" /><b>명</b></div></label>
+            <label><span>전체 1위를 고를 예상 성공률은?</span><div class="unit-input"><input type="number" min="0" max="100" step="0.1" data-report-field="predictedProbability" placeholder="예: 50" /><b>%</b></div></label>
+          </div>
+          <label class="report-textarea"><span>그렇게 예상한 이유</span><textarea rows="3" data-report-field="hypothesisReason" placeholder="관찰 인원과 성공률을 그렇게 예상한 까닭을 적어 보세요."></textarea></label>
+        </section>
+
+        <section class="report-section">
+          <div class="report-section-title"><i>02</i><div><span>EXPERIMENT LOG</span><h3>웹툴이 자동으로 기록한 결과</h3></div><button class="sync-report-button" type="button" data-sync-report>현재 실험값 새로고침</button></div>
+          <div class="capture-grid">
+            <article><span>현재 조건</span><strong data-report-condition>100명 중 37명 관찰</strong><small data-report-theory>이론 성공률 37.10%</small></article>
+            <article><span>한 명씩 만나기</span><strong data-report-single>아직 완료하지 않음</strong><small data-report-single-detail>실험을 완료하면 자동 기록됩니다</small></article>
+            <article><span>반복 실험</span><strong data-report-batch>아직 실행하지 않음</strong><small data-report-batch-detail>1,000번 이상을 권장합니다</small></article>
+            <article><span>경우의 수</span><strong data-report-cases>100!가지</strong><small data-report-cases-detail>성공 경우의 수가 자동 기록됩니다</small></article>
+          </div>
+          <label class="report-textarea"><span>실험하면서 발견한 변화나 특징</span><textarea rows="3" data-report-field="observation" placeholder="관찰 인원을 늘리거나 줄였을 때 그래프와 성공률이 어떻게 변했나요?"></textarea></label>
+        </section>
+
+        <section class="report-section">
+          <div class="report-section-title"><i>03</i><div><span>INTERPRETATION</span><h3>결과 해석</h3></div></div>
+          <label class="report-textarea"><span>1. 관찰 인원이 너무 적거나 너무 많을 때 성공률이 낮아지는 이유는 무엇인가요?</span><textarea rows="3" data-report-field="balanceReason"></textarea></label>
+          <label class="report-textarea"><span>2. 최적 전략인데도 약 63%는 실패합니다. 여기서 ‘최적’은 무슨 뜻인가요?</span><textarea rows="3" data-report-field="optimalMeaning"></textarea></label>
+          <label class="report-textarea"><span>3. 이 모형을 적용해 볼 수 있는 다른 상황과 적용할 때의 한계를 적어 보세요.</span><textarea rows="3" data-report-field="application"></textarea></label>
+        </section>
+
+        <section class="report-conclusion">
+          <span>한 문장 결론</span>
+          <textarea rows="2" data-report-field="conclusion" placeholder="이번 활동에서 알게 된 핵심을 한 문장으로 정리해 보세요."></textarea>
+        </section>
+
+        <div class="report-actions" data-report-actions>
+          <p><i></i><span data-report-save-status>입력 내용은 이 기기에 자동 저장됩니다.</span></p>
+          <button class="outline-button" type="button" data-clear-report>내용 지우기</button>
+          <button class="outline-button" type="button" data-copy-report>텍스트 복사</button>
+          <button class="print-report-button" type="button" data-print-report>인쇄 · PDF 저장</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="./script.js"></script>
+  </body>
+</html>

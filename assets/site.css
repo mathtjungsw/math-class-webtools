@@ -864,6 +864,52 @@ body.is-modal-open {
 }
 
 /* 카드별 간단한 시각화 */
+.card-optimal-stopping .tool-visual {
+  position: relative;
+  overflow: hidden;
+  background: #eef7e5;
+}
+
+.stopping-people {
+  position: absolute;
+  right: 34px;
+  bottom: 39px;
+  left: 34px;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+}
+
+.stopping-people i {
+  position: relative;
+  width: 24px;
+  height: 48px;
+  border: 4px solid var(--navy);
+  border-radius: 12px 12px 5px 5px;
+  background: white;
+}
+
+.stopping-people i::before {
+  position: absolute;
+  top: -23px;
+  left: 50%;
+  width: 19px;
+  height: 19px;
+  border: 4px solid var(--navy);
+  border-radius: 50%;
+  background: white;
+  content: "";
+  transform: translateX(-50%);
+}
+
+.stopping-people i:nth-child(-n+4) { opacity: .4; }
+.stopping-people i:nth-child(7) { height: 70px; background: var(--yellow); }
+.stopping-line { position: absolute; top: 24px; left: 170px; display: flex; align-items: center; gap: 9px; }
+.stopping-line::after { position: absolute; top: 34px; bottom: -104px; left: 3px; border-left: 3px dashed var(--orange); content: ""; }
+.stopping-line span { padding: 7px 9px; background: var(--navy); color: white; font-size: 11px; font-weight: 850; }
+.stopping-line b { color: var(--orange); font-size: 17px; transform: rotate(-5deg); }
+.stopping-best { position: absolute; top: 26px; right: 80px; display: grid; width: 35px; height: 35px; place-items: center; border-radius: 50%; background: var(--mint); color: var(--navy); font-size: 17px; font-weight: 900; }
+
 .card-motion-shot .tool-visual { background: #edf3ff; }
 .card-motion-shot .motion-camera {
   fill: white;
