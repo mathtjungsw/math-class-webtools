@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="모집단에서 표본을 반복 추출하며 표본평균, 표집분포, 표준오차와 신뢰구간을 탐구하는 확률과 통계 수업용 웹툴" />
+    <meta name="theme-color" content="#102a43" />
+    <title>표본추출 스튜디오 | 확률과 통계</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="back-link" href="../../index.html"><span aria-hidden="true">←</span> 웹툴 모음</a>
+      <a class="wordmark" href="#top"><span class="wordmark-mark" aria-hidden="true">S</span><span><strong>SAMPLE STUDIO</strong><small>표본추출과 통계적 추정</small></span></a>
+      <button class="guide-button" id="guideButton" type="button"><span>?</span> 탐구 안내</button>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> INTERACTIVE STATISTICS LAB</p>
+          <h1>한 숟갈만 맛보고<br /><em>전체 냄비의 맛을 맞힐 수 있을까?</em></h1>
+          <p>모집단을 직접 만들고 표본을 뽑아 보세요. 같은 모집단에서도 표본은 매번 달라지고, 표본을 어떻게 뽑느냐에 따라 추정은 공정해지기도 편향되기도 합니다.</p>
+          <div class="hero-pills"><span>5가지 예시 상황</span><span>반복 표집 1,000회</span><span>신뢰구간 시각화</span></div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="pot"><span class="steam steam-a"></span><span class="steam steam-b"></span><div class="pot-body"><i></i><i></i><i></i><i></i><i></i></div></div>
+          <div class="ladle"><i></i><b>?</b></div>
+          <div class="estimate-card"><small>SAMPLE MEAN</small><strong id="heroEstimate">?</strong><span>표본으로 전체를 추정!</span></div>
+        </div>
+      </section>
+
+      <section class="scenario-section" aria-labelledby="scenarioTitle">
+        <div class="section-title"><b>01</b><div><span>CHOOSE A STORY</span><h2 id="scenarioTitle">어떤 모집단을 조사할까요?</h2></div></div>
+        <div class="scenario-grid" id="scenarioGrid"></div>
+      </section>
+
+      <section class="lab-shell" aria-label="표본추출 실험실">
+        <aside class="control-panel">
+          <div class="section-title panel-title"><b>02</b><div><span>DESIGN THE SAMPLE</span><h2>표집 설계</h2></div></div>
+
+          <div class="control-group">
+            <div class="control-heading"><label for="populationRange">모집단 크기</label><output id="populationOutput">1,000명</output></div>
+            <input id="populationRange" type="range" min="200" max="5000" step="100" value="1000" />
+            <div class="range-labels"><span>200</span><span>5,000</span></div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-heading"><label for="sampleRange">표본 크기 n</label><output id="sampleOutput">30명</output></div>
+            <input id="sampleRange" type="range" min="5" max="200" step="5" value="30" />
+            <div class="quick-sizes" aria-label="빠른 표본 크기 선택"><button type="button" data-size="10">10</button><button type="button" data-size="30" class="active">30</button><button type="button" data-size="50">50</button><button type="button" data-size="100">100</button></div>
+          </div>
+
+          <div class="control-group split-controls">
+            <label>추출 방법<select id="methodSelect"><option value="random">단순무작위추출</option><option value="front">앞쪽에서만 추출</option><option value="high">큰 값 위주 추출</option><option value="cluster">한 집단만 추출</option></select></label>
+            <label>신뢰수준<select id="confidenceSelect"><option value="0.9">90%</option><option value="0.95" selected>95%</option><option value="0.99">99%</option></select></label>
+          </div>
+
+          <div class="control-group">
+            <span class="group-label">모집단 모양</span>
+            <div class="segmented" id="shapeButtons"><button type="button" data-shape="normal" class="active">종 모양</button><button type="button" data-shape="skewed">오른쪽 꼬리</button><button type="button" data-shape="uniform">고른 모양</button><button type="button" data-shape="bimodal">두 봉우리</button></div>
+          </div>
+
+          <div class="control-group custom-values">
+            <div class="control-heading"><label for="meanRange">모평균 μ</label><output id="meanOutput">70.0</output></div>
+            <input id="meanRange" type="range" min="20" max="100" step="1" value="70" />
+            <div class="control-heading"><label for="sdRange">모표준편차 σ</label><output id="sdOutput">12.0</output></div>
+            <input id="sdRange" type="range" min="2" max="25" step="1" value="12" />
+          </div>
+
+          <label class="switch-row"><span><b>복원추출</b><small>뽑은 대상을 다시 넣기</small></span><input id="replaceToggle" type="checkbox" /><i aria-hidden="true"></i></label>
+          <label class="seed-row"><span>실험 번호 <small>같은 번호 = 같은 결과</small></span><span><input id="seedInput" type="number" min="1" max="999999" value="2026" /><button id="shuffleSeed" type="button" aria-label="실험 번호 무작위 변경">↻</button></span></label>
+
+          <button class="rebuild-button" id="rebuildButton" type="button"><span>✦</span><b>새 모집단 만들기</b><small id="populationSummary">1,000명 · 종 모양</small></button>
+          <button class="reset-button" id="resetButton" type="button">기본 설정으로 돌아가기</button>
+        </aside>
+
+        <div class="stage-panel">
+          <div class="stage-head">
+            <div><p><i></i> LIVE POPULATION</p><h2 id="stageTitle">우리 학교 수학 시험 점수</h2></div>
+            <div class="truth-chip"><span>숨겨진 실제 평균</span><strong id="truthValue">70.0점</strong></div>
+          </div>
+
+          <article class="population-card">
+            <div class="card-head"><div><span>POPULATION MAP</span><h3>모집단 속 사람들</h3></div><div class="legend"><span><i class="population-dot"></i>모집단</span><span><i class="sample-dot"></i>이번 표본</span></div></div>
+            <canvas id="populationCanvas" role="img" aria-label="모집단과 선택된 표본의 분포"></canvas>
+            <div class="axis-labels"><span id="axisMin">낮은 값</span><span id="axisMax">높은 값</span></div>
+          </article>
+
+          <div class="sample-result-grid">
+            <article class="sample-card">
+              <div class="sample-card-top"><span>이번 표본</span><b id="sampleBadge">n = 30</b></div>
+              <div class="sample-avatars" id="sampleAvatars" aria-label="이번에 뽑힌 표본"></div>
+              <p id="sampleMessage">아직 표본을 뽑지 않았어요.</p>
+            </article>
+            <article class="estimate-result">
+              <span>SAMPLE ESTIMATE</span>
+              <div><small>표본평균 x̄</small><strong id="sampleMean">—</strong></div>
+              <div class="estimate-meta"><span>오차 <b id="sampleError">—</b></span><span>표준오차 <b id="standardError">—</b></span></div>
+              <div class="confidence-track"><i id="confidenceBar"></i><b id="confidenceTruth"></b></div>
+              <p id="confidenceText">표본을 뽑으면 신뢰구간이 나타납니다.</p>
+            </article>
+          </div>
+
+          <div class="action-row">
+            <button class="draw-button" id="drawButton" type="button"><span>한 번</span><b>표본 뽑기</b></button>
+            <button type="button" data-repeat="20"><b>20회</b><span>빠르게 반복</span></button>
+            <button type="button" data-repeat="100"><b>100회</b><span>분포 만들기</span></button>
+            <button type="button" data-repeat="1000"><b>1,000회</b><span>확실히 보기</span></button>
+            <button class="clear-button" id="clearButton" type="button">기록 지우기</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="analysis-section" aria-labelledby="analysisTitle">
+        <div class="analysis-intro">
+          <div class="section-title light"><b>03</b><div><span>WATCH THE ESTIMATES</span><h2 id="analysisTitle">표본평균은 어디에 모일까요?</h2></div></div>
+          <p>세로 막대 하나가 표본 한 번의 평균입니다. 표본을 여러 번 뽑을수록 표본평균의 분포가 드러나고, 표본 크기가 클수록 가운데로 모입니다.</p>
+        </div>
+        <div class="analysis-grid">
+          <article class="histogram-card">
+            <div class="card-head dark"><div><span>SAMPLING DISTRIBUTION</span><h3>표본평균의 분포</h3></div><div class="legend"><span><i class="mean-line"></i>모평균</span></div></div>
+            <canvas id="histogramCanvas" role="img" aria-label="반복 표집으로 만든 표본평균의 히스토그램"></canvas>
+            <div class="histogram-footer"><span id="histMin">낮음</span><b id="histCenter">모평균</b><span id="histMax">높음</span></div>
+          </article>
+          <div class="stat-stack">
+            <article><span>반복 표집</span><strong id="trialCount">0</strong><small>회</small></article>
+            <article><span>표본평균들의 평균</span><strong id="meansMean">—</strong><small id="meansBias">편향 확인 전</small></article>
+            <article><span>신뢰구간 적중률</span><strong id="coverageRate">—</strong><small id="coverageTarget">목표 95%</small></article>
+            <article class="mission-card"><span>오늘의 미션</span><strong id="missionTitle">오차 3 이내로 맞히기</strong><div class="stars" id="missionStars" aria-label="미션 별점">☆ ☆ ☆</div><small id="missionHint">공정한 추출과 충분한 표본이 열쇠예요.</small></article>
+          </div>
+        </div>
+        <div class="insight-strip"><span>STATISTICIAN'S NOTE</span><strong id="insightText">표본 크기와 추출 방법을 바꾸고 결과를 비교해 보세요.</strong><button id="challengeButton" type="button">랜덤 도전 받기 →</button></div>
+      </section>
+
+      <section class="question-section">
+        <div><p class="eyebrow"><span></span> THINK & TALK</p><h2>결과를 보고 이야기해 볼까요?</h2></div>
+        <div class="question-grid"><article><b>01</b><p>표본 크기를 10에서 100으로 늘리면 표본평균의 분포 폭은 어떻게 변하나요?</p></article><article><b>02</b><p>큰 값 위주로 뽑았을 때 표본을 많이 뽑아도 오차가 사라지지 않는 이유는 무엇일까요?</p></article><article><b>03</b><p>신뢰수준을 90%에서 99%로 올리면 신뢰구간의 폭과 적중률은 어떻게 달라지나요?</p></article></div>
+      </section>
+    </main>
+
+    <footer><strong>SAMPLE STUDIO</strong><p>수학 수업 웹툴 모음 · 확률과 통계</p><span>모형은 수업용으로 단순화되었습니다. 실제 조사에서는 표본틀과 무응답 편향도 함께 고려해야 합니다.</span></footer>
+
+    <dialog id="guideDialog">
+      <div class="dialog-head"><div><span>QUICK GUIDE</span><h2>표본추출 스튜디오 탐구 안내</h2></div><button id="closeGuide" type="button" aria-label="안내 닫기">×</button></div>
+      <ol><li><b>예시 상황을 고르세요.</b><span>상황마다 단위, 평균, 퍼짐과 기본 분포가 달라집니다.</span></li><li><b>표본을 설계하세요.</b><span>표본 크기와 추출 방법, 복원 여부, 신뢰수준을 바꿀 수 있습니다.</span></li><li><b>한 번 뽑아 추정하세요.</b><span>표본평균과 모평균의 차이, 신뢰구간을 확인합니다.</span></li><li><b>100회 이상 반복하세요.</b><span>표집분포와 신뢰구간 적중률을 비교해 보세요.</span></li></ol>
+      <div class="guide-tip"><b>수업 추천 순서</b><p>n=10과 n=100 비교 → 큰 값 위주 추출로 편향 관찰 → 신뢰수준 90%와 99% 비교</p></div>
+      <button class="dialog-start" id="dialogStart" type="button">바로 탐구하기</button>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
