@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="다양한 유전 모형의 자녀 형질 확률과 여러 세대의 변화를 퍼넷 사각형과 그래프로 탐구하는 수업용 시뮬레이터" />
+    <meta name="theme-color" content="#132820" />
+    <title>유전 확률 시뮬레이터 | Gene Lab</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="back-link" href="../../index.html"><span aria-hidden="true">←</span> 웹툴 모음</a>
+      <a class="wordmark" href="#top" aria-label="유전 확률 시뮬레이터 처음으로">
+        <span class="wordmark-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span><strong>GENE LAB</strong><small>유전 확률 시뮬레이터</small></span>
+      </a>
+      <button class="guide-button" id="guideButton" type="button"><span>?</span> 탐구 안내</button>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> INTERACTIVE GENETICS LAB</p>
+          <h1>부모의 유전 정보는<br /><em>세대를 지나며 어떻게 섞일까?</em></h1>
+          <p>두 부모의 유전자형을 교배하고, 수백 명의 가상 자녀와 최대 10세대의 집단을 직접 만들어 보세요. 이론 확률과 우연이 만든 차이를 한눈에 비교합니다.</p>
+          <div class="hero-pills" aria-label="주요 기능">
+            <span>8가지 유전 모형</span><span>최대 10세대</span><span>실시간 시각화</span>
+          </div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="dna-ladder">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+          <div class="gene-note note-a"><b>A</b><span>대립유전자</span></div>
+          <div class="gene-note note-b"><b>a</b><span>대립유전자</span></div>
+          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        </div>
+      </section>
+
+      <section class="lab-shell" aria-label="유전 확률 실험실">
+        <aside class="control-panel">
+          <div class="section-label"><b>01</b><div><span>DESIGN A CROSS</span><h2>교배 설계</h2></div></div>
+
+          <div class="control-block">
+            <label for="traitSelect">탐구할 유전 형질</label>
+            <select id="traitSelect"></select>
+            <p class="model-note" id="modelNote"></p>
+          </div>
+
+          <div class="parent-grid">
+            <div class="parent-card parent-a">
+              <div class="parent-title"><span aria-hidden="true">A</span><div><small>PARENT A</small><strong>부모 A</strong></div></div>
+              <label for="parentASelect">유전자형</label>
+              <select id="parentASelect"></select>
+              <div class="parent-phenotype"><small>표현형</small><b id="parentAPhenotype"></b></div>
+            </div>
+            <div class="cross-mark" aria-hidden="true">×</div>
+            <div class="parent-card parent-b">
+              <div class="parent-title"><span aria-hidden="true">B</span><div><small>PARENT B</small><strong>부모 B</strong></div></div>
+              <label for="parentBSelect">유전자형</label>
+              <select id="parentBSelect"></select>
+              <div class="parent-phenotype"><small>표현형</small><b id="parentBPhenotype"></b></div>
+            </div>
+          </div>
+
+          <div class="slider-block">
+            <div class="slider-heading"><label for="generationRange">관찰 세대</label><output id="generationOutput">5세대</output></div>
+            <input id="generationRange" type="range" min="1" max="10" value="5" step="1" />
+            <div class="range-labels"><span>1세대</span><span>10세대</span></div>
+          </div>
+          <div class="slider-block">
+            <div class="slider-heading"><label for="populationRange">세대별 개체 수</label><output id="populationOutput">100명</output></div>
+            <input id="populationRange" type="range" min="20" max="500" value="100" step="20" />
+            <div class="range-labels"><span>20</span><span>500</span></div>
+          </div>
+
+          <div class="seed-control">
+            <label for="seedInput">실험 번호 <small>같은 번호 = 같은 결과</small></label>
+            <div><input id="seedInput" type="number" min="1" max="999999" value="2026" /><button id="shuffleSeed" type="button" aria-label="새 실험 번호 만들기">↻</button></div>
+          </div>
+
+          <button class="simulate-button" id="simulateButton" type="button"><span aria-hidden="true">▶</span><b>새로운 세대 만들기</b><small id="simulateSummary">5세대 · 500명</small></button>
+          <button class="reset-button" id="resetButton" type="button">기본 설정으로</button>
+        </aside>
+
+        <div class="result-stage">
+          <div class="stage-heading">
+            <div><p><i></i> LIVE CROSS</p><h2 id="crossTitle">Aa × Aa 교배 결과</h2></div>
+            <div class="stage-chip"><span id="modelType">완전 우성</span><b id="generationChip">F1 → F5</b></div>
+          </div>
+
+          <div class="f1-grid">
+            <article class="punnett-card visual-card">
+              <div class="card-heading"><div><span>PUNNETT SQUARE</span><h3>퍼넷 사각형</h3></div><small>이론적 F1</small></div>
+              <div class="punnett-wrap" id="punnettSquare" aria-label="퍼넷 사각형"></div>
+            </article>
+
+            <article class="probability-card visual-card">
+              <div class="card-heading"><div><span>PHENOTYPE ODDS</span><h3>자녀 표현형 확률</h3></div><small>이론값</small></div>
+              <div class="probability-content">
+                <div class="donut" id="phenotypeDonut" role="img" aria-label="표현형 확률 도넛 그래프"><div><strong id="donutValue">75%</strong><span id="donutLabel">우성</span></div></div>
+                <div class="probability-legend" id="probabilityLegend"></div>
+              </div>
+            </article>
+          </div>
+
+          <article class="children-card visual-card">
+            <div class="card-heading"><div><span>VIRTUAL OFFSPRING</span><h3>가상 자녀 20명</h3></div><div class="legend-inline" id="childLegend"></div></div>
+            <div class="children-strip" id="childrenStrip" aria-label="가상 자녀 표본"></div>
+            <p class="sample-note" id="sampleNote"></p>
+          </article>
+        </div>
+      </section>
+
+      <section class="generation-section" aria-labelledby="generationTitle">
+        <div class="generation-intro">
+          <div class="section-label light"><b>02</b><div><span>GENERATION JOURNEY</span><h2 id="generationTitle">세대를 따라가는 유전</h2></div></div>
+          <p>F1은 선택한 두 부모의 교배 결과입니다. F2부터는 같은 세대 안에서 무작위로 짝을 이루며, 우연에 따라 대립유전자 비율이 조금씩 달라집니다.</p>
+        </div>
+
+        <div class="generation-stats" id="generationStats"></div>
+
+        <article class="generation-card">
+          <div class="card-heading dark"><div><span>PHENOTYPE BY GENERATION</span><h3>세대별 표현형 분포</h3></div><div class="legend-inline" id="generationLegend"></div></div>
+          <div class="generation-bars" id="generationBars"></div>
+        </article>
+
+        <div class="analysis-grid">
+          <article class="chart-card">
+            <div class="card-heading dark"><div><span>ALLELE FREQUENCY</span><h3>대립유전자 빈도 변화</h3></div><span class="chart-value" id="alleleHeadline">A 50%</span></div>
+            <div class="canvas-wrap"><canvas id="alleleChart" role="img" aria-label="세대별 대립유전자 빈도 꺾은선 그래프"></canvas></div>
+          </article>
+
+          <article class="family-card">
+            <div class="card-heading dark"><div><span>FAMILY SNAPSHOT</span><h3>가계도 표본</h3></div><small>세대별 8명</small></div>
+            <div class="family-tree" id="familyTree"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="insight-section">
+        <div>
+          <p class="eyebrow"><span></span> READ THE RESULT</p>
+          <h2>확률은 한 아이의 운명을 말하지 않아요.</h2>
+          <p>퍼넷 사각형은 가능한 결과의 <strong>확률</strong>을 보여 줍니다. 실제 표본은 매번 달라지고, 집단이 작을수록 세대 사이의 흔들림이 커질 수 있습니다.</p>
+        </div>
+        <div class="insight-box">
+          <span>이번 실험의 발견</span>
+          <strong id="insightText"></strong>
+          <button id="compareButton" type="button">다른 실험 번호와 비교하기 <b>→</b></button>
+        </div>
+      </section>
+
+      <section class="model-cards" aria-labelledby="modelCardsTitle">
+        <div class="model-heading"><span>MODEL LIBRARY</span><h2 id="modelCardsTitle">어떤 유전 방식이 있을까요?</h2><p>형질마다 유전 방식이 다릅니다. 카드의 예시는 수업을 위한 단순화된 모형입니다.</p></div>
+        <div class="model-grid">
+          <article><i class="model-icon dominant">Aa</i><span>COMPLETE DOMINANCE</span><h3>완전 우성</h3><p>이형접합에서 한 대립유전자의 형질이 나타나는 모형</p></article>
+          <article><i class="model-icon incomplete">RW</i><span>INCOMPLETE DOMINANCE</span><h3>불완전 우성</h3><p>두 동형접합의 중간 표현형이 나타나는 모형</p></article>
+          <article><i class="model-icon codominant">AB</i><span>CODOMINANCE</span><h3>공우성·복대립</h3><p>두 대립유전자가 함께 발현되거나 종류가 셋 이상인 모형</p></article>
+          <article><i class="model-icon linked">Xⁿ</i><span>SEX-LINKED</span><h3>X-연관 유전</h3><p>X 염색체 위의 유전자 전달을 살펴보는 모형</p></article>
+        </div>
+      </section>
+    </main>
+
+    <footer><strong>GENE LAB</strong><p>수학 수업 웹툴 모음 · 확률과 통계</p><span>교과용 단순화 모형이며 실제 개인의 형질 예측이나 의학적 판단에 사용할 수 없습니다.</span></footer>
+
+    <dialog id="guideDialog">
+      <div class="dialog-head"><div><span>QUICK GUIDE</span><h2>유전 확률 탐구 안내</h2></div><button id="closeGuide" type="button" aria-label="안내 닫기">×</button></div>
+      <ol>
+        <li><b>형질과 부모를 선택해요.</b><span>유전 방식에 따라 가능한 유전자형이 자동으로 바뀝니다.</span></li>
+        <li><b>세대 수와 개체 수를 정해요.</b><span>집단 크기를 바꾸며 우연한 변동의 크기를 비교해 보세요.</span></li>
+        <li><b>퍼넷 사각형부터 읽어요.</b><span>F1의 이론 확률과 실제 가상 자녀 표본이 얼마나 다른지 확인합니다.</span></li>
+        <li><b>세대 그래프를 해석해요.</b><span>같은 조건에서 실험 번호만 바꾸어 결과가 어떻게 달라지는지 토의합니다.</span></li>
+      </ol>
+      <div class="guide-question"><span>탐구 질문</span><p>개체 수가 20명일 때와 500명일 때, 어느 쪽의 대립유전자 빈도가 더 크게 흔들릴까요?</p></div>
+    </dialog>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
