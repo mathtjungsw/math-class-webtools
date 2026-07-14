@@ -42,8 +42,7 @@
     startOffset: null,
     activeHandle: null,
     showGolden: false,
-    spacePressed: false,
-    dragDepth: 0
+    spacePressed: false
   };
 
   function resizeCanvas() {
@@ -363,6 +362,7 @@
       state.image = image;
       state.sourceName = name;
       emptyState.hidden = true;
+      dropMask.hidden = true;
       clearMeasurement(false);
       requestAnimationFrame(() => fitImage(false));
       statusText.textContent = `${name} 사진을 불러왔습니다.`;
@@ -384,6 +384,7 @@
   }
 
   function loadFile(file) {
+    dropMask.hidden = true;
     if (!file || !file.type.startsWith("image/")) {
       showToast("이미지 파일을 선택해 주세요.");
       return;
@@ -451,22 +452,31 @@
     render();
   });
 
-  ["dragenter", "dragover"].forEach((type) => shell.addEventListener(type, (event) => {
+  function isFileDrag(event) {
+    return Array.from(event.dataTransfer?.types || []).includes("Files");
+  }
+
+  shell.addEventListener("dragenter", (event) => {
+    if (!isFileDrag(event)) return;
     event.preventDefault();
-    state.dragDepth += type === "dragenter" ? 1 : 0;
     dropMask.hidden = false;
-  }));
-  shell.addEventListener("dragleave", (event) => {
+  });
+  shell.addEventListener("dragover", (event) => {
+    if (!isFileDrag(event)) return;
     event.preventDefault();
-    state.dragDepth = Math.max(0, state.dragDepth - 1);
-    if (state.dragDepth === 0) dropMask.hidden = true;
+    event.dataTransfer.dropEffect = "copy";
+    dropMask.hidden = false;
+  });
+  shell.addEventListener("dragleave", (event) => {
+    if (!shell.contains(event.relatedTarget)) dropMask.hidden = true;
   });
   shell.addEventListener("drop", (event) => {
     event.preventDefault();
-    state.dragDepth = 0;
     dropMask.hidden = true;
     loadFile(event.dataTransfer.files[0]);
   });
+  window.addEventListener("dragend", () => { dropMask.hidden = true; });
+  window.addEventListener("drop", () => { dropMask.hidden = true; });
 
   const dialog = document.querySelector("[data-guide-dialog]");
   document.querySelector("[data-open-guide]").addEventListener("click", () => dialog.showModal());
