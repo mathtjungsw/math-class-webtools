@@ -1971,3 +1971,60 @@ body.is-modal-open {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Benford lab card */
+.card-benford .tool-visual {
+  background: #102b3f;
+}
+
+.benford-preview {
+  position: relative;
+  width: min(82%, 310px);
+  height: 150px;
+  padding: 28px 22px 24px;
+  color: #f6f5ee;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+}
+
+.benford-preview__bars {
+  height: 82px;
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 6px;
+  align-items: end;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.benford-preview__bars i {
+  display: block;
+  height: var(--bar);
+  background: #57d4b4;
+  border-radius: 4px 4px 0 0;
+}
+
+.benford-preview__digits {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 6px;
+  margin-top: 6px;
+  color: #abc1c8;
+  font-size: 9px;
+  text-align: center;
+}
+
+.benford-preview__digits b {
+  color: #fff;
+}
+
+.benford-preview > strong,
+.benford-preview > em {
+  position: absolute;
+  top: 8px;
+  font: 800 10px/1 sans-serif;
+  font-style: normal;
+}
+
+.benford-preview > strong { left: 20px; color: #57d4b4; }
+.benford-preview > em { right: 20px; color: #ff9d5b; }

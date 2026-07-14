@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="기사와 데이터에서 수를 추출해 첫째 자리 분포를 벤포드 법칙과 비교하는 수업용 실험기" />
+    <meta name="theme-color" content="#102b3f" />
+    <title>벤포드 법칙 실험기</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="back-link" href="../../index.html" aria-label="웹툴 모음으로 돌아가기"><span aria-hidden="true">←</span> 웹툴 모음</a>
+      <div class="brand"><span class="brand-mark" aria-hidden="true">B₁</span><strong>BENFORD LAB</strong></div>
+      <button class="header-report" type="button" data-open-report>보고서 만들기</button>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <div class="tags"><span>확률과 통계</span><span>통계</span><span>시각화·탐구</span><span>수업용</span></div>
+          <p class="eyebrow">숫자에는 첫인상이 있다</p>
+          <h1>첫째 자리 숫자는<br /><em>정말 공평할까?</em></h1>
+          <p class="hero-description">뉴스 기사나 실제 데이터를 그대로 붙여넣으세요. 숨어 있는 수를 찾아 1부터 9까지 분류하고, 벤포드 법칙의 이론 분포와 한눈에 비교합니다.</p>
+          <div class="hero-actions">
+            <a class="primary-link" href="#experiment">데이터로 실험하기 <span aria-hidden="true">↓</span></a>
+            <button class="text-button" type="button" data-scroll-theory>법칙 먼저 알아보기</button>
+          </div>
+        </div>
+        <div class="hero-card" aria-label="벤포드 법칙의 핵심 이론값">
+          <div class="formula-label">BENFORD'S LAW</div>
+          <div class="formula">P(d) = log<sub>10</sub>(1 + <span>1</span>/<i>d</i>)</div>
+          <div class="hero-bars" aria-hidden="true">
+            <div style="--h:100%"><b>30.1%</b><i></i><span>1</span></div>
+            <div style="--h:58%"><i></i><span>2</span></div>
+            <div style="--h:42%"><i></i><span>3</span></div>
+            <div style="--h:34%"><i></i><span>4</span></div>
+            <div style="--h:28%"><i></i><span>5</span></div>
+            <div style="--h:24%"><i></i><span>6</span></div>
+            <div style="--h:21%"><i></i><span>7</span></div>
+            <div style="--h:19%"><i></i><span>8</span></div>
+            <div style="--h:17%"><b>4.6%</b><i></i><span>9</span></div>
+          </div>
+          <p>1로 시작할 확률은 9보다 약 <strong>6.6배</strong> 높습니다.</p>
+        </div>
+      </section>
+
+      <section class="experiment" id="experiment" aria-labelledby="experiment-title">
+        <div class="section-heading">
+          <div><span class="step">01</span><p>PASTE &amp; EXTRACT</p><h2 id="experiment-title">데이터를 붙여넣어 보세요</h2></div>
+          <p>분석은 이 브라우저 안에서만 이루어집니다. 입력한 내용은 어디에도 전송되지 않습니다.</p>
+        </div>
+
+        <div class="workspace-grid">
+          <article class="input-card panel">
+            <div class="panel-heading">
+              <div><span class="status-dot"></span><strong>원문 입력</strong></div>
+              <button type="button" id="clearButton">모두 지우기</button>
+            </div>
+            <label class="sr-only" for="sourceText">분석할 기사 또는 데이터</label>
+            <textarea id="sourceText" spellcheck="false" placeholder="예) 2025년 A시의 인구는 1,234,567명이고, B시는 842,910명입니다.&#10;&#10;뉴스 기사, 표, CSV 데이터 등을 그대로 붙여넣으세요."></textarea>
+            <div class="input-meta"><span><b id="characterCount">0</b>자 입력됨</span><span id="candidateCount">아직 분석 전</span></div>
+            <div class="quick-data">
+              <span>빠른 예시</span>
+              <button type="button" data-sample="cities">도시 인구</button>
+              <button type="button" data-sample="finance">기업 매출</button>
+              <button type="button" data-sample="uniform">인위적 숫자</button>
+            </div>
+            <details class="options">
+              <summary>데이터 정제 옵션 <span>자동 추천 설정</span></summary>
+              <div class="option-grid">
+                <label><input type="checkbox" id="excludeDates" checked /><span><b>날짜 제외</b><small>2026-07-14 같은 날짜 묶음</small></span></label>
+                <label><input type="checkbox" id="excludePercent" checked /><span><b>백분율 제외</b><small>범위가 제한된 % 값</small></span></label>
+                <label><input type="checkbox" id="excludeYears" checked /><span><b>연도 제외</b><small>1900~2099 사이 정수</small></span></label>
+                <label><input type="checkbox" id="uniqueOnly" /><span><b>중복값 한 번만</b><small>같은 수의 반복 영향 제거</small></span></label>
+              </div>
+            </details>
+            <div class="input-actions">
+              <label class="file-button" for="fileInput">TXT·CSV 열기</label>
+              <input id="fileInput" type="file" accept=".txt,.csv,.tsv,text/plain,text/csv" />
+              <button class="analyze-button" id="analyzeButton" type="button">숫자 추출하고 분석하기 <span aria-hidden="true">→</span></button>
+            </div>
+          </article>
+
+          <aside class="extraction-card panel" aria-live="polite">
+            <div class="panel-heading"><div><span class="status-dot mint"></span><strong>추출 결과</strong></div><span class="privacy-badge">LOCAL ONLY</span></div>
+            <div class="empty-state" id="emptyState">
+              <div class="scan-icon" aria-hidden="true"><span>1</span><span>2</span><span>3</span></div>
+              <h3>아직 찾은 숫자가 없어요</h3>
+              <p>왼쪽에 자료를 붙여넣고 분석 버튼을 누르면 숫자만 골라 보여 드려요.</p>
+            </div>
+            <div class="extraction-result" id="extractionResult" hidden>
+              <div class="extract-summary">
+                <div><span>발견</span><strong id="foundCount">0</strong><small>개</small></div>
+                <div><span>분석 사용</span><strong id="usedCount">0</strong><small>개</small></div>
+                <div><span>제외</span><strong id="excludedCount">0</strong><small>개</small></div>
+              </div>
+              <div class="number-list-heading"><strong>분석에 사용한 수</strong><button type="button" id="copyNumbersButton">복사</button></div>
+              <div class="number-chips" id="numberChips"></div>
+              <p class="number-note" id="numberNote"></p>
+              <details class="excluded-details" id="excludedDetails">
+                <summary>제외된 값과 이유 보기</summary>
+                <ul id="excludedList"></ul>
+              </details>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="results" id="results" aria-labelledby="results-title" hidden>
+        <div class="section-heading">
+          <div><span class="step">02</span><p>OBSERVED VS EXPECTED</p><h2 id="results-title">첫째 자리 분포 비교</h2></div>
+          <div class="result-actions"><button type="button" id="downloadCsvButton">분석표 CSV</button><button class="dark-button" type="button" data-open-report>보고서 만들기</button></div>
+        </div>
+
+        <div class="metrics-grid">
+          <article><span>표본 크기</span><strong id="metricN">0</strong><small id="sampleComment">개의 유효한 수</small></article>
+          <article><span>평균 절대 편차</span><strong id="metricMad">0.000</strong><small>MAD · 낮을수록 비슷함</small></article>
+          <article><span>카이제곱 통계량</span><strong id="metricChi">0.00</strong><small id="metricP">p값 계산 중</small></article>
+          <article class="fit-metric"><span>분포 판정</span><strong id="metricFit">—</strong><small id="metricFitDetail">분석 후 표시됩니다</small></article>
+        </div>
+
+        <div class="chart-layout">
+          <article class="chart-card panel">
+            <div class="chart-heading">
+              <div><h3>관측값과 이론값</h3><p>각 숫자로 시작한 데이터의 비율</p></div>
+              <div class="legend"><span><i class="observed"></i>관측값</span><span><i class="expected"></i>벤포드 이론값</span></div>
+            </div>
+            <div class="canvas-wrap"><canvas id="benfordChart" role="img" aria-label="1부터 9까지 첫째 자리 숫자의 관측 비율과 벤포드 이론 비율 비교 그래프"></canvas></div>
+            <p class="chart-footnote">세로축은 전체 유효 데이터에서 차지하는 비율입니다.</p>
+          </article>
+          <aside class="insight-card panel">
+            <span class="insight-kicker">DATA NOTE</span>
+            <h3 id="insightTitle">분포를 해석하고 있어요</h3>
+            <p id="insightText"></p>
+            <div class="largest-gap"><span>이론값과 차이가 가장 큰 숫자</span><strong id="largestGapDigit">—</strong><p id="largestGapText"></p></div>
+            <div class="warning-box" id="sampleWarning"></div>
+          </aside>
+        </div>
+
+        <article class="table-card panel">
+          <div class="table-heading"><div><h3>숫자별 상세 분석</h3><p>관측 도수·비율과 벤포드 법칙의 기대값을 비교합니다.</p></div><button type="button" id="toggleTableButton" aria-expanded="true">표 접기</button></div>
+          <div class="table-wrap" id="tableWrap">
+            <table>
+              <thead><tr><th scope="col">첫째 자리</th><th scope="col">관측 도수</th><th scope="col">관측 비율</th><th scope="col">이론 비율</th><th scope="col">비율 차이</th></tr></thead>
+              <tbody id="resultTableBody"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section class="theory" id="theory" aria-labelledby="theory-title">
+        <div class="section-heading light">
+          <div><span class="step">03</span><p>WHY BENFORD?</p><h2 id="theory-title">왜 1이 더 자주 등장할까요?</h2></div>
+          <p>벤포드 법칙은 모든 숫자 모음에 적용되는 마법이 아니라, 특정 조건을 갖춘 자연 발생 데이터에서 나타나는 경험 법칙입니다.</p>
+        </div>
+        <div class="theory-grid">
+          <article><span class="theory-number">01</span><h3>배율로 자라는 데이터</h3><p>인구, 매출, 강의 길이처럼 여러 크기 범위에 걸쳐 있고 곱셈적으로 변하는 자료에서 잘 나타납니다.</p></article>
+          <article><span class="theory-number">02</span><h3>1의 구간은 더 길다</h3><p>수의 크기가 커질 때 1에서 2가 되려면 100% 증가해야 하지만, 9에서 다음 자리로 가려면 약 11%만 증가하면 됩니다.</p></article>
+          <article><span class="theory-number">03</span><h3>항상 맞지는 않는다</h3><p>전화번호·학번 같은 식별번호, 키·시험점수처럼 범위가 좁은 자료, 사람이 정한 최솟값·최댓값에는 적합하지 않습니다.</p></article>
+        </div>
+        <div class="teacher-note"><strong>수업에서 꼭 짚어 주세요</strong><p>분포가 다르다는 사실만으로 조작이나 부정을 단정할 수 없습니다. 작은 표본, 자료 선택 방식, 범위 제한 등 다른 원인을 먼저 살펴야 합니다.</p></div>
+      </section>
+    </main>
+
+    <footer><div><strong>BENFORD LAB</strong><p>숫자에서 패턴을 찾고, 패턴을 의심하는 통계 탐구</p></div><a href="#experiment">새 데이터 실험하기 ↑</a></footer>
+
+    <dialog id="reportDialog">
+      <div class="dialog-shell">
+        <div class="dialog-header"><div><span>EXPERIMENT REPORT</span><h2>벤포드 법칙 탐구 보고서</h2></div><button type="button" id="closeReportButton" aria-label="보고서 닫기">×</button></div>
+        <div class="report-form">
+          <label>보고서 제목<input id="reportTitle" type="text" value="벤포드 법칙을 활용한 첫째 자리 분포 탐구" /></label>
+          <div class="form-row"><label>작성자<input id="reportAuthor" type="text" placeholder="이름" /></label><label>학급·모둠<input id="reportClass" type="text" placeholder="예: 2학년 3반 1모둠" /></label></div>
+          <label>자료의 출처<textarea id="reportSource" rows="2" placeholder="기사 제목, 사이트, 조사 날짜 등을 적어 보세요."></textarea></label>
+          <label>나의 가설<textarea id="reportHypothesis" rows="2" placeholder="분석하기 전에 예상했던 결과와 그 이유를 적어 보세요."></textarea></label>
+          <label>결과 해석<textarea id="reportInterpretation" rows="4"></textarea></label>
+          <label>한계와 더 알아볼 점<textarea id="reportLimit" rows="3" placeholder="표본 크기, 자료 범위, 정제 방식의 한계와 후속 탐구를 적어 보세요."></textarea></label>
+        </div>
+        <div class="report-preview" id="reportPreview"></div>
+        <div class="dialog-actions"><button type="button" id="copyReportButton">내용 복사</button><button type="button" id="downloadReportButton">HTML 저장</button><button class="print-button" type="button" id="printReportButton">인쇄·PDF 저장</button></div>
+      </div>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./script.js"></script>
+  </body>
+</html>
