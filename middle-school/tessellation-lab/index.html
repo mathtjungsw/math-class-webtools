@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="기본 조각을 고르고 변을 움직여 나만의 테셀레이션을 만드는 수학 시각화 웹툴" />
+    <meta name="theme-color" content="#17251f" />
+    <title>테셀레이션 조각 공방</title>
+    <link rel="stylesheet" href="./style.css?v=20260715-3" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../../index.html" aria-label="수학 수업 웹툴 모음으로 돌아가기">
+        <span class="brand-mark" aria-hidden="true">T</span>
+        <span><strong>테셀레이션 조각 공방</strong><small>TESSELLATION STUDIO</small></span>
+      </a>
+      <nav aria-label="페이지 메뉴">
+        <a href="#studio">조각 만들기</a>
+        <a href="#methods">만드는 방법</a>
+        <a href="#examples">예시</a>
+        <a href="#theory">수학 원리</a>
+        <a class="home-link" href="../../index.html">웹툴 모음</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> CUT · MOVE · REPEAT</p>
+          <h1>한 변을 바꾸면,<br /><em>반대편이 알아서 맞춰져요.</em></h1>
+          <p>조각의 주황색 점을 움직여 보세요. 잘라 낸 부분을 반대편으로 옮기는 규칙이 자동으로 적용되어, 어떤 모양도 빈틈없이 이어집니다.</p>
+          <div class="hero-actions">
+            <a class="primary-link" href="#studio">바로 만들어 보기 <span aria-hidden="true">↓</span></a>
+            <button type="button" data-load-example="fish">물고기 예시 열기</button>
+          </div>
+          <dl class="hero-facts">
+            <div><dt>6</dt><dd>기본 조각 모드</dd></div>
+            <div><dt>8</dt><dd>완성 예시</dd></div>
+            <div><dt>0</dt><dd>빈틈과 겹침</dd></div>
+          </dl>
+        </div>
+        <div class="hero-pattern" aria-hidden="true">
+          <canvas data-hero-canvas></canvas>
+          <span class="pattern-note">같은 조각 + 같은 변환</span>
+        </div>
+      </section>
+
+      <section class="studio-section" id="studio" aria-labelledby="studio-title">
+        <div class="section-heading">
+          <div><p class="eyebrow"><span></span> MAKE YOUR TILE</p><h2 id="studio-title">세 단계면 나만의 조각 완성</h2></div>
+          <p>모양을 고르고 점을 움직인 뒤, 오른쪽에서 반복 결과를 바로 확인하세요.</p>
+        </div>
+
+        <div class="studio-shell">
+          <aside class="control-panel">
+            <section class="control-step">
+              <div class="step-title"><span>1</span><div><strong>기본 조각</strong><small>반복 규칙을 골라요</small></div></div>
+              <div class="mode-grid" role="radiogroup" aria-label="기본 조각 모드">
+                <button class="mode-button is-active" type="button" role="radio" aria-checked="true" data-mode="translation"><i>▦</i><strong>이동 사각형</strong><small>평행이동</small></button>
+                <button class="mode-button" type="button" role="radio" aria-checked="false" data-mode="halfturn"><i>↻</i><strong>반회전 조각</strong><small>180° 회전</small></button>
+                <button class="mode-button" type="button" role="radio" aria-checked="false" data-mode="triangle"><i>△</i><strong>삼각 조각</strong><small>반사</small></button>
+                <button class="mode-button" type="button" role="radio" aria-checked="false" data-mode="hexagon"><i>⬡</i><strong>벌집 조각</strong><small>60° 회전</small></button>
+                <button class="mode-button" type="button" role="radio" aria-checked="false" data-mode="glide"><i>⌁</i><strong>미끄럼 조각</strong><small>반사 + 이동</small></button>
+                <button class="mode-button" type="button" role="radio" aria-checked="false" data-mode="diamond"><i>◇</i><strong>마름모 조각</strong><small>평행이동</small></button>
+              </div>
+            </section>
+
+            <section class="control-step">
+              <div class="step-title"><span>2</span><div><strong>자르고 붙이는 방법</strong><small>어떻게 옮길지 선택해요</small></div></div>
+              <div class="method-picker" role="radiogroup" aria-label="조각을 잘라 붙이는 방법">
+                <button class="method-button is-active" type="button" role="radio" aria-checked="true" data-method="translate"><i>→</i><span><strong>반대편으로</strong><small>평행이동</small></span></button>
+                <button class="method-button" type="button" role="radio" aria-checked="false" data-method="rotate"><i>↻</i><span><strong>같은 변 반대쪽</strong><small>180° 회전</small></span></button>
+                <button class="method-button" type="button" role="radio" aria-checked="false" data-method="glide"><i>⌁</i><span><strong>뒤집어 옆으로</strong><small>미끄럼 반사</small></span></button>
+              </div>
+              <p class="method-hint" data-method-hint><b>평행이동</b> 왼쪽에서 잘라 낸 조각을 방향을 바꾸지 않고 오른쪽 변에 붙입니다.</p>
+              <label class="range-row"><span>잘라낼 조각 크기 <output data-output="amplitude">28</output></span><input type="range" min="0" max="48" value="28" data-control="amplitude" /></label>
+              <label class="range-row"><span>곡선 굽이 <output data-output="waves">2</output></span><input type="range" min="1" max="3" value="2" step="1" data-control="waves" /></label>
+              <label class="range-row"><span>붙이는 위치 <output data-output="skew">0</output></span><input type="range" min="-35" max="35" value="0" data-control="skew" /></label>
+              <div class="button-row">
+                <button type="button" data-randomize>뜻밖의 조각</button>
+                <button type="button" data-undo disabled>실행 취소</button>
+                <button type="button" data-reset>처음으로</button>
+              </div>
+            </section>
+
+            <section class="control-step">
+              <div class="step-title"><span>3</span><div><strong>무늬 꾸미기</strong><small>색과 반복 수를 정해요</small></div></div>
+              <div class="palette-list" role="radiogroup" aria-label="색상 팔레트">
+                <button class="palette is-active" type="button" role="radio" aria-checked="true" data-palette="garden" aria-label="정원 팔레트"><i style="--c:#f4b43f"></i><i style="--c:#e9654b"></i><i style="--c:#4b9d83"></i><i style="--c:#f6e8c4"></i></button>
+                <button class="palette" type="button" role="radio" aria-checked="false" data-palette="ocean" aria-label="바다 팔레트"><i style="--c:#0d6380"></i><i style="--c:#36a6a1"></i><i style="--c:#9ed9c5"></i><i style="--c:#f2cf75"></i></button>
+                <button class="palette" type="button" role="radio" aria-checked="false" data-palette="berry" aria-label="베리 팔레트"><i style="--c:#6a376f"></i><i style="--c:#bc4b70"></i><i style="--c:#ef8d76"></i><i style="--c:#f7d9c4"></i></button>
+                <button class="palette" type="button" role="radio" aria-checked="false" data-palette="mono" aria-label="흑백 팔레트"><i style="--c:#26332e"></i><i style="--c:#66756e"></i><i style="--c:#b6c0bb"></i><i style="--c:#eef1ed"></i></button>
+              </div>
+              <label class="range-row"><span>반복 촘촘함 <output data-output="density">7</output></span><input type="range" min="4" max="11" value="7" step="1" data-control="density" /></label>
+              <div class="toggle-row">
+                <label><input type="checkbox" data-toggle="outline" checked /><span></span>경계선</label>
+                <label><input type="checkbox" data-toggle="guides" /><span></span>변환 표시</label>
+              </div>
+            </section>
+          </aside>
+
+          <div class="canvas-column">
+            <section class="editor-card">
+              <div class="canvas-heading">
+                <div><span class="canvas-kicker">PIECE</span><h3>기본 조각 편집</h3></div>
+                <p><i></i> 주황색 점을 드래그하세요</p>
+              </div>
+              <div class="editor-wrap"><canvas data-editor-canvas aria-label="테셀레이션 기본 조각 편집 캔버스"></canvas><span class="cut-legend"><i></i> 잘라낸 자리 <b></b> 붙인 자리</span></div>
+              <div class="rule-strip"><span data-rule-icon>→</span><div><small>현재 적용 규칙</small><strong data-rule-name>잘라서 반대편으로 평행이동</strong></div><p><b>빈틈 0</b><b>겹침 0</b></p></div>
+            </section>
+
+            <section class="preview-card">
+              <div class="canvas-heading">
+                <div><span class="canvas-kicker">LIVE PATTERN</span><h3>반복 미리보기</h3></div>
+                <div class="preview-actions"><button type="button" data-fullscreen>크게 보기</button><button class="download-button" type="button" data-download>PNG 저장</button></div>
+              </div>
+              <div class="preview-wrap"><canvas data-preview-canvas aria-label="테셀레이션 반복 무늬 미리보기"></canvas><div class="transform-guide" data-transform-guide hidden></div></div>
+              <p class="preview-caption" data-preview-caption>모든 조각이 같은 방향으로 평행이동합니다.</p>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="methods-section" id="methods" aria-labelledby="methods-title">
+        <div class="section-heading">
+          <div><p class="eyebrow"><span></span> CUT AND REARRANGE</p><h2 id="methods-title">한 조각을 잘라 옮기는 세 가지 방법</h2></div>
+          <p>잘라 낸 조각의 모양과 크기를 바꾸지 않고 정해진 변환으로 옮기면, 원래 자리의 홈과 이웃 조각의 돌기가 정확히 맞습니다.</p>
+        </div>
+        <div class="method-cards">
+          <article class="method-card">
+            <div class="method-visual method-visual--translate" aria-hidden="true"><span class="method-tile"><i></i><b></b></span><em>→</em><span class="method-tile is-result"><i></i><b></b></span></div>
+            <div class="method-copy"><span>METHOD 01</span><h3>반대편 변으로 평행이동</h3><p>왼쪽 변에서 조각을 잘라 냅니다. 잘라 낸 조각을 돌리거나 뒤집지 않고 같은 높이의 오른쪽 변에 붙입니다. 위쪽 조각은 같은 방법으로 아래쪽 변에 붙입니다.</p><ol><li>한쪽 변에 자를 선을 그린다.</li><li>조각을 반대편 변까지 그대로 옮긴다.</li><li>평행이동한 두 변을 반복해 맞춘다.</li></ol><button type="button" data-method-use="translate">이 방법으로 만들기 <b>→</b></button></div>
+          </article>
+          <article class="method-card">
+            <div class="method-visual method-visual--rotate" aria-hidden="true"><span class="method-tile"><i></i><b></b></span><em>↻</em><span class="method-tile is-result"><i></i><b></b></span></div>
+            <div class="method-copy"><span>METHOD 02</span><h3>변의 중점을 중심으로 반회전</h3><p>한 변의 절반에서 잘라 낸 조각을 그 변의 중점을 중심으로 180° 회전해 같은 변의 다른 절반에 붙입니다. 조각의 방향은 바뀌지만 회전 중심까지의 거리는 같습니다.</p><ol><li>한 변의 중점을 회전 중심으로 정한다.</li><li>한쪽 절반에서 자른 조각을 180° 돌린다.</li><li>같은 변의 다른 절반에 정확히 붙인다.</li></ol><button type="button" data-method-use="rotate">이 방법으로 만들기 <b>→</b></button></div>
+          </article>
+          <article class="method-card">
+            <div class="method-visual method-visual--glide" aria-hidden="true"><span class="method-tile"><i></i><b></b></span><em>⌁</em><span class="method-tile is-result"><i></i><b></b></span></div>
+            <div class="method-copy"><span>METHOD 03</span><h3>뒤집어서 옆으로 이동</h3><p>잘라 낸 조각을 기준선에 대해 뒤집은 다음, 그 선과 나란한 방향으로 옮겨 붙입니다. 발자국처럼 방향이 번갈아 나타나는 미끄럼 반사 무늬가 됩니다.</p><ol><li>한쪽 변에서 조각을 잘라 낸다.</li><li>기준선에 대해 거울처럼 뒤집는다.</li><li>기준선과 나란히 밀어 붙인다.</li></ol><button type="button" data-method-use="glide">이 방법으로 만들기 <b>→</b></button></div>
+          </article>
+        </div>
+        <aside class="method-proof"><b>왜 빈틈이 없을까요?</b><p>잘라 낸 조각과 남은 홈은 합동입니다. 평행이동·회전·대칭이동은 길이와 각도를 보존하므로, 옮긴 뒤에도 조각의 경계가 홈의 경계와 정확히 일치합니다.</p><span>합동 + 거리 보존 + 각도 보존</span></aside>
+      </section>
+
+      <section class="examples-section" id="examples" aria-labelledby="examples-title">
+        <div class="section-heading">
+          <div><p class="eyebrow"><span></span> START WITH AN EXAMPLE</p><h2 id="examples-title">아이디어가 필요할 땐 예시부터</h2></div>
+          <p>카드를 누르면 조각과 색이 편집기에 바로 적용됩니다.</p>
+        </div>
+        <div class="example-grid">
+          <button class="example-card" type="button" data-example="fish"><canvas></canvas><span><strong>헤엄치는 물고기</strong><small>평행이동 · 사각형</small></span><i>불러오기</i></button>
+          <button class="example-card" type="button" data-example="bird"><canvas></canvas><span><strong>마주 보는 새</strong><small>반회전 · 사각형</small></span><i>불러오기</i></button>
+          <button class="example-card" type="button" data-example="mountain"><canvas></canvas><span><strong>이어지는 산맥</strong><small>반사 · 삼각형</small></span><i>불러오기</i></button>
+          <button class="example-card" type="button" data-example="honey"><canvas></canvas><span><strong>꿀벌의 벌집</strong><small>회전 · 육각형</small></span><i>불러오기</i></button>
+          <button class="example-card" type="button" data-example="wave"><canvas></canvas><span><strong>바람과 물결</strong><small>미끄럼 반사</small></span><i>불러오기</i></button>
+          <button class="example-card" type="button" data-example="leaf"><canvas></canvas><span><strong>가을 잎사귀</strong><small>평행이동 · 마름모</small></span><i>불러오기</i></button>
+          <button class="example-card" type="button" data-example="pinwheel"><canvas></canvas><span><strong>회전 바람개비</strong><small>반회전 · 사각형</small></span><i>불러오기</i></button>
+          <button class="example-card" type="button" data-example="ice"><canvas></canvas><span><strong>얼음 결정</strong><small>회전 · 육각형</small></span><i>불러오기</i></button>
+        </div>
+      </section>
+
+      <section class="theory-section" id="theory" aria-labelledby="theory-title">
+        <div class="theory-intro">
+          <p class="eyebrow"><span></span> WHY IT WORKS</p>
+          <h2 id="theory-title">테셀레이션은<br /><em>변환의 수학</em>입니다.</h2>
+          <p>평면을 빈틈이나 겹침 없이 도형으로 덮는 것을 테셀레이션(쪽매맞춤)이라고 합니다. 한 조각의 모양보다 더 중요한 것은, 그 조각을 어떤 규칙으로 복사해 이웃과 맞추는가입니다.</p>
+        </div>
+
+        <div class="transform-grid">
+          <article><span class="transform-symbol">→</span><small>TRANSLATION</small><h3>평행이동</h3><p>도형의 방향과 크기를 그대로 두고 일정한 거리만큼 옮깁니다. 한쪽 변을 잘라 반대편으로 옮기면 두 변이 정확히 맞습니다.</p><code>(x, y) → (x+a, y+b)</code></article>
+          <article><span class="transform-symbol">↻</span><small>ROTATION</small><h3>회전</h3><p>한 점을 중심으로 일정한 각도만큼 돌립니다. 꼭짓점 둘레의 회전각이 합쳐져 360°가 되면 빈 공간이 생기지 않습니다.</p><code>60° × 6 = 360°</code></article>
+          <article><span class="transform-symbol">◩</span><small>REFLECTION</small><h3>대칭이동</h3><p>거울처럼 한 직선을 기준으로 뒤집습니다. 삼각형을 한 변에 대해 반사하면 평행사변형 한 쌍이 만들어집니다.</p><code>(x, y) → (x, −y)</code></article>
+          <article><span class="transform-symbol">⌁</span><small>GLIDE REFLECTION</small><h3>미끄럼 반사</h3><p>대칭이동을 한 뒤 대칭축과 나란히 평행이동합니다. 발자국이나 물결처럼 번갈아 이어지는 무늬에 자주 보입니다.</p><code>반사 + 평행이동</code></article>
+        </div>
+
+        <div class="angle-lab">
+          <div class="angle-copy">
+            <p class="eyebrow"><span></span> THE 360° RULE</p>
+            <h3>왜 정삼각형·정사각형·정육각형일까요?</h3>
+            <p>한 종류의 정다각형만으로 평면을 덮으려면 한 내각이 360°의 약수가 되어야 합니다. 꼭짓점에 모인 각의 합이 정확히 360°일 때만 빈틈도 겹침도 없습니다.</p>
+            <p class="formula">정n각형의 한 내각 = <b>(n−2) × 180° ÷ n</b></p>
+          </div>
+          <div class="angle-table" role="table" aria-label="정다각형 테셀레이션 비교">
+            <div role="row"><span role="columnheader">정다각형</span><span role="columnheader">한 내각</span><span role="columnheader">모이는 개수</span><span role="columnheader">판정</span></div>
+            <div role="row"><strong>정삼각형</strong><span>60°</span><span>6개</span><b>60° × 6 = 360°</b></div>
+            <div role="row"><strong>정사각형</strong><span>90°</span><span>4개</span><b>90° × 4 = 360°</b></div>
+            <div role="row"><strong>정오각형</strong><span>108°</span><span>3.33…개</span><em>한 종류로는 불가</em></div>
+            <div role="row"><strong>정육각형</strong><span>120°</span><span>3개</span><b>120° × 3 = 360°</b></div>
+          </div>
+        </div>
+
+        <div class="lesson-box">
+          <div><span>수업 탐구 질문</span><h3>조각을 만들었다면, 무늬 속 수학을 설명해 보세요.</h3></div>
+          <ol>
+            <li><b>01</b><p>내 조각에는 평행이동, 회전, 대칭이동 중 어떤 변환이 쓰였나요?</p></li>
+            <li><b>02</b><p>한 변을 바꾸었는데 반대편도 함께 바뀌어야 하는 까닭은 무엇인가요?</p></li>
+            <li><b>03</b><p>정오각형 하나만으로 평면을 덮을 수 없는 이유를 각의 합으로 설명해 보세요.</p></li>
+          </ol>
+        </div>
+      </section>
+    </main>
+
+    <footer><strong>테셀레이션 조각 공방</strong><p>만들고, 반복하고, 변환의 원리를 발견하는 수학 실험실</p><a href="../../index.html">수학 수업 웹툴 모음으로 돌아가기</a></footer>
+    <div class="toast" role="status" aria-live="polite" data-toast></div>
+    <script src="./app.js?v=20260715-3"></script>
+  </body>
+</html>
