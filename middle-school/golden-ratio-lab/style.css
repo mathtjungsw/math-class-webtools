@@ -50,7 +50,7 @@ main { width: min(1500px, 100%); margin: 0 auto; padding: 0 clamp(18px, 4vw, 62p
 .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 350px; gap: 20px; align-items: start; }
 .workbench, .result-card, .examples { border: 1px solid var(--line); border-radius: 22px; background: var(--panel); }
 .workbench { min-width: 0; overflow: hidden; box-shadow: 0 8px 35px rgba(23,35,27,.06); }
-.toolbar { min-height: 70px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; gap: 14px; border-bottom: 1px solid var(--line); }
+.toolbar { min-height: 70px; padding: 12px 14px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 14px; border-bottom: 1px solid var(--line); }
 .toolbar-group { display: flex; align-items: center; gap: 7px; }
 .primary-button, .tool-button, .fit-button, .icon-button { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid var(--line); border-radius: 11px; background: white; cursor: pointer; font-size: 12px; font-weight: 800; transition: .2s ease; }
 .primary-button { padding: 0 16px; border-color: var(--dark); background: var(--dark); color: white; }
@@ -62,6 +62,13 @@ main { width: min(1500px, 100%); margin: 0 auto; padding: 0 clamp(18px, 4vw, 62p
 .zoom-range { width: clamp(80px, 10vw, 130px); display: flex; }
 .zoom-range input { width: 100%; accent-color: var(--green); cursor: pointer; }
 .zoom-controls output { width: 44px; color: var(--muted); font: 500 11px/1 "DM Mono", monospace; text-align: center; }
+.rotation-controls { padding: 4px 6px; border: 1px solid var(--line); border-radius: 12px; background: #f8f8f2; }
+.rotation-range { width: clamp(100px, 12vw, 150px); display: flex; align-items: center; gap: 7px; }
+.rotation-range span { color: var(--muted); font-size: 10px; font-weight: 800; white-space: nowrap; }
+.rotation-range input { min-width: 70px; width: 100%; accent-color: var(--gold); cursor: pointer; }
+.rotation-controls output { width: 38px; color: #765a0f; font: 500 11px/1 "DM Mono", monospace; text-align: center; }
+.rotation-controls .fit-button { min-height: 34px; padding-inline: 9px; }
+.rotation-reset { width: 34px; min-height: 34px; font-size: 11px; font-weight: 800; }
 .primary-button:hover, .tool-button:hover, .fit-button:hover, .icon-button:hover { transform: translateY(-1px); border-color: #9aa69d; }
 
 .canvas-shell { height: clamp(470px, 56vw, 690px); min-height: 470px; position: relative; overflow: hidden; background-color: #28332c; background-image: linear-gradient(45deg, rgba(255,255,255,.025) 25%, transparent 25%), linear-gradient(-45deg, rgba(255,255,255,.025) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(255,255,255,.025) 75%), linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.025) 75%); background-size: 28px 28px; background-position: 0 0, 0 14px, 14px -14px, -14px 0; }
@@ -174,6 +181,7 @@ canvas.is-panning { cursor: grabbing; }
   .toolbar-group { width: 100%; }
   .primary-button, .tool-button { flex: 1; padding: 0 9px; }
   .zoom-range { flex: 1; width: auto; }
+  .rotation-range { flex: 1; width: auto; }
   .fit-button { padding: 0 8px; font-size: 10px; }
   .canvas-shell { height: 74vw; min-height: 360px; }
   .canvas-footer { align-items: flex-start; flex-direction: column; padding: 11px; }

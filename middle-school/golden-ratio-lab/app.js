@@ -8,6 +8,8 @@
   const upload = document.querySelector("#image-upload");
   const zoomRange = document.querySelector("[data-zoom-range]");
   const zoomOutput = document.querySelector("[data-zoom-output]");
+  const rotationRange = document.querySelector("[data-rotation-range]");
+  const rotationOutput = document.querySelector("[data-rotation-output]");
   const hint = document.querySelector("[data-canvas-hint]");
   const emptyState = document.querySelector("[data-empty-state]");
   const dropMask = document.querySelector("[data-drop-mask]");
@@ -33,6 +35,7 @@
     mode: "measure",
     fitScale: 1,
     zoom: 1,
+    rotation: 0,
     offsetX: 0,
     offsetY: 0,
     pointA: null,
@@ -64,13 +67,36 @@
     return state.fitScale * state.zoom;
   }
 
+  function imageDimensions() {
+    return {
+      width: state.image?.naturalWidth || state.image?.width || 0,
+      height: state.image?.naturalHeight || state.image?.height || 0
+    };
+  }
+
+  function rotationRadians() {
+    return state.rotation * Math.PI / 180;
+  }
+
+  function imageCenterOnScreen(scale = imageScale()) {
+    const { width, height } = imageDimensions();
+    return {
+      x: state.offsetX + width * scale / 2,
+      y: state.offsetY + height * scale / 2
+    };
+  }
+
   function fitImage(resetMeasurement = false) {
     if (!state.image) return;
-    const { width, height } = canvasSize();
-    state.fitScale = Math.min(width / state.image.naturalWidth, height / state.image.naturalHeight);
+    const canvasBounds = canvasSize();
+    const imageBounds = imageDimensions();
+    const angle = rotationRadians();
+    const rotatedWidth = Math.abs(imageBounds.width * Math.cos(angle)) + Math.abs(imageBounds.height * Math.sin(angle));
+    const rotatedHeight = Math.abs(imageBounds.width * Math.sin(angle)) + Math.abs(imageBounds.height * Math.cos(angle));
+    state.fitScale = Math.min(canvasBounds.width / rotatedWidth, canvasBounds.height / rotatedHeight);
     state.zoom = 1;
-    state.offsetX = (width - state.image.naturalWidth * state.fitScale) / 2;
-    state.offsetY = (height - state.image.naturalHeight * state.fitScale) / 2;
+    state.offsetX = (canvasBounds.width - imageBounds.width * state.fitScale) / 2;
+    state.offsetY = (canvasBounds.height - imageBounds.height * state.fitScale) / 2;
     if (resetMeasurement) clearMeasurement(false);
     syncZoom();
     render();
@@ -78,15 +104,30 @@
 
   function screenToImage(x, y) {
     const scale = imageScale();
+    const dimensions = imageDimensions();
+    const center = imageCenterOnScreen(scale);
+    const angle = rotationRadians();
+    const dx = x - center.x;
+    const dy = y - center.y;
+    const unrotatedX = dx * Math.cos(angle) + dy * Math.sin(angle);
+    const unrotatedY = -dx * Math.sin(angle) + dy * Math.cos(angle);
     return {
-      x: Math.max(0, Math.min(state.image.naturalWidth, (x - state.offsetX) / scale)),
-      y: Math.max(0, Math.min(state.image.naturalHeight, (y - state.offsetY) / scale))
+      x: Math.max(0, Math.min(dimensions.width, unrotatedX / scale + dimensions.width / 2)),
+      y: Math.max(0, Math.min(dimensions.height, unrotatedY / scale + dimensions.height / 2))
     };
   }
 
   function imageToScreen(point) {
     const scale = imageScale();
-    return { x: state.offsetX + point.x * scale, y: state.offsetY + point.y * scale };
+    const dimensions = imageDimensions();
+    const center = imageCenterOnScreen(scale);
+    const angle = rotationRadians();
+    const x = (point.x - dimensions.width / 2) * scale;
+    const y = (point.y - dimensions.height / 2) * scale;
+    return {
+      x: center.x + x * Math.cos(angle) - y * Math.sin(angle),
+      y: center.y + x * Math.sin(angle) + y * Math.cos(angle)
+    };
   }
 
   function eventPoint(event) {
@@ -99,44 +140,70 @@
     ctx.clearRect(0, 0, width, height);
     if (!state.image) return;
     const scale = imageScale();
+    const dimensions = imageDimensions();
+    const center = imageCenterOnScreen(scale);
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
-    ctx.drawImage(state.image, state.offsetX, state.offsetY, state.image.naturalWidth * scale, state.image.naturalHeight * scale);
+    ctx.save();
+    ctx.translate(center.x, center.y);
+    ctx.rotate(rotationRadians());
+    ctx.drawImage(state.image, -dimensions.width * scale / 2, -dimensions.height * scale / 2, dimensions.width * scale, dimensions.height * scale);
+    ctx.restore();
     drawMeasurement();
+  }
+
+  function tracePolygon(points) {
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    points.slice(1).forEach((point) => ctx.lineTo(point.x, point.y));
+    ctx.closePath();
+  }
+
+  function outsideLabelPoint(edgeStart, edgeEnd, center, distance = 15) {
+    const midpoint = { x: (edgeStart.x + edgeEnd.x) / 2, y: (edgeStart.y + edgeEnd.y) / 2 };
+    const dx = midpoint.x - center.x;
+    const dy = midpoint.y - center.y;
+    const length = Math.hypot(dx, dy) || 1;
+    return { x: midpoint.x + dx / length * distance, y: midpoint.y + dy / length * distance };
   }
 
   function drawMeasurement() {
     if (!state.pointA) return;
     const a = imageToScreen(state.pointA);
     const b = state.pointB ? imageToScreen(state.pointB) : a;
-    const left = Math.min(a.x, b.x);
-    const top = Math.min(a.y, b.y);
-    const width = Math.abs(b.x - a.x);
-    const height = Math.abs(b.y - a.y);
 
     if (state.pointB) {
+      const imageWidth = Math.abs(state.pointB.x - state.pointA.x);
+      const imageHeight = Math.abs(state.pointB.y - state.pointA.y);
+      const corners = [
+        state.pointA,
+        { x: state.pointB.x, y: state.pointA.y },
+        state.pointB,
+        { x: state.pointA.x, y: state.pointB.y }
+      ].map(imageToScreen);
+      const center = {
+        x: corners.reduce((sum, point) => sum + point.x, 0) / 4,
+        y: corners.reduce((sum, point) => sum + point.y, 0) / 4
+      };
       ctx.save();
       ctx.fillStyle = "rgba(229, 184, 63, .16)";
       ctx.strokeStyle = "#f2cb5e";
       ctx.lineWidth = 2;
       ctx.setLineDash([8, 5]);
-      ctx.fillRect(left, top, width, height);
-      ctx.strokeRect(left, top, width, height);
+      tracePolygon(corners);
+      ctx.fill();
+      ctx.stroke();
       ctx.setLineDash([]);
 
-      if (state.showGolden && width > 2 && height > 2) drawGoldenGuide(a, b, width, height);
+      if (state.showGolden && imageWidth > 2 && imageHeight > 2) drawGoldenGuide(imageWidth, imageHeight);
 
-      const imageWidth = Math.abs(state.pointB.x - state.pointA.x);
-      const imageHeight = Math.abs(state.pointB.y - state.pointA.y);
       ctx.font = '700 11px "Noto Sans KR", sans-serif';
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      drawLabel(`${Math.round(imageWidth)} px`, left + width / 2, top - 15);
-      ctx.save();
-      ctx.translate(left - 15, top + height / 2);
-      ctx.rotate(-Math.PI / 2);
-      drawLabel(`${Math.round(imageHeight)} px`, 0, 0);
-      ctx.restore();
+      const widthLabel = outsideLabelPoint(corners[0], corners[1], center);
+      const heightLabel = outsideLabelPoint(corners[0], corners[3], center);
+      drawLabel(`${Math.round(imageWidth)} px`, widthLabel.x, widthLabel.y);
+      drawLabel(`${Math.round(imageHeight)} px`, heightLabel.x, heightLabel.y);
       ctx.restore();
     }
 
@@ -144,9 +211,9 @@
     if (state.pointB) drawHandle(b, "B");
   }
 
-  function drawGoldenGuide(a, b, width, height) {
-    const signX = b.x >= a.x ? 1 : -1;
-    const signY = b.y >= a.y ? 1 : -1;
+  function drawGoldenGuide(width, height) {
+    const signX = state.pointB.x >= state.pointA.x ? 1 : -1;
+    const signY = state.pointB.y >= state.pointA.y ? 1 : -1;
     let guideWidth;
     let guideHeight;
     if (width >= height) {
@@ -156,17 +223,31 @@
       guideWidth = width;
       guideHeight = width * PHI;
     }
+    const end = {
+      x: state.pointA.x + guideWidth * signX,
+      y: state.pointA.y + guideHeight * signY
+    };
+    const corners = [
+      state.pointA,
+      { x: end.x, y: state.pointA.y },
+      end,
+      { x: state.pointA.x, y: end.y }
+    ].map(imageToScreen);
+    const center = {
+      x: corners.reduce((sum, point) => sum + point.x, 0) / 4,
+      y: corners.reduce((sum, point) => sum + point.y, 0) / 4
+    };
     ctx.save();
     ctx.strokeStyle = "rgba(126, 244, 172, .95)";
     ctx.lineWidth = 2;
     ctx.setLineDash([4, 5]);
-    ctx.strokeRect(a.x, a.y, guideWidth * signX, guideHeight * signY);
+    tracePolygon(corners);
+    ctx.stroke();
     ctx.setLineDash([]);
     ctx.font = '700 10px "Noto Sans KR", sans-serif';
     ctx.fillStyle = "#173b26";
-    const labelX = a.x + guideWidth * signX / 2;
-    const labelY = a.y + guideHeight * signY + (signY > 0 ? 14 : -14);
-    drawLabel("φ 기준", labelX, labelY, "#bdf4cc", "#173b26");
+    const label = outsideLabelPoint(corners[3], corners[2], center, 14);
+    drawLabel("φ 기준", label.x, label.y, "#bdf4cc", "#173b26");
     ctx.restore();
   }
 
@@ -337,14 +418,19 @@
 
   function setZoom(nextZoom, anchor = null) {
     if (!state.image) return;
-    const previousScale = imageScale();
     const { width, height } = canvasSize();
     const focus = anchor || { x: width / 2, y: height / 2 };
-    const imageFocus = { x: (focus.x - state.offsetX) / previousScale, y: (focus.y - state.offsetY) / previousScale };
+    const imageFocus = screenToImage(focus.x, focus.y);
     state.zoom = Math.max(.5, Math.min(4, nextZoom));
     const nextScale = imageScale();
-    state.offsetX = focus.x - imageFocus.x * nextScale;
-    state.offsetY = focus.y - imageFocus.y * nextScale;
+    const dimensions = imageDimensions();
+    const angle = rotationRadians();
+    const relativeX = (imageFocus.x - dimensions.width / 2) * nextScale;
+    const relativeY = (imageFocus.y - dimensions.height / 2) * nextScale;
+    const centerX = focus.x - (relativeX * Math.cos(angle) - relativeY * Math.sin(angle));
+    const centerY = focus.y - (relativeX * Math.sin(angle) + relativeY * Math.cos(angle));
+    state.offsetX = centerX - dimensions.width * nextScale / 2;
+    state.offsetY = centerY - dimensions.height * nextScale / 2;
     syncZoom();
     render();
   }
@@ -356,11 +442,31 @@
     zoomOutput.textContent = `${percent}%`;
   }
 
+  function normalizeRotation(value) {
+    let normalized = Math.round(value);
+    while (normalized > 180) normalized -= 360;
+    while (normalized < -180) normalized += 360;
+    return normalized;
+  }
+
+  function setRotation(value) {
+    state.rotation = normalizeRotation(value);
+    rotationRange.value = String(state.rotation);
+    rotationOutput.value = `${state.rotation}°`;
+    rotationOutput.textContent = `${state.rotation}°`;
+    if (state.image) fitImage(false);
+    statusText.textContent = `사진을 ${state.rotation}° 회전했습니다. 측정점은 사진과 함께 유지됩니다.`;
+  }
+
   function loadImage(src, name, markExample = null) {
     const image = new Image();
     image.onload = () => {
       state.image = image;
       state.sourceName = name;
+      state.rotation = 0;
+      rotationRange.value = "0";
+      rotationOutput.value = "0°";
+      rotationOutput.textContent = "0°";
       emptyState.hidden = true;
       dropMask.hidden = true;
       clearMeasurement(false);
@@ -442,6 +548,10 @@
   document.querySelector("[data-zoom-in]").addEventListener("click", () => setZoom(state.zoom + .2));
   document.querySelector("[data-zoom-out]").addEventListener("click", () => setZoom(state.zoom - .2));
   zoomRange.addEventListener("input", () => setZoom(Number(zoomRange.value) / 100));
+  rotationRange.addEventListener("input", () => setRotation(Number(rotationRange.value)));
+  document.querySelector("[data-rotate-left]").addEventListener("click", () => setRotation(state.rotation - 90));
+  document.querySelector("[data-rotate-right]").addEventListener("click", () => setRotation(state.rotation + 90));
+  document.querySelector("[data-rotation-reset]").addEventListener("click", () => setRotation(0));
   document.querySelector("[data-fit]").addEventListener("click", () => fitImage(false));
   document.querySelector("[data-clear]").addEventListener("click", () => clearMeasurement(true));
   document.querySelector("[data-download]").addEventListener("click", saveResult);

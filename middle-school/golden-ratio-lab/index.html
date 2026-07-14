@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#17231b" />
     <title>황금비 측정 실험실</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2317231b'/%3E%3Cpath d='M17 45V19h42v26H17Zm0-16H7v16h10' fill='none' stroke='%23edc557' stroke-width='5'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="./style.css?v=20260714-2" />
+    <link rel="stylesheet" href="./style.css?v=20260714-3" />
   </head>
   <body>
     <header class="site-header">
@@ -58,6 +58,16 @@
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 11V7a2 2 0 0 1 4 0v4-6a2 2 0 0 1 4 0v6-4a2 2 0 0 1 4 0v7c0 4-3 7-7 7h-1c-3 0-5-2-7-5l-2-4a2 2 0 0 1 3-2Z" /></svg>
                 이동
               </button>
+            </div>
+            <div class="toolbar-group rotation-controls" aria-label="사진 회전">
+              <button class="fit-button" type="button" data-rotate-left aria-label="왼쪽으로 90도 회전">↶ 90°</button>
+              <label class="rotation-range">
+                <span>회전</span>
+                <input type="range" min="-180" max="180" value="0" step="1" data-rotation-range />
+              </label>
+              <output data-rotation-output>0°</output>
+              <button class="fit-button" type="button" data-rotate-right aria-label="오른쪽으로 90도 회전">90° ↷</button>
+              <button class="icon-button rotation-reset" type="button" data-rotation-reset aria-label="회전 각도 초기화">0</button>
             </div>
             <div class="toolbar-group zoom-controls">
               <button class="icon-button" type="button" data-zoom-out aria-label="축소">−</button>
@@ -147,12 +157,12 @@
       <ol>
         <li><b>1</b><div><strong>사진을 준비하세요.</strong><p>예시 사진을 누르거나 내 사진을 업로드할 수 있습니다. 파일은 서버로 전송되지 않고 브라우저 안에서만 처리됩니다.</p></div></li>
         <li><b>2</b><div><strong>측정할 영역의 두 꼭짓점을 지정하세요.</strong><p>첫 점과 둘째 점이 만드는 직사각형의 가로·세로가 측정됩니다. 한 번에 드래그해도 됩니다.</p></div></li>
-        <li><b>3</b><div><strong>확대해 더 정확히 찍으세요.</strong><p>+/− 버튼, 슬라이더, 마우스 휠로 확대·축소하고 ‘이동’ 도구로 사진 위치를 바꿀 수 있습니다.</p></div></li>
+        <li><b>3</b><div><strong>사진 방향과 배율을 조정하세요.</strong><p>90° 버튼으로 빠르게 돌리거나 회전 슬라이더로 1°씩 기울기를 맞출 수 있습니다. +/− 버튼과 마우스 휠로 확대·축소하고 ‘이동’ 도구로 위치를 바꾸세요.</p></div></li>
         <li><b>4</b><div><strong>결과를 비교하세요.</strong><p>‘황금 사각형 비교’를 켜면 같은 짧은 변을 기준으로 한 이상적인 황금 사각형이 점선으로 나타납니다.</p></div></li>
       </ol>
     </dialog>
 
     <div class="toast" role="status" aria-live="polite" data-toast></div>
-    <script src="./app.js?v=20260714-3"></script>
+    <script src="./app.js?v=20260714-4"></script>
   </body>
 </html>
