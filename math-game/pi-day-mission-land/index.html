@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#24164f" />
+    <meta name="description" content="파이데이 행사에서 바로 쓰는 24가지 원주율 게임과 팀 점수판" />
+    <title>파이데이 미션랜드 | 수학 수업 웹툴 모음</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="back-link" href="../../index.html#math-game" aria-label="수학 게임 목록으로 돌아가기"><span aria-hidden="true">←</span> 웹툴 모음</a>
+      <div class="event-brand" aria-label="파이데이 미션랜드">
+        <span class="mini-pi" aria-hidden="true">π</span>
+        <strong>파이데이 미션랜드</strong>
+      </div>
+      <div class="top-actions">
+        <button class="soft-button" id="soundButton" type="button" aria-pressed="true">소리 켬</button>
+        <button class="soft-button" id="fullscreenButton" type="button">전체 화면</button>
+      </div>
+    </header>
+
+    <section class="scoreboard" aria-label="팀 점수판">
+      <div class="scoreboard-heading">
+        <span>LIVE SCORE</span>
+        <strong>우리 반 점수판</strong>
+      </div>
+      <div class="teams" id="teamList"></div>
+      <button class="add-team" id="addTeamButton" type="button">+ 팀 추가</button>
+      <button class="reset-board" id="resetBoardButton" type="button">점수 초기화</button>
+    </section>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span>3월 14일</span> 교실이 수학 축제장으로!</p>
+          <h1>π 하나로 즐기는<br /><em>24가지 미션</em></h1>
+          <p class="hero-description">암기전부터 다트 실험, 원주 측정, 빙고와 팀 릴레이까지. 준비물 적고 진행은 빠른 파이데이 종목을 한곳에 모았습니다.</p>
+          <div class="hero-actions">
+            <button class="primary-button" id="randomMissionButton" type="button">행운의 종목 뽑기 <span aria-hidden="true">↗</span></button>
+            <button class="outline-button" id="showGuideButton" type="button">행사 운영 가이드</button>
+          </div>
+          <ul class="hero-facts" aria-label="도구 특징">
+            <li><strong>24</strong><span>전체 종목</span></li>
+            <li><strong>15</strong><span>디지털 게임</span></li>
+            <li><strong>0</strong><span>로그인·설치</span></li>
+          </ul>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="orbit orbit-one"><i>3</i><i>1</i><i>4</i></div>
+          <div class="orbit orbit-two"><i>1</i><i>5</i><i>9</i></div>
+          <div class="pi-disc"><span>π</span><small>MISSION<br />LAND</small></div>
+          <div class="hero-sticker sticker-one">READY?</div>
+          <div class="hero-sticker sticker-two">PLAY!</div>
+        </div>
+      </section>
+
+      <section class="mission-section" id="missions">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">CHOOSE YOUR MISSION</p>
+            <h2>오늘의 종목을 골라보세요</h2>
+          </div>
+          <p><strong id="visibleCount">24</strong>개 종목 · 완료 <strong id="completedCount">0</strong>개</p>
+        </div>
+
+        <div class="mission-toolbar">
+          <label class="search-box">
+            <span aria-hidden="true">⌕</span>
+            <span class="sr-only">종목 검색</span>
+            <input id="searchInput" type="search" placeholder="종목 이름이나 준비물 검색" autocomplete="off" />
+          </label>
+          <div class="filters" id="categoryFilters" aria-label="종목 분류">
+            <button class="filter-button is-active" type="button" data-category="all">전체</button>
+            <button class="filter-button" type="button" data-category="memory">암기·스피드</button>
+            <button class="filter-button" type="button" data-category="experiment">확률·실험</button>
+            <button class="filter-button" type="button" data-category="calculation">계산·추론</button>
+            <button class="filter-button" type="button" data-category="team">팀·교실</button>
+          </div>
+        </div>
+
+        <div class="mission-grid" id="missionGrid"></div>
+        <div class="empty-state" id="emptyState" hidden>
+          <span>π</span>
+          <h3>찾는 종목이 없어요</h3>
+          <p>검색어를 바꾸거나 다른 분류를 선택해 보세요.</p>
+        </div>
+      </section>
+    </main>
+
+    <dialog class="game-dialog" id="gameDialog">
+      <div class="dialog-shell">
+        <header class="dialog-header">
+          <div>
+            <span class="dialog-number" id="dialogNumber">MISSION 01</span>
+            <h2 id="dialogTitle">파이 암기왕</h2>
+            <p id="dialogSubtitle">숫자를 기억하고 정확히 입력하세요.</p>
+          </div>
+          <button class="close-button" id="closeDialogButton" type="button" aria-label="게임 닫기">×</button>
+        </header>
+        <div class="dialog-content" id="gameContent"></div>
+        <footer class="dialog-footer">
+          <div class="mini-timer" aria-label="공용 타이머">
+            <button id="timerMinusButton" type="button" aria-label="10초 줄이기">−</button>
+            <strong id="timerDisplay">01:00</strong>
+            <button id="timerPlusButton" type="button" aria-label="10초 늘리기">＋</button>
+            <button class="timer-toggle" id="timerToggleButton" type="button">타이머 시작</button>
+          </div>
+          <div class="dialog-score-actions">
+            <span><b id="activeTeamLabel">자주 팀</b>에 기록</span>
+            <button class="score-button" id="addFiveButton" type="button">+5점</button>
+            <button class="score-button strong" id="addTenButton" type="button">+10점</button>
+            <button class="complete-button" id="completeMissionButton" type="button">미션 완료</button>
+          </div>
+        </footer>
+      </div>
+    </dialog>
+
+    <dialog class="guide-dialog" id="guideDialog">
+      <div class="guide-shell">
+        <button class="close-button" id="closeGuideButton" type="button" aria-label="가이드 닫기">×</button>
+        <p class="section-kicker">EVENT GUIDE</p>
+        <h2>50분 파이데이 추천 운영안</h2>
+        <div class="guide-timeline">
+          <article><b>05분</b><div><strong>오프닝</strong><span>팀 이름 정하기 · π 이야기</span></div></article>
+          <article><b>25분</b><div><strong>스테이션 5종</strong><span>종목당 5분씩 순환</span></div></article>
+          <article><b>12분</b><div><strong>반 대항전</strong><span>파이 암기왕 · 퀴즈 릴레이</span></div></article>
+          <article><b>08분</b><div><strong>결승과 시상</strong><span>점수 확인 · 단체 사진</span></div></article>
+        </div>
+        <div class="guide-tips">
+          <div><span>1</span><p><strong>기기 1대라면</strong>교사 화면을 띄우고 팀별 대표가 차례로 도전하세요.</p></div>
+          <div><span>2</span><p><strong>기기가 여러 대라면</strong>QR로 이 페이지를 열고 스테이션마다 한 종목씩 고정하세요.</p></div>
+          <div><span>3</span><p><strong>점수 기준</strong>참가 5점, 성공 10점, 최고 기록 보너스 5점을 추천합니다.</p></div>
+        </div>
+        <button class="primary-button full-button" id="guideStartButton" type="button">종목 고르러 가기</button>
+      </div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
