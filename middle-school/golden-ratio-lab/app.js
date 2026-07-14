@@ -18,10 +18,16 @@
   const toast = document.querySelector("[data-toast]");
 
   const fields = {
+    ratioCaption: document.querySelector("[data-ratio-caption]"),
+    ratioFormula: document.querySelector("[data-ratio-formula]"),
     ratio: document.querySelector("[data-ratio]"),
+    widthLabel: document.querySelector("[data-width-label]"),
     width: document.querySelector("[data-width]"),
+    heightLabel: document.querySelector("[data-height-label]"),
     height: document.querySelector("[data-height]"),
+    differenceLabel: document.querySelector("[data-difference-label]"),
     difference: document.querySelector("[data-difference]"),
+    errorLabel: document.querySelector("[data-error-label]"),
     error: document.querySelector("[data-error]"),
     badge: document.querySelector("[data-result-badge]"),
     marker: document.querySelector("[data-ratio-marker]"),
@@ -32,7 +38,8 @@
     image: null,
     sourceName: "",
     objectUrl: null,
-    mode: "measure",
+    mode: "rectangle",
+    measurementType: "rectangle",
     fitScale: 1,
     zoom: 1,
     rotation: 0,
@@ -40,6 +47,7 @@
     offsetY: 0,
     pointA: null,
     pointB: null,
+    segmentT: null,
     pointerDown: false,
     pointerStart: null,
     startOffset: null,
@@ -50,6 +58,14 @@
 
   function resizeCanvas() {
     const rect = shell.getBoundingClientRect();
+    const previousWidth = canvas.clientWidth;
+    const previousHeight = canvas.clientHeight;
+    if (state.pointA && previousWidth > 0 && previousHeight > 0) {
+      const scaleX = rect.width / previousWidth;
+      const scaleY = rect.height / previousHeight;
+      state.pointA = { x: state.pointA.x * scaleX, y: state.pointA.y * scaleY };
+      if (state.pointB) state.pointB = { x: state.pointB.x * scaleX, y: state.pointB.y * scaleY };
+    }
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(rect.width * dpr);
     canvas.height = Math.round(rect.height * dpr);
@@ -169,8 +185,13 @@
 
   function drawMeasurement() {
     if (!state.pointA) return;
-    const a = imageToScreen(state.pointA);
-    const b = state.pointB ? imageToScreen(state.pointB) : a;
+    if (state.measurementType === "segment") drawSegmentMeasurement();
+    else drawRectangleMeasurement();
+  }
+
+  function drawRectangleMeasurement() {
+    const a = state.pointA;
+    const b = state.pointB || a;
 
     if (state.pointB) {
       const imageWidth = Math.abs(state.pointB.x - state.pointA.x);
@@ -180,7 +201,7 @@
         { x: state.pointB.x, y: state.pointA.y },
         state.pointB,
         { x: state.pointA.x, y: state.pointB.y }
-      ].map(imageToScreen);
+      ];
       const center = {
         x: corners.reduce((sum, point) => sum + point.x, 0) / 4,
         y: corners.reduce((sum, point) => sum + point.y, 0) / 4
@@ -195,7 +216,7 @@
       ctx.stroke();
       ctx.setLineDash([]);
 
-      if (state.showGolden && imageWidth > 2 && imageHeight > 2) drawGoldenGuide(imageWidth, imageHeight);
+      if (state.showGolden && imageWidth > 2 && imageHeight > 2) drawGoldenRectangleGuide(imageWidth, imageHeight);
 
       ctx.font = '700 11px "Noto Sans KR", sans-serif';
       ctx.textAlign = "center";
@@ -211,7 +232,7 @@
     if (state.pointB) drawHandle(b, "B");
   }
 
-  function drawGoldenGuide(width, height) {
+  function drawGoldenRectangleGuide(width, height) {
     const signX = state.pointB.x >= state.pointA.x ? 1 : -1;
     const signY = state.pointB.y >= state.pointA.y ? 1 : -1;
     let guideWidth;
@@ -232,7 +253,7 @@
       { x: end.x, y: state.pointA.y },
       end,
       { x: state.pointA.x, y: end.y }
-    ].map(imageToScreen);
+    ];
     const center = {
       x: corners.reduce((sum, point) => sum + point.x, 0) / 4,
       y: corners.reduce((sum, point) => sum + point.y, 0) / 4
@@ -251,6 +272,99 @@
     ctx.restore();
   }
 
+  function segmentPoint(t = state.segmentT) {
+    if (!state.pointA || !state.pointB || t == null) return null;
+    return {
+      x: state.pointA.x + (state.pointB.x - state.pointA.x) * t,
+      y: state.pointA.y + (state.pointB.y - state.pointA.y) * t
+    };
+  }
+
+  function projectToSegment(point) {
+    if (!state.pointA || !state.pointB) return .5;
+    const dx = state.pointB.x - state.pointA.x;
+    const dy = state.pointB.y - state.pointA.y;
+    const lengthSquared = dx * dx + dy * dy;
+    if (lengthSquared < 1) return .5;
+    const t = ((point.x - state.pointA.x) * dx + (point.y - state.pointA.y) * dy) / lengthSquared;
+    return Math.max(.02, Math.min(.98, t));
+  }
+
+  function drawLine(start, end, color, width, dashed = false) {
+    ctx.beginPath();
+    ctx.moveTo(start.x, start.y);
+    ctx.lineTo(end.x, end.y);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.setLineDash(dashed ? [5, 5] : []);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  function segmentLabelPoint(start, end, distance = 16) {
+    const midpoint = { x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 };
+    const dx = end.x - start.x;
+    const dy = end.y - start.y;
+    const length = Math.hypot(dx, dy) || 1;
+    return { x: midpoint.x - dy / length * distance, y: midpoint.y + dx / length * distance };
+  }
+
+  function drawSegmentMeasurement() {
+    const a = state.pointA;
+    const b = state.pointB;
+    if (!b) {
+      drawHandle(a, "A");
+      return;
+    }
+
+    ctx.save();
+    drawLine(a, b, "rgba(255,255,255,.76)", 8);
+    drawLine(a, b, "#17231b", 3);
+    const p = segmentPoint();
+    if (p) {
+      drawLine(a, p, "#f2cb5e", 5);
+      drawLine(p, b, "#78d7a0", 5);
+      const firstLength = Math.hypot(p.x - a.x, p.y - a.y);
+      const secondLength = Math.hypot(b.x - p.x, b.y - p.y);
+      ctx.font = '700 11px "Noto Sans KR", sans-serif';
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      const firstLabel = segmentLabelPoint(a, p);
+      const secondLabel = segmentLabelPoint(p, b);
+      drawLabel(`${Math.round(firstLength)} px`, firstLabel.x, firstLabel.y);
+      drawLabel(`${Math.round(secondLength)} px`, secondLabel.x, secondLabel.y);
+      if (state.showGolden) drawGoldenSegmentGuide();
+      drawHandle(p, "P", "#78d7a0");
+    }
+    ctx.restore();
+    drawHandle(a, "A");
+    drawHandle(b, "B");
+  }
+
+  function drawGoldenSegmentGuide() {
+    const idealT = state.segmentT <= .5 ? 1 - 1 / PHI : 1 / PHI;
+    const ideal = segmentPoint(idealT);
+    const measured = segmentPoint();
+    if (!ideal || !measured) return;
+    ctx.save();
+    drawLine(measured, ideal, "rgba(126, 244, 172, .8)", 2, true);
+    ctx.beginPath();
+    ctx.arc(ideal.x, ideal.y, 8, 0, Math.PI * 2);
+    ctx.fillStyle = "#bdf4cc";
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#173b26";
+    ctx.stroke();
+    ctx.font = '700 10px "Noto Sans KR", sans-serif';
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    const label = segmentLabelPoint(state.pointA, state.pointB, -18);
+    label.x += (ideal.x - (state.pointA.x + state.pointB.x) / 2);
+    label.y += (ideal.y - (state.pointA.y + state.pointB.y) / 2);
+    drawLabel("φ 분할점", label.x, label.y, "#bdf4cc", "#173b26");
+    ctx.restore();
+  }
+
   function drawLabel(text, x, y, background = "rgba(18, 29, 21, .88)", color = "white") {
     const metrics = ctx.measureText(text);
     const w = metrics.width + 14;
@@ -261,14 +375,14 @@
     ctx.fillText(text, x, y + .5);
   }
 
-  function drawHandle(point, label) {
+  function drawHandle(point, label, stroke = "#f2cb5e") {
     ctx.save();
     ctx.beginPath();
     ctx.arc(point.x, point.y, 10, 0, Math.PI * 2);
     ctx.fillStyle = "#17231b";
     ctx.fill();
     ctx.lineWidth = 3;
-    ctx.strokeStyle = "#f2cb5e";
+    ctx.strokeStyle = stroke;
     ctx.stroke();
     ctx.fillStyle = "white";
     ctx.font = '700 9px "DM Mono", monospace';
@@ -286,8 +400,10 @@
 
   function nearestHandle(point) {
     if (!state.pointA) return null;
-    const handles = [{ name: "a", point: imageToScreen(state.pointA) }];
-    if (state.pointB) handles.push({ name: "b", point: imageToScreen(state.pointB) });
+    const handles = [{ name: "a", point: state.pointA }];
+    if (state.pointB) handles.push({ name: "b", point: state.pointB });
+    const p = state.measurementType === "segment" ? segmentPoint() : null;
+    if (p) handles.push({ name: "p", point: p });
     return handles.find((handle) => Math.hypot(handle.point.x - point.x, handle.point.y - point.y) <= 18)?.name || null;
   }
 
@@ -312,16 +428,25 @@
       return;
     }
 
-    const imagePoint = screenToImage(point.x, point.y);
-    if (!state.pointA || state.pointB) {
-      state.pointA = imagePoint;
+    const measurementComplete = state.measurementType === "rectangle"
+      ? Boolean(state.pointA && state.pointB)
+      : Boolean(state.pointA && state.pointB && state.segmentT != null);
+
+    if (!state.pointA || measurementComplete) {
+      state.pointA = point;
       state.pointB = null;
+      state.segmentT = null;
       state.activeHandle = "new";
-      hint.innerHTML = "<b>2</b> 두 번째 꼭짓점을 클릭하세요";
+      hint.innerHTML = state.measurementType === "segment"
+        ? "<b>2</b> 전체 선분의 끝점 B를 클릭하세요"
+        : "<b>2</b> 사각형의 반대 꼭짓점 B를 클릭하세요";
       resetResults();
-    } else {
-      state.pointB = imagePoint;
+    } else if (!state.pointB) {
+      state.pointB = point;
       state.activeHandle = "b";
+    } else if (state.measurementType === "segment" && state.segmentT == null) {
+      state.segmentT = projectToSegment(point);
+      state.activeHandle = "p";
     }
     render();
   }
@@ -333,14 +458,16 @@
       state.offsetX = state.startOffset.x + point.x - state.pointerStart.x;
       state.offsetY = state.startOffset.y + point.y - state.pointerStart.y;
     } else if (state.activeHandle === "a") {
-      state.pointA = screenToImage(point.x, point.y);
+      state.pointA = point;
     } else if (state.activeHandle === "b") {
-      state.pointB = screenToImage(point.x, point.y);
+      state.pointB = point;
+    } else if (state.activeHandle === "p") {
+      state.segmentT = projectToSegment(point);
     } else if (state.activeHandle === "new" && Math.hypot(point.x - state.pointerStart.x, point.y - state.pointerStart.y) > 5) {
-      state.pointB = screenToImage(point.x, point.y);
+      state.pointB = point;
     }
     render();
-    if (state.pointB) updateResults();
+    if (state.pointB && (state.measurementType === "rectangle" || state.segmentT != null)) updateResults();
   }
 
   function onPointerUp(event) {
@@ -348,16 +475,50 @@
     if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
     state.pointerDown = false;
     canvas.classList.remove("is-panning");
-    if (state.pointB) {
+    const complete = state.pointB && (state.measurementType === "rectangle" || state.segmentT != null);
+    if (complete) {
       updateResults();
       hint.style.opacity = "0";
-      statusText.textContent = "측정 완료 — 점 A와 B를 끌어 세밀하게 조정할 수 있습니다.";
+      statusText.textContent = state.measurementType === "segment"
+        ? "선분 측정 완료 — A·P·B 점을 끌어 세밀하게 조정할 수 있습니다."
+        : "사각형 측정 완료 — A와 B를 끌어 세밀하게 조정할 수 있습니다.";
+    } else if (state.measurementType === "segment" && state.pointB) {
+      hint.innerHTML = "<b>3</b> 선분 위의 분할점 P를 클릭하세요";
+      hint.style.opacity = "1";
+      statusText.textContent = "전체 선분이 만들어졌습니다. 황금분할을 확인할 점 P를 지정하세요.";
     }
     state.activeHandle = null;
   }
 
   function updateResults() {
     if (!state.pointA || !state.pointB) return resetResults();
+    if (state.measurementType === "segment") updateSegmentResults();
+    else updateRectangleResults();
+  }
+
+  function setComparisonMarker(ratio) {
+    fields.marker.hidden = false;
+    fields.marker.style.left = `${Math.max(0, Math.min(100, (ratio - 1) * 100))}%`;
+  }
+
+  function setResultBadge(error) {
+    fields.badge.className = "result-badge";
+    if (error <= 1) {
+      fields.badge.textContent = "거의 일치";
+      fields.badge.classList.add("is-close");
+    } else if (error <= 3) {
+      fields.badge.textContent = "매우 가까움";
+      fields.badge.classList.add("is-close");
+    } else if (error <= 7) {
+      fields.badge.textContent = "비슷함";
+      fields.badge.classList.add("is-close");
+    } else {
+      fields.badge.textContent = "차이 있음";
+      fields.badge.classList.add("is-far");
+    }
+  }
+
+  function updateRectangleResults() {
     const width = Math.abs(state.pointB.x - state.pointA.x);
     const height = Math.abs(state.pointB.y - state.pointA.y);
     if (width < 1 || height < 1) return resetResults();
@@ -369,29 +530,49 @@
     fields.ratio.textContent = ratio.toFixed(3);
     fields.difference.textContent = difference.toFixed(3);
     fields.error.textContent = `${error.toFixed(1)}%`;
-    fields.marker.hidden = false;
-    fields.marker.style.left = `${Math.max(0, Math.min(100, (ratio - 1) * 100))}%`;
-    fields.badge.className = "result-badge";
+    setComparisonMarker(ratio);
+    setResultBadge(error);
     if (error <= 1) {
-      fields.badge.textContent = "거의 일치";
-      fields.badge.classList.add("is-close");
       fields.message.textContent = "황금비에 거의 정확히 맞습니다. 다른 영역에서도 같은 결과가 나오는지 확인해 보세요.";
     } else if (error <= 3) {
-      fields.badge.textContent = "매우 가까움";
-      fields.badge.classList.add("is-close");
       fields.message.textContent = "황금비에 매우 가깝습니다. 점의 위치를 조금씩 바꾸며 가장 가까운 경계를 찾아보세요.";
     } else if (error <= 7) {
-      fields.badge.textContent = "비슷함";
-      fields.badge.classList.add("is-close");
       fields.message.textContent = "황금비와 비슷한 비율입니다. 황금 사각형 비교선을 켜 차이가 나는 방향을 살펴보세요.";
     } else {
-      fields.badge.textContent = "차이 있음";
-      fields.badge.classList.add("is-far");
       fields.message.textContent = "황금비와 차이가 있습니다. 이것도 중요한 관찰입니다. 다른 부분을 재어 결과를 비교해 보세요.";
     }
   }
 
+  function updateSegmentResults() {
+    if (state.segmentT == null) return resetResults();
+    const total = Math.hypot(state.pointB.x - state.pointA.x, state.pointB.y - state.pointA.y);
+    const first = total * state.segmentT;
+    const second = total * (1 - state.segmentT);
+    const longPart = Math.max(first, second);
+    const shortPart = Math.min(first, second);
+    if (shortPart < 1) return resetResults();
+    const longToShort = longPart / shortPart;
+    const wholeToLong = total / longPart;
+    const ratiosDifference = Math.abs(longToShort - wholeToLong);
+    const error = Math.max(Math.abs(longToShort - PHI), Math.abs(wholeToLong - PHI)) / PHI * 100;
+    fields.width.textContent = Math.round(longPart).toLocaleString("ko-KR");
+    fields.height.textContent = Math.round(shortPart).toLocaleString("ko-KR");
+    fields.ratio.textContent = longToShort.toFixed(3);
+    fields.difference.textContent = wholeToLong.toFixed(3);
+    fields.error.textContent = ratiosDifference.toFixed(3);
+    setComparisonMarker(longToShort);
+    setResultBadge(error);
+    fields.message.textContent = `긴÷짧은 ${longToShort.toFixed(3)}, 전체÷긴 ${wholeToLong.toFixed(3)}입니다. 두 값의 차이는 ${ratiosDifference.toFixed(3)}이고 황금비 기준 최대 오차율은 ${error.toFixed(1)}%입니다.`;
+  }
+
   function resetResults() {
+    const segmentMode = state.measurementType === "segment";
+    fields.ratioCaption.textContent = segmentMode ? "선분 분할 비율" : "사각형 비율";
+    fields.ratioFormula.textContent = segmentMode ? "긴 부분 ÷ 짧은 부분" : "긴 변 ÷ 짧은 변";
+    fields.widthLabel.textContent = segmentMode ? "긴 부분" : "가로";
+    fields.heightLabel.textContent = segmentMode ? "짧은 부분" : "세로";
+    fields.differenceLabel.textContent = segmentMode ? "전체 ÷ 긴 부분" : "황금비와 차이";
+    fields.errorLabel.textContent = segmentMode ? "두 비율 차이" : "오차율";
     fields.ratio.textContent = "—";
     fields.width.textContent = "—";
     fields.height.textContent = "—";
@@ -400,18 +581,25 @@
     fields.badge.textContent = "측정 전";
     fields.badge.className = "result-badge";
     fields.marker.hidden = true;
-    fields.message.textContent = "사진에서 비교할 영역의 두 꼭짓점을 지정해 보세요.";
+    fields.message.textContent = segmentMode
+      ? "전체 선분 A–B를 만든 뒤 분할점 P를 지정해 보세요."
+      : "사진에서 비교할 영역의 두 꼭짓점을 지정해 보세요.";
   }
 
   function clearMeasurement(announce = true) {
     state.pointA = null;
     state.pointB = null;
-    hint.innerHTML = "<b>1</b> 첫 번째 꼭짓점을 클릭하세요";
+    state.segmentT = null;
+    hint.innerHTML = state.measurementType === "segment"
+      ? "<b>1</b> 전체 선분의 시작점 A를 클릭하세요"
+      : "<b>1</b> 사각형의 첫 번째 꼭짓점을 클릭하세요";
     hint.style.opacity = "1";
     resetResults();
     render();
     if (announce) {
-      statusText.textContent = "측정점을 지웠습니다. 첫 번째 꼭짓점을 지정하세요.";
+      statusText.textContent = state.measurementType === "segment"
+        ? "측정점을 지웠습니다. 전체 선분의 시작점 A를 지정하세요."
+        : "측정점을 지웠습니다. 사각형의 첫 번째 꼭짓점을 지정하세요.";
       showToast("측정점을 지웠습니다.");
     }
   }
@@ -455,7 +643,7 @@
     rotationOutput.value = `${state.rotation}°`;
     rotationOutput.textContent = `${state.rotation}°`;
     if (state.image) fitImage(false);
-    statusText.textContent = `사진을 ${state.rotation}° 회전했습니다. 측정점은 사진과 함께 유지됩니다.`;
+    statusText.textContent = `사진만 ${state.rotation}° 회전했습니다. 측정점과 도형은 화면에 고정됩니다.`;
   }
 
   function loadImage(src, name, markExample = null) {
@@ -505,6 +693,10 @@
   }
 
   function setMode(mode) {
+    if (mode !== "pan" && mode !== state.measurementType) {
+      state.measurementType = mode;
+      clearMeasurement(false);
+    }
     state.mode = mode;
     document.querySelectorAll("[data-mode]").forEach((button) => {
       const active = button.dataset.mode === mode;
@@ -512,7 +704,10 @@
       button.setAttribute("aria-pressed", String(active));
     });
     canvas.classList.toggle("is-pan", mode === "pan");
-    statusText.textContent = mode === "pan" ? "사진을 끌어 원하는 위치로 이동하세요." : "측정할 영역의 두 꼭짓점을 지정하세요.";
+    document.querySelector("[data-golden-label]").textContent = state.measurementType === "segment" ? "황금분할점 비교" : "황금 사각형 비교";
+    if (mode === "pan") statusText.textContent = "사진만 끌어 이동합니다. 측정점과 도형은 화면에 고정됩니다.";
+    else if (mode === "segment") statusText.textContent = "전체 선분 A–B를 만든 뒤 분할점 P를 지정하세요.";
+    else statusText.textContent = "수평·수직 사각형을 만들 두 꼭짓점을 지정하세요.";
   }
 
   function saveResult() {
@@ -558,7 +753,7 @@
   goldenToggle.addEventListener("click", () => {
     state.showGolden = !state.showGolden;
     goldenToggle.setAttribute("aria-pressed", String(state.showGolden));
-    goldenToggle.querySelector("span").textContent = state.showGolden ? "켬" : "끔";
+    goldenToggle.querySelector("[data-toggle-state]").textContent = state.showGolden ? "켬" : "끔";
     render();
   });
 
