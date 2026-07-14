@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="피타고라스 음계, 주파수 비율, 맥놀이와 소리 간섭을 직접 듣고 관찰하는 인터랙티브 수학 실험실" />
+    <meta name="theme-color" content="#17182f" />
+    <title>소리와 수학 실험실</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#lab">실험실로 바로 가기</a>
+
+    <header class="site-header">
+      <a class="back-link" href="../../index.html" aria-label="수학 수업 웹툴 모음으로 돌아가기">
+        <span aria-hidden="true">←</span> 웹툴 모음
+      </a>
+      <div class="brand"><span class="brand-dot" aria-hidden="true"></span> SOUND × MATH LAB</div>
+      <div class="score-pill" aria-live="polite"><span aria-hidden="true">★</span> <b id="starCount">0</b>/3</div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span>LIVE</span> 귀로 듣고, 눈으로 보는 수학</p>
+          <h1>소리는<br /><em>숫자로 춤춘다!</em></h1>
+          <p class="hero-lead">슬라이더를 움직이고, 두 소리를 섞고, 파동을 겹쳐 보세요. 음정 속 비율부터 맥놀이와 간섭까지 직접 발견할 수 있어요.</p>
+          <div class="hero-actions">
+            <a class="primary-button" href="#lab">실험 시작 <span aria-hidden="true">↓</span></a>
+            <button class="sound-check" id="soundCheck" type="button"><span aria-hidden="true">♪</span> 소리 확인</button>
+          </div>
+          <p class="sound-notice" id="soundNotice">소리는 버튼을 누른 뒤 재생돼요. 볼륨을 먼저 낮게 맞춰 주세요.</p>
+        </div>
+
+        <div class="hero-console" aria-label="실시간 소리 파형 미리보기">
+          <div class="console-top"><span><i></i> WAVE MONITOR</span><b id="heroFrequency">220.0 Hz</b></div>
+          <canvas id="heroCanvas" width="720" height="420"></canvas>
+          <div class="floating-formula formula-a">f × 3/2</div>
+          <div class="floating-formula formula-b">λ = v/f</div>
+          <div class="planet" aria-hidden="true"><span></span><i></i><i></i><i></i></div>
+          <div class="console-bottom"><span>진폭</span><div class="level-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><b>READY</b></div>
+        </div>
+      </section>
+
+      <section class="lab-section" id="lab" aria-labelledby="labTitle">
+        <div class="section-title">
+          <div><p>EXPERIMENT DECK 01</p><h2 id="labTitle">무엇을 실험할까요?</h2></div>
+          <div class="master-control">
+            <label for="masterVolume">전체 볼륨 <output id="volumeOutput">20%</output></label>
+            <input id="masterVolume" type="range" min="0" max="50" value="20" aria-label="전체 볼륨" />
+          </div>
+        </div>
+
+        <div class="tab-list" role="tablist" aria-label="소리 수학 실험 선택">
+          <button id="tabPitch" role="tab" aria-selected="true" aria-controls="panelPitch" data-tab="pitch"><span>01</span> 피타고라스 음계</button>
+          <button id="tabBeat" role="tab" aria-selected="false" aria-controls="panelBeat" data-tab="beat" tabindex="-1"><span>02</span> 맥놀이 탐정</button>
+          <button id="tabInterference" role="tab" aria-selected="false" aria-controls="panelInterference" data-tab="interference" tabindex="-1"><span>03</span> 간섭 조종실</button>
+        </div>
+
+        <div class="experiment-shell">
+          <section class="tab-panel" id="panelPitch" role="tabpanel" aria-labelledby="tabPitch">
+            <div class="panel-intro">
+              <div><p class="panel-kicker">PYTHAGOREAN SCALE</p><h3>기준음에 비율을 곱하면 음계가 태어나요.</h3></div>
+              <div class="base-slider">
+                <label for="baseFrequency">기준 주파수 <output id="baseOutput">220 Hz</output></label>
+                <input id="baseFrequency" type="range" min="110" max="440" step="1" value="220" />
+              </div>
+            </div>
+
+            <div class="pitch-workspace">
+              <div>
+                <div class="tone-deck" id="toneDeck" aria-label="피타고라스 음계 15음"></div>
+                <p class="deck-help">음을 눌러 들어 보세요. <kbd>←</kbd> <kbd>→</kbd> 키로도 이동할 수 있어요.</p>
+              </div>
+              <aside class="tone-inspector" aria-live="polite">
+                <div class="inspector-note" id="inspectorNote">도</div>
+                <div><p>주파수</p><strong id="inspectorFrequency">220.00 <small>Hz</small></strong></div>
+                <div><p>기준음과의 비</p><strong id="inspectorRatio">1 : 1</strong></div>
+                <p class="inspector-tip" id="inspectorTip">모든 음계의 출발점이에요.</p>
+                <button id="playSelectedTone" type="button"><span aria-hidden="true">▶</span> 선택한 음 듣기</button>
+              </aside>
+            </div>
+            <canvas class="wide-canvas" id="pitchCanvas" width="1200" height="230" aria-label="선택한 음의 파형"></canvas>
+          </section>
+
+          <section class="tab-panel" id="panelBeat" role="tabpanel" aria-labelledby="tabBeat" hidden>
+            <div class="panel-intro">
+              <div><p class="panel-kicker">BEAT DETECTOR</p><h3>아주 비슷한 두 소리가 만나면 ‘우웅—’ 맥놀이가 생겨요.</h3></div>
+              <button class="play-combo" id="playBeat" type="button"><span aria-hidden="true">▶</span> 두 소리 함께 듣기</button>
+            </div>
+            <div class="dual-controls">
+              <label class="frequency-card frequency-a" for="frequencyA">
+                <span>소리 A</span><output id="frequencyAOutput">220.0 Hz</output>
+                <input id="frequencyA" type="range" min="200" max="240" step="0.1" value="220" />
+              </label>
+              <div class="mix-symbol" aria-hidden="true">+</div>
+              <label class="frequency-card frequency-b" for="frequencyB">
+                <span>소리 B</span><output id="frequencyBOutput">224.0 Hz</output>
+                <input id="frequencyB" type="range" min="200" max="240" step="0.1" value="224" />
+              </label>
+            </div>
+            <div class="beat-result">
+              <div class="beat-number"><span>초당 맥놀이</span><strong id="beatValue">4.0</strong><small>번</small></div>
+              <div class="beat-explain"><b id="beatMood">두근두근, 느린 맥놀이!</b><p>| <span id="beatFormulaB">224.0</span> − <span id="beatFormulaA">220.0</span> | = <strong id="beatFormulaResult">4.0 Hz</strong></p></div>
+              <div class="beat-meter"><span>거의 같은 음</span><div><i id="beatNeedle"></i></div><span>빠른 떨림</span></div>
+            </div>
+            <canvas class="wide-canvas" id="beatCanvas" width="1200" height="300" aria-label="두 주파수의 합성과 맥놀이 파형"></canvas>
+          </section>
+
+          <section class="tab-panel" id="panelInterference" role="tabpanel" aria-labelledby="tabInterference" hidden>
+            <div class="panel-intro">
+              <div><p class="panel-kicker">INTERFERENCE CONTROL</p><h3>같은 파동도 타이밍에 따라 커지거나 사라져요.</h3></div>
+              <button class="play-combo" id="playInterference" type="button"><span aria-hidden="true">▶</span> 합성음 듣기</button>
+            </div>
+            <div class="interference-layout">
+              <div class="knob-panel">
+                <label for="interferenceFrequency"><span>주파수</span><output id="interferenceFrequencyOutput">220 Hz</output></label>
+                <input id="interferenceFrequency" type="range" min="110" max="440" value="220" />
+                <label for="amplitudeA"><span>파동 A 세기</span><output id="amplitudeAOutput">100%</output></label>
+                <input id="amplitudeA" type="range" min="0" max="100" value="100" />
+                <label for="amplitudeB"><span>파동 B 세기</span><output id="amplitudeBOutput">100%</output></label>
+                <input id="amplitudeB" type="range" min="0" max="100" value="100" />
+                <label for="phase"><span>위상 차이</span><output id="phaseOutput">0°</output></label>
+                <input id="phase" type="range" min="0" max="360" step="1" value="0" />
+                <div class="quick-phase" aria-label="빠른 위상 선택">
+                  <button type="button" data-phase="0">0° 겹치기</button><button type="button" data-phase="180">180° 엇갈리기</button>
+                </div>
+              </div>
+              <div class="interference-stage">
+                <div class="interference-status"><span id="interferenceIcon" aria-hidden="true">＋</span><div><small>지금은</small><strong id="interferenceTitle">보강 간섭</strong><p id="interferenceDescription">마루와 마루가 만나 더 큰 파동이 됩니다.</p></div></div>
+                <canvas id="interferenceCanvas" width="900" height="520" aria-label="파동 A와 B 및 합성파 시각화"></canvas>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="missions" aria-labelledby="missionTitle">
+        <div class="section-title mission-heading">
+          <div><p>MISSION DECK</p><h2 id="missionTitle">사운드 탐험가 도전!</h2></div>
+          <p>실험값을 직접 맞춰 별 3개를 모아 보세요.</p>
+        </div>
+        <div class="mission-grid">
+          <article class="mission-card" id="missionFifth"><span class="mission-number">MISSION 01</span><div class="mission-star" aria-hidden="true">★</div><h3>완전5도 찾기</h3><p>피타고라스 음계에서 기준음의 <b>3 : 2</b>가 되는 음을 찾아 눌러 보세요.</p><button type="button" data-go-tab="pitch">음계로 이동</button></article>
+          <article class="mission-card" id="missionBeat"><span class="mission-number">MISSION 02</span><div class="mission-star" aria-hidden="true">★</div><h3>맥놀이 잠재우기</h3><p>소리 A와 B의 차이를 <b>0.5 Hz 이하</b>로 맞춰 파동을 진정시키세요.</p><button type="button" data-go-tab="beat">탐정실로 이동</button></article>
+          <article class="mission-card" id="missionCancel"><span class="mission-number">MISSION 03</span><div class="mission-star" aria-hidden="true">★</div><h3>소리 지우기</h3><p>두 파동의 세기를 같게 하고 위상 차를 <b>180°</b>로 맞춰 보세요.</p><button type="button" data-go-tab="interference">조종실로 이동</button></article>
+        </div>
+      </section>
+    </main>
+
+    <footer><p><strong>소리와 수학 실험실</strong> · 헤드폰을 사용하면 작은 차이를 더 잘 들을 수 있어요.</p><a href="../../index.html">다른 수학 웹툴 보기 →</a></footer>
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    <div class="confetti" id="confetti" aria-hidden="true"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
