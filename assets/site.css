@@ -781,6 +781,84 @@ h2 {
   gap: 6px;
 }
 
+.card-mathematicians .tool-visual {
+  background: #0c1a35;
+}
+
+.mathematician-preview {
+  position: relative;
+  width: 310px;
+  height: 170px;
+}
+
+.mathematician-preview::before,
+.mathematician-preview::after {
+  position: absolute;
+  border: 1px solid rgba(101, 212, 209, 0.28);
+  border-radius: 50%;
+  content: "";
+}
+
+.mathematician-preview::before {
+  inset: 13px 62px;
+}
+
+.mathematician-preview::after {
+  inset: 35px 86px;
+  border-color: rgba(255, 115, 91, 0.3);
+}
+
+.math-face {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  width: 53px;
+  height: 53px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  background: #16294d;
+  color: white;
+  font-family: Georgia, serif;
+  font-size: 22px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+}
+
+.math-face--one { top: 17px; left: 72px; color: #65d4d1; }
+.math-face--two { top: 59px; right: 58px; color: #ff826c; }
+.math-face--three { bottom: 6px; left: 104px; color: #f1bd56; }
+
+.mathematician-preview > i {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #65d4d1;
+  box-shadow: 0 0 10px #65d4d1;
+}
+
+.mathematician-preview > i:nth-of-type(1) { top: 34px; right: 96px; }
+.mathematician-preview > i:nth-of-type(2) { top: 87px; left: 51px; }
+.mathematician-preview > i:nth-of-type(3) { right: 37px; bottom: 31px; background: #ff735b; }
+.mathematician-preview > i:nth-of-type(4) { left: 147px; bottom: 53px; }
+
+.mathematician-preview > b {
+  position: absolute;
+  top: 54px;
+  left: 50%;
+  color: white;
+  font-size: 13px;
+  line-height: 1.15;
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.mathematician-preview > b small {
+  color: #65d4d1;
+  font-size: 7px;
+  letter-spacing: 0.16em;
+}
+
 .tool-tag {
   display: inline-flex;
   min-height: 26px;

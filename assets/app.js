@@ -21,6 +21,7 @@ const TAG_META = {
   ai: { label: "인공지능", group: "topic" },
   "finance-economy": { label: "금융·경제", group: "topic" },
   "logic-reasoning": { label: "논리·추론", group: "topic" },
+  "history-culture": { label: "수학사·문화", group: "topic" },
   "assessment-grades": { label: "평가·성적", group: "topic" },
   "file-data-management": { label: "파일·자료 관리", group: "topic" },
   "class-use": { label: "수업용", group: "purpose" },

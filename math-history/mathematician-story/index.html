@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="시대와 지역을 넘나들며 수학자들의 삶, 질문, 개념의 연결을 탐색하는 인터랙티브 수학사 지도" />
+    <meta name="theme-color" content="#09152b" />
+    <title>수학자 이야기 수업관</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#explorer">탐색기로 바로 가기</a>
+
+    <header class="topbar">
+      <a class="brand" href="../../index.html" aria-label="수학 수업 웹툴 모음으로 돌아가기">
+        <span class="brand-mark" aria-hidden="true">M</span>
+        <span><b>수학자 이야기 수업관</b><small>MATHEMATICIANS ATLAS</small></span>
+      </a>
+      <nav aria-label="페이지 메뉴">
+        <a href="#explorer">인물 탐색</a>
+        <a href="#visual-lab">연결 지도</a>
+        <a href="#classroom">수업 활동</a>
+      </nav>
+      <button class="icon-button theme-button" type="button" data-theme aria-label="화면 테마 바꾸기">☼</button>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> HISTORY × PEOPLE × IDEAS</p>
+          <h1>공식보다 먼저,<br /><em>사람의 질문</em>을 만나다.</h1>
+          <p class="hero-description">고대 이집트의 서기관부터 오늘의 필즈상 수상자까지. 수학자가 살았던 장면을 따라가며 서로 멀어 보이던 개념이 어떻게 이어지는지 발견해 보세요.</p>
+          <div class="hero-actions">
+            <a class="primary-button" href="#explorer">수학자 만나기 <span>↓</span></a>
+            <button class="secondary-button" type="button" data-random>무작위 만남 <span>↗</span></button>
+          </div>
+          <div class="hero-stats" aria-label="수록 자료 현황">
+            <div><strong data-total-count>0</strong><span>명의 수학자</span></div>
+            <div><strong data-region-count>0</strong><span>개 문화권</span></div>
+            <div><strong data-era-count>0</strong><span>개의 시대</span></div>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-label="수학 개념의 연결을 상징하는 움직이는 별자리">
+          <canvas id="hero-canvas"></canvas>
+          <div class="orbit-label orbit-label--one">기하</div>
+          <div class="orbit-label orbit-label--two">대수</div>
+          <div class="orbit-label orbit-label--three">확률</div>
+          <div class="hero-center"><span>?</span><b>질문이<br />역사를 만든다</b></div>
+          <div class="hero-caption"><i></i> 4,000년의 생각이 지금도 연결되는 중</div>
+        </div>
+      </section>
+
+      <section class="story-strip" aria-label="수학사의 주요 흐름">
+        <div><span>기원전 1800년경</span><b>측량과 계산</b><small>생활의 문제를 기록하다</small></div>
+        <i></i>
+        <div><span>9세기</span><b>대수의 언어</b><small>미지수를 다루기 시작하다</small></div>
+        <i></i>
+        <div><span>17세기</span><b>변화를 계산</b><small>우주와 운동을 수식으로 읽다</small></div>
+        <i></i>
+        <div><span>20세기 이후</span><b>구조와 정보</b><small>보이지 않는 세계를 연결하다</small></div>
+      </section>
+
+      <section class="explorer section-shell" id="explorer" aria-labelledby="explorer-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow"><span></span> PEOPLE EXPLORER</p>
+            <h2 id="explorer-title">누구의 이야기를<br />따라가 볼까요?</h2>
+          </div>
+          <p>이름, 시대, 지역, 개념을 조합해 필터링하세요. 카드를 열면 삶의 장면과 핵심 개념, 수업용 질문을 볼 수 있습니다.</p>
+        </div>
+
+        <div class="control-deck">
+          <label class="search-box">
+            <span aria-hidden="true">⌕</span>
+            <input type="search" data-search placeholder="이름·개념·지역 검색" autocomplete="off" />
+            <kbd>Ctrl K</kbd>
+          </label>
+          <label class="select-box"><span>지역</span><select data-region-filter><option value="all">모든 지역</option></select></label>
+          <label class="select-box"><span>분야</span><select data-field-filter><option value="all">모든 분야</option></select></label>
+          <div class="view-switch" role="group" aria-label="보기 방식">
+            <button type="button" class="is-active" data-view="cards" aria-pressed="true">카드</button>
+            <button type="button" data-view="timeline" aria-pressed="false">연표</button>
+          </div>
+        </div>
+
+        <div class="era-filters" data-era-filters aria-label="시대 필터"></div>
+        <div class="explorer-progress">
+          <div class="progress-copy"><span>나의 탐험 기록</span><b><strong data-visited-count>0</strong> / <span data-visited-total>55</span>명 발견</b></div>
+          <div class="progress-track" aria-label="수학자 발견 진행률"><i data-progress-bar></i></div>
+          <button type="button" data-favorites-filter aria-pressed="false">☆ 즐겨찾기만 보기 <span data-favorite-count>0</span></button>
+          <button type="button" data-next-mission>다음 탐험 추천 →</button>
+        </div>
+        <div class="result-meta"><p><strong data-result-count>0</strong>명의 이야기를 찾았어요.</p><button type="button" data-reset>필터 초기화</button></div>
+        <div class="people-grid" data-people-grid></div>
+        <div class="timeline-view" data-timeline hidden></div>
+        <div class="empty-state" data-empty hidden><span>∅</span><h3>조건에 맞는 수학자가 없어요</h3><p>필터를 하나 줄이거나 다른 검색어를 입력해 보세요.</p></div>
+      </section>
+
+      <section class="visual-lab" id="visual-lab" aria-labelledby="lab-title">
+        <div class="section-shell">
+          <div class="section-heading section-heading--light">
+            <div>
+              <p class="eyebrow"><span></span> CONNECTION LAB</p>
+              <h2 id="lab-title">수학은 혼자 자라지<br />않았습니다.</h2>
+            </div>
+            <p>점은 수학자, 선은 공유하는 분야입니다. 점을 선택하면 시대와 대륙을 건너 이어지는 생각의 계보를 볼 수 있어요.</p>
+          </div>
+
+          <div class="lab-grid">
+            <article class="network-panel panel">
+              <div class="panel-head"><div><span>01</span><h3>생각의 연결망</h3></div><p data-network-hint>점을 선택해 연결을 확인하세요.</p></div>
+              <div class="network-stage"><canvas id="network-canvas" aria-label="수학자와 분야의 관계 네트워크"></canvas><div class="network-tooltip" data-network-tooltip hidden></div></div>
+              <div class="network-legend"><span><i class="dot ancient"></i>고대·중세</span><span><i class="dot early"></i>근대</span><span><i class="dot modern"></i>현대</span><span><i class="line"></i>공유 분야</span></div>
+            </article>
+
+            <article class="distribution-panel panel">
+              <div class="panel-head"><div><span>02</span><h3>지역과 시대의 분포</h3></div></div>
+              <div class="donut-wrap"><div class="donut" data-donut><div><strong data-donut-total>0</strong><span>PEOPLE</span></div></div><div class="region-bars" data-region-bars></div></div>
+              <div class="era-river" data-era-river></div>
+            </article>
+
+            <article class="concept-panel panel">
+              <div class="panel-head"><div><span>03</span><h3>개념의 시간 지도</h3></div><select data-concept-select aria-label="살펴볼 수학 분야"></select></div>
+              <div class="concept-story" data-concept-story></div>
+              <div class="concept-track" data-concept-track></div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="classroom section-shell" id="classroom" aria-labelledby="classroom-title">
+        <div class="section-heading">
+          <div><p class="eyebrow"><span></span> CLASSROOM STUDIO</p><h2 id="classroom-title">이야기를 수업으로<br />바꾸는 세 가지 방법</h2></div>
+          <p>읽는 데서 끝내지 않고 질문하고, 비교하고, 역할을 맡아 말해 보세요.</p>
+        </div>
+
+        <div class="activity-grid">
+          <article class="activity activity--interview">
+            <div class="activity-number">01</div><span class="activity-icon">?</span><h3>대화형 시간 여행 인터뷰</h3><p>추천 질문을 뽑거나 직접 입력해 자료 속 수학자와 대화합니다.</p>
+            <div class="interview-result" data-interview-result></div>
+            <div class="activity-actions"><button type="button" data-interview>새 질문 <span>↻</span></button><button type="button" data-chat-launch>대화 시작 <span>→</span></button></div>
+          </article>
+          <article class="activity activity--compare">
+            <div class="activity-number">02</div><span class="activity-icon">≠</span><h3>두 생각 비교하기</h3><p>두 수학자의 시대·문제·방법을 나란히 놓고 공통점과 차이를 찾습니다.</p>
+            <div class="compare-pickers"><select data-compare-a aria-label="첫 번째 수학자"></select><span>VS</span><select data-compare-b aria-label="두 번째 수학자"></select></div>
+            <button type="button" data-compare-open>비교 보드 열기 <span>→</span></button>
+          </article>
+          <article class="activity activity--scene">
+            <div class="activity-number">03</div><span class="activity-icon">◫</span><h3>역사 속 상황극</h3><p>당시의 기술과 사회를 배경으로, 새로운 수학이 왜 필요했는지 설명합니다.</p>
+            <div class="scene-result" data-scene-result></div>
+            <button type="button" data-scene>새 장면 만들기 <span>✦</span></button>
+          </article>
+        </div>
+
+        <article class="chat-studio" id="chat-studio" aria-labelledby="chat-title">
+          <div class="chat-guide">
+            <p class="eyebrow"><span></span> OFFLINE ROLE CHAT</p>
+            <h3 id="chat-title">수학자와<br />자료 기반 대화하기</h3>
+            <p>추천 질문은 바로 누르고, 궁금한 내용은 자유롭게 입력하세요. 입력 문장에서 주제를 찾아 현재 인물의 기록과 연결해 답합니다.</p>
+            <div class="chat-safety"><i></i><div><b>API 없음 · 개인정보 전송 없음</b><span>AI가 새 답을 만드는 것이 아니라, 수록 자료를 대화형으로 재구성합니다.</span></div></div>
+            <label class="chat-person-select"><span>대화할 수학자</span><select data-chat-person aria-label="대화할 수학자 선택"></select></label>
+            <div class="chat-person-summary" data-chat-person-summary></div>
+          </div>
+          <div class="chat-window">
+            <div class="chat-window-head"><div><i data-chat-avatar>유</i><p><b data-chat-name>유클리드</b><span data-chat-status>자료를 펼쳐 보는 중</span></p></div><button type="button" data-chat-reset>대화 지우기</button></div>
+            <div class="chat-messages" data-chat-messages aria-live="polite" aria-label="인터뷰 대화 내용"></div>
+            <div class="chat-suggestions" data-chat-suggestions aria-label="추천 질문"></div>
+            <form class="chat-form" data-chat-form>
+              <label><span class="sr-only">수학자에게 질문하기</span><input data-chat-input maxlength="120" autocomplete="off" placeholder="예: 어떤 문제를 해결하려 했나요?" /></label>
+              <button type="submit" aria-label="질문 보내기">↑</button>
+            </form>
+            <p class="chat-notice">역사적 기록을 바탕으로 재구성한 역할 대화입니다. 실제 발언이나 생성형 AI 답변이 아닙니다.</p>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer><div><span class="brand-mark" aria-hidden="true">M</span><p><b>수학자 이야기 수업관</b><small>공식 뒤에 숨은 사람과 질문을 만나는 곳</small></p></div><a href="../../index.html">웹툴 모음으로 돌아가기 ↑</a></footer>
+
+    <dialog class="profile-dialog" data-profile-dialog>
+      <button class="dialog-close" type="button" data-dialog-close aria-label="닫기">×</button>
+      <div data-profile-content></div>
+    </dialog>
+
+    <dialog class="compare-dialog" data-compare-dialog>
+      <button class="dialog-close" type="button" data-compare-close aria-label="닫기">×</button>
+      <div data-compare-content></div>
+    </dialog>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
