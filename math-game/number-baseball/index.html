@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#10233f" />
+    <meta name="description" content="3자리·4자리 숫자 야구를 즐기며 경우의 수와 조건부확률을 탐구하는 수학 수업 웹툴" />
+    <title>숫자 야구 | 수학 수업 웹툴 모음</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="back-link" href="../../index.html#math-game" aria-label="수학 게임 목록으로 돌아가기">
+        <span aria-hidden="true">←</span><span>수학 게임</span>
+      </a>
+      <div class="brand" aria-label="숫자 야구">
+        <span class="brand-ball" aria-hidden="true">9</span>
+        <span><strong>숫자 야구</strong><small>NUMBER BASEBALL LAB</small></span>
+      </div>
+      <div class="header-actions">
+        <button class="ghost-button" id="rulesButton" type="button">게임 규칙</button>
+        <button class="ghost-button" id="copyButton" type="button">기록 복사</button>
+        <button class="new-button" id="newGameButton" type="button">새 게임</button>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section class="hero-strip" aria-labelledby="gameTitle">
+        <div>
+          <p class="eyebrow">DEDUCTION × PROBABILITY</p>
+          <h1 id="gameTitle">몇 번 만에 비밀 숫자를 찾을까요?</h1>
+          <p>기록으로 후보를 좁히고, TIP에서 다음 결과의 확률을 예상해 보세요.</p>
+        </div>
+        <div class="length-switch" role="group" aria-label="숫자 자릿수 선택">
+          <button class="length-button is-active" type="button" data-length="3" aria-pressed="true">3자리</button>
+          <button class="length-button" type="button" data-length="4" aria-pressed="false">4자리</button>
+        </div>
+      </section>
+
+      <section class="scoreboard" aria-label="게임 현황">
+        <div><span>시도</span><strong id="attemptCount">0</strong><small>번</small></div>
+        <div><span>남은 경우</span><strong id="remainingCount">648</strong><small>가지</small></div>
+        <div><span>제외한 경우</span><strong id="eliminatedCount">0</strong><small>가지</small></div>
+        <div class="chance-card"><span>지금 정답 확률</span><strong id="answerChance">0.15%</strong></div>
+      </section>
+
+      <section class="game-grid">
+        <section class="play-panel" aria-labelledby="guessTitle">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">YOUR PITCH</p>
+              <h2 id="guessTitle">숫자를 제안하세요</h2>
+            </div>
+            <span class="status-badge" id="statusBadge">경기 중</span>
+          </div>
+
+          <form id="guessForm" novalidate>
+            <label class="guess-label" for="guessInput">서로 다른 <b id="digitLabel">3</b>자리 숫자</label>
+            <div class="guess-row">
+              <input
+                id="guessInput"
+                class="guess-input"
+                type="text"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                maxlength="3"
+                autocomplete="off"
+                aria-describedby="inputMessage"
+                placeholder="123"
+              />
+              <button class="tip-button" id="tipButton" type="button"><span aria-hidden="true">✦</span> TIP</button>
+              <button class="pitch-button" id="submitButton" type="submit">던지기</button>
+            </div>
+            <p class="input-message" id="inputMessage" aria-live="polite">첫 자리에는 0을 쓸 수 없고, 같은 숫자는 한 번만 써요.</p>
+
+            <div class="keypad" id="keypad" aria-label="숫자 입력 키패드"></div>
+            <div class="keypad-actions" aria-label="숫자 지우기">
+              <button id="backspaceButton" type="button"><span aria-hidden="true">⌫</span> 한 칸 지우기</button>
+              <button id="clearButton" type="button">전체 지우기</button>
+            </div>
+          </form>
+
+          <section class="tip-panel" id="tipPanel" aria-live="polite" hidden>
+            <div class="tip-heading">
+              <div><span>TIP REPORT</span><h3><b id="tipGuess">—</b>의 예상 결과</h3></div>
+              <button id="closeTipButton" type="button" aria-label="TIP 닫기">×</button>
+            </div>
+            <div class="tip-summary" id="tipSummary"></div>
+            <div class="tip-meter"><i id="tipMeter"></i></div>
+            <p id="tipDescription"></p>
+          </section>
+
+          <div class="probability-callout">
+            <div><span aria-hidden="true">∑</span><p><strong>경우의 수는 어떻게 줄었을까요?</strong><small>현재 기록과 다음 예상 결과를 확률로 확인하세요.</small></p></div>
+            <button id="probabilityButton" type="button">경우의 수 · 확률 열기 <b aria-hidden="true">→</b></button>
+          </div>
+        </section>
+
+        <section class="record-panel" aria-labelledby="recordTitle">
+          <div class="panel-heading record-heading">
+            <div><p class="eyebrow">GAME LOG</p><h2 id="recordTitle">나의 제안 기록</h2></div>
+            <div class="record-heading-actions">
+              <button class="text-button" id="undoButton" type="button" disabled>마지막 기록 취소</button>
+              <button class="record-toggle-button" id="recordToggleButton" type="button" aria-expanded="true" aria-controls="recordContent">기록 끄기</button>
+            </div>
+          </div>
+
+          <div id="recordContent">
+            <div class="record-table-wrap">
+              <table>
+                <thead><tr><th>회</th><th>제안한 숫자</th><th>판정</th><th>남은 경우</th></tr></thead>
+                <tbody id="recordBody">
+                  <tr class="empty-row"><td colspan="4"><span>⚾</span><strong>아직 제안한 숫자가 없어요</strong><small>첫 숫자를 던지면 이곳에 기록됩니다.</small></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="progress-block">
+              <div><span>후보 제거율</span><strong id="progressLabel">0%</strong></div>
+              <div class="progress-track"><i id="progressBar"></i></div>
+            </div>
+
+            <button class="reveal-button" id="revealButton" type="button">정답 숫자 공개</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="lesson-note">
+        <span class="lesson-icon" aria-hidden="true">?</span>
+        <div><strong>생각해 보기</strong><p>같은 기록을 얻었더라도 남은 경우의 수가 다를 수 있을까요? TIP의 결과 분포를 비교해 보세요.</p></div>
+      </section>
+    </main>
+
+    <dialog class="drawer" id="probabilityDialog" aria-labelledby="probabilityTitle">
+      <div class="drawer-header">
+        <div><p class="eyebrow">COUNTING &amp; PROBABILITY</p><h2 id="probabilityTitle">경우의 수 · 확률</h2></div>
+        <button class="icon-button" type="button" data-close-dialog aria-label="닫기">×</button>
+      </div>
+      <div class="formula-card">
+        <span>처음 가능한 비밀 숫자</span>
+        <strong id="formulaText">8 × 9 × 9 = 648</strong>
+        <p>첫 자리 0 제외 · 중복 숫자 제외</p>
+      </div>
+      <div class="probability-stats">
+        <div><span>남은 경우</span><strong id="drawerRemaining">648</strong></div>
+        <div><span>정답 확률</span><strong id="drawerChance">0.15%</strong></div>
+      </div>
+      <section class="distribution-section">
+        <div class="section-heading"><h3>현재 입력의 예상 결과</h3><span id="distributionGuess">숫자를 입력하세요</span></div>
+        <div id="distributionList" class="distribution-list">
+          <p class="empty-distribution">유효한 숫자를 입력하면 각 판정이 나올 확률을 계산합니다.</p>
+        </div>
+      </section>
+      <section class="concept-card">
+        <h3>기록이 쌓이면 왜 확률이 바뀔까요?</h3>
+        <p>각 판정은 조건이 됩니다. 지금까지의 모든 조건을 만족하는 숫자만 남기 때문에, 다음 숫자가 정답일 확률은 <b>1 ÷ 남은 경우의 수</b>로 커집니다.</p>
+      </section>
+    </dialog>
+
+    <dialog class="modal remaining-modal" id="remainingDialog" aria-labelledby="remainingTitle">
+      <div class="modal-header">
+        <div><p class="eyebrow">REMAINING NUMBERS</p><h2 id="remainingTitle">남은 경우 보기</h2></div>
+        <button class="icon-button" type="button" data-close-dialog aria-label="닫기">×</button>
+      </div>
+      <div class="remaining-summary">
+        <span id="remainingTurnLabel">1회 기록 후</span>
+        <strong><b id="remainingModalCount">0</b>가지</strong>
+        <p id="remainingCondition"></p>
+      </div>
+      <section class="remaining-preview">
+        <div class="section-heading"><h3 id="remainingListTitle">남은 수 미리보기</h3><span id="remainingListMeta"></span></div>
+        <div class="candidate-list" id="candidateList"></div>
+      </section>
+      <button class="primary-button full remaining-all-button" id="showAllRemainingButton" type="button">남은 수 전체 보기</button>
+    </dialog>
+
+    <dialog class="modal" id="rulesDialog" aria-labelledby="rulesTitle">
+      <div class="modal-header">
+        <div><p class="eyebrow">HOW TO PLAY</p><h2 id="rulesTitle">숫자 야구 규칙</h2></div>
+        <button class="icon-button" type="button" data-close-dialog aria-label="닫기">×</button>
+      </div>
+      <ol class="rules-list">
+        <li><b>1</b><div><strong>비밀 숫자</strong><span>0~9 중 서로 다른 숫자로 만든 3자리 또는 4자리 수예요. 첫 자리는 0이 아닙니다.</span></div></li>
+        <li><b>S</b><div><strong>스트라이크</strong><span>숫자와 자리가 모두 맞으면 1S입니다.</span></div></li>
+        <li><b>B</b><div><strong>볼</strong><span>숫자는 있지만 자리가 다르면 1B입니다.</span></div></li>
+        <li><b>O</b><div><strong>아웃</strong><span>맞는 숫자가 하나도 없으면 OUT입니다.</span></div></li>
+      </ol>
+      <button class="primary-button full" type="button" data-close-dialog>게임 시작</button>
+    </dialog>
+
+    <dialog class="modal result-modal" id="resultDialog" aria-labelledby="resultTitle">
+      <div class="result-mark" aria-hidden="true">⚾</div>
+      <p class="eyebrow">HOME RUN!</p>
+      <h2 id="resultTitle">정답을 찾았어요</h2>
+      <p id="resultDescription"></p>
+      <div class="answer-display" id="answerDisplay"></div>
+      <button class="primary-button full" id="resultNewGameButton" type="button">한 게임 더</button>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./game-logic.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
