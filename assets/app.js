@@ -1,5 +1,32 @@
 const MANUAL_GITHUB_REPOSITORY_URL = "https://github.com/mathtjungsw/math-class-webtools";
 
+const TAG_META = {
+  common: { label: "공통", group: "subject" },
+  "middle-school-1": { label: "중학교 수학1", group: "subject" },
+  "middle-school-2": { label: "중학교 수학2", group: "subject" },
+  "middle-school-3": { label: "중학교 수학3", group: "subject" },
+  "common-math1": { label: "공통수학1", group: "subject" },
+  "probability-statistics": { label: "확률과 통계", group: "subject" },
+  "ai-math": { label: "인공지능 수학", group: "subject" },
+  "economic-math": { label: "경제 수학", group: "subject" },
+  "math-game": { label: "수학 게임", group: "format" },
+  simulation: { label: "시뮬레이션", group: "format" },
+  visualization: { label: "시각화·탐구", group: "format" },
+  "ai-data-practice": { label: "AI·데이터 실습", group: "format" },
+  "work-automation": { label: "업무 자동화", group: "format" },
+  "coordinate-geometry": { label: "좌표·도형", group: "topic" },
+  "number-operations": { label: "수와 연산", group: "topic" },
+  probability: { label: "확률", group: "topic" },
+  statistics: { label: "통계", group: "topic" },
+  ai: { label: "인공지능", group: "topic" },
+  "finance-economy": { label: "금융·경제", group: "topic" },
+  "logic-reasoning": { label: "논리·추론", group: "topic" },
+  "assessment-grades": { label: "평가·성적", group: "topic" },
+  "file-data-management": { label: "파일·자료 관리", group: "topic" },
+  "class-use": { label: "수업용", group: "purpose" },
+  "school-work": { label: "학교 업무용", group: "purpose" }
+};
+
 const TOOL_GUIDES = {
   "좌표평면 미니골프": {
     purpose: "좌표평면에서 순서쌍 (x, y)의 위치를 읽고, 두 점 사이의 변화량을 직선의 식 또는 이동 명령으로 표현하며 좌표와 이동의 관계를 탐구합니다.",
@@ -363,43 +390,141 @@ function wireGuideModal() {
   });
 }
 
-function selectFilter(filter, updateHash = false) {
-  const selectedButton = document.querySelector(`[data-filter="${filter}"]`);
-  if (!selectedButton) return;
+const toolCards = [...document.querySelectorAll("[data-tool-tags]")];
+const filterButtons = [...document.querySelectorAll("[data-tag-filter]")];
+const selectedTags = new Set();
 
-  document.querySelectorAll("[data-filter]").forEach((button) => {
-    const isSelected = button === selectedButton;
+function getCardTags(card) {
+  return card.dataset.toolTags.split(/\s+/).filter(Boolean);
+}
+
+function renderCardTags() {
+  toolCards.forEach((card) => {
+    const container = card.querySelector(".tool-tags");
+    if (!container) return;
+
+    const tags = getCardTags(card);
+    const displayTags = tags.filter((tag) => tag !== "class-use").slice(0, 3);
+    container.replaceChildren(...displayTags.map((tag) => {
+      const chip = document.createElement("span");
+      const meta = TAG_META[tag];
+      chip.className = `tool-tag tool-tag--${meta?.group || "topic"}`;
+      chip.textContent = meta?.label || tag;
+      return chip;
+    }));
+    container.title = tags.map((tag) => TAG_META[tag]?.label || tag).join(" · ");
+  });
+}
+
+function updateFilterCounts() {
+  filterButtons.forEach((button) => {
+    const tag = button.dataset.tagFilter;
+    const count = toolCards.filter((card) => getCardTags(card).includes(tag)).length;
+    const countElement = button.querySelector("span");
+    if (countElement) countElement.textContent = count;
+  });
+}
+
+function matchesSelectedTags(card) {
+  const cardTags = getCardTags(card);
+  const activeGroups = new Map();
+
+  selectedTags.forEach((tag) => {
+    const group = TAG_META[tag]?.group;
+    if (!group) return;
+    if (!activeGroups.has(group)) activeGroups.set(group, []);
+    activeGroups.get(group).push(tag);
+  });
+
+  return [...activeGroups.values()].every((groupTags) => groupTags.some((tag) => cardTags.includes(tag)));
+}
+
+function renderSelectedTags() {
+  const container = document.querySelector("[data-selected-tags]");
+  if (!container) return;
+
+  if (!selectedTags.size) {
+    const hint = document.createElement("span");
+    hint.className = "selected-tags__hint";
+    hint.textContent = "원하는 태그를 여러 개 선택할 수 있어요.";
+    container.replaceChildren(hint);
+    return;
+  }
+
+  container.replaceChildren(...[...selectedTags].map((tag) => {
+    const button = document.createElement("button");
+    button.className = "selected-tag";
+    button.type = "button";
+    button.dataset.removeTag = tag;
+    button.setAttribute("aria-label", `${TAG_META[tag].label} 태그 해제`);
+    button.innerHTML = `${TAG_META[tag].label} <span aria-hidden="true">×</span>`;
+    return button;
+  }));
+}
+
+function updateTagFilters(updateHash = false) {
+  filterButtons.forEach((button) => {
+    const isSelected = selectedTags.has(button.dataset.tagFilter);
     button.classList.toggle("is-active", isSelected);
-    button.setAttribute("aria-selected", String(isSelected));
+    button.setAttribute("aria-pressed", String(isSelected));
   });
 
   let visibleCount = 0;
-  document.querySelectorAll("[data-tool-category]").forEach((card) => {
-    const isVisible = filter === "all" || card.dataset.toolCategory === filter;
+  toolCards.forEach((card) => {
+    const isVisible = matchesSelectedTags(card);
     card.classList.toggle("is-hidden", !isVisible);
     card.setAttribute("aria-hidden", String(!isVisible));
     if (isVisible) visibleCount += 1;
   });
 
   document.querySelectorAll("[data-tool-section]").forEach((section) => {
-    const hasVisibleCards = Boolean(section.querySelector("[data-tool-category]:not(.is-hidden)"));
+    const hasVisibleCards = Boolean(section.querySelector("[data-tool-tags]:not(.is-hidden)"));
     section.classList.toggle("is-hidden", !hasVisibleCards);
     section.setAttribute("aria-hidden", String(!hasVisibleCards));
   });
 
+  const countElement = document.querySelector("[data-visible-count]");
+  if (countElement) countElement.textContent = visibleCount;
   document.querySelector(".empty-message").hidden = visibleCount !== 0;
+  document.querySelector("[data-filter-reset]").hidden = selectedTags.size === 0;
+  renderSelectedTags();
+
+  const hasTopicTag = [...selectedTags].some((tag) => TAG_META[tag]?.group === "topic");
+  if (hasTopicTag) document.querySelector(".filter-more")?.setAttribute("open", "");
 
   if (updateHash) {
-    const nextHash = filter === "all" ? "tools" : filter;
+    const nextHash = selectedTags.size ? `tags=${[...selectedTags].join(",")}` : "tools";
     window.history.replaceState({}, "", `#${nextHash}`);
   }
 }
 
-document.querySelectorAll("[data-filter]").forEach((button) => {
-  button.addEventListener("click", () => selectFilter(button.dataset.filter, true));
+filterButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const tag = button.dataset.tagFilter;
+    if (selectedTags.has(tag)) selectedTags.delete(tag);
+    else selectedTags.add(tag);
+    updateTagFilters(true);
+  });
 });
 
-const initialFilter = window.location.hash.slice(1);
-selectFilter(document.querySelector(`[data-filter="${initialFilter}"]`) ? initialFilter : "all");
+document.querySelector("[data-selected-tags]")?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-remove-tag]");
+  if (!button) return;
+  selectedTags.delete(button.dataset.removeTag);
+  updateTagFilters(true);
+});
+
+document.querySelector("[data-filter-reset]")?.addEventListener("click", () => {
+  selectedTags.clear();
+  document.querySelector(".filter-more")?.removeAttribute("open");
+  updateTagFilters(true);
+});
+
+const initialHash = window.location.hash.slice(1);
+const initialTagValue = initialHash.startsWith("tags=") ? initialHash.slice(5) : initialHash;
+initialTagValue.split(",").filter((tag) => TAG_META[tag]).forEach((tag) => selectedTags.add(tag));
+renderCardTags();
+updateFilterCounts();
+updateTagFilters();
 wireGithubLinks();
 wireGuideModal();
