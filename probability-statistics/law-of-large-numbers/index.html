@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="동전·주사위·카드 실험으로 상대도수가 이론적 확률에 가까워지는 과정을 관찰하는 대수의 법칙 실험실" />
+    <meta name="theme-color" content="#f4f1ea" />
+    <title>확률 대수의 법칙 실험실</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="back-link" href="../../index.html"><span aria-hidden="true">←</span> 웹툴 모음</a>
+      <div class="brand"><i aria-hidden="true"></i><strong>확률 실험실</strong><span>LAW OF LARGE NUMBERS</span></div>
+      <div class="header-actions">
+        <span class="subject-tag">확률과 통계</span>
+        <button class="guide-button" id="helpButton" type="button"><span aria-hidden="true">?</span> 설명서 보기</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">INTERACTIVE PROBABILITY LAB</p>
+          <h1>우연을 수천 번 반복하면,<br /><em>규칙이 보일까?</em></h1>
+        </div>
+        <p class="intro-copy">동전·주사위·카드의 조건을 바꾸고 직접 실험해 보세요. 시행 횟수가 커질수록 상대도수는 이론적 확률에 가까워지는지 실시간으로 확인할 수 있습니다.</p>
+      </section>
+
+      <section class="lab" aria-label="확률 실험 도구">
+        <aside class="control-panel">
+          <div class="panel-heading">
+            <span>01</span>
+            <div><p>EXPERIMENT SETUP</p><h2>실험 설계</h2></div>
+          </div>
+
+          <fieldset class="experiment-tabs">
+            <legend>실험 도구</legend>
+            <button type="button" class="active" data-experiment="coin"><span>●</span><b>동전</b></button>
+            <button type="button" data-experiment="dice"><span>⚄</span><b>주사위</b></button>
+            <button type="button" data-experiment="cards"><span>♦</span><b>카드</b></button>
+          </fieldset>
+
+          <div class="setting-block">
+            <div class="setting-label"><label for="eventSelect">관찰할 사건</label><small>성공으로 셀 결과</small></div>
+            <select id="eventSelect"></select>
+          </div>
+
+          <div class="setting-block" id="biasBlock">
+            <div class="setting-label"><label for="biasRange">앞면이 나올 확률</label><output id="biasOutput">50%</output></div>
+            <input id="biasRange" type="range" min="10" max="90" value="50" step="5" />
+            <div class="range-scale"><span>10%</span><button type="button" id="fairButton">공정하게 50%</button><span>90%</span></div>
+          </div>
+
+          <div class="theory-card">
+            <span>이론적 확률</span>
+            <strong id="theoryPercent">50.0%</strong>
+            <p id="theoryFormula">P(앞면) = 1/2</p>
+          </div>
+
+          <div class="setting-block compact">
+            <div class="setting-label"><label for="seedInput">실험 번호</label><small>같은 번호 = 같은 결과</small></div>
+            <div class="seed-row"><input id="seedInput" type="number" value="2026" min="1" max="999999" /><button type="button" id="randomSeedButton" aria-label="실험 번호 무작위로 바꾸기">↻</button></div>
+          </div>
+
+          <div class="shortcuts"><span><kbd>Space</kbd> 연속 실험</span><span><kbd>R</kbd> 초기화</span></div>
+        </aside>
+
+        <div class="experiment-stage">
+          <div class="stage-top">
+            <div>
+              <p class="stage-kicker"><i></i> LIVE EXPERIMENT</p>
+              <h2 id="stageTitle">동전을 던져 보세요</h2>
+            </div>
+            <div class="live-status" id="liveStatus"><span></span> 준비</div>
+          </div>
+
+          <div class="object-zone" aria-live="polite">
+            <div class="experiment-object coin-object" id="experimentObject" aria-hidden="true"><div class="coin-face front">앞</div><div class="coin-face back">뒤</div></div>
+            <div class="result-callout" id="resultCallout"><span>최근 결과</span><strong>—</strong><small>실험을 시작해 보세요</small></div>
+          </div>
+
+          <div class="counter-grid">
+            <article><span>전체 시행</span><strong id="totalCount">0</strong><small>회</small></article>
+            <article class="success"><span>사건 발생</span><strong id="successCount">0</strong><small>회</small></article>
+            <article><span>현재 상대도수</span><strong id="relativeFrequency">—</strong></article>
+            <article><span>이론과의 차이</span><strong id="errorValue">—</strong></article>
+          </div>
+
+          <div class="run-controls">
+            <div class="batch-buttons" aria-label="한 번에 실행할 횟수">
+              <button type="button" data-run="1"><b>+1</b><span>천천히</span></button>
+              <button type="button" data-run="10"><b>+10</b><span>관찰</span></button>
+              <button type="button" data-run="100"><b>+100</b><span>비교</span></button>
+              <button type="button" data-run="1000"><b>+1,000</b><span>가속</span></button>
+            </div>
+            <button class="auto-button" id="autoButton" type="button"><span class="play-icon">▶</span><b>연속 실험</b><small>초당 <output id="speedOutput">500</output>회</small></button>
+            <button class="reset-button" id="resetButton" type="button">초기화</button>
+          </div>
+          <div class="speed-control">
+            <label for="speedRange">연속 속도</label>
+            <input id="speedRange" type="range" min="1" max="4" value="3" step="1" />
+            <div><span>10회/초</span><span>5,000회/초</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard" aria-labelledby="analysisTitle">
+        <div class="section-heading">
+          <div class="panel-heading light"><span>02</span><div><p>LIVE ANALYSIS</p><h2 id="analysisTitle">실시간 분석</h2></div></div>
+          <p>색이 있는 선은 실험값, 점선은 이론값입니다. 시행 횟수가 늘어날 때 두 선 사이의 거리를 관찰하세요.</p>
+        </div>
+
+        <div class="analysis-grid">
+          <article class="chart-card convergence-card">
+            <div class="card-heading">
+              <div><span>CONVERGENCE</span><h3>상대도수의 변화</h3></div>
+              <div class="legend"><span><i class="observed"></i>상대도수</span><span><i class="expected"></i>이론확률</span></div>
+            </div>
+            <div class="canvas-wrap"><canvas id="convergenceChart" role="img" aria-label="시행 횟수에 따른 상대도수 변화 그래프"></canvas></div>
+            <div class="chart-scale"><span>1회</span><span id="chartEndLabel">시행 횟수</span></div>
+          </article>
+
+          <article class="chart-card distribution-card">
+            <div class="card-heading"><div><span>DISTRIBUTION</span><h3>결과별 분포</h3></div><button type="button" id="togglePercentButton">횟수 보기</button></div>
+            <div class="distribution" id="distributionChart"></div>
+          </article>
+
+          <article class="chart-card error-card">
+            <div class="card-heading"><div><span>ABSOLUTE ERROR</span><h3>이론과의 거리</h3></div></div>
+            <div class="error-gauge">
+              <div class="gauge-ring" id="gaugeRing"><div><strong id="gaugeValue">—</strong><span>퍼센트포인트</span></div></div>
+              <p id="errorMessage">첫 실험을 기다리고 있어요.</p>
+            </div>
+            <div class="milestones" id="milestones">
+              <div data-milestone="100"><i></i><span>100회</span><b>대기</b></div>
+              <div data-milestone="1000"><i></i><span>1,000회</span><b>대기</b></div>
+              <div data-milestone="10000"><i></i><span>10,000회</span><b>대기</b></div>
+            </div>
+          </article>
+
+          <article class="chart-card trail-card">
+            <div class="card-heading"><div><span>RECENT TRIALS</span><h3>최근 60회 기록</h3></div><span class="success-key"><i></i>사건 발생</span></div>
+            <div class="trial-trail" id="trialTrail" aria-label="최근 실험 결과"></div>
+            <div class="streak-row"><span>현재 연속 성공 <b id="currentStreak">0</b>회</span><span>최장 연속 성공 <b id="bestStreak">0</b>회</span></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="insight-section">
+        <div class="insight-copy">
+          <p class="eyebrow">THINK LIKE A STATISTICIAN</p>
+          <h2>“많이 하면 반드시<br />정확히 같아진다”는 뜻일까?</h2>
+          <p>아니요. 대수의 법칙은 시행 횟수가 커질수록 <strong>상대도수가 확률에 가까워지는 경향</strong>을 말합니다. 횟수의 차이는 계속 커질 수도 있어요.</p>
+        </div>
+        <div class="comparison-box">
+          <div><span>성공 횟수 − 기대 횟수</span><strong id="countGap">—</strong><small>기대 횟수 = 시행 횟수 × 이론확률</small></div>
+          <div><span>상대 오차</span><strong id="relativeError">—</strong><small>확률에 비해 오차가 차지하는 비율</small></div>
+          <p id="insightSentence">실험을 시작하면 두 종류의 오차를 비교해 드릴게요.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer><strong>확률 대수의 법칙 실험실</strong><p>우연을 반복하고, 데이터 속 규칙을 발견하세요.</p><a href="#top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">맨 위로 ↑</a></footer>
+
+    <dialog id="helpDialog">
+      <div class="dialog-card">
+        <button class="dialog-close" id="closeHelpButton" type="button" aria-label="닫기">×</button>
+        <span class="dialog-kicker">3 STEPS</span>
+        <h2>이렇게 실험해 보세요</h2>
+        <ol>
+          <li><b>조건 만들기</b><p>동전·주사위·카드 중 하나를 고르고 관찰할 사건을 정합니다.</p></li>
+          <li><b>작게 시작하기</b><p>1회, 10회씩 실행하며 상대도수가 크게 흔들리는 모습을 봅니다.</p></li>
+          <li><b>크게 반복하기</b><p>1,000회 또는 연속 실험으로 시행 수를 늘리고 이론확률과의 거리를 비교합니다.</p></li>
+        </ol>
+        <button class="dialog-start" id="dialogStartButton" type="button">실험 시작하기</button>
+      </div>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
