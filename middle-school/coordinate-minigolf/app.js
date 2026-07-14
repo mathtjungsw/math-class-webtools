@@ -681,5 +681,6 @@ new ResizeObserver(draw).observe($("#canvasWrap"));
 updateStats();
 loadLevel(0);
 if (new URLSearchParams(window.location.search).get("manual") === "1") {
-  $("#guideDialog").showModal();
+  document.body.classList.add("manual-only");
+  $("#guideDialog").show();
 }
