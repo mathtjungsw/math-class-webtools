@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#161c2b" />
+    <meta name="description" content="수학 문제를 입력하면 암호, 자물쇠, 힌트가 있는 교실 방탈출 활동을 자동으로 만드는 웹툴" />
+    <title>수학 방탈출 제작기 | 수학 수업 웹툴 모음</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="back-link" href="../../index.html#tools" aria-label="수학 수업 웹툴 모음으로 돌아가기">
+        <span aria-hidden="true">←</span><span>웹툴 모음</span>
+      </a>
+      <div class="brand" aria-label="수학 방탈출 제작기">
+        <span class="brand-mark" aria-hidden="true"><i></i></span>
+        <span><strong>수학 방탈출 제작기</strong><small>ESCAPE LAB</small></span>
+      </div>
+      <div class="header-actions builder-only">
+        <button class="text-button" id="sampleButton" type="button">예시 불러오기</button>
+        <button class="text-button" id="resetButton" type="button">새로 만들기</button>
+        <button class="primary-button compact" id="previewButton" type="button">학생 화면 미리보기 <span aria-hidden="true">→</span></button>
+      </div>
+      <div class="header-actions player-only" hidden>
+        <button class="text-button light" id="exitPlayButton" type="button">제작실로 돌아가기</button>
+      </div>
+    </header>
+
+    <main>
+      <div id="builderView">
+        <section class="maker-hero">
+          <div class="hero-copy">
+            <p class="eyebrow"><span>교사용 메이커</span> 문제만 준비하세요</p>
+            <h1>문제를 넣으면,<br /><em>교실이 탈출 미션으로.</em></h1>
+            <p class="hero-description">정답의 모양을 읽어 숫자 키패드·문자 자물쇠·선택형 잠금장치를 자동으로 붙이고, 모든 미션의 단서를 모아 최종 탈출 코드를 만듭니다.</p>
+          </div>
+          <div class="hero-console" aria-label="제작 현황">
+            <div class="console-top"><span class="pulse"></span><b>MISSION CONTROL</b><small>READY</small></div>
+            <div class="console-grid">
+              <div><span>등록 미션</span><strong id="heroMissionCount">3</strong><small>개</small></div>
+              <div><span>예상 시간</span><strong id="heroTime">25</strong><small>분</small></div>
+              <div><span>최종 코드</span><strong id="heroCode">···</strong><small>자동</small></div>
+            </div>
+            <div class="console-line"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+        </section>
+
+        <section class="maker-shell">
+          <div class="section-intro">
+            <div>
+              <span class="step-number">01</span>
+              <p class="eyebrow">ESCAPE SETTING</p>
+              <h2>탈출 상황을 정해주세요</h2>
+            </div>
+            <p>수업 내용에 어울리는 제목과 이야기를 넣으면 학생 화면의 첫 장면이 완성됩니다.</p>
+          </div>
+
+          <div class="settings-card">
+            <label class="field field-wide">
+              <span>방탈출 제목 <b>필수</b></span>
+              <input id="escapeTitle" type="text" maxlength="60" placeholder="예: 사라진 수학자의 연구실" />
+            </label>
+            <label class="field field-wide">
+              <span>도입 이야기</span>
+              <textarea id="escapeStory" rows="4" maxlength="360" placeholder="학생들이 몰입할 수 있는 상황을 적어주세요."></textarea>
+              <small><b id="storyCount">0</b>/360</small>
+            </label>
+            <label class="field">
+              <span>제한 시간</span>
+              <div class="suffix-input"><input id="timeLimit" type="number" min="5" max="90" step="5" /><b>분</b></div>
+            </label>
+            <label class="field">
+              <span>활동 인원</span>
+              <select id="teamMode">
+                <option value="모둠">모둠 활동</option>
+                <option value="개인">개인 활동</option>
+                <option value="전체">학급 전체</option>
+              </select>
+            </label>
+            <label class="field field-wide">
+              <span>탈출 성공 메시지</span>
+              <input id="successMessage" type="text" maxlength="120" placeholder="예: 연구실의 비밀을 밝혀냈습니다!" />
+            </label>
+          </div>
+        </section>
+
+        <section class="maker-shell mission-maker">
+          <div class="section-intro">
+            <div>
+              <span class="step-number">02</span>
+              <p class="eyebrow">MISSION BUILDER</p>
+              <h2>수학 문제를 등록하세요</h2>
+            </div>
+            <p>정답에 <code>|</code>를 넣으면 여러 정답을 허용합니다. 예: <code>1/2|0.5</code></p>
+          </div>
+
+          <div class="mission-list" id="missionList"></div>
+
+          <button class="add-mission-button" id="addMissionButton" type="button">
+            <span aria-hidden="true">+</span><b>미션 추가하기</b><small>최대 8개</small>
+          </button>
+        </section>
+
+        <section class="maker-shell launch-section">
+          <div class="section-intro">
+            <div>
+              <span class="step-number">03</span>
+              <p class="eyebrow">LAUNCH MISSION</p>
+              <h2>방탈출을 완성하세요</h2>
+            </div>
+            <p>기기 한 대로 바로 진행하거나, 링크를 복사해 학생 기기에 보낼 수 있습니다.</p>
+          </div>
+
+          <div class="launch-grid">
+            <div class="launch-summary">
+              <div class="summary-heading">
+                <div><span class="status-dot"></span><b>탈출 코드 생성 완료</b></div>
+                <strong id="finalCodePreview">···</strong>
+              </div>
+              <ol id="codeBreakdown" aria-label="미션별 코드 조각"></ol>
+              <p><span aria-hidden="true">ⓘ</span> 각 문제를 풀 때마다 코드 조각이 공개됩니다. 모든 조각을 순서대로 입력하면 탈출합니다.</p>
+            </div>
+            <div class="launch-actions">
+              <button class="launch-primary" id="startButton" type="button"><span>▶</span><b>이 기기에서 시작</b><small>학생 화면으로 전환합니다</small></button>
+              <button id="shareButton" type="button"><span>↗</span><b>학생용 링크 복사</b><small>정답은 화면에 표시되지 않습니다</small></button>
+              <button id="saveButton" type="button"><span>↓</span><b>제작 파일 저장</b><small>나중에 다시 불러올 수 있어요</small></button>
+              <label class="file-action" for="importInput"><span>↑</span><b>제작 파일 불러오기</b><small>JSON 파일</small></label>
+              <input id="importInput" type="file" accept="application/json,.json" hidden />
+              <button id="printStudentButton" type="button"><span>▤</span><b>학생 활동지 인쇄</b><small>문제와 힌트 칸</small></button>
+              <button id="printTeacherButton" type="button"><span>✓</span><b>교사용 정답지 인쇄</b><small>정답과 탈출 코드 포함</small></button>
+            </div>
+          </div>
+          <p class="save-state" id="saveState" role="status"><span>●</span> 이 브라우저에 자동 저장됨</p>
+        </section>
+      </div>
+
+      <div id="playerView" hidden>
+        <section class="game-intro" id="gameIntro">
+          <div class="intro-noise" aria-hidden="true"></div>
+          <p class="player-eyebrow">CLASSIFIED · MATH ESCAPE</p>
+          <div class="intro-lock" aria-hidden="true"><span></span><i></i></div>
+          <h1 id="playTitle">사라진 수학자의 연구실</h1>
+          <p id="playStory"></p>
+          <div class="mission-brief">
+            <div><span>제한 시간</span><strong id="briefTime">25분</strong></div>
+            <div><span>미션</span><strong id="briefCount">3개</strong></div>
+            <div><span>활동 방식</span><strong id="briefMode">모둠</strong></div>
+          </div>
+          <label class="team-field">
+            <span id="teamLabel">모둠 이름</span>
+            <input id="teamName" type="text" maxlength="24" placeholder="예: 피타고라스" autocomplete="off" />
+          </label>
+          <button class="begin-button" id="beginMissionButton" type="button">미션 시작 <span aria-hidden="true">→</span></button>
+          <p class="intro-tip">문제를 순서대로 해결하고 최종 탈출 코드를 완성하세요.</p>
+        </section>
+
+        <section class="game-board" id="gameBoard" hidden>
+          <header class="game-status">
+            <div class="game-brand"><span class="brand-mark small" aria-hidden="true"><i></i></span><b id="statusTitle"></b></div>
+            <div class="game-team"><span id="statusTeam">도전자</span><b id="progressText">0 / 3</b></div>
+            <div class="timer" id="timerBox"><span>남은 시간</span><strong id="timerDisplay">25:00</strong></div>
+          </header>
+
+          <div class="progress-rail" id="progressRail" aria-label="미션 진행도"></div>
+
+          <div class="challenge-layout">
+            <section class="problem-panel" aria-labelledby="currentMissionTitle">
+              <div class="mission-kicker"><span id="missionNumber">MISSION 01</span><b id="missionLockType">NUMERIC LOCK</b></div>
+              <h2 id="currentMissionTitle">문제를 불러오는 중입니다.</h2>
+              <div class="problem-text" id="problemText"></div>
+              <div class="hint-zone">
+                <div class="hint-heading"><span>구조 신호</span><b id="hintUsage">힌트 0개 사용</b></div>
+                <div id="hintList"></div>
+                <button class="hint-button" id="hintButton" type="button"><span aria-hidden="true">?</span> 힌트 열기</button>
+              </div>
+            </section>
+
+            <aside class="lock-panel">
+              <div class="lock-top">
+                <div class="mini-lock" aria-hidden="true"><span></span><i></i></div>
+                <div><span>SECURITY LOCK</span><strong id="lockTitle">숫자 암호</strong></div>
+                <b id="lockState">LOCKED</b>
+              </div>
+              <div id="answerControl"></div>
+              <p class="answer-feedback" id="answerFeedback" role="alert" aria-live="assertive"></p>
+            </aside>
+          </div>
+
+          <footer class="game-footer">
+            <span>정답은 띄어쓰기와 대소문자를 구분하지 않습니다.</span>
+            <button id="restartButton" type="button">처음부터 다시</button>
+          </footer>
+        </section>
+
+        <section class="code-reveal" id="codeReveal" hidden>
+          <p class="player-eyebrow">MISSION CLEARED</p>
+          <div class="reveal-icon" aria-hidden="true">✓</div>
+          <h2>잠금장치가 열렸습니다</h2>
+          <p>탈출에 필요한 <b id="revealNumber">첫 번째</b> 코드 조각입니다.</p>
+          <strong id="revealedCode">7</strong>
+          <button class="begin-button" id="nextMissionButton" type="button">다음 미션 <span aria-hidden="true">→</span></button>
+        </section>
+
+        <section class="final-lock-screen" id="finalLockScreen" hidden>
+          <p class="player-eyebrow">FINAL SECURITY</p>
+          <div class="intro-lock final" aria-hidden="true"><span></span><i></i></div>
+          <h2>마지막 자물쇠</h2>
+          <p>지금까지 모은 코드 조각을 순서대로 입력하세요.</p>
+          <div class="collected-codes" id="collectedCodes"></div>
+          <form id="finalCodeForm">
+            <label for="finalCodeInput">최종 탈출 코드</label>
+            <div><input id="finalCodeInput" type="text" autocomplete="off" spellcheck="false" /><button type="submit">UNLOCK</button></div>
+          </form>
+          <p class="answer-feedback" id="finalFeedback" role="alert"></p>
+        </section>
+
+        <section class="escape-success" id="escapeSuccess" hidden>
+          <div class="success-rays" aria-hidden="true"></div>
+          <p class="player-eyebrow">ESCAPE COMPLETE</p>
+          <div class="success-mark" aria-hidden="true">OPEN</div>
+          <h2>탈출 성공!</h2>
+          <p id="successText"></p>
+          <div class="result-stats">
+            <div><span>완료 시간</span><strong id="resultTime">00:00</strong></div>
+            <div><span>사용한 힌트</span><strong id="resultHints">0개</strong></div>
+            <div><span>도전 팀</span><strong id="resultTeam">도전자</strong></div>
+          </div>
+          <button class="begin-button" id="playAgainButton" type="button">다시 도전하기</button>
+          <button class="quiet-button" id="successExitButton" type="button">제작실로 돌아가기</button>
+        </section>
+      </div>
+
+      <section class="print-sheet" id="printSheet" aria-hidden="true"></section>
+    </main>
+
+    <template id="missionTemplate">
+      <article class="mission-card">
+        <div class="mission-card-head">
+          <div class="drag-handle" aria-hidden="true">⋮⋮</div>
+          <div><span class="mission-label">MISSION 01</span><strong class="mission-title-preview">새 수학 미션</strong></div>
+          <span class="auto-badge">AUTO LOCK</span>
+          <button class="move-button move-up" type="button" aria-label="미션 위로 이동">↑</button>
+          <button class="move-button move-down" type="button" aria-label="미션 아래로 이동">↓</button>
+          <button class="delete-button" type="button" aria-label="미션 삭제">삭제</button>
+        </div>
+        <div class="mission-card-body">
+          <label class="field field-wide">
+            <span>문제 <b>필수</b></span>
+            <textarea class="mission-question" rows="3" maxlength="500" placeholder="학생에게 보여줄 수학 문제를 입력하세요."></textarea>
+          </label>
+          <label class="field">
+            <span>정답 <b>필수</b></span>
+            <input class="mission-answer" type="text" maxlength="80" placeholder="예: 24 또는 1/2|0.5" />
+          </label>
+          <label class="field">
+            <span>자물쇠 방식</span>
+            <select class="mission-type">
+              <option value="auto">정답에 맞춰 자동</option>
+              <option value="number">숫자 키패드</option>
+              <option value="text">문자 암호</option>
+              <option value="choice">선택형 잠금</option>
+            </select>
+          </label>
+          <label class="field field-wide choices-field">
+            <span>선택지 <b>쉼표로 구분</b></span>
+            <input class="mission-choices" type="text" maxlength="240" placeholder="예: 12, 18, 24, 36" />
+          </label>
+          <div class="hint-editor field-wide">
+            <div><span>단계별 힌트</span><small>빈칸은 학생 화면에 표시되지 않습니다.</small></div>
+            <label><b>1</b><input class="mission-hint" data-hint="0" type="text" maxlength="160" placeholder="가벼운 방향 제시" /></label>
+            <label><b>2</b><input class="mission-hint" data-hint="1" type="text" maxlength="160" placeholder="풀이에 필요한 핵심 개념" /></label>
+            <label><b>3</b><input class="mission-hint" data-hint="2" type="text" maxlength="160" placeholder="정답 직전의 강한 힌트" /></label>
+          </div>
+          <div class="lock-preview field-wide">
+            <span class="lock-preview-icon" aria-hidden="true"><i></i></span>
+            <div><span>자동 생성 결과</span><strong class="lock-preview-name">정답을 입력하면 자물쇠가 정해집니다.</strong></div>
+            <b class="code-piece-preview">CODE · ?</b>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
