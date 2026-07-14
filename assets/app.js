@@ -28,6 +28,11 @@ const TAG_META = {
   "school-work": { label: "학교 업무용", group: "purpose" }
 };
 
+const CLICK_STATS_CONFIG = window.CLICK_STATS_CONFIG || {};
+const CLICK_STATS_ENDPOINT = String(CLICK_STATS_CONFIG.endpoint || "").trim();
+const CLICK_STATS_TIMEOUT_MS = Number(CLICK_STATS_CONFIG.requestTimeoutMs) || 5000;
+const CLICK_STATS_DUPLICATE_WINDOW_MS = Number(CLICK_STATS_CONFIG.duplicateWindowMs) || 3000;
+
 const TOOL_GUIDES = {
   "수학 방탈출 제작기": {
     purpose: "교사가 준비한 수학 문제를 순차형 탈출 미션으로 바꾸어 문제 해결, 풀이 점검, 모둠 의사소통을 자연스럽게 연결합니다. 정답의 형태에 따라 숫자 키패드·문자 암호·선택형 자물쇠가 자동으로 만들어지고, 각 정답에서 얻은 코드 조각을 모아 최종 탈출 코드를 완성합니다.",
@@ -412,6 +417,125 @@ function wireGuideModal() {
 const toolCards = [...document.querySelectorAll("[data-tool-tags]")];
 const filterButtons = [...document.querySelectorAll("[data-tag-filter]")];
 const selectedTags = new Set();
+const originalToolOrder = new Map(toolCards.map((card, index) => [card.dataset.toolId, index]));
+
+function sanitizeClickCounts(rawCounts) {
+  if (!rawCounts || typeof rawCounts !== "object") return {};
+  return Object.fromEntries(Object.entries(rawCounts).flatMap(([toolId, rawCount]) => {
+    const count = Number(rawCount);
+    return originalToolOrder.has(toolId) && Number.isFinite(count) && count >= 0
+      ? [[toolId, Math.floor(count)]]
+      : [];
+  }));
+}
+
+function sortCardsByPopularity(rawCounts) {
+  const counts = sanitizeClickCounts(rawCounts);
+  document.querySelectorAll(".tool-grid").forEach((grid) => {
+    const cards = [...grid.querySelectorAll(":scope > [data-tool-id]")];
+    cards.sort((left, right) => {
+      const clickDifference = (counts[right.dataset.toolId] || 0) - (counts[left.dataset.toolId] || 0);
+      return clickDifference || originalToolOrder.get(left.dataset.toolId) - originalToolOrder.get(right.dataset.toolId);
+    });
+    cards.forEach((card) => {
+      card.dataset.clickCount = String(counts[card.dataset.toolId] || 0);
+      grid.append(card);
+    });
+  });
+}
+
+function requestClickCounts() {
+  if (!CLICK_STATS_ENDPOINT) return Promise.resolve(null);
+
+  return new Promise((resolve, reject) => {
+    const callbackName = `__mathToolCounts_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    const script = document.createElement("script");
+    let settled = false;
+    const timeoutId = window.setTimeout(() => finish(new Error("click_stats_timeout")), CLICK_STATS_TIMEOUT_MS);
+
+    function cleanup() {
+      window.clearTimeout(timeoutId);
+      script.remove();
+      delete window[callbackName];
+    }
+
+    function finish(error, payload) {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      if (error) reject(error);
+      else resolve(payload);
+    }
+
+    window[callbackName] = (payload) => {
+      if (!payload?.ok || typeof payload.counts !== "object") {
+        finish(new Error("click_stats_invalid_response"));
+        return;
+      }
+      finish(null, payload.counts);
+    };
+
+    script.async = true;
+    script.onerror = () => finish(new Error("click_stats_load_failed"));
+    let endpoint;
+    try {
+      endpoint = new URL(CLICK_STATS_ENDPOINT);
+    } catch {
+      finish(new Error("click_stats_invalid_endpoint"));
+      return;
+    }
+    endpoint.searchParams.set("action", "counts");
+    endpoint.searchParams.set("callback", callbackName);
+    endpoint.searchParams.set("_", String(Date.now()));
+    script.src = endpoint.toString();
+    document.head.append(script);
+  });
+}
+
+async function loadAndSortByPopularity() {
+  if (!CLICK_STATS_ENDPOINT) return;
+  try {
+    const counts = await requestClickCounts();
+    if (counts) sortCardsByPopularity(counts);
+  } catch {
+    document.documentElement.dataset.popularityStatus = "fallback";
+  }
+}
+
+function wasRecentlyCounted(toolId) {
+  const key = `math-tool-click:${toolId}`;
+  try {
+    const now = Date.now();
+    const previous = Number(window.localStorage.getItem(key)) || 0;
+    if (now - previous < CLICK_STATS_DUPLICATE_WINDOW_MS) return true;
+    window.localStorage.setItem(key, String(now));
+  } catch {
+    return false;
+  }
+  return false;
+}
+
+function recordToolClick(toolId) {
+  if (!CLICK_STATS_ENDPOINT || !originalToolOrder.has(toolId) || wasRecentlyCounted(toolId)) return;
+
+  const body = new URLSearchParams({ tool_id: toolId });
+  if (navigator.sendBeacon?.(CLICK_STATS_ENDPOINT, body)) return;
+  fetch(CLICK_STATS_ENDPOINT, {
+    method: "POST",
+    mode: "no-cors",
+    body,
+    keepalive: true
+  }).catch(() => {});
+}
+
+function wirePopularityTracking() {
+  toolCards.forEach((card) => {
+    const primaryLink = card.querySelector(".tool-footer a:not(.guide-link)");
+    if (!primaryLink || !card.dataset.toolId) return;
+    primaryLink.dataset.clickTrack = card.dataset.toolId;
+    primaryLink.addEventListener("click", () => recordToolClick(card.dataset.toolId));
+  });
+}
 
 function getCardTags(card) {
   return card.dataset.toolTags.split(/\s+/).filter(Boolean);
@@ -547,3 +671,5 @@ updateFilterCounts();
 updateTagFilters();
 wireGithubLinks();
 wireGuideModal();
+wirePopularityTracking();
+loadAndSortByPopularity();
