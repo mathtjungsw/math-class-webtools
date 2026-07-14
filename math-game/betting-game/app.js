@@ -112,7 +112,7 @@ function assertConnection(connection, needsCode = false) {
   }
 }
 
-function requestJsonp(apiUrl, action, params = {}) {
+function requestJsonp(apiUrl, action, params = {}, options = {}) {
   return new Promise((resolve, reject) => {
     const callbackName = `__bettingGame_${Date.now()}_${Math.random().toString(36).slice(2)}`;
     const query = new URLSearchParams({ action, callback: callbackName, _: Date.now().toString() });
@@ -138,7 +138,8 @@ function requestJsonp(apiUrl, action, params = {}) {
       reject(new Error(message));
     };
 
-    const timer = setTimeout(() => fail("서버 응답이 늦어지고 있습니다. 네트워크와 웹앱 배포 권한을 확인한 뒤 다시 시도해 주세요."), 20000);
+    const timeoutMs = Number(options.timeoutMs) > 0 ? Number(options.timeoutMs) : 20000;
+    const timer = setTimeout(() => fail("서버 응답이 늦어지고 있습니다. 네트워크와 웹앱 배포 권한을 확인한 뒤 다시 시도해 주세요."), timeoutMs);
     window[callbackName] = (response) => {
       if (settled) return;
       settled = true;
@@ -495,22 +496,58 @@ async function autoSubmitFinalRound() {
     setLoading(true, "마지막 라운드 숫자를 자동 제출하고 있습니다…");
     let state;
     try {
-      state = await requestJsonp(connection.apiUrl, "autoSubmitFinalRound", { spreadsheetId: connection.spreadsheetId });
-    } catch (error) {
-      if (!String(error.message || "").includes("지원하지 않는 요청")) throw error;
+      state = await requestJsonp(
+        connection.apiUrl,
+        "autoSubmitFinalRound",
+        { spreadsheetId: connection.spreadsheetId },
+        { timeoutMs: 45000 },
+      );
+    } catch (bulkError) {
+      // 요청 시간이 초과되어도 Apps Script에서는 저장이 계속될 수 있다.
+      // 최신 상태를 다시 읽고 실제로 미제출인 팀만 관리자 직접 입력으로 보완한다.
+      try {
+        state = await requestJsonp(
+          connection.apiUrl,
+          "getGameState",
+          { spreadsheetId: connection.spreadsheetId },
+          { timeoutMs: 30000 },
+        );
+      } catch (_refreshError) {
+        throw bulkError;
+      }
 
-      // 이전 Apps Script 배포본에는 일괄 자동 제출 action이 없을 수 있다.
-      // 이미 제공되는 관리자 직접 입력 action을 팀별로 호출해 같은 결과를 만든다.
-      state = appState.admin;
-      for (let index = 0; index < planned.length; index += 1) {
-        const item = planned[index];
-        setLoading(true, `${item.team.teamName} 마지막 숫자 제출 중… (${index + 1}/${planned.length})`);
-        state = await requestJsonp(connection.apiUrl, "adminSubmitNumber", {
-          spreadsheetId: connection.spreadsheetId,
-          teamId: item.team.teamId,
-          round: settings.currentRound,
-          number: item.remaining[0],
-        });
+      const hasSubmitted = (gameState, teamId) => (gameState.submissions || []).some(
+        (item) => Number(item.round) === Number(settings.currentRound) && Number(item.teamId) === Number(teamId),
+      );
+      const remainingPlans = planned.filter((item) => !hasSubmitted(state, item.team.teamId));
+
+      for (let index = 0; index < remainingPlans.length; index += 1) {
+        const item = remainingPlans[index];
+        if (hasSubmitted(state, item.team.teamId)) continue;
+        setLoading(true, `${item.team.teamName} 마지막 숫자 제출 중… (${index + 1}/${remainingPlans.length})`);
+        try {
+          state = await requestJsonp(
+            connection.apiUrl,
+            "adminSubmitNumber",
+            {
+              spreadsheetId: connection.spreadsheetId,
+              teamId: item.team.teamId,
+              round: settings.currentRound,
+              number: item.remaining[0],
+            },
+            { timeoutMs: 30000 },
+          );
+        } catch (teamError) {
+          // 동시에 참가자가 제출했거나 앞선 요청이 늦게 완료된 경우를 재확인한다.
+          const refreshed = await requestJsonp(
+            connection.apiUrl,
+            "getGameState",
+            { spreadsheetId: connection.spreadsheetId },
+            { timeoutMs: 30000 },
+          );
+          if (!hasSubmitted(refreshed, item.team.teamId)) throw teamError;
+          state = refreshed;
+        }
       }
     }
     appState.admin = state;
