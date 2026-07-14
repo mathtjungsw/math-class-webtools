@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="사진에서 두 점을 지정해 가로세로 비율을 측정하고 황금비와의 오차를 탐구하는 수학 수업 웹툴" />
+    <meta name="theme-color" content="#17231b" />
+    <title>황금비 측정 실험실</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2317231b'/%3E%3Cpath d='M17 45V19h42v26H17Zm0-16H7v16h10' fill='none' stroke='%23edc557' stroke-width='5'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./style.css?v=20260714-1" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../../index.html" aria-label="수학 수업 웹툴 모음으로 돌아가기">
+        <span class="brand-mark" aria-hidden="true">φ</span>
+        <span><strong>황금비 측정 실험실</strong><small>GOLDEN RATIO LAB</small></span>
+      </a>
+      <div class="header-actions">
+        <button class="text-button" type="button" data-open-guide>
+          <span aria-hidden="true">?</span> 설명서 보기
+        </button>
+        <a class="home-link" href="../../index.html"><span aria-hidden="true">←</span> 웹툴 모음</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <div class="intro-copy">
+          <p class="eyebrow">FIND THE HIDDEN PROPORTION</p>
+          <h1 id="page-title">사진 속 비율을 재고,<br /><em>황금비에 얼마나 가까운지</em> 확인해 보세요.</h1>
+          <p class="intro-description">사진 위 두 점을 직사각형의 마주 보는 꼭짓점으로 지정하면 가로와 세로의 비, 황금비와의 차이, 오차율을 한 번에 계산합니다.</p>
+        </div>
+        <div class="phi-card" aria-label="황금비 안내">
+          <span class="phi-symbol">φ</span>
+          <div><small>THE GOLDEN RATIO</small><strong>1.618 033 988…</strong><p>긴 변 ÷ 짧은 변</p></div>
+          <svg viewBox="0 0 180 112" aria-hidden="true">
+            <rect x="5" y="5" width="170" height="102" rx="3" />
+            <path d="M110 5v102M110 67h65" />
+            <path class="spiral" d="M110 67c0-34-26-62-60-62C25 5 5 25 5 50c0 32 25 57 57 57 27 0 48-18 48-40 0-18-14-32-32-32-15 0-27 12-27 27 0 12 10 22 22 22 10 0 18-8 18-18" />
+          </svg>
+        </div>
+      </section>
+
+      <section class="workspace" aria-label="황금비 사진 측정 도구">
+        <div class="workbench">
+          <div class="toolbar" role="toolbar" aria-label="사진 도구">
+            <div class="toolbar-group">
+              <label class="primary-button" for="image-upload">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m-4 4 4-4 4 4M5 14v5h14v-5" /></svg>
+                사진 추가
+              </label>
+              <input id="image-upload" type="file" accept="image/*" hidden />
+              <button class="tool-button is-active" type="button" data-mode="measure" aria-pressed="true">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M6 7l-2-2 1-1 2 2m11 11 2 2-1 1-2-2M9 17l-2-2m6-2-2-2m6-2-2-2" /></svg>
+                측정
+              </button>
+              <button class="tool-button" type="button" data-mode="pan" aria-pressed="false">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 11V7a2 2 0 0 1 4 0v4-6a2 2 0 0 1 4 0v6-4a2 2 0 0 1 4 0v7c0 4-3 7-7 7h-1c-3 0-5-2-7-5l-2-4a2 2 0 0 1 3-2Z" /></svg>
+                이동
+              </button>
+            </div>
+            <div class="toolbar-group zoom-controls">
+              <button class="icon-button" type="button" data-zoom-out aria-label="축소">−</button>
+              <label class="zoom-range"><span class="sr-only">확대 배율</span><input type="range" min="50" max="400" value="100" step="10" data-zoom-range /></label>
+              <button class="icon-button" type="button" data-zoom-in aria-label="확대">+</button>
+              <output data-zoom-output>100%</output>
+              <button class="fit-button" type="button" data-fit>화면 맞춤</button>
+            </div>
+          </div>
+
+          <div class="canvas-shell" data-canvas-shell>
+            <canvas data-canvas aria-label="사진 측정 캔버스"></canvas>
+            <div class="empty-state" data-empty-state hidden>
+              <span aria-hidden="true">↥</span>
+              <strong>측정할 사진을 불러오세요</strong>
+              <p>사진을 끌어다 놓거나 ‘사진 추가’를 눌러 주세요.</p>
+            </div>
+            <div class="canvas-hint" data-canvas-hint><b>1</b> 첫 번째 꼭짓점을 클릭하세요</div>
+            <div class="drop-mask" data-drop-mask hidden><strong>여기에 사진 놓기</strong><span>JPG · PNG · WEBP</span></div>
+          </div>
+
+          <div class="canvas-footer">
+            <p><span class="status-dot"></span><span data-status-text>해바라기 예시를 불러왔습니다.</span></p>
+            <div>
+              <button type="button" data-toggle-golden aria-pressed="false">황금 사각형 비교 <span>끔</span></button>
+              <button type="button" data-clear>측정 지우기</button>
+              <button type="button" data-download>결과 저장</button>
+            </div>
+          </div>
+        </div>
+
+        <aside class="side-panel">
+          <section class="result-card" aria-labelledby="result-title">
+            <div class="panel-heading"><p>MEASUREMENT</p><h2 id="result-title">측정 결과</h2><span class="result-badge" data-result-badge>측정 전</span></div>
+            <div class="ratio-display">
+              <small>측정한 비율</small>
+              <strong data-ratio>—</strong>
+              <span>긴 변 ÷ 짧은 변</span>
+            </div>
+            <div class="measure-grid">
+              <div><span>가로</span><strong data-width>—</strong><small>px</small></div>
+              <div><span>세로</span><strong data-height>—</strong><small>px</small></div>
+              <div><span>황금비와 차이</span><strong data-difference>—</strong></div>
+              <div><span>오차율</span><strong data-error>—</strong></div>
+            </div>
+            <div class="comparison">
+              <div class="comparison-labels"><span>1.0</span><b>φ = 1.618</b><span>2.0</span></div>
+              <div class="comparison-track"><i class="phi-tick"></i><b data-ratio-marker hidden></b></div>
+              <p data-result-message>사진에서 비교할 영역의 두 꼭짓점을 지정해 보세요.</p>
+            </div>
+          </section>
+
+          <section class="examples" aria-labelledby="examples-title">
+            <div class="panel-heading"><p>QUICK START</p><h2 id="examples-title">예시 사진</h2></div>
+            <div class="example-list">
+              <button class="example-card is-active" type="button" data-example="sunflower" data-src="./assets/examples/sunflower.webp">
+                <img src="./assets/examples/sunflower.webp" alt="해바라기 씨앗의 나선 배열" />
+                <span><strong>해바라기</strong><small>자연 속 나선</small></span><i>선택됨</i>
+              </button>
+              <button class="example-card" type="button" data-example="temple" data-src="./assets/examples/temple.webp">
+                <img src="./assets/examples/temple.webp" alt="고전 양식의 신전 정면" />
+                <span><strong>고전 건축</strong><small>너비와 높이</small></span><i>보기</i>
+              </button>
+              <button class="example-card" type="button" data-example="notebook" data-src="./assets/examples/notebook.webp">
+                <img src="./assets/examples/notebook.webp" alt="책상 위의 크림색 노트" />
+                <span><strong>노트</strong><small>생활 속 사각형</small></span><i>보기</i>
+              </button>
+            </div>
+          </section>
+        </aside>
+      </section>
+
+      <section class="lesson" aria-labelledby="lesson-title">
+        <div class="lesson-title"><p class="eyebrow">CLASSROOM ACTIVITY</p><h2 id="lesson-title">세 번의 클릭으로 시작하는 탐구</h2><p>같은 사진도 어디를 재느냐에 따라 비율이 달라집니다. ‘황금비처럼 보인다’는 인상과 실제 측정값을 비교해 보세요.</p></div>
+        <ol>
+          <li><span>01</span><div><strong>사진 고르기</strong><p>예시를 선택하거나 직접 찍은 사진을 올립니다.</p></div></li>
+          <li><span>02</span><div><strong>두 점 지정하기</strong><p>비교할 직사각형의 왼쪽 위와 오른쪽 아래를 누릅니다.</p></div></li>
+          <li><span>03</span><div><strong>근거로 말하기</strong><p>오차율을 읽고 왜 차이가 생겼는지 설명합니다.</p></div></li>
+        </ol>
+      </section>
+    </main>
+
+    <dialog class="guide-dialog" data-guide-dialog>
+      <button class="dialog-close" type="button" data-close-guide aria-label="사용법 닫기">×</button>
+      <p class="eyebrow">HOW TO USE</p>
+      <h2>황금비 측정 실험실 사용법</h2>
+      <ol>
+        <li><b>1</b><div><strong>사진을 준비하세요.</strong><p>예시 사진을 누르거나 내 사진을 업로드할 수 있습니다. 파일은 서버로 전송되지 않고 브라우저 안에서만 처리됩니다.</p></div></li>
+        <li><b>2</b><div><strong>측정할 영역의 두 꼭짓점을 지정하세요.</strong><p>첫 점과 둘째 점이 만드는 직사각형의 가로·세로가 측정됩니다. 한 번에 드래그해도 됩니다.</p></div></li>
+        <li><b>3</b><div><strong>확대해 더 정확히 찍으세요.</strong><p>+/− 버튼, 슬라이더, 마우스 휠로 확대·축소하고 ‘이동’ 도구로 사진 위치를 바꿀 수 있습니다.</p></div></li>
+        <li><b>4</b><div><strong>결과를 비교하세요.</strong><p>‘황금 사각형 비교’를 켜면 같은 짧은 변을 기준으로 한 이상적인 황금 사각형이 점선으로 나타납니다.</p></div></li>
+      </ol>
+    </dialog>
+
+    <div class="toast" role="status" aria-live="polite" data-toast></div>
+    <script src="./app.js?v=20260714-2"></script>
+  </body>
+</html>

@@ -9,7 +9,7 @@
     />
     <title>수학 수업 웹툴 모음 by 정T</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23111c35'/%3E%3Cpath d='M16 44V20l16 12 16-12v24' fill='none' stroke='%235dd2b2' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="./assets/site.css?v=20260714-5" />
+    <link rel="stylesheet" href="./assets/site.css?v=20260714-6" />
   </head>
   <body>
     <header class="topbar">
@@ -60,8 +60,8 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 12 10 0m-4-4 4 4-4 4" /></svg>
           </a>
           <dl class="hero-stats" aria-label="웹툴 현황">
-            <div><dt>37</dt><dd>개의 웹툴</dd></div>
-            <div><dt>26</dt><dd>개의 태그</dd></div>
+            <div><dt>38</dt><dd>개의 웹툴</dd></div>
+            <div><dt>27</dt><dd>개의 태그</dd></div>
             <div><dt>100%</dt><dd>브라우저 실행</dd></div>
           </dl>
         </div>
@@ -136,6 +136,7 @@
               <span class="filter-group__label">세부 주제</span>
               <div class="filter-bar">
                 <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="coordinate-geometry">좌표·도형 <span></span></button>
+                <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="ratio-proportion">비·비율 <span></span></button>
                 <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="sound-waves">소리·파동 <span></span></button>
                 <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="number-operations">수와 연산 <span></span></button>
                 <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="probability">확률 <span></span></button>
@@ -162,11 +163,32 @@
             <div class="selected-tags" data-selected-tags>
               <span class="selected-tags__hint">원하는 태그를 여러 개 선택할 수 있어요.</span>
             </div>
-            <p><strong data-visible-count>37</strong>개의 웹툴</p>
+            <p><strong data-visible-count>38</strong>개의 웹툴</p>
           </div>
         </div>
 
         <div class="tool-grid" aria-live="polite">
+          <article class="tool-card card-golden-ratio" data-tool-id="golden-ratio-lab" data-tool-tags="common visualization ratio-proportion coordinate-geometry class-use">
+            <div class="tool-visual" aria-hidden="true">
+              <div class="golden-preview">
+                <span class="golden-frame"><i></i><i></i><i></i><b>φ</b></span>
+                <span class="golden-measure"><i>A</i><b>1.618</b><i>B</i></span>
+              </div>
+            </div>
+            <div class="tool-content">
+              <div class="tool-tags" aria-label="태그"></div>
+              <h3>황금비 측정 실험실</h3>
+              <p>사진에서 두 꼭짓점을 지정해 가로세로 비율을 재고, 황금비와의 차이와 오차율을 시각적으로 탐구합니다.</p>
+              <div class="tool-footer">
+                <span>사진 측정 · 확대/축소 · 예시 3종</span>
+                <div class="tool-actions">
+                  <a class="guide-link" href="./middle-school/golden-ratio-lab/index.html?manual=1" aria-label="황금비 측정 실험실 설명서 열기">설명서</a>
+                  <a href="./middle-school/golden-ratio-lab/index.html" aria-label="황금비 측정 실험실 시작하기">시작하기 <b aria-hidden="true">→</b></a>
+                </div>
+              </div>
+            </div>
+          </article>
+
           <article class="tool-card card-mathematicians" data-tool-id="mathematician-story" data-tool-tags="common visualization history-culture logic-reasoning class-use">
             <div class="tool-visual" aria-hidden="true">
               <div class="mathematician-preview">
@@ -1142,6 +1164,6 @@
     </div>
 
     <script src="./assets/click-stats-config.js?v=20260714-1"></script>
-    <script src="./assets/app.js?v=20260714-7"></script>
+    <script src="./assets/app.js?v=20260714-8"></script>
   </body>
 </html>

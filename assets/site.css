@@ -740,6 +740,80 @@ h2 {
   display: none;
 }
 
+.card-golden-ratio .tool-visual {
+  color: #f3c956;
+  background: #18251d;
+}
+
+.golden-preview {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 78% 18%, rgba(243, 201, 86, .18), transparent 30%),
+    linear-gradient(135deg, rgba(255,255,255,.025), transparent 45%);
+}
+
+.golden-preview::before,
+.golden-preview::after {
+  content: "";
+  position: absolute;
+  border: 1px solid rgba(243, 201, 86, .15);
+  border-radius: 50%;
+}
+
+.golden-preview::before { width: 210px; height: 210px; right: -75px; top: -90px; }
+.golden-preview::after { width: 122px; height: 122px; right: -30px; top: -45px; }
+
+.golden-frame {
+  width: 210px;
+  height: 130px;
+  position: absolute;
+  left: 42px;
+  top: 33px;
+  border: 3px solid currentColor;
+  box-shadow: 0 13px 32px rgba(0,0,0,.22);
+}
+
+.golden-frame > i { position: absolute; display: block; background: currentColor; }
+.golden-frame > i:nth-child(1) { width: 2px; height: 100%; left: 61.8%; top: 0; }
+.golden-frame > i:nth-child(2) { width: 38.2%; height: 2px; right: 0; top: 61.8%; }
+.golden-frame > i:nth-child(3) { width: 32px; height: 32px; right: 10px; bottom: 8px; border: 2px solid currentColor; border-radius: 50%; background: transparent; }
+.golden-frame > b { position: absolute; left: 20px; bottom: 12px; font: 500 46px/1 Georgia, serif; }
+
+.golden-measure {
+  min-width: 142px;
+  height: 38px;
+  padding: 0 11px;
+  position: absolute;
+  right: 35px;
+  bottom: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 999px;
+  background: rgba(8,15,10,.82);
+  color: white;
+  box-shadow: 0 8px 22px rgba(0,0,0,.28);
+}
+
+.golden-measure i {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border: 2px solid #f3c956;
+  border-radius: 50%;
+  color: white;
+  font-size: 8px;
+  font-style: normal;
+}
+
+.golden-measure b { color: #f3c956; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
+
 .tool-visual {
   position: relative;
   display: grid;

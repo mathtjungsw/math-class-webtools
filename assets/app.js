@@ -15,6 +15,7 @@ const TAG_META = {
   "ai-data-practice": { label: "AI·데이터 실습", group: "format" },
   "work-automation": { label: "업무 자동화", group: "format" },
   "coordinate-geometry": { label: "좌표·도형", group: "topic" },
+  "ratio-proportion": { label: "비·비율", group: "topic" },
   "sound-waves": { label: "소리·파동", group: "topic" },
   "number-operations": { label: "수와 연산", group: "topic" },
   probability: { label: "확률", group: "topic" },
