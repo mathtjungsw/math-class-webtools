@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="낯선 인공 기호의 두 선택지 중 하나를 고르고 점수를 이항분포 B(n, 0.5), 반복 시뮬레이션, 학급 자료와 비교하는 확률 실험" />
+    <meta name="theme-color" content="#102f38" />
+    <title>낯선 문자 찍기 확률 실험</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="back-link" href="../../index.html"><span aria-hidden="true">←</span> 웹툴 모음</a>
+      <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><i></i><b></b><em></em></span><strong>우연의 점수</strong><small>BINOMIAL LAB · O6</small></a>
+      <div class="top-actions">
+        <button type="button" id="fullscreenButton"><span aria-hidden="true">⛶</span><span>전체화면</span></button>
+        <button type="button" id="printButton"><span aria-hidden="true">▤</span><span>결과 인쇄</span></button>
+        <button class="help-button" type="button" id="helpButton"><span aria-hidden="true">?</span><span>설명서 보기</span></button>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><i></i> CHOOSE WITHOUT KNOWING</p>
+          <h1>모르고 고른 점수에도<br /><em>모양이 있을까?</em></h1>
+          <p>의미 없는 인공 기호를 보고 두 선택지 중 하나를 고르세요. 각 문항을 서로 독립적으로, 맞힐 확률 <strong>1/2</strong>로 선택했다면 총점은 <strong>B(n, 0.5)</strong>를 따릅니다.</p>
+          <div class="hero-pills"><span>개인 20·30·50문항</span><span>최대 10,000회 모의실험</span><span>학급 CSV</span></div>
+        </div>
+        <div class="hero-model" aria-label="이항분포 모형 요약">
+          <div class="formula-card"><small>MODEL</small><strong>X ~ B(n, 0.5)</strong><span>X = 맞힌 문항 수</span></div>
+          <div class="mini-distribution" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <dl><div><dt>기댓값</dt><dd>n × 0.5</dd></div><div><dt>표준편차</dt><dd>√(n × 0.25)</dd></div></dl>
+        </div>
+      </section>
+
+      <aside class="purpose-note">
+        <strong>이것은 언어·문화 능력 시험이 아닙니다.</strong>
+        <p>글꼴과 배경지식에 기대지 않는 인공 기호로 ‘무작위 선택의 점수 분포’를 관찰합니다. 높은 점수는 가정 아래에서 드물 수 있다는 뜻일 뿐, 실력이나 부정행위를 판정하는 근거가 아닙니다.</p>
+      </aside>
+
+      <nav class="mode-tabs" aria-label="실험 모드">
+        <button class="active" type="button" data-view-button="personal" aria-current="page"><span>01</span> 개인 실험</button>
+        <button type="button" data-view-button="simulation"><span>02</span> 이론·모의</button>
+        <button type="button" data-view-button="classroom"><span>03</span> 학급 실험</button>
+        <button type="button" data-view-button="assumptions"><span>04</span> 가정 바꾸기</button>
+        <button type="button" data-view-button="teacher"><span>05</span> 교사 설정</button>
+        <button type="button" data-view-button="inquiry"><span>06</span> 탐구 기록</button>
+      </nav>
+
+      <section class="mode-view active" id="view-personal" data-view="personal" aria-labelledby="personalTitle">
+        <div class="section-heading">
+          <div><p>PERSONAL EXPERIMENT</p><h2 id="personalTitle">먼저 예상하고, 빠르게 선택하세요</h2></div>
+          <span>정답은 제출 전까지 보이지 않습니다.</span>
+        </div>
+
+        <div class="personal-layout">
+          <article class="panel prediction-panel" id="predictionPanel">
+            <header class="panel-title"><span>STEP 1</span><div><h3>결과를 먼저 예상하기</h3><p>계산하지 말고 분포의 모양과 범위를 그려 보세요.</p></div></header>
+            <div class="setting-row">
+              <label for="questionCountSelect">문항 수</label>
+              <select id="questionCountSelect"><option value="20">20문항</option><option value="30">30문항</option><option value="50">50문항</option></select>
+            </div>
+            <div class="prediction-inputs">
+              <label>예상 평균 <span><input id="predictedMean" type="number" min="0" max="50" value="10" /> 점</span></label>
+              <label>대부분 나올 범위 <span><input id="predictedLow" type="number" min="0" max="50" value="6" aria-label="예상 최저점" /> ~ <input id="predictedHigh" type="number" min="0" max="50" value="14" aria-label="예상 최고점" /> 점</span></label>
+            </div>
+            <div class="prediction-draw-wrap">
+              <div class="draw-heading"><strong>예상 분포 그리기</strong><small>막대를 클릭하거나 ↑↓ 키로 높이 조절</small></div>
+              <div class="prediction-draw" id="predictionDraw" role="group" aria-label="예상 분포 막대"></div>
+            </div>
+            <button class="primary-button" id="startExperimentButton" type="button">예상 저장하고 실험 시작 <span aria-hidden="true">→</span></button>
+          </article>
+
+          <article class="panel how-panel">
+            <header class="panel-title"><span>HOW</span><div><h3>선택 규칙</h3><p>기호의 의미나 정답 규칙을 찾는 시험이 아닙니다.</p></div></header>
+            <ol class="steps-list">
+              <li><b>1</b><span>인공 기호를 보고 <strong>왼쪽·오른쪽</strong> 중 하나를 고릅니다.</span></li>
+              <li><b>2</b><span>매 문항의 선택은 다른 문항에 영향을 주지 않는다고 가정합니다.</span></li>
+              <li><b>3</b><span>제출 뒤 실제 점수를 <strong>B(n, 0.5)</strong>와 비교합니다.</span></li>
+            </ol>
+            <div class="keyboard-note"><kbd>←</kbd><kbd>→</kbd><span>또는</span><kbd>1</kbd><kbd>2</kbd><span>로 선택</span></div>
+            <p class="privacy-note"><span aria-hidden="true">◉</span> 이름·학번·로그인을 받지 않으며 입력은 이 브라우저 안에서만 처리됩니다.</p>
+          </article>
+        </div>
+
+        <article class="question-stage" id="questionStage" hidden aria-live="polite">
+          <div class="question-topline">
+            <div><span id="questionProgressText">1 / 20</span><div class="progress-track"><i id="questionProgressBar"></i></div></div>
+            <div class="timer-chip" id="timerChip" hidden><small>남은 시간</small><strong id="timerText">01:00</strong></div>
+          </div>
+          <div class="question-prompt"><small>이 기호가 뜻한다고 느껴지는 쪽을 고르세요</small><strong id="questionNumber">문항 1</strong></div>
+          <div class="glyph-card" id="glyphCard" aria-label="의미 없는 인공 기호"></div>
+          <div class="choice-grid">
+            <button class="choice-button left" id="leftChoiceButton" type="button"><span class="key-hint">← · 1</span><b id="leftChoiceLabel">모양 A</b><small>왼쪽 선택</small></button>
+            <button class="choice-button right" id="rightChoiceButton" type="button"><span class="key-hint">→ · 2</span><b id="rightChoiceLabel">모양 B</b><small>오른쪽 선택</small></button>
+          </div>
+          <div class="answer-dots" id="answerDots" aria-label="응답 진행 상황"></div>
+          <button class="secondary-button" id="cancelExperimentButton" type="button">실험 나가기</button>
+        </article>
+
+        <article class="result-panel" id="personalResult" hidden>
+          <div class="result-hero">
+            <div><p>YOUR OBSERVATION</p><h3>나의 관측 점수</h3><strong><span id="personalScore">0</span><small id="personalScoreTotal"> / 20점</small></strong><p id="raritySentence"></p></div>
+            <dl>
+              <div><dt>이론 기댓값</dt><dd id="personalExpected">10.00</dd></div>
+              <div><dt>표준편차</dt><dd id="personalSd">2.24</dd></div>
+              <div><dt>내 점수 이하</dt><dd id="personalBelow">—</dd></div>
+              <div><dt>내 점수 이상</dt><dd id="personalAbove">—</dd></div>
+            </dl>
+          </div>
+          <div class="prediction-recall" id="predictionRecall"></div>
+          <div class="result-grid">
+            <section class="result-card">
+              <header><div><small>EXACT DISTRIBUTION</small><h4>B(n, 0.5)의 정확한 분포</h4></div><div class="legend"><span><i class="theory-key"></i>이론</span><span><i class="score-key"></i>내 점수</span></div></header>
+              <div class="bar-chart" id="personalTheoryChart" aria-label="정확한 이항확률분포 막대그래프"></div>
+            </section>
+            <section class="result-card pattern-card">
+              <header><div><small>CHOICE PATTERN</small><h4>나의 선택 패턴</h4></div></header>
+              <div class="pattern-summary" id="patternSummary"></div>
+              <div class="choice-pattern" id="choicePattern" aria-label="문항별 선택과 정답 여부"></div>
+              <p><i class="pattern-left"></i> 왼쪽 <i class="pattern-right"></i> 오른쪽 <b>✓</b> 맞은 선택</p>
+            </section>
+          </div>
+          <div class="result-actions"><button class="primary-button" type="button" data-go-view="simulation">반복 모의실험과 비교</button><button class="secondary-button" id="restartExperimentButton" type="button">새 개인 실험</button></div>
+        </article>
+      </section>
+
+      <section class="mode-view" id="view-simulation" data-view="simulation" aria-labelledby="simulationTitle" hidden>
+        <div class="section-heading">
+          <div><p>EXACT & SIMULATED</p><h2 id="simulationTitle">정확한 분포와 반복 결과를 겹쳐 보기</h2></div>
+          <span>점선 테두리는 이론, 채운 막대는 모의실험입니다.</span>
+        </div>
+        <div class="simulation-toolbar panel">
+          <label for="simulationN">문항 수<select id="simulationN"><option value="20">20</option><option value="30">30</option><option value="50">50</option></select></label>
+          <div class="run-buttons" aria-label="모의실험 반복 횟수"><button type="button" data-simulations="1">1회</button><button type="button" data-simulations="100">100회</button><button type="button" data-simulations="1000">1,000회</button><button type="button" data-simulations="10000">10,000회</button></div>
+          <label for="simulationSeed">실험 번호<input id="simulationSeed" type="number" min="1" value="2026" /></label>
+        </div>
+        <div class="analysis-strip" id="simulationStats">
+          <div><span>반복 횟수</span><strong>0회</strong></div><div><span>실험 평균</span><strong>—</strong></div><div><span>실험 표준편차</span><strong>—</strong></div><div><span>이론과의 총 차이</span><strong>—</strong></div>
+        </div>
+        <article class="chart-panel panel">
+          <header><div><small>OVERLAY HISTOGRAM</small><h3>점수별 이론확률 · 실험상대도수</h3></div><div class="legend"><span><i class="theory-key"></i>이론확률</span><span><i class="observed-key"></i>실험상대도수</span></div></header>
+          <div class="bar-chart overlay" id="simulationChart" aria-label="이론분포와 모의실험 분포 비교 막대그래프"></div>
+          <p class="chart-caption" id="simulationCaption">반복 횟수를 골라 실험해 보세요. 1회에서는 한 막대만, 10,000회에서는 전체 윤곽이 보입니다.</p>
+        </article>
+        <details class="probability-table panel"><summary>점수별 정확한 확률표 보기 <span>+</span></summary><div class="table-wrap"><table><thead><tr><th>점수 k</th><th>P(X=k)</th><th>P(X≤k)</th><th>P(X≥k)</th></tr></thead><tbody id="probabilityTableBody"></tbody></table></div></details>
+      </section>
+
+      <section class="mode-view" id="view-classroom" data-view="classroom" aria-labelledby="classroomTitle" hidden>
+        <div class="section-heading">
+          <div><p>CLASSROOM DATA</p><h2 id="classroomTitle">학급 점수와 이론분포 비교하기</h2></div>
+          <span>학생 이름 없이 총점만 입력합니다.</span>
+        </div>
+        <div class="classroom-layout">
+          <article class="panel data-entry">
+            <header class="panel-title"><span>INPUT</span><div><h3>익명 점수 입력</h3><p>쉼표·띄어쓰기·줄바꿈으로 구분하세요.</p></div></header>
+            <label for="classQuestionCount">문항 수<select id="classQuestionCount"><option value="20">20문항</option><option value="30">30문항</option><option value="50">50문항</option></select></label>
+            <label for="classScores">학급 총점<textarea id="classScores" rows="8" placeholder="예: 8, 11, 10, 13, 7, 12"></textarea></label>
+            <div class="file-row"><input id="csvFileInput" type="file" accept=".csv,text/csv,text/plain" /><label class="file-button" for="csvFileInput">CSV 불러오기</label><button type="button" id="sampleClassButton">예시 점수</button></div>
+            <p class="input-feedback" id="classInputFeedback" role="status">0명의 유효한 점수</p>
+            <button class="primary-button" id="analyzeClassButton" type="button">학급 분포 분석</button>
+          </article>
+          <article class="panel class-guidance">
+            <header class="panel-title"><span>CHECK</span><div><h3>비교할 세 가지</h3><p>한 학급은 작은 표본임을 기억하세요.</p></div></header>
+            <ul><li><b>중심</b><span>학급 평균이 n/2 근처인가?</span></li><li><b>퍼짐</b><span>학급 표준편차가 √(n/4)와 비슷한가?</span></li><li><b>모양</b><span>점수별 인원 비율이 이론분포와 얼마나 다른가?</span></li></ul>
+            <p>분포가 다르면 곧바로 ‘이상’이라고 결론 내리지 말고 표본 크기, 선택 편향, 문항 구조와 독립성 가정을 함께 살펴보세요.</p>
+          </article>
+        </div>
+        <article class="class-result panel" id="classResult" hidden>
+          <div class="analysis-strip" id="classStats"></div>
+          <header><div><small>CLASS HISTOGRAM</small><h3>관측 인원과 이론적 예상 인원</h3></div><div class="legend"><span><i class="theory-key"></i>예상 인원</span><span><i class="observed-key"></i>실제 인원</span></div></header>
+          <div class="bar-chart overlay" id="classChart" aria-label="학급 점수 히스토그램과 이론분포 비교"></div>
+          <p class="chart-caption" id="classInterpretation"></p>
+        </article>
+      </section>
+
+      <section class="mode-view" id="view-assumptions" data-view="assumptions" aria-labelledby="assumptionTitle" hidden>
+        <div class="section-heading">
+          <div><p>BREAK THE ASSUMPTIONS</p><h2 id="assumptionTitle">1/2 · 독립 · 편향 없음 가정을 바꿔 보기</h2></div>
+          <span>한 번에 한 조건씩 바꾸면 원인을 찾기 쉽습니다.</span>
+        </div>
+        <div class="assumption-layout">
+          <article class="panel assumption-controls">
+            <label for="extensionN"><span><b>문항 수 n</b><small>한 번의 총 문항</small></span><output id="extensionNOutput">30</output><input id="extensionN" type="range" min="10" max="50" step="5" value="30" /></label>
+            <label for="extensionP"><span><b>문항별 정답 확률 p</b><small>0.5가 동일확률 가정</small></span><output id="extensionPOutput">0.50</output><input id="extensionP" type="range" min="0.1" max="0.9" step="0.05" value="0.5" /></label>
+            <label for="leftBias"><span><b>왼쪽 선택 비율</b><small>50%이면 좌우 편향 없음</small></span><output id="leftBiasOutput">50%</output><input id="leftBias" type="range" min="0" max="100" step="5" value="50" /></label>
+            <label for="dependence"><span><b>앞 문항을 따라갈 확률</b><small>0%이면 문항 간 독립</small></span><output id="dependenceOutput">0%</output><input id="dependence" type="range" min="0" max="90" step="5" value="0" /></label>
+            <button class="primary-button" id="runExtensionButton" type="button">10,000회 확장 실험</button>
+            <button class="secondary-button" id="resetExtensionButton" type="button">기본 가정으로</button>
+          </article>
+          <article class="panel assumption-explainer">
+            <p class="eyebrow"><i></i> WHAT CHANGES?</p>
+            <h3 id="assumptionHeadline">기본 가정: X ~ B(n, 0.5)</h3>
+            <p id="assumptionExplanation">각 문항을 맞힐 확률이 같고 결과가 서로 독립일 때 이항분포를 사용할 수 있습니다.</p>
+            <dl><div><dt>설정상 기댓값</dt><dd id="extensionExpected">15.00</dd></div><div><dt>설정상 이항 표준편차</dt><dd id="extensionExpectedSd">2.74</dd></div><div><dt>실험 왼쪽 선택률</dt><dd id="extensionLeftRate">—</dd></div><div><dt>연속 같은 선택률</dt><dd id="extensionRepeatRate">—</dd></div></dl>
+          </article>
+        </div>
+        <article class="chart-panel panel">
+          <header><div><small>ASSUMPTION TEST</small><h3>기본 B(n, 0.5)와 바뀐 실험분포</h3></div><div class="legend"><span><i class="theory-key"></i>기본 이론</span><span><i class="observed-key"></i>바뀐 실험</span></div></header>
+          <div class="bar-chart overlay" id="extensionChart" aria-label="기본 이항분포와 가정을 바꾼 실험 결과 비교"></div>
+          <p class="chart-caption">왼쪽을 많이 고르는 것만으로는 점수가 반드시 높아지지 않습니다. 정답 확률과 선택·결과의 독립성을 따로 구분해 보세요.</p>
+        </article>
+      </section>
+
+      <section class="mode-view" id="view-teacher" data-view="teacher" aria-labelledby="teacherTitle" hidden>
+        <div class="section-heading">
+          <div><p>TEACHER SETUP</p><h2 id="teacherTitle">문항과 정답 패턴을 수업에 맞게 설정하기</h2></div>
+          <span>학생 실험을 시작하기 전에 설정 화면을 닫아 주세요.</span>
+        </div>
+        <div class="teacher-layout">
+          <form class="panel teacher-form" id="teacherForm">
+            <div class="form-grid">
+              <label for="teacherQuestionCount">문항 수<input id="teacherQuestionCount" type="number" min="10" max="100" value="20" /></label>
+              <label for="teacherTimeLimit">제한시간<select id="teacherTimeLimit"><option value="0">제한 없음</option><option value="30">30초</option><option value="60">60초</option><option value="90">90초</option><option value="120">120초</option><option value="180">180초</option></select></label>
+              <label for="teacherLeftLabel">왼쪽 선택지<input id="teacherLeftLabel" type="text" maxlength="20" value="모양 A" /></label>
+              <label for="teacherRightLabel">오른쪽 선택지<input id="teacherRightLabel" type="text" maxlength="20" value="모양 B" /></label>
+              <label for="teacherAnswerPattern">정답 패턴<select id="teacherAnswerPattern"><option value="balanced">좌우 균형 무작위</option><option value="random">매 문항 무작위</option><option value="alternating">좌우 번갈아</option><option value="custom">직접 입력</option></select></label>
+              <label for="teacherSeed">문항 세트 번호<input id="teacherSeed" type="number" min="1" max="999999999" value="2026" /></label>
+            </div>
+            <label class="custom-pattern" for="teacherCustomPattern" id="customPatternLabel" hidden>직접 패턴 <span>L=왼쪽 정답, R=오른쪽 정답. 짧으면 반복됩니다.</span><input id="teacherCustomPattern" type="text" value="LR" pattern="[LRlr]+" /></label>
+            <div class="teacher-warning"><strong>정답 패턴은 학생에게 보여 주지 마세요.</strong><p>‘좌우 균형’은 정답 위치만 균형 있게 섞습니다. 학생이 매 문항을 독립적으로 1/2 확률로 고른다는 가정이 있어야 총점이 B(n, 0.5)를 따릅니다.</p></div>
+            <button class="primary-button" type="submit">현재 설정 적용</button>
+          </form>
+          <article class="panel preset-panel">
+            <header class="panel-title"><span>LOCAL</span><div><h3>프리셋 저장·불러오기</h3><p>이 기기의 브라우저에만 저장됩니다.</p></div></header>
+            <label for="presetName">프리셋 이름<input id="presetName" type="text" maxlength="40" placeholder="예: 2학년 3반 30문항" /></label>
+            <button class="primary-button" id="savePresetButton" type="button">현재 설정 저장</button>
+            <label for="presetSelect">저장된 프리셋<select id="presetSelect"><option value="">저장된 프리셋 없음</option></select></label>
+            <div class="preset-actions"><button id="loadPresetButton" type="button">불러오기</button><button id="deletePresetButton" type="button">삭제</button></div>
+            <p class="privacy-note"><span aria-hidden="true">◉</span> 프리셋에는 문항 설정만 저장되며 학생 점수나 개인정보는 저장하지 않습니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="mode-view" id="view-inquiry" data-view="inquiry" aria-labelledby="inquiryTitle" hidden>
+        <div class="section-heading">
+          <div><p>THINK · WRITE · TALK</p><h2 id="inquiryTitle">예상과 결과, 가정을 한 문장으로 연결하기</h2></div>
+          <span>기록은 현재 브라우저 화면에만 남습니다.</span>
+        </div>
+        <div class="inquiry-grid">
+          <article class="question-card"><span>01 · 예상</span><h3>실험 전에 그린 분포와 실제 이론분포는 무엇이 달랐나요?</h3><textarea id="reflectionPrediction" rows="5" placeholder="예상한 중심, 퍼짐, 최고점 범위를 비교해 쓰세요."></textarea></article>
+          <article class="question-card"><span>02 · 희귀성</span><h3>높거나 낮은 점수가 ‘드물다’는 말은 어떤 가정 아래에서만 가능한가요?</h3><textarea id="reflectionRarity" rows="5" placeholder="동일확률, 독립성, 문항 수를 포함해 설명해 보세요."></textarea></article>
+          <article class="question-card"><span>03 · 학급</span><h3>학급 분포가 이론과 달랐다면 가능한 원인을 세 가지 제안해 보세요.</h3><textarea id="reflectionClass" rows="5" placeholder="표본 크기, 선택 편향, 문항 구조 등을 생각해 보세요."></textarea></article>
+          <article class="question-card"><span>04 · 판단</span><h3>한 사람의 극단적인 점수만으로 실력이나 부정행위를 판정하면 안 되는 이유는?</h3><textarea id="reflectionJudgment" rows="5" placeholder="확률적 희귀성과 실제 원인 판단의 차이를 쓰세요."></textarea></article>
+        </div>
+        <div class="inquiry-actions"><button class="secondary-button" id="clearReflectionButton" type="button">기록 지우기</button><button class="primary-button" id="printReflectionButton" type="button">탐구 결과 인쇄</button></div>
+      </section>
+    </main>
+
+    <footer>
+      <div><strong>낯선 문자 찍기 확률 실험</strong><p>자연언어 평가가 아닌 이항분포 탐구용 모형입니다.</p></div>
+      <p>B(n, 0.5) · 개인 실험 · 학급 자료 · 가정 확장</p>
+    </footer>
+
+    <dialog id="helpDialog" aria-labelledby="helpTitle">
+      <div class="dialog-head"><div><p>CLASS GUIDE</p><h2 id="helpTitle">45분 수업 운영 예시</h2></div><button id="closeHelpButton" type="button" aria-label="안내 닫기">×</button></div>
+      <div class="dialog-body">
+        <ol><li><b>5분</b><span>평균과 최고점 범위를 예상하고 분포를 그립니다.</span></li><li><b>8분</b><span>개인 실험을 진행합니다. 제출 전에는 정답 규칙을 말하지 않습니다.</span></li><li><b>10분</b><span>개인 점수와 정확한 B(n, 0.5), 누적확률을 읽습니다.</span></li><li><b>10분</b><span>학급 점수를 익명으로 모아 이론분포와 비교합니다.</span></li><li><b>12분</b><span>p·편향·독립성 가정을 바꾸고 판단의 한계를 토론합니다.</span></li></ol>
+        <aside><strong>해석 원칙</strong><p>극단적인 점수는 모형의 가정 아래에서 확률적으로 희귀할 수 있습니다. 화면은 원인을 판정하지 않으며, 언어 능력·문화적 배경·부정행위를 평가하지 않습니다.</p></aside>
+      </div>
+      <button class="primary-button dialog-close" id="dialogStartButton" type="button">실험 화면으로 돌아가기</button>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./probability.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
