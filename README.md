@@ -18,6 +18,7 @@
   - 조건부 확률 실험기: 유병률·민감도·특이도에 따른 베이즈 정리, 혼동행렬, 재검사 및 무작위 실험
   - 벤포드 법칙 실험기: 기사·표·CSV에서 숫자 추출, 첫째 자리 분포와 이론값 비교, 적합도 분석 및 탐구 보고서
 - 인공지능 수학
+  - 허프만 부호·파일 압축 실험실: 한글·영문·숫자·기호의 출현 빈도와 상대도수를 분석하고, 결정적인 동률 규칙으로 허프만 트리를 단계별 생성해 코드표·가중 경로 길이·인코딩/디코딩·고정 길이 대비 압축률·엔트로피를 탐구하며 클릭형 그리디 미션과 CSV/JSON/기록 내보내기를 지원
   - 이미지 지도학습 인공지능 만들기
   - 감성 분석 인공지능 만들기 실습
   - 데이터의 경향성을 파악하여 예측하기
@@ -56,7 +57,7 @@
 
 GitHub 저장소에 올린 뒤 저장소의 `Settings > Pages`에서 배포 브랜치를 선택하면 정적 사이트로 사용할 수 있습니다.
 
-GitHub Pages 주소에서 실행할 때는 화면의 `GitHub` 링크가 저장소 주소를 자동으로 추정합니다. 로컬에서 직접 열거나 다른 호스팅을 사용할 경우 `assets/app.js`, `ai-math/sentiment-ai/sentiment.js`, `ai-math/image-supervised-learning/image-supervised.js`, `ai-math/trendline-prediction/trendline.js`의 `MANUAL_GITHUB_REPOSITORY_URL` 값을 저장소 주소로 바꾸면 됩니다.
+GitHub Pages 주소에서 실행할 때는 화면의 `GitHub` 링크가 저장소 주소를 자동으로 추정합니다. 로컬에서 직접 열거나 다른 호스팅을 사용할 경우 `assets/app.js`, `ai-math/sentiment-ai/sentiment.js`, `ai-math/image-supervised-learning/image-supervised.js`, `ai-math/trendline-prediction/trendline.js`의 `MANUAL_GITHUB_REPOSITORY_URL` 값을 저장소 주소로 바꾸면 됩니다. 허프만 부호 실험실은 저장소 주소를 자동 추정하며, 추정할 수 없는 로컬 환경에서는 GitHub 링크를 숨깁니다.
 
 ## KBO 조건부 확률 실험실 개발
 

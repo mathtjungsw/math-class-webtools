@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="문자 빈도에서 허프만 트리, 인코딩과 디코딩, 압축률까지 탐구하는 수학 실험실" />
+    <title>허프만 부호·파일 압축 실험실</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="tool-topbar">
+      <a class="brand" href="../../" aria-label="수학 수업 웹툴 모음 홈">
+        <span class="brand-mark" aria-hidden="true">01</span>
+        <span><strong>허프만 부호·파일 압축 실험실</strong><small>인공지능 수학 · 확률과 통계</small></span>
+      </a>
+      <nav class="top-actions" aria-label="상단 메뉴">
+        <button class="ghost-link" id="openGuideButton" type="button">설명서 보기</button>
+        <a class="ghost-link" href="../../">전체 웹툴</a>
+        <a class="ghost-link" data-github-link href="#" target="_blank" rel="noreferrer">GitHub</a>
+      </nav>
+    </header>
+
+    <dialog class="guide-dialog" id="guideDialog" aria-labelledby="guideTitle">
+      <div class="guide-header">
+        <div><p class="eyebrow">교사·학생 공용 안내</p><h2 id="guideTitle">허프만 압축 실험실 설명서</h2></div>
+        <button class="dialog-close" id="closeGuideButton" type="button" aria-label="설명서 닫기">×</button>
+      </div>
+      <div class="guide-body">
+        <section><h3>무엇을 배우나요?</h3><p>문자 출현 빈도를 확률로 해석하고, 매 순간 가장 작은 두 묶음을 선택하는 그리디 알고리즘이 전체 부호 길이를 줄이는 과정을 탐구합니다.</p></section>
+        <ol class="guide-steps">
+          <li><b>1. 텍스트 준비</b><span>예시를 선택하거나 한글·영문·숫자·기호가 섞인 문장을 입력하고 ‘빈도 분석 시작’을 누릅니다.</span></li>
+          <li><b>2. 빈도 관찰</b><span>출현 횟수·상대도수·막대그래프를 보고 어떤 문자가 짧은 코드를 받을지 먼저 예측합니다.</span></li>
+          <li><b>3. 트리 생성</b><span>‘다음 한 단계’ 또는 ‘자동 재생’으로 가장 작은 두 노드가 합쳐지는 우선순위 큐를 관찰합니다. 동률이면 유니코드 순서를 따릅니다.</span></li>
+          <li><b>4. 코드 왕복</b><span>완성된 트리의 왼쪽 0·오른쪽 1 경로를 읽고, 인코딩된 비트열을 전체 또는 한 비트씩 디코딩합니다.</span></li>
+          <li><b>5. 압축 비교</b><span>고정 길이와 허프만 부호의 총 비트 수, 절감률, 엔트로피와 평균 부호 길이를 비교합니다.</span></li>
+          <li><b>6. 미션·기록</b><span>직접 가장 작은 두 카드를 선택하고, 탐구 질문의 예측·관찰·결론을 기록한 뒤 CSV·TXT·JSON으로 저장합니다.</span></li>
+        </ol>
+        <div class="guide-callouts">
+          <article><h3>수업 운영 예시</h3><p><b>도입 5분</b> 압축 원리 예측 → <b>탐구 25분</b> 트리와 왕복 실험 → <b>정리 15분</b> 문장별 압축률 비교와 그리디 원리 설명</p></article>
+          <article><h3>꼭 구분하세요</h3><p>화면의 비트 수는 문자 집합에 붙인 이론적 부호 길이입니다. 실제 파일 크기에는 UTF-8 표현, 트리·코드표와 파일 형식 정보가 더해집니다.</p></article>
+        </div>
+        <section><h3>접근성과 조작</h3><p>모든 활동은 드래그 없이 클릭과 키보드로 가능합니다. Tab으로 이동하고 Enter 또는 Space로 버튼을 실행할 수 있으며, 설명서는 Esc 키로 닫을 수 있습니다.</p></section>
+      </div>
+      <div class="guide-footer"><button class="primary-button" id="startGuideActivityButton" type="button">설명서 닫고 실험 시작</button></div>
+    </dialog>
+
+    <main class="tool-workspace">
+      <section class="intro-band" aria-labelledby="toolTitle">
+        <div>
+          <p class="eyebrow">E3 · 자료의 표현과 최적화</p>
+          <h1 id="toolTitle">자주 나오는 문자에는 짧은 코드를</h1>
+          <p>문자의 출현 확률을 세고, 가장 작은 두 묶음을 반복해서 합치는 그리디 알고리즘으로 압축의 원리를 직접 확인해 보세요.</p>
+        </div>
+        <ol class="step-strip" aria-label="활동 순서">
+          <li><b>1</b> 빈도 분석</li><li><b>2</b> 트리 만들기</li><li><b>3</b> 부호 왕복</li><li><b>4</b> 압축 비교</li>
+        </ol>
+      </section>
+
+      <p id="statusMessage" class="status-message" role="status" aria-live="polite">예시를 고르거나 문장을 입력한 뒤 분석을 시작하세요.</p>
+
+      <section class="card input-card" aria-labelledby="inputTitle">
+        <div class="section-heading">
+          <div><p class="eyebrow">01 · 입력</p><h2 id="inputTitle">압축할 텍스트 준비하기</h2></div>
+          <span class="count-badge" id="inputCount">0문자</span>
+        </div>
+        <div class="sample-row">
+          <label for="sampleSelect">예시 문장</label>
+          <select id="sampleSelect">
+            <option value="banana">BANANA와 파인애플</option>
+            <option value="school">수학 수업 문장</option>
+            <option value="balanced">비슷한 빈도의 기호</option>
+            <option value="skewed">한 문자가 매우 잦은 자료</option>
+          </select>
+          <button type="button" class="plain-button" id="loadSampleButton">불러오기</button>
+        </div>
+        <label class="stacked-label" for="textInput">한글·영문·숫자·기호를 모두 사용할 수 있어요.</label>
+        <textarea id="textInput" rows="5" maxlength="4000" spellcheck="false" placeholder="예: BANANA는 바나나🍌"></textarea>
+        <div class="button-row">
+          <button type="button" class="primary-button" id="analyzeButton">빈도 분석 시작</button>
+          <button type="button" class="plain-button" id="clearButton">비우기</button>
+          <button type="button" class="plain-button" id="saveJsonButton">설정 JSON 저장</button>
+          <label class="file-button">JSON 불러오기<input type="file" id="loadJsonInput" accept="application/json,.json" /></label>
+        </div>
+      </section>
+
+      <section class="workspace-grid" id="analysisSection" aria-label="빈도 분석 결과">
+        <section class="card" aria-labelledby="frequencyTitle">
+          <div class="section-heading"><div><p class="eyebrow">02 · 확률 분석</p><h2 id="frequencyTitle">문자별 출현 빈도</h2></div></div>
+          <div class="table-wrap"><table><thead><tr><th scope="col">문자</th><th scope="col">횟수</th><th scope="col">상대도수</th><th scope="col">허프만 코드</th></tr></thead><tbody id="frequencyBody"><tr><td colspan="4" class="empty-cell">분석 결과가 여기에 표시됩니다.</td></tr></tbody></table></div>
+        </section>
+        <section class="card" aria-labelledby="chartTitle">
+          <div class="section-heading"><div><p class="eyebrow blue">빈도 막대그래프</p><h2 id="chartTitle">어떤 문자가 자주 나올까?</h2></div></div>
+          <div id="barChart" class="bar-chart" role="img" aria-label="문자별 출현 빈도 막대그래프"><p class="empty-copy">텍스트를 분석하면 막대가 나타납니다.</p></div>
+        </section>
+      </section>
+
+      <section class="card tree-card" aria-labelledby="treeTitle">
+        <div class="section-heading tree-heading">
+          <div><p class="eyebrow">03 · 그리디 알고리즘</p><h2 id="treeTitle">가장 작은 두 노드를 합치기</h2></div>
+          <span class="count-badge" id="stepBadge">0 / 0단계</span>
+        </div>
+        <p class="rule-note"><b>동률 규칙:</b> 빈도가 같으면 포함 문자의 유니코드 순서가 앞선 묶음을 먼저 고릅니다. 먼저 고른 노드는 0(왼쪽), 다음 노드는 1(오른쪽)이 됩니다.</p>
+        <div class="tree-controls" aria-label="트리 생성 단계 조작">
+          <button type="button" class="plain-button" id="previousStepButton">이전</button>
+          <button type="button" class="primary-button" id="nextStepButton">다음 한 단계</button>
+          <button type="button" class="plain-button" id="autoPlayButton">자동 재생</button>
+          <button type="button" class="plain-button" id="resetStepsButton">처음으로</button>
+        </div>
+        <div class="process-panel">
+          <h3>우선순위 큐</h3>
+          <div id="queueView" class="queue-view"><span class="empty-copy">분석 후 노드 카드가 표시됩니다.</span></div>
+          <p id="stepExplanation" class="step-explanation">빈도가 낮은 카드가 왼쪽에 놓입니다.</p>
+        </div>
+        <div class="tree-shell">
+          <div class="tree-legend"><span><i class="line-zero"></i>0 · 왼쪽</span><span><i class="line-one"></i>1 · 오른쪽</span></div>
+          <div id="treeView" class="tree-view"><p class="empty-copy">완성된 트리가 여기에 표시됩니다.</p></div>
+        </div>
+      </section>
+
+      <section class="workspace-grid encoding-grid" aria-label="인코딩과 디코딩">
+        <section class="card" aria-labelledby="encodeTitle">
+          <div class="section-heading"><div><p class="eyebrow">04 · 인코딩</p><h2 id="encodeTitle">문자를 비트열로</h2></div></div>
+          <label class="stacked-label" for="encodedBits">입력 문장의 허프만 비트열</label>
+          <textarea id="encodedBits" rows="7" class="bit-field" spellcheck="false" placeholder="분석하면 자동으로 인코딩됩니다."></textarea>
+          <button type="button" class="plain-button" id="copyBitsButton">비트열 복사</button>
+        </section>
+        <section class="card" aria-labelledby="decodeTitle">
+          <div class="section-heading"><div><p class="eyebrow blue">05 · 디코딩</p><h2 id="decodeTitle">0/1 경로를 다시 문자로</h2></div></div>
+          <div class="button-row compact-row">
+            <button type="button" class="primary-button" id="decodeButton">전체 디코딩</button>
+            <button type="button" class="plain-button" id="decodeStepButton">한 비트씩 보기</button>
+            <button type="button" class="plain-button" id="decodeResetButton">경로 초기화</button>
+          </div>
+          <div class="decode-output" aria-live="polite"><span>복원된 텍스트</span><strong id="decodedText">—</strong></div>
+          <p id="decodeTrace" class="decode-trace">비트열을 따라가면 방문한 노드가 트리에서 강조됩니다.</p>
+        </section>
+      </section>
+
+      <section class="card result-card" aria-labelledby="resultTitle">
+        <div class="section-heading"><div><p class="eyebrow">06 · 압축 비교</p><h2 id="resultTitle">얼마나 짧아졌을까?</h2></div><button type="button" class="plain-button" id="exportCsvButton">결과 CSV</button></div>
+        <div class="metric-grid">
+          <article><span>고정 길이</span><strong id="fixedBits">—</strong><small id="fixedDetail">문자당 —비트</small></article>
+          <article><span>허프만 부호</span><strong id="huffmanBits">—</strong><small id="averageDetail">평균 —비트</small></article>
+          <article><span>절감 비트</span><strong id="savedBits">—</strong><small id="savedDetail">—% 절감</small></article>
+          <article><span>압축률</span><strong id="compressionRatio">—</strong><small>허프만 ÷ 고정 길이</small></article>
+        </div>
+        <p class="concept-warning"><b>중요:</b> 위 값은 이 문장의 문자 집합에 이론적인 이진 부호를 붙인 결과입니다. 실제 파일에는 UTF-8 바이트, 코드표·트리 정보, 파일 형식 메타데이터가 필요하므로 실제 파일 크기와 같지 않습니다.</p>
+        <details class="deep-dive"><summary>선택 심화 · 엔트로피와 평균 부호 길이</summary><p id="entropyText">분석하면 엔트로피와 평균 부호 길이의 관계가 표시됩니다.</p></details>
+      </section>
+
+      <section class="workspace-grid activity-grid" aria-label="탐구 활동">
+        <section class="card game-card" aria-labelledby="gameTitle">
+          <div class="section-heading"><div><p class="eyebrow">도전 미션</p><h2 id="gameTitle">내가 직접 그리디 선택하기</h2></div><span class="count-badge" id="gameScore">0회 성공</span></div>
+          <p>현재 카드에서 가장 작은 두 개를 클릭한 뒤 합치세요. 드래그하지 않아도 됩니다.</p>
+          <div id="gameQueue" class="queue-view game-queue"></div>
+          <div class="button-row"><button type="button" class="primary-button" id="mergeGameButton">선택한 두 카드 합치기</button><button type="button" class="plain-button" id="resetGameButton">미션 다시 시작</button></div>
+          <p id="gameFeedback" class="feedback" role="status" aria-live="polite">분석을 마치면 미션이 시작됩니다.</p>
+        </section>
+        <section class="card" aria-labelledby="predictionTitle">
+          <div class="section-heading"><div><p class="eyebrow blue">예측하고 검증하기</p><h2 id="predictionTitle">어느 문장이 더 잘 압축될까?</h2></div></div>
+          <div class="prediction-options" id="predictionOptions"></div>
+          <p id="predictionResult" class="feedback">한 문장을 고르면 실제 절감률로 검증합니다.</p>
+        </section>
+      </section>
+
+      <section class="card lesson-card" aria-labelledby="lessonTitle">
+        <div class="section-heading"><div><p class="eyebrow">수업 활용</p><h2 id="lessonTitle">관찰 → 설명 → 일반화</h2></div><button type="button" class="plain-button" id="exportNotesButton">기록 TXT</button></div>
+        <div class="lesson-grid">
+          <article><b>핵심 개념</b><p>상대도수는 확률의 추정값이고, 가중 경로 길이 Σ(빈도×코드 길이)를 작게 만드는 것이 목표입니다.</p></article>
+          <article><b>탐구 질문 1</b><p>문자 빈도가 모두 같을 때와 한 문자에 몰릴 때 압축률은 어떻게 달라질까요?</p></article>
+          <article><b>탐구 질문 2</b><p>매 단계의 ‘가장 작은 두 묶음’ 선택이 전체 최적화로 이어지는 까닭을 설명해 보세요.</p></article>
+        </div>
+        <label class="stacked-label" for="studentNotes">나의 예측·관찰·결론 기록</label>
+        <textarea id="studentNotes" rows="6" placeholder="예측: …&#10;관찰: …&#10;결론: …"></textarea>
+      </section>
+    </main>
+    <script src="./huffman.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

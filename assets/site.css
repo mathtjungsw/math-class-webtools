@@ -1448,6 +1448,19 @@ body.is-modal-open {
 .monty-visual .car circle { fill: var(--navy); stroke: #fff3e9; stroke-width: 4; }
 
 .card-image-ai .tool-visual { background: #e9f7f2; }
+.card-huffman .tool-visual { background: #e8f5ef; }
+.huffman-preview { position: relative; width: 100%; height: 100%; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+.huffman-preview span { position: absolute; display: grid; place-items: center; min-width: 68px; min-height: 42px; padding: 5px 10px; border: 4px solid var(--navy); border-radius: 12px; background: white; color: var(--navy); font-weight: 900; }
+.huffman-preview .huffman-root { top: 28px; left: calc(50% - 34px); background: var(--yellow); }
+.huffman-preview .node-left { bottom: 34px; left: 62px; border-color: #1f7a52; }
+.huffman-preview .node-right { right: 62px; bottom: 34px; border-color: var(--blue); }
+.huffman-edge { position: absolute; top: 79px; width: 115px; border-top: 5px solid #1f7a52; }
+.huffman-edge.edge-left { left: 93px; transform: rotate(-25deg); }
+.huffman-edge.edge-right { right: 93px; border-top-color: var(--blue); border-top-style: dashed; transform: rotate(25deg); }
+.huffman-bit { position: absolute; top: 88px; z-index: 2; padding: 2px 6px; border-radius: 10px; background: white; color: var(--navy); }
+.huffman-bit.bit-zero { left: 132px; }
+.huffman-bit.bit-one { right: 132px; }
+.huffman-preview code { position: absolute; right: 18px; top: 18px; padding: 6px 9px; border-radius: 8px; background: var(--navy); color: white; font-weight: 900; }
 .card-image-ai .frame { fill: white; stroke: var(--navy); stroke-width: 5; }
 .card-image-ai .sun { fill: var(--yellow); }
 .card-image-ai .mountain { fill: var(--mint); stroke: var(--navy); stroke-linejoin: round; stroke-width: 4; }
