@@ -1388,6 +1388,30 @@ body.is-modal-open {
 .stopping-line b { color: var(--orange); font-size: 17px; transform: rotate(-5deg); }
 .stopping-best { position: absolute; top: 26px; right: 80px; display: grid; width: 35px; height: 35px; place-items: center; border-radius: 50%; background: var(--mint); color: var(--navy); font-size: 17px; font-weight: 900; }
 
+.card-path-probability .tool-visual { background: linear-gradient(135deg, #eeedff, #fff0e8); }
+.path-probability-preview { position: relative; width: 100%; height: 100%; }
+.path-preview-grid { position: absolute; top: 28px; left: 38px; width: 205px; height: 126px; }
+.path-preview-grid > i { position: absolute; display: block; background: #aaa8cf; }
+.path-preview-grid > i:nth-child(-n + 3) { left: 0; width: 100%; height: 4px; }
+.path-preview-grid > i:nth-child(1) { top: 0; }
+.path-preview-grid > i:nth-child(2) { top: 50%; }
+.path-preview-grid > i:nth-child(3) { bottom: 0; }
+.path-preview-grid > i:nth-child(n + 4) { top: 0; width: 4px; height: 100%; }
+.path-preview-grid > i:nth-child(4) { left: 0; }
+.path-preview-grid > i:nth-child(5) { left: 33.333%; }
+.path-preview-grid > i:nth-child(6) { left: 66.666%; }
+.path-preview-grid > i:nth-child(7) { right: 0; }
+.path-preview-grid > span { position: absolute; z-index: 2; display: grid; width: 31px; height: 31px; place-items: center; border: 4px solid var(--navy); border-radius: 50%; color: white; font-size: 12px; font-weight: 900; transform: translate(-50%, -50%); }
+.path-preview-grid .point-a { top: 0; left: 0; background: #4bb99c; }
+.path-preview-grid .point-b { top: 50%; right: -31px; background: var(--orange); }
+.path-preview-grid .point-c { right: -31px; bottom: -31px; background: var(--navy); }
+.path-preview-values { position: absolute; top: 49px; right: 30px; display: grid; grid-template-columns: 1fr; gap: 5px; text-align: center; }
+.path-preview-values b, .path-preview-values strong { padding: 5px 9px; border-radius: 8px; font: 900 17px ui-monospace, Consolas, monospace; }
+.path-preview-values b { color: #3f3fb4; background: #dfdefe; }
+.path-preview-values strong { color: #9b3d20; background: #ffdccc; }
+.path-preview-values em { color: var(--navy); font-style: normal; font-weight: 900; }
+.path-probability-preview > small { position: absolute; right: 28px; bottom: 23px; color: #6e6b86; font-size: 9px; font-weight: 900; letter-spacing: .1em; }
+
 .card-motion-shot .tool-visual { background: #edf3ff; }
 .card-motion-shot .motion-camera {
   fill: white;
