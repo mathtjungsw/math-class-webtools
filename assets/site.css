@@ -1510,6 +1510,18 @@ body.is-modal-open {
 .card-pig .die rect { fill: white; stroke: var(--navy); stroke-width: 5; }
 .card-pig .die circle { fill: var(--orange); }
 
+.card-liars-dice .tool-visual { background: #eef2f7; }
+.liars-dice-preview { position: relative; width: 100%; height: 100%; }
+.liars-cup { position: absolute; left: 54px; top: 35px; display: grid; width: 105px; height: 126px; place-items: center; border: 5px solid var(--navy); border-radius: 15px 15px 38px 38px; background: #29425e; box-shadow: 8px 9px 0 var(--yellow); transform: rotate(-6deg); }
+.liars-cup::before { position: absolute; top: -11px; width: 98px; height: 20px; border: 5px solid var(--navy); border-radius: 50%; background: #385675; content: ""; }
+.liars-cup i { color: var(--yellow); font-family: Georgia, serif; font-size: 48px; font-style: normal; }
+.liars-dice-row { position: absolute; left: 188px; top: 54px; display: flex; gap: 6px; }
+.liars-dice-row b { display: grid; width: 47px; height: 47px; place-items: center; border: 4px solid var(--navy); border-radius: 10px; background: white; color: var(--navy); font-family: Georgia, serif; font-size: 34px; }
+.liars-dice-row b:nth-child(2) { transform: translateY(44px) rotate(5deg); }
+.liars-dice-row b:nth-child(3) { transform: translate(-4px, 3px) rotate(-4deg); }
+.liars-dice-preview > strong { position: absolute; right: 38px; bottom: 32px; padding: 6px 9px; border: 3px solid var(--navy); border-radius: 7px; background: var(--mint); color: var(--navy); font-size: 15px; transform: rotate(4deg); }
+.liars-dice-preview > em { position: absolute; left: 152px; bottom: 25px; color: var(--orange); font-size: 14px; font-style: normal; font-weight: 950; transform: rotate(-8deg); }
+
 .card-triangle-drawing .tool-visual { background: #f0f7ed; }
 .card-triangle-drawing .triangle-grid path { fill: none; stroke: #c7dbc4; stroke-width: 3; }
 .card-triangle-drawing .triangle-points circle { fill: white; stroke: var(--navy); stroke-width: 4; }

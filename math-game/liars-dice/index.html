@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#15263b" />
+    <meta name="description" content="숨겨진 주사위를 추정하고 입찰과 도전으로 확률·논리를 탐구하는 라이어스 다이스 수업용 웹툴" />
+    <title>라이어스 다이스 확률 게임</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#mainContent">게임으로 바로가기</a>
+
+    <header class="app-header">
+      <a class="back-link" href="../../index.html#tools" aria-label="웹툴 목록으로 돌아가기">
+        <span aria-hidden="true">←</span>
+        <span>웹툴 모음</span>
+      </a>
+      <div class="brand" aria-label="라이어스 다이스">
+        <span class="brand-mark" aria-hidden="true">LD</span>
+        <span><strong>LIAR'S DICE</strong><small>확률 × 허세 × 논리</small></span>
+      </div>
+      <nav class="header-actions" aria-label="도움말과 게임 관리">
+        <button class="quiet-button" id="tutorialButton" type="button">튜토리얼</button>
+        <button class="quiet-button" id="rulesButton" type="button">설명서 보기</button>
+        <button class="quiet-button danger" id="newGameButton" type="button">새 게임</button>
+      </nav>
+    </header>
+
+    <main id="mainContent" class="page-shell">
+      <section class="hero" aria-labelledby="pageTitle">
+        <div class="hero-copy">
+          <p class="eyebrow">G4 · 경남수학교육소식 수업 아이디어</p>
+          <h1 id="pageTitle">보이지 않는 주사위를<br /><em>확률로 읽어 내세요.</em></h1>
+          <p>내가 아는 정보는 내 주사위뿐. 더 높은 입찰로 허세를 이어 갈지, “도전!”을 외칠지 근거를 말하며 결정합니다.</p>
+        </div>
+        <div class="hero-cups" aria-hidden="true">
+          <span class="cup cup-back"><i>?</i></span>
+          <span class="cup cup-front"><i>?</i></span>
+          <b>3 × ⚄</b>
+        </div>
+      </section>
+
+      <section class="setup-panel panel" id="setupPanel" aria-labelledby="setupTitle">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">GAME SETUP</p>
+            <h2 id="setupTitle">어떻게 연습할까요?</h2>
+          </div>
+          <p class="heading-note">모두 주사위 5개로 시작해 마지막 한 명이 남으면 승리합니다.</p>
+        </div>
+
+        <div class="mode-picker" role="radiogroup" aria-label="게임 모드">
+          <label class="mode-option is-selected">
+            <input type="radio" name="gameMode" value="solo" checked />
+            <span class="mode-icon" aria-hidden="true">AI</span>
+            <span><strong>혼자서 AI와 연습</strong><small>확률 힌트를 보며 1~3명의 AI와 플레이</small></span>
+            <b>추천</b>
+          </label>
+          <label class="mode-option">
+            <input type="radio" name="gameMode" value="pass" />
+            <span class="mode-icon" aria-hidden="true">↻</span>
+            <span><strong>패스앤플레이</strong><small>한 기기를 2~6명이 안전하게 번갈아 사용</small></span>
+          </label>
+        </div>
+
+        <div class="setup-grid">
+          <section class="setup-card" aria-labelledby="playersSettingTitle">
+            <div class="setup-card-title">
+              <span>01</span>
+              <div><h3 id="playersSettingTitle">참가자</h3><p id="playerSettingHint">나와 AI 수를 정하세요.</p></div>
+            </div>
+            <div class="field-grid" id="soloSettings">
+              <label class="field"><span>내 이름</span><input id="soloName" type="text" maxlength="16" value="플레이어" autocomplete="off" /></label>
+              <label class="field"><span>AI 상대</span><select id="aiCount"><option value="1">1명</option><option value="2" selected>2명</option><option value="3">3명</option></select></label>
+              <label class="field field-wide"><span>AI 판단 성향</span><select id="aiDifficulty"><option value="gentle">연습형 · 도전을 신중하게</option><option value="balanced" selected>균형형 · 확률과 허세를 함께</option><option value="sharp">분석형 · 낮은 확률에 빠르게 도전</option></select></label>
+            </div>
+            <div id="passSettings" hidden>
+              <label class="field count-field"><span>참가 인원</span><select id="passCount"><option value="2">2명</option><option value="3">3명</option><option value="4" selected>4명</option><option value="5">5명</option><option value="6">6명</option></select></label>
+              <div class="name-grid" id="passNameFields"></div>
+            </div>
+          </section>
+
+          <section class="setup-card" aria-labelledby="ruleSettingTitle">
+            <div class="setup-card-title">
+              <span>02</span>
+              <div><h3 id="ruleSettingTitle">규칙</h3><p>1의 역할에 따라 확률이 크게 달라집니다.</p></div>
+            </div>
+            <div class="rule-options" role="radiogroup" aria-label="1의 규칙">
+              <label class="rule-option is-selected">
+                <input type="radio" name="wildRule" value="standard" checked />
+                <span><strong>기본 규칙</strong><small>입찰한 눈금만 셉니다. 숨은 한 개가 맞을 확률은 1/6.</small></span>
+              </label>
+              <label class="rule-option">
+                <input type="radio" name="wildRule" value="wild" />
+                <span><strong>1 와일드</strong><small>1은 다른 눈금으로도 셉니다. 단, 1 입찰에는 1만 셉니다.</small></span>
+              </label>
+            </div>
+            <div class="rule-preview" id="rulePreview"><span>예</span><p><b>“3개의 5”</b>라면 모든 주사위에서 5만 3개 이상인지 확인합니다.</p></div>
+          </section>
+        </div>
+
+        <div class="setup-actions">
+          <button class="secondary-button" id="resumeButton" type="button" hidden>저장한 게임 계속</button>
+          <button class="primary-button" id="startButton" type="button">게임 시작 <span aria-hidden="true">→</span></button>
+        </div>
+      </section>
+
+      <section class="game-panel" id="gamePanel" hidden aria-label="라이어스 다이스 게임">
+        <div class="game-topline">
+          <div class="round-info"><span>ROUND</span><strong id="roundNumber">1</strong><small id="ruleBadge">기본 규칙</small></div>
+          <p id="turnAnnouncement" aria-live="polite"><strong>플레이어</strong> 차례입니다.</p>
+          <div class="game-tools">
+            <button class="icon-button" id="undoButton" type="button" disabled title="직전 입찰 실행 취소"><span aria-hidden="true">↶</span><span>실행 취소</span></button>
+            <button class="icon-button" id="analysisToggle" type="button" aria-pressed="true"><span aria-hidden="true">%</span><span>분석 켜짐</span></button>
+          </div>
+        </div>
+
+        <section class="player-strip" id="playerStrip" aria-label="참가자와 남은 주사위"></section>
+
+        <div class="game-layout">
+          <div class="table-column">
+            <section class="table-panel" aria-labelledby="tableTitle">
+              <div class="table-heading">
+                <div>
+                  <p class="eyebrow">PRIVATE INFORMATION</p>
+                  <h2 id="tableTitle"><span id="viewerName">플레이어</span>의 주사위</h2>
+                </div>
+                <span class="privacy-badge"><i aria-hidden="true">●</i> 나만 볼 수 있어요</span>
+              </div>
+              <div class="dice-tray" id="ownDice" aria-label="내 주사위"></div>
+
+              <div class="bid-stage" id="bidStage">
+                <div class="current-bid">
+                  <span>현재 입찰</span>
+                  <div id="currentBidDisplay" class="bid-display is-empty"><b>—</b><strong>첫 입찰을 기다리는 중</strong></div>
+                  <small id="bidderLabel">수량을 정하고 눈금을 고르세요.</small>
+                </div>
+                <div class="bid-trail-wrap">
+                  <span>입찰 흐름</span>
+                  <ol class="bid-trail" id="bidTrail"><li class="empty">아직 입찰이 없습니다.</li></ol>
+                </div>
+              </div>
+            </section>
+
+            <section class="action-panel" id="actionPanel" aria-labelledby="actionTitle">
+              <div class="action-heading">
+                <div><p class="eyebrow">YOUR DECISION</p><h2 id="actionTitle">더 높게 입찰하거나 도전하세요</h2></div>
+                <p id="legalBidHint">첫 입찰은 어떤 조합도 가능합니다.</p>
+              </div>
+
+              <div class="bid-controls">
+                <label class="quantity-control"><span>수량</span><div><button id="quantityDown" type="button" aria-label="입찰 수량 1 줄이기">−</button><input id="bidQuantity" type="number" min="1" value="1" inputmode="numeric" aria-describedby="legalBidHint" /><button id="quantityUp" type="button" aria-label="입찰 수량 1 늘리기">+</button></div></label>
+                <fieldset class="face-control">
+                  <legend>눈금</legend>
+                  <div id="faceButtons">
+                    <button type="button" data-face="1" aria-pressed="true"><span aria-hidden="true">⚀</span><small>1</small></button>
+                    <button type="button" data-face="2" aria-pressed="false"><span aria-hidden="true">⚁</span><small>2</small></button>
+                    <button type="button" data-face="3" aria-pressed="false"><span aria-hidden="true">⚂</span><small>3</small></button>
+                    <button type="button" data-face="4" aria-pressed="false"><span aria-hidden="true">⚃</span><small>4</small></button>
+                    <button type="button" data-face="5" aria-pressed="false"><span aria-hidden="true">⚄</span><small>5</small></button>
+                    <button type="button" data-face="6" aria-pressed="false"><span aria-hidden="true">⚅</span><small>6</small></button>
+                  </div>
+                </fieldset>
+              </div>
+              <div class="decision-actions">
+                <button class="primary-button bid-button" id="bidButton" type="button"><span aria-hidden="true">↑</span> 이대로 입찰 <kbd>Enter</kbd></button>
+                <button class="challenge-button" id="challengeButton" type="button" disabled><span aria-hidden="true">!</span><span><strong>도전!</strong><small>현재 입찰이 거짓이라고 판단</small></span><kbd>Space</kbd></button>
+              </div>
+              <p class="action-feedback" id="actionFeedback" role="status"></p>
+            </section>
+          </div>
+
+          <aside class="analysis-column" id="analysisColumn" aria-label="확률 분석과 기록">
+            <section class="analysis-card probability-card" aria-labelledby="probabilityTitle">
+              <div class="card-heading">
+                <span class="card-icon" aria-hidden="true">P</span>
+                <div><p>조건부 확률</p><h2 id="probabilityTitle">현재 입찰이 맞을 가능성</h2></div>
+              </div>
+              <div class="probability-hero">
+                <strong id="probabilityValue">—</strong>
+                <span id="probabilityVerdict">입찰이 나오면 계산합니다</span>
+              </div>
+              <div class="probability-meter" role="img" id="probabilityMeter" aria-label="현재 입찰 성립 확률"><span id="probabilityFill"></span><i></i><i></i></div>
+              <p class="probability-copy" id="probabilityCopy">내 주사위와 다른 사람이 가진 주사위 개수를 이용해 계산해요.</p>
+              <details class="formula-details">
+                <summary>계산식과 용어 보기</summary>
+                <div id="formulaExplanation"></div>
+              </details>
+            </section>
+
+            <section class="analysis-card distribution-card" aria-labelledby="distributionTitle">
+              <div class="card-heading compact"><div><p>확률분포</p><h2 id="distributionTitle">전체에 적어도 몇 개?</h2></div><span class="legend"><i></i>입찰 이상</span></div>
+              <div class="distribution" id="distributionChart" role="img" aria-label="일치하는 주사위 개수의 확률분포"><p class="empty-chart">현재 입찰 뒤에 분포가 나타납니다.</p></div>
+            </section>
+
+            <section class="analysis-card compare-card" id="compareCard" hidden aria-labelledby="compareTitle">
+              <div class="card-heading compact"><div><p>예측 ↔ 실제</p><h2 id="compareTitle">도전 결과 비교</h2></div><span class="result-symbol" id="compareSymbol" aria-hidden="true">✓</span></div>
+              <div class="compare-grid"><div><span>도전 직전 예측</span><strong id="predictedValue">0%</strong></div><div><span>실제 일치</span><strong id="actualValue">0개</strong></div></div>
+              <p id="compareCopy"></p>
+            </section>
+
+            <section class="analysis-card log-card" aria-labelledby="logTitle">
+              <div class="card-heading compact"><div><p>GAME LOG</p><h2 id="logTitle">라운드 기록</h2></div><span id="logCount">0회</span></div>
+              <ol class="round-log" id="roundLog"><li class="empty">첫 도전을 기다리고 있어요.</li></ol>
+            </section>
+          </aside>
+        </div>
+      </section>
+
+      <section class="lesson-strip" aria-labelledby="lessonTitle">
+        <div><p class="eyebrow">수업에서 이렇게 질문해 보세요</p><h2 id="lessonTitle">“가능성이 낮다”와 “거짓이다”는 같은 말일까요?</h2></div>
+        <ol><li><b>예측</b><span>내 정보로 숨은 주사위를 추정하기</span></li><li><b>결정</b><span>입찰 또는 도전의 근거 말하기</span></li><li><b>비교</b><span>계산한 확률과 실제 결과 돌아보기</span></li></ol>
+      </section>
+    </main>
+
+    <section class="privacy-screen" id="privacyScreen" hidden aria-modal="true" role="dialog" aria-labelledby="privacyTitle">
+      <div class="privacy-cup" aria-hidden="true"><span>?</span></div>
+      <p class="eyebrow">PASS THE DEVICE</p>
+      <h2 id="privacyTitle">다음 사람에게 넘겨주세요</h2>
+      <p id="privacyMessage">화면을 가린 뒤 다음 참가자만 버튼을 누르세요.</p>
+      <button class="primary-button" id="revealTurnButton" type="button"><span id="nextPlayerName">플레이어</span>입니다 · 주사위 보기</button>
+      <button class="privacy-undo" id="privacyUndoButton" type="button" hidden>직전 입찰 실행 취소</button>
+    </section>
+
+    <dialog class="modal reveal-modal" id="revealDialog">
+      <form method="dialog" class="modal-shell">
+        <div class="reveal-heading"><span class="result-kicker" id="revealKicker">도전 성공</span><h2 id="revealTitle">주사위를 공개합니다</h2><p id="revealSummary"></p></div>
+        <div class="reveal-bid" id="revealBid"></div>
+        <div class="reveal-players" id="revealPlayers"></div>
+        <div class="loss-callout" id="lossCallout"></div>
+        <div class="modal-actions"><button class="primary-button" id="nextRoundButton" value="default" type="button">다음 라운드 <span aria-hidden="true">→</span></button></div>
+      </form>
+    </dialog>
+
+    <dialog class="modal" id="rulesDialog">
+      <form method="dialog" class="modal-shell">
+        <div class="modal-header"><div><p class="eyebrow">CLASS &amp; GAME GUIDE</p><h2>라이어스 다이스 설명서</h2></div><button class="modal-close" value="close" aria-label="설명서 닫기">×</button></div>
+        <div class="rule-steps">
+          <article><b>1</b><div><h3>나만 확인</h3><p>각자 자기 주사위만 봅니다. 다른 주사위는 모두 숨겨져 있어요.</p></div></article>
+          <article><b>2</b><div><h3>전체를 추정해 입찰</h3><p>“3개의 5”처럼 모든 참가자의 주사위에 특정 눈금이 적어도 몇 개 있다고 말합니다.</p></div></article>
+          <article><b>3</b><div><h3>더 높게 또는 도전</h3><p>수량을 늘리거나, 같은 수량에서 더 큰 눈금을 말해야 합니다. 입찰이 거짓 같다면 도전합니다.</p></div></article>
+          <article><b>4</b><div><h3>공개하고 한 개 상실</h3><p>입찰이 맞으면 도전자, 틀리면 마지막 입찰자가 주사위 1개를 잃습니다. 주사위가 없는 참가자는 탈락합니다.</p></div></article>
+        </div>
+        <div class="rule-note"><strong>입찰 순서 예시</strong><p>“2개의 6” 다음에는 “3개의 1”이 가능하지만 “2개의 5”는 불가능합니다. 수량이 먼저, 같은 수량이면 눈금이 커야 해요.</p></div>
+        <div class="variant-note"><span>1 와일드 변형</span><p>“4개의 5”를 판정할 때 5와 1을 함께 셉니다. 하지만 “4개의 1”에는 1만 셉니다.</p></div>
+        <section class="class-guide" aria-labelledby="classGuideTitle">
+          <div class="class-guide-heading"><p class="eyebrow">LESSON FLOW</p><h3 id="classGuideTitle">수업 운영 안내</h3></div>
+          <div class="class-guide-grid">
+            <article><b>도입 · 5분</b><p>“성립 확률이 20%면 거짓일까?”를 먼저 묻고, 가능성이 낮다는 말과 거짓이라는 판단을 구분합니다.</p></article>
+            <article><b>게임 · 20분</b><p>입찰 전에 “숨은 주사위 몇 개 중 적어도 몇 개가 필요하다”는 근거 문장을 말하게 합니다.</p></article>
+            <article><b>정리 · 10분</b><p>도전 직전 예측과 실제 결과를 비교하고, 결과가 달라도 당시 판단이 타당할 수 있는지 토론합니다.</p></article>
+          </div>
+          <div class="teacher-prompts"><strong>교사용 핵심 질문</strong><ul><li>내 주사위에 일치하는 눈금이 하나 더 보이면 확률은 어떻게 변하나요?</li><li>1 와일드에서 2~6 입찰과 1 입찰의 확률이 다른 이유는 무엇인가요?</li><li>앞사람의 입찰 흐름은 계산한 확률 외에 어떤 정보를 주나요?</li></ul></div>
+        </section>
+      </form>
+    </dialog>
+
+    <dialog class="modal tutorial-modal" id="tutorialDialog">
+      <form method="dialog" class="modal-shell">
+        <div class="modal-header"><div><p class="eyebrow">60초 튜토리얼</p><h2>입찰은 ‘전체’에 대한 주장입니다</h2></div><button class="modal-close" value="close" aria-label="튜토리얼 닫기">×</button></div>
+        <div class="tutorial-example"><div class="mini-dice"><i>⚄</i><i>⚁</i><i>⚄</i><i>⚀</i><i>⚂</i></div><div><span>내 주사위에 5가 2개</span><strong>다른 10개 중 5가<br />1개 이상이면 “3개의 5”는 참!</strong></div></div>
+        <div class="tutorial-grid"><article><span>① 읽기</span><p>현재 입찰의 <b>수량</b>과 <b>눈금</b>을 확인합니다.</p></article><article><span>② 계산</span><p>내가 이미 가진 일치 눈금을 빼고, 숨은 주사위에서 필요한 개수를 생각합니다.</p></article><article><span>③ 선택</span><p>확률은 판단 근거이지 정답이 아닙니다. 상대의 허세도 고려하세요.</p></article></div>
+        <div class="modal-actions"><button class="primary-button" value="close" id="tutorialDoneButton">알겠어요 · 게임 준비하기</button></div>
+      </form>
+    </dialog>
+
+    <dialog class="modal winner-modal" id="winnerDialog">
+      <form method="dialog" class="modal-shell">
+        <div class="winner-mark" aria-hidden="true">★</div><p class="eyebrow">FINAL WINNER</p><h2><span id="winnerName">플레이어</span> 승리!</h2><p id="winnerSummary"></p>
+        <div class="winner-stats" id="winnerStats"></div>
+        <div class="modal-actions split"><button class="secondary-button" id="winnerSetupButton" type="button">설정으로</button><button class="primary-button" id="rematchButton" type="button">같은 설정으로 다시</button></div>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="./game-logic.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
