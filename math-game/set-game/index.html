@@ -41,102 +41,201 @@
         </button>
       </section>
 
-      <section class="summary-strip" aria-label="게임 현황">
-        <div>
-          <span>현재 버전</span>
-          <strong id="modeSummary">4속성 · 81장</strong>
-        </div>
-        <div>
-          <span>찾은 SET</span>
-          <strong><b id="foundCount">0</b>개</strong>
-        </div>
-        <div>
-          <span>보드 / 남은 카드</span>
-          <strong><b id="boardCount">12</b> / <b id="deckCount">69</b></strong>
-        </div>
-        <div>
-          <span>선택</span>
-          <strong><b id="selectedCount">0</b> / 3장</strong>
-        </div>
-      </section>
+      <nav class="tool-tabs" aria-label="SET 도구 탭">
+        <button class="tab-button is-active" type="button" data-tab="game" aria-pressed="true">
+          게임
+        </button>
+        <button class="tab-button" type="button" data-tab="learn" aria-pressed="false">
+          학습
+        </button>
+      </nav>
 
-      <section class="game-layout">
-        <section class="board-panel" aria-labelledby="boardTitle">
-          <div class="panel-heading">
-            <div>
-              <p class="eyebrow" id="modeEyebrow">4 ATTRIBUTES · 81 CARDS</p>
-              <h1 id="boardTitle">SET이 되는 세 장을 찾으세요</h1>
-            </div>
-            <div class="board-actions">
-              <button class="secondary-button" id="hintButton" type="button">힌트</button>
-              <button class="secondary-button" id="shuffleButton" type="button">보드 섞기</button>
-              <button class="secondary-button" id="noSetButton" type="button">SET 없음</button>
-            </div>
+      <section class="tool-view" data-view="game">
+        <section class="summary-strip" aria-label="게임 현황">
+          <div>
+            <span>현재 버전</span>
+            <strong id="modeSummary">4속성 · 81장</strong>
           </div>
-
-          <div class="attribute-guide" id="attributeGuide" aria-label="사용 속성">
-            <span>개수 1·2·3</span>
-            <span>원·마름모·별</span>
-            <span>빨강·초록·파랑</span>
-            <span>불투명·반투명·투명</span>
+          <div>
+            <span>찾은 SET</span>
+            <strong><b id="foundCount">0</b>개</strong>
           </div>
-
-          <div class="set-board" id="setBoard" aria-label="SET 카드 게임판"></div>
-
-          <p class="status-message" id="statusMessage" aria-live="polite">
-            카드 세 장을 선택한 뒤 SET 판정 버튼을 누르세요.
-          </p>
+          <div>
+            <span>보드 / 남은 카드</span>
+            <strong><b id="boardCount">12</b> / <b id="deckCount">69</b></strong>
+          </div>
+          <div>
+            <span>선택</span>
+            <strong><b id="selectedCount">0</b> / 3장</strong>
+          </div>
         </section>
 
-        <aside class="side-panel">
-          <section class="selection-panel" aria-labelledby="selectionTitle">
+        <section class="game-layout">
+          <section class="board-panel" aria-labelledby="boardTitle">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow" id="modeEyebrow">4 ATTRIBUTES · 81 CARDS</p>
+                <h1 id="boardTitle">SET이 되는 세 장을 찾으세요</h1>
+              </div>
+              <div class="board-actions">
+                <button class="secondary-button" id="hintButton" type="button">힌트</button>
+                <button class="secondary-button" id="shuffleButton" type="button">보드 섞기</button>
+                <button class="secondary-button" id="noSetButton" type="button">SET 없음</button>
+              </div>
+            </div>
+
+            <div class="attribute-guide" id="attributeGuide" aria-label="사용 속성">
+              <span>개수 1·2·3</span>
+              <span>원·마름모·별</span>
+              <span>빨강·초록·파랑</span>
+              <span>불투명·반투명·투명</span>
+            </div>
+
+            <div class="set-board" id="setBoard" aria-label="SET 카드 게임판"></div>
+
+            <p class="status-message" id="statusMessage" aria-live="polite">
+              카드 세 장을 선택한 뒤 SET 판정 버튼을 누르세요.
+            </p>
+          </section>
+
+          <aside class="side-panel">
+            <section class="selection-panel" aria-labelledby="selectionTitle">
+              <div class="section-title">
+                <div>
+                  <p class="eyebrow">SELECT 3</p>
+                  <h2 id="selectionTitle">선택한 카드</h2>
+                </div>
+                <button class="text-button" id="clearButton" type="button">선택 해제</button>
+              </div>
+              <div class="selection-slots" id="selectionSlots" aria-label="선택한 카드 목록"></div>
+              <button class="primary-button full judge-button" id="judgeButton" type="button" disabled>
+                SET 판정
+              </button>
+            </section>
+
+            <section class="timer-panel" aria-labelledby="timerTitle">
+              <div class="section-title timer-title">
+                <div>
+                  <p class="eyebrow">MINI TIMER</p>
+                  <h2 id="timerTitle">라운드 타이머</h2>
+                </div>
+                <div class="timer-display" id="timerDisplay" aria-live="polite">01:00</div>
+              </div>
+              <div class="timer-progress" aria-hidden="true"><span id="timerProgress"></span></div>
+              <div class="timer-controls">
+                <select id="timerPreset" aria-label="타이머 시간">
+                  <option value="30">30초</option>
+                  <option value="60" selected>1분</option>
+                  <option value="90">1분 30초</option>
+                  <option value="180">3분</option>
+                </select>
+                <button class="primary-button" id="timerToggleButton" type="button">시작</button>
+                <button class="secondary-button" id="timerResetButton" type="button">초기화</button>
+              </div>
+            </section>
+
+            <section class="history-panel" aria-labelledby="historyTitle">
+              <div class="section-title compact">
+                <div>
+                  <p class="eyebrow">FOUND SETS</p>
+                  <h2 id="historyTitle">찾은 기록</h2>
+                </div>
+                <span class="history-count" id="historyCount">0개</span>
+              </div>
+              <ol class="history-list" id="historyList">
+                <li class="empty-history">아직 찾은 SET이 없습니다.</li>
+              </ol>
+            </section>
+          </aside>
+        </section>
+      </section>
+
+      <section class="tool-view learning-view" data-view="learn" hidden>
+        <section class="learning-hero" aria-labelledby="learningTitle">
+          <div>
+            <p class="eyebrow" id="learningModeLabel">4 ATTRIBUTES · LEARNING</p>
+            <h1 id="learningTitle">SET의 수학 구조를 직접 확인해 보세요</h1>
+            <p>
+              원자료처럼 카드를 속성값 1·2·3으로 바꾸면, SET 판정은 각 속성의
+              “같음/다름” 규칙과 삼진법 나머지 계산으로 설명할 수 있습니다.
+            </p>
+          </div>
+          <aside class="source-note">
+            <strong>원자료 연결</strong>
+            <span id="sourceNoteText">
+              엑셀 자료는 색·개수·모양·배경을 1·2·3 코드로 바꿔 세 카드 조합을 검사합니다.
+            </span>
+          </aside>
+        </section>
+
+        <section class="learning-layout">
+          <article class="learning-card wide" aria-labelledby="combinationTitle">
             <div class="section-title">
               <div>
-                <p class="eyebrow">SELECT 3</p>
-                <h2 id="selectionTitle">선택한 카드</h2>
+                <p class="eyebrow">RULE</p>
+                <h2 id="combinationTitle">결합 규칙: 같거나, 모두 다르거나</h2>
               </div>
-              <button class="text-button" id="clearButton" type="button">선택 해제</button>
             </div>
-            <div class="selection-slots" id="selectionSlots" aria-label="선택한 카드 목록"></div>
-            <button class="primary-button full judge-button" id="judgeButton" type="button" disabled>
-              SET 판정
-            </button>
-          </section>
+            <p class="learning-copy">
+              세 장을 비교할 때 속성 하나씩 따로 봅니다. 어떤 속성에서 값이 2종류만 섞이면
+              SET이 깨지고, 모든 속성이 통과해야 SET입니다.
+            </p>
+            <div class="rule-cards" id="combinationRules"></div>
+          </article>
 
-          <section class="timer-panel" aria-labelledby="timerTitle">
-            <div class="section-title timer-title">
+          <article class="learning-card wide" aria-labelledby="ternaryTitle">
+            <div class="section-title">
               <div>
-                <p class="eyebrow">MINI TIMER</p>
-                <h2 id="timerTitle">라운드 타이머</h2>
+                <p class="eyebrow">TERNARY CHECK</p>
+                <h2 id="ternaryTitle">삼진법 검토</h2>
               </div>
-              <div class="timer-display" id="timerDisplay" aria-live="polite">01:00</div>
+              <div class="board-actions compact-actions">
+                <button class="secondary-button" id="setExampleButton" type="button">SET 예시</button>
+                <button class="secondary-button" id="nonSetExampleButton" type="button">아닌 예시</button>
+              </div>
             </div>
-            <div class="timer-progress" aria-hidden="true"><span id="timerProgress"></span></div>
-            <div class="timer-controls">
-              <select id="timerPreset" aria-label="타이머 시간">
-                <option value="30">30초</option>
-                <option value="60" selected>1분</option>
-                <option value="90">1분 30초</option>
-                <option value="180">3분</option>
-              </select>
-              <button class="primary-button" id="timerToggleButton" type="button">시작</button>
-              <button class="secondary-button" id="timerResetButton" type="button">초기화</button>
-            </div>
-          </section>
+            <div class="learning-cards" id="vectorCards" aria-label="삼진법 검토 카드"></div>
+            <div class="vector-table" id="vectorTable"></div>
+            <p class="learning-result" id="vectorResult" aria-live="polite"></p>
+          </article>
 
-          <section class="history-panel" aria-labelledby="historyTitle">
-            <div class="section-title compact">
+          <article class="learning-card" aria-labelledby="thirdCardTitle">
+            <div class="section-title">
               <div>
-                <p class="eyebrow">FOUND SETS</p>
-                <h2 id="historyTitle">찾은 기록</h2>
+                <p class="eyebrow">FIND THE THIRD</p>
+                <h2 id="thirdCardTitle">세트가 되는 나머지 한 장 찾기</h2>
               </div>
-              <span class="history-count" id="historyCount">0개</span>
+              <button class="text-button" id="newThirdPuzzleButton" type="button">새 문제</button>
             </div>
-            <ol class="history-list" id="historyList">
-              <li class="empty-history">아직 찾은 SET이 없습니다.</li>
-            </ol>
-          </section>
-        </aside>
+            <p class="learning-copy">
+              두 카드가 정해지면 SET을 완성하는 카드는 딱 한 장입니다.
+            </p>
+            <div class="pair-zone" id="thirdPair" aria-label="문제 카드 두 장"></div>
+            <div class="third-rule" id="thirdRule"></div>
+            <div class="candidate-grid" id="thirdCandidates" aria-label="후보 카드"></div>
+            <p class="learning-result" id="thirdResult" aria-live="polite"></p>
+          </article>
+
+          <article class="learning-card" aria-labelledby="noSetTitle">
+            <div class="section-title">
+              <div>
+                <p class="eyebrow">NO-SET BOARD</p>
+                <h2 id="noSetTitle">SET이 안 되도록 카드 배치하기</h2>
+              </div>
+              <button class="text-button" id="resetNoSetButton" type="button">처음부터</button>
+            </div>
+            <p class="learning-copy">
+              후보 카드 중 하나를 골라 현재 배치에 추가해 보세요. SET이 생기면 실패입니다.
+            </p>
+            <div class="no-set-meta" id="noSetMeta"></div>
+            <div class="no-set-board" id="noSetBoard" aria-label="SET 없는 배치"></div>
+            <div class="board-actions compact-actions">
+              <button class="secondary-button" id="refreshNoSetButton" type="button">후보 새로 뽑기</button>
+            </div>
+            <div class="candidate-grid" id="noSetCandidates" aria-label="배치 후보 카드"></div>
+            <p class="learning-result" id="noSetResult" aria-live="polite"></p>
+          </article>
+        </section>
       </section>
     </main>
 
