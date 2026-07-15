@@ -1500,6 +1500,24 @@ body.is-modal-open {
 }
 .card-triangle-drawing .triangle-dice rect { fill: white; stroke: var(--navy); stroke-width: 4; }
 
+.card-square-battle .tool-visual { background: #edf6ee; }
+.card-square-battle .square-preview-grid path { fill: none; stroke: #c4d9c5; stroke-width: 2.5; }
+.card-square-battle .square-preview-grid circle { fill: white; stroke: var(--navy); stroke-width: 3; }
+.card-square-battle .square-preview-shape {
+  fill: rgba(93, 210, 178, 0.24);
+  stroke: var(--orange);
+  stroke-linejoin: round;
+  stroke-width: 7;
+}
+.card-square-battle .square-preview-math rect { fill: white; stroke: var(--navy); stroke-width: 4; }
+.card-square-battle .square-preview-math path { fill: none; stroke: #c4d9c5; stroke-width: 3; }
+.card-square-battle .square-preview-math text {
+  fill: var(--navy);
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-weight: 900;
+}
+
 .card-pharaoh .tool-visual { background: #fff4d9; }
 .card-pharaoh .pharaoh-sun { fill: var(--yellow); }
 .card-pharaoh .pharaoh-pyramid { fill: #dba744; stroke: var(--navy); stroke-linejoin: round; stroke-width: 5; }

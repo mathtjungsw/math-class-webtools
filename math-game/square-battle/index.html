@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f7f2" />
+    <meta
+      name="description"
+      content="격자점 네 개로 정사각형을 만들고 변의 길이, 넓이, 대각선과 피타고라스 정리를 탐구하는 수학 게임"
+    />
+    <title>정사각형 만들기 대결 | 수학 수업 웹툴 모음</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="back-link" href="../../index.html#tools" aria-label="웹툴 목록으로 돌아가기">
+        <span aria-hidden="true">←</span>
+        <span>웹툴 목록</span>
+      </a>
+      <a class="brand" href="./index.html" aria-label="정사각형 만들기 대결 처음으로">
+        <span class="brand-mark" aria-hidden="true">□</span>
+        <span><strong>정사각형 만들기 대결</strong><small>G1 · 좌표와 피타고라스 정리</small></span>
+      </a>
+      <div class="header-actions">
+        <button class="ghost-button" id="helpButton" type="button">설명서 보기</button>
+        <button class="danger-button" id="newGameButton" type="button">새 게임</button>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section class="intro-panel" aria-labelledby="pageTitle">
+        <div>
+          <p class="eyebrow">격자 위 네 점, 하나의 완전한 조건</p>
+          <h1 id="pageTitle">기울여도 정사각형일까?</h1>
+          <p>
+            격자점 4개를 골라 정사각형을 완성하세요. 좌표의 차이로 변의 길이와 넓이를 구하고,
+            대각선까지 피타고라스 정리로 연결해 봅니다.
+          </p>
+        </div>
+        <div class="intro-formula" aria-label="핵심 수학 관계">
+          <span>변²</span>
+          <strong>a² + b²</strong>
+          <i aria-hidden="true">→</i>
+          <span>넓이</span>
+        </div>
+      </section>
+
+      <section class="setup-panel" aria-labelledby="setupTitle">
+        <div class="setup-heading">
+          <div>
+            <p class="mini-label">GAME SETUP</p>
+            <h2 id="setupTitle">게임 방식</h2>
+          </div>
+          <div class="mode-switch" role="group" aria-label="게임 방식 선택">
+            <button class="mode-button is-active" type="button" data-mode="practice" aria-pressed="true">개인 연습</button>
+            <button class="mode-button" type="button" data-mode="battle" aria-pressed="false">팀 대결</button>
+          </div>
+        </div>
+        <div class="battle-settings" id="battleSettings" hidden>
+          <label>
+            <span>참가 팀</span>
+            <select id="playerCount">
+              <option value="2" selected>2팀</option>
+              <option value="3">3팀</option>
+              <option value="4">4팀</option>
+            </select>
+          </label>
+          <label>
+            <span>팀별 도전 횟수</span>
+            <select id="roundCount">
+              <option value="3">3회</option>
+              <option value="5" selected>5회</option>
+              <option value="8">8회</option>
+            </select>
+          </label>
+          <button class="primary-button" id="applySettingsButton" type="button">대결 시작</button>
+        </div>
+      </section>
+
+      <section class="game-layout">
+        <aside class="control-panel" aria-label="게임 진행 정보">
+          <section class="turn-card" aria-live="polite">
+            <span class="mini-label" id="turnLabel">개인 연습</span>
+            <div class="turn-row">
+              <span class="team-dot" id="turnDot" aria-hidden="true"></span>
+              <strong id="turnPlayer">자유 탐구</strong>
+            </div>
+            <p id="turnMessage">서로 다른 점 4개를 선택하세요.</p>
+          </section>
+
+          <section class="selection-card">
+            <div class="card-heading">
+              <div>
+                <span class="mini-label">선택한 좌표</span>
+                <strong><span id="selectionCount">0</span> / 4</strong>
+              </div>
+              <button class="text-button" id="clearButton" type="button" disabled>선택 지우기</button>
+            </div>
+            <ol class="coordinate-slots" id="coordinateSlots" aria-label="선택한 네 점"></ol>
+            <div class="feedback is-neutral" id="feedback" role="status" aria-live="polite">
+              첫 번째 점을 선택해 시작하세요.
+            </div>
+            <button class="primary-button full-button" id="confirmButton" type="button" disabled>정사각형 확정</button>
+            <button class="ghost-button full-button" id="undoButton" type="button" disabled>마지막 행동 되돌리기</button>
+          </section>
+
+          <section class="score-card">
+            <div class="card-heading">
+              <div>
+                <span class="mini-label">SCORE</span>
+                <h2 id="scoreTitle">발견 기록</h2>
+              </div>
+              <strong id="completedCount">0개</strong>
+            </div>
+            <ol class="score-list" id="scoreList"></ol>
+          </section>
+        </aside>
+
+        <section class="board-panel" aria-labelledby="boardTitle">
+          <div class="board-toolbar">
+            <div>
+              <span class="mini-label">9 × 9 COORDINATE GRID</span>
+              <h2 id="boardTitle">격자판</h2>
+            </div>
+            <p><kbd>← ↑ → ↓</kbd> 이동 · <kbd>Enter</kbd> 선택</p>
+          </div>
+          <div class="board-wrap">
+            <div class="board-stage" id="boardStage">
+              <svg class="board-art" id="boardArt" viewBox="0 0 560 560" aria-hidden="true"></svg>
+              <div class="point-layer" id="pointLayer" role="grid" aria-label="x와 y가 -4부터 4까지인 격자점"></div>
+            </div>
+          </div>
+          <div class="board-legend" aria-label="격자판 범례">
+            <span><i class="legend-point selected"></i> 선택한 점</span>
+            <span><i class="legend-line valid"></i> 유효한 정사각형</span>
+            <span><i class="legend-line saved"></i> 완성 기록</span>
+          </div>
+        </section>
+
+        <aside class="math-panel" aria-label="수학 해설과 기록">
+          <section class="math-card" id="mathCard">
+            <div class="card-heading">
+              <div>
+                <span class="mini-label">MATH NOTE</span>
+                <h2>정사각형 분석</h2>
+              </div>
+              <span class="shape-chip" id="shapeChip">선택 전</span>
+            </div>
+            <div class="empty-math" id="emptyMath">
+              점 4개를 선택하면 좌표, 변의 길이, 넓이와 대각선이 여기에 나타납니다.
+            </div>
+            <div class="math-content" id="mathContent" hidden>
+              <div class="coordinate-summary" id="coordinateSummary"></div>
+              <dl class="measure-grid">
+                <div><dt>변의 길이</dt><dd id="sideValue">-</dd></div>
+                <div><dt>넓이</dt><dd id="areaValue">-</dd></div>
+                <div><dt>대각선</dt><dd id="diagonalValue">-</dd></div>
+              </dl>
+              <div class="reasoning-box">
+                <strong>피타고라스로 설명하면</strong>
+                <p id="reasoningText"></p>
+              </div>
+            </div>
+          </section>
+
+          <section class="history-card">
+            <div class="card-heading">
+              <div>
+                <span class="mini-label">HISTORY</span>
+                <h2>완성한 정사각형</h2>
+              </div>
+              <span id="historyCount">0</span>
+            </div>
+            <ol class="history-list" id="historyList"></ol>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <dialog class="help-dialog" id="helpDialog">
+      <form method="dialog">
+        <header>
+          <div>
+            <p class="mini-label">CLASS GUIDE</p>
+            <h2>게임 방법과 수업 활용</h2>
+          </div>
+          <button class="icon-button" type="submit" aria-label="도움말 닫기">×</button>
+        </header>
+        <div class="help-grid">
+          <section>
+            <h3>개인 연습</h3>
+            <ol>
+              <li>격자점 4개를 선택합니다.</li>
+              <li>네 변과 두 대각선의 조건을 확인합니다.</li>
+              <li>정사각형이면 확정하고 수학 설명을 읽습니다.</li>
+              <li>축에 평행한 모양과 기울어진 모양을 모두 찾아봅니다.</li>
+            </ol>
+          </section>
+          <section>
+            <h3>팀 대결</h3>
+            <ol>
+              <li>2~4팀과 팀별 도전 횟수를 정합니다.</li>
+              <li>각 팀이 번갈아 서로 다른 정사각형을 만듭니다.</li>
+              <li>넓이만큼 점수를 얻고, 기울어진 정사각형은 2점을 더 얻습니다.</li>
+              <li>틀린 선택은 턴을 소모하지 않으며, 중복 도형은 확정할 수 없습니다.</li>
+            </ol>
+          </section>
+          <section>
+            <h3>수업 활용</h3>
+            <p>
+              먼저 모양만 보고 판단하게 한 뒤, 두 점 사이의 가로·세로 변화량을 찾게 하세요.
+              변의 길이²과 넓이가 모두 <strong>a²+b²</strong>가 되는 이유, 대각선²이 그 두 배가 되는
+              이유를 모둠별로 설명하게 하면 제곱근과 피타고라스 정리를 자연스럽게 연결할 수 있습니다.
+            </p>
+          </section>
+          <section>
+            <h3>핵심 발문</h3>
+            <ul>
+              <li>네 변의 길이가 같다는 것만으로 충분할까요?</li>
+              <li>기울어진 한 변을 벡터 (a, b)로 보면 넓이는 왜 a²+b²일까요?</li>
+              <li>같은 넓이를 가진 서로 다른 기울기의 정사각형을 찾을 수 있나요?</li>
+            </ul>
+          </section>
+        </div>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="./geometry.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
