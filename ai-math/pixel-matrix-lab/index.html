@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="픽셀값 행렬과 3×3 커널의 합성곱 계산을 직접 보고 조작하는 수학 실험실" />
+    <title>픽셀 행렬·이미지 필터 실험실</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="tool-topbar">
+      <a class="brand" href="../../" aria-label="수학 수업 웹툴 모음으로 이동">
+        <span class="brand-mark" aria-hidden="true">E5</span>
+        <span><strong>픽셀 행렬·이미지 필터 실험실</strong><small>인공지능 수학 · 행렬과 합성곱</small></span>
+      </a>
+      <nav class="top-actions" aria-label="상단 메뉴">
+        <button class="ghost-button" id="openGuideButton" type="button">설명서 보기</button>
+        <a class="ghost-button" href="#missions">탐구 미션</a>
+        <a class="ghost-button" href="../../">전체 웹툴</a>
+      </nav>
+    </header>
+
+    <dialog id="guideDialog" aria-labelledby="guideTitle">
+      <div class="dialog-head"><div><p class="eyebrow">교사·학생 공용 안내</p><h2 id="guideTitle">이미지를 수의 행렬로 읽어 봅시다</h2></div><button id="closeGuideButton" class="icon-button" type="button" aria-label="안내 닫기">×</button></div>
+      <div class="dialog-body">
+        <ol class="guide-steps">
+          <li><b>1. 이미지 준비</b><span>예시를 고르거나 로컬 이미지를 불러오고, 픽셀 그림을 직접 그립니다.</span></li>
+          <li><b>2. 행렬 읽기</b><span>4×4·8×8·16×16 명도 행렬의 숫자와 회색 밝기를 함께 관찰합니다.</span></li>
+          <li><b>3. 해상도 비교</b><span>최근접과 면적 평균 축소가 정보를 고르는 방법을 비교합니다.</span></li>
+          <li><b>4. 합성곱 계산</b><span>3×3 커널이 이동하며 곱하고 더하는 계산을 한 칸씩 확인합니다.</span></li>
+        </ol>
+        <div class="notice"><b>개인정보 보호</b><p>업로드한 이미지는 서버로 전송되지 않으며 현재 브라우저 안에서만 처리됩니다. 큰 이미지는 최대 512×512로 안전하게 축소합니다.</p></div>
+        <div class="concept-grid"><article><b>이 도구가 하는 것</b><p>행렬 계산과 고정된 이미지 필터를 체험합니다.</p></article><article><b>이 도구가 하지 않는 것</b><p>AI 모델을 학습하거나 이미지를 외부 서비스에 보내지 않습니다.</p></article></div>
+      </div>
+      <div class="dialog-foot"><button id="startButton" class="primary-button" type="button">실험 시작하기</button></div>
+    </dialog>
+
+    <main class="workspace">
+      <section class="hero" aria-labelledby="pageTitle">
+        <div><p class="eyebrow">E5 · 인공지능과 수학의 만남</p><h1 id="pageTitle">사진 한 장은<br /><em>숫자 행렬</em>입니다</h1><p>밝기를 0부터 255까지의 수로 바꾸고, 3×3 커널이 주변 픽셀을 곱하고 더해 새 이미지를 만드는 과정을 직접 계산해 보세요.</p></div>
+        <div class="hero-demo" aria-hidden="true"><div class="mini-picture"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span>→</span><div class="mini-matrix"><b>34</b><b>82</b><b>126</b><b>61</b><b>174</b><b>229</b><b>18</b><b>112</b><b>248</b></div></div>
+      </section>
+
+      <nav class="step-nav" aria-label="실험 단계">
+        <a href="#input"><b>01</b><span>이미지 입력</span></a><a href="#matrix"><b>02</b><span>픽셀 행렬</span></a><a href="#resolution"><b>03</b><span>해상도 비교</span></a><a href="#convolution"><b>04</b><span>커널 합성곱</span></a>
+      </nav>
+      <p class="status" id="statusMessage" role="status" aria-live="polite">내장 예시 ‘웃는 로봇’을 8×8 명도 행렬로 준비했습니다.</p>
+
+      <section class="panel" id="input" aria-labelledby="inputTitle">
+        <div class="section-heading"><div><p class="eyebrow">01 · 이미지 입력</p><h2 id="inputTitle">관찰할 이미지를 준비하세요</h2></div><span class="privacy-badge">기기 안에서만 처리</span></div>
+        <div class="input-layout">
+          <div class="source-panel">
+            <div class="canvas-frame"><canvas id="sourceCanvas" width="320" height="320" aria-label="선택한 원본 이미지"></canvas><span id="sourceSize">320 × 320 px</span></div>
+            <div class="input-actions">
+              <label>내장 예시<select id="sampleSelect"><option value="robot">웃는 로봇</option><option value="landscape">산과 달</option><option value="gradient">명도 계단</option><option value="checker">체크 패턴</option></select></label>
+              <label class="file-button">내 이미지 열기<input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" /></label>
+              <button id="toggleEditorButton" class="secondary-button" type="button" aria-expanded="false" aria-controls="pixelEditor">픽셀 그림 그리기</button>
+            </div>
+          </div>
+          <div class="editor-panel" id="pixelEditor" hidden>
+            <div class="subheading"><div><h3>16×16 픽셀 그림판</h3><p>칸을 누르거나 드래그해 명도를 칠하세요.</p></div><output id="brushOutput" for="brushRange">명도 32</output></div>
+            <label class="range-label">붓 명도 <input id="brushRange" type="range" min="0" max="255" value="32" /></label>
+            <div id="drawGrid" class="draw-grid" role="grid" aria-label="16×16 픽셀 그림판"></div>
+            <div class="button-row"><button id="clearDrawingButton" class="secondary-button" type="button">흰색으로 지우기</button><button id="useDrawingButton" class="primary-button" type="button">이 그림으로 실험</button></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="matrix" aria-labelledby="matrixTitle">
+        <div class="section-heading"><div><p class="eyebrow">02 · 픽셀 행렬</p><h2 id="matrixTitle">밝기를 숫자로 읽어 보세요</h2></div><div class="segmented" role="group" aria-label="행렬 해상도"><button type="button" data-resolution="4">4×4</button><button class="is-active" type="button" data-resolution="8">8×8</button><button type="button" data-resolution="16">16×16</button></div></div>
+        <div class="matrix-layout">
+          <div>
+            <div class="matrix-toolbar"><div class="legend"><span>0 검정</span><i></i><span>255 흰색</span></div><label class="switch"><input id="binaryToggle" type="checkbox" /><span>0·1 이진 행렬 보기</span></label></div>
+            <div id="matrixGrid" class="matrix-grid" role="grid" aria-label="명도값 행렬"></div>
+          </div>
+          <aside class="inspector" aria-labelledby="inspectorTitle">
+            <div><p class="eyebrow">선택한 셀</p><h3 id="inspectorTitle">행 <span id="cellRow">1</span>, 열 <span id="cellColumn">1</span></h3></div>
+            <div class="selected-swatch" id="selectedSwatch"><strong id="cellLuminance">0</strong><span>명도</span></div>
+            <dl><div><dt>원본 위치</dt><dd id="sourcePosition">x 0, y 0</dd></div><div><dt>RGB</dt><dd id="rgbValue">(0, 0, 0)</dd></div><div><dt>명도 계산</dt><dd id="luminanceFormula">0.2126R + 0.7152G + 0.0722B</dd></div><div><dt>이진값</dt><dd id="binaryValue">0</dd></div></dl>
+            <p class="keyboard-tip">행렬에서 방향키로 이웃 셀을 이동할 수 있습니다.</p>
+          </aside>
+        </div>
+        <div class="threshold-box"><label for="thresholdRange"><b>이진화 임계값</b><span>명도 ≥ <output id="thresholdOutput">128</output>이면 1, 작으면 0</span></label><input id="thresholdRange" type="range" min="0" max="255" value="128" /><div class="binary-preview"><canvas id="binaryCanvas" width="240" height="240" aria-label="이진화 미리보기"></canvas><p><b>1</b>인 셀 <strong id="whiteCellCount">0</strong>개<br /><b>0</b>인 셀 <strong id="blackCellCount">0</strong>개</p></div></div>
+        <div class="export-row"><button id="copyCsvButton" class="secondary-button" type="button">행렬 CSV 복사</button><button id="downloadCsvButton" class="secondary-button" type="button">행렬 CSV 저장</button></div>
+      </section>
+
+      <section class="panel" id="resolution" aria-labelledby="resolutionTitle">
+        <div class="section-heading"><div><p class="eyebrow">03 · 해상도 비교</p><h2 id="resolutionTitle">픽셀이 적어지면 무엇을 잃을까요?</h2></div><label class="compact-select">축소 방식<select id="resampleSelect"><option value="average">면적 평균</option><option value="nearest">최근접</option></select></label></div>
+        <div class="comparison-grid"><article><span>원본 명도</span><canvas id="compareOriginal" width="256" height="256" aria-label="원본 명도 이미지"></canvas><small>세부 정보 기준</small></article><article><span>16 × 16</span><canvas id="compare16" width="256" height="256" aria-label="16×16 저해상도 이미지"></canvas><small id="metric16">정보 손실 —</small></article><article><span>8 × 8</span><canvas id="compare8" width="256" height="256" aria-label="8×8 저해상도 이미지"></canvas><small id="metric8">정보 손실 —</small></article><article><span>4 × 4</span><canvas id="compare4" width="256" height="256" aria-label="4×4 저해상도 이미지"></canvas><small id="metric4">정보 손실 —</small></article></div>
+        <div class="method-note"><article><b>최근접</b><p>가장 가까운 한 픽셀을 고릅니다. 값은 보존되지만 거친 계단과 빠진 정보가 생길 수 있습니다.</p></article><article><b>면적 평균</b><p>영역 안 픽셀의 밝기를 평균냅니다. 전체 경향은 부드럽게 남지만 날카로운 경계가 흐려질 수 있습니다.</p></article></div>
+      </section>
+
+      <section class="panel" id="convolution" aria-labelledby="convolutionTitle">
+        <div class="section-heading"><div><p class="eyebrow">04 · 3×3 커널 합성곱</p><h2 id="convolutionTitle">주변 픽셀 × 가중치 → 합계 → 새 픽셀</h2></div><span class="step-badge" id="convolutionStep">1 / 64칸</span></div>
+        <div class="kernel-controls">
+          <label>필터 프리셋<select id="presetSelect"><option value="blur">흐림</option><option value="sharpen">선명화</option><option value="edge">윤곽선</option><option value="emboss">엠보싱</option><option value="identity">원본 유지</option></select></label>
+          <label>경계 처리<select id="paddingSelect"><option value="zero">0으로 채우기</option><option value="extend">가장자리 복제</option><option value="reflect">거울 반사</option></select></label>
+          <label class="check-label"><input id="normalizeToggle" type="checkbox" checked /> 계수 합으로 정규화</label>
+          <label>편향<input id="biasInput" type="number" min="-255" max="255" value="0" /></label>
+        </div>
+        <div class="convolution-flow">
+          <section class="flow-block"><div class="flow-title"><span>입력 행렬</span><small>3×3 이웃을 선택</small></div><div id="inputPatch" class="patch-grid" aria-label="현재 3×3 입력 영역"></div></section>
+          <span class="operator" aria-hidden="true">×</span>
+          <section class="flow-block"><div class="flow-title"><span>커널</span><small>직접 수정 가능</small></div><div id="kernelGrid" class="kernel-grid"></div><p class="kernel-sum">계수 합 = <strong id="kernelSum">9</strong> · 나눗수 = <strong id="divisorValue">9</strong></p></section>
+          <span class="operator" aria-hidden="true">→</span>
+          <section class="flow-block calculation-block"><div class="flow-title"><span>곱하고 더하기</span><small id="positionLabel">출력 (1, 1)</small></div><div id="productList" class="product-list"></div><p class="equation" id="equationText">합계 ÷ 나눗수 + 편향</p></section>
+          <span class="operator" aria-hidden="true">=</span>
+          <section class="flow-block output-block"><div class="flow-title"><span>출력 픽셀</span><small>0~255로 제한</small></div><div class="output-pixel" id="outputPixel"><strong id="outputValue">0</strong></div></section>
+        </div>
+        <div class="playback"><button id="previousStepButton" class="secondary-button" type="button">← 한 칸</button><button id="playButton" class="primary-button" type="button">자동 재생</button><button id="nextStepButton" class="secondary-button" type="button">한 칸 →</button><label>속도<select id="speedSelect"><option value="1200">느리게</option><option value="650" selected>보통</option><option value="250">빠르게</option></select></label><button id="resetStepButton" class="text-button" type="button">처음으로</button></div>
+        <div class="result-comparison"><article><span>입력 이미지</span><canvas id="filterInputCanvas" width="320" height="320" aria-label="합성곱 입력 명도 이미지"></canvas></article><div class="filter-arrow" aria-hidden="true"><b>3×3</b><span>커널 적용</span></div><article><span>출력 이미지</span><canvas id="filterOutputCanvas" width="320" height="320" aria-label="합성곱 출력 명도 이미지"></canvas></article></div>
+        <div class="export-row"><button id="downloadImageButton" class="primary-button" type="button">결과 PNG 저장</button><button id="saveSettingsButton" class="secondary-button" type="button">설정 JSON 저장</button><label class="file-button secondary-button">설정 JSON 불러오기<input id="loadSettingsInput" type="file" accept="application/json,.json" /></label></div>
+      </section>
+
+      <section class="panel mission-panel" id="missions" aria-labelledby="missionTitle">
+        <div class="section-heading"><div><p class="eyebrow">탐구 미션</p><h2 id="missionTitle">숫자 속 그림과 필터의 규칙을 찾아보세요</h2></div><span class="mission-score"><strong id="missionScore">0</strong> / 3 완료</span></div>
+        <div class="mission-grid">
+          <article><span class="mission-number">01</span><h3>숨은 그림 암호</h3><p>숫자가 128보다 작으면 ■, 크거나 같으면 □로 바꾸면 무엇이 보일까요?</p><pre class="cipher-matrix">255 255   0   0 255 255
+255   0 255 255   0 255
+  0 255   0   0 255   0
+  0 255 255 255 255   0
+255   0 255 255   0 255
+255 255   0   0 255 255</pre><label>정답<select id="cipherAnswer"><option value="">선택하세요</option><option value="heart">하트</option><option value="smile">웃는 얼굴</option><option value="letter">알파벳 A</option></select></label><button class="mission-button" data-mission="cipher" type="button">정답 확인</button><p class="mission-feedback" id="cipherFeedback"></p></article>
+          <article><span class="mission-number">02</span><h3>선명화 커널 완성</h3><p>가운데 픽셀은 강조하고 위·아래·왼쪽·오른쪽은 빼려면 ?에 들어갈 수는?</p><div class="tiny-kernel"><span>0</span><span>-1</span><span>0</span><span>-1</span><b>?</b><span>-1</span><span>0</span><span>-1</span><span>0</span></div><label>?의 값 <input id="kernelMissionAnswer" type="number" /></label><button class="mission-button" data-mission="kernel" type="button">정답 확인</button><p class="mission-feedback" id="kernelFeedback"></p></article>
+          <article><span class="mission-number">03</span><h3>정보 손실 순서</h3><p>같은 이미지를 16×16, 8×8, 4×4로 줄일 때 일반적으로 세부 정보가 가장 많이 사라지는 것은?</p><label>정답<select id="resolutionAnswer"><option value="">선택하세요</option><option value="16">16×16</option><option value="8">8×8</option><option value="4">4×4</option></select></label><button class="mission-button" data-mission="resolution" type="button">정답 확인</button><p class="mission-feedback" id="resolutionFeedback"></p></article>
+        </div>
+      </section>
+
+      <section class="panel concept-panel" aria-labelledby="conceptTitle">
+        <div class="section-heading"><div><p class="eyebrow">수학 설명</p><h2 id="conceptTitle">행렬에서 합성곱, 그리고 CNN까지</h2></div></div>
+        <div class="concept-cards"><article><b>이미지 = 행렬</b><p>흑백 이미지는 각 픽셀의 명도를 원소로 갖는 행렬입니다. 0은 검정, 255는 흰색이며 행과 열은 픽셀의 위치를 나타냅니다.</p></article><article><b>합성곱 = 지역 계산</b><p>3×3 이웃과 커널의 같은 위치끼리 곱한 뒤 모두 더합니다. 커널이 한 칸씩 이동하며 출력 행렬의 원소를 만듭니다.</p></article><article><b>효과가 달라지는 이유</b><p>양수는 밝기나 특징을 더하고, 음수는 이웃과의 차이를 강조합니다. 평균 커널은 부드럽게, 차이 커널은 경계를 선명하게 만듭니다.</p></article><article><b>CNN과의 연결</b><p>CNN도 작은 커널로 지역 특징을 찾지만, 이 실험처럼 사람이 값을 정하는 대신 데이터로 유용한 값을 학습합니다. 이 도구 자체는 AI를 학습하지 않습니다.</p></article></div>
+      </section>
+    </main>
+    <footer><p>경남수학교육소식의 ‘흑백 이미지 속 픽셀’과 ‘행렬 시각화·이미지 커널 필터 체험’ 수업 아이디어를 바탕으로 구성했습니다.</p></footer>
+    <script src="./matrix.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
