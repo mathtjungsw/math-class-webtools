@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#142b35" />
+    <meta name="description" content="풀이팀과 그래프팀이 답을 보지 않고 제한된 힌트로 다항함수 그래프를 복원하는 패스앤플레이 수학 게임" />
+    <title>함수 그래프 블라인드 전달 게임 | 수학 수업 웹툴 모음</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="back-link" href="../../index.html#math-game" aria-label="수학 게임 목록으로 돌아가기"><span aria-hidden="true">←</span><span>수학 게임</span></a>
+      <a class="brand" href="./index.html" aria-label="함수 그래프 블라인드 전달 게임 처음 화면">
+        <span class="brand-mark" aria-hidden="true"><i></i><b></b></span>
+        <span><strong>함수 그래프 블라인드 전달 게임</strong><small>O1 · ASK LESS, SEE MORE</small></span>
+      </a>
+      <div class="header-actions">
+        <button class="ghost-button" id="guideButton" type="button">설명서 보기</button>
+        <button class="teacher-button" id="teacherButton" type="button">교사용 문제 편집</button>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section class="hero-panel" aria-labelledby="pageTitle">
+        <div>
+          <p class="eyebrow">SOLVE · ASK · RECONSTRUCT</p>
+          <h1 id="pageTitle">답은 가리고, 그래프의 단서만 건네세요.</h1>
+          <p>풀이팀과 그래프팀이 번갈아 정보 하나씩을 고릅니다. 적은 힌트로 정확한 개형을 복원할수록 높은 점수를 얻습니다.</p>
+        </div>
+        <div class="hero-rule" aria-label="힌트 사용 수준 기준">
+          <span><b>≤ 4</b> 상</span><span><b>5–6</b> 중</span><span><b>≥ 7</b> 하</span>
+        </div>
+      </section>
+
+      <section id="setupView" class="setup-layout" aria-labelledby="setupTitle">
+        <div class="setup-main panel">
+          <div class="panel-heading"><div><p class="eyebrow">ROUND SETUP</p><h2 id="setupTitle">활동 방식을 정하세요</h2></div><span>설정은 이 기기에 자동 저장됩니다.</span></div>
+
+          <fieldset class="setting-block">
+            <legend>모드</legend>
+            <div class="choice-grid choice-grid--mode">
+              <button class="choice-card is-active" type="button" data-mode="group" aria-pressed="true"><b>4인 1조 권장</b><strong>모둠 대결</strong><span>풀이팀 → 화면 가리기 → 그래프팀</span></button>
+              <button class="choice-card" type="button" data-mode="solo" aria-pressed="false"><b>혼자 훈련</b><strong>개인 연습</strong><span>식을 보지 않고 힌트만 골라 추론</span></button>
+            </div>
+          </fieldset>
+
+          <fieldset class="setting-block">
+            <legend>난이도</legend>
+            <div class="choice-grid choice-grid--difficulty">
+              <button class="difficulty-card is-active" type="button" data-difficulty="easy" aria-pressed="true"><b>01</b><span><strong>쉬움</strong><small>삼차함수 중심</small></span></button>
+              <button class="difficulty-card" type="button" data-difficulty="normal" aria-pressed="false"><b>02</b><span><strong>보통</strong><small>사차·비대칭</small></span></button>
+              <button class="difficulty-card" type="button" data-difficulty="hard" aria-pressed="false"><b>03</b><span><strong>도전</strong><small>중근 임계점</small></span></button>
+              <button class="difficulty-card" id="customDifficulty" type="button" data-difficulty="custom" aria-pressed="false" hidden><b>MY</b><span><strong>교사 문제</strong><small id="customProblemCount">0개</small></span></button>
+            </div>
+          </fieldset>
+
+          <div class="setting-row">
+            <label>문제
+              <select id="problemSelect" aria-describedby="problemSelectHelp"></select>
+              <small id="problemSelectHelp">무작위를 고르면 같은 난이도 안에서 라운드마다 바뀝니다.</small>
+            </label>
+            <label>제한시간
+              <select id="timeLimitSelect"><option value="300">5분</option><option value="480" selected>8분</option><option value="720">12분</option><option value="900">15분</option></select>
+              <small>풀이와 전달 시간을 합친 시간입니다.</small>
+            </label>
+          </div>
+
+          <section id="teamSettings" class="team-settings" aria-labelledby="teamSettingsTitle">
+            <div class="subheading"><div><strong id="teamSettingsTitle">모둠 점수판</strong><span>2–4개 조 이름을 정하고 역할을 고르세요.</span></div><div class="team-count" role="group" aria-label="참가 모둠 수"><button type="button" data-team-count="2" aria-pressed="true">2조</button><button type="button" data-team-count="3" aria-pressed="false">3조</button><button type="button" data-team-count="4" aria-pressed="false">4조</button></div></div>
+            <div class="team-name-grid" id="teamNameGrid"></div>
+            <div class="role-selects">
+              <label>문제 풀이팀<select id="solverTeamSelect"></select></label>
+              <span aria-hidden="true">→</span>
+              <label>그래프 그리기팀<select id="graphTeamSelect"></select></label>
+            </div>
+          </section>
+
+          <button class="primary-button start-button" id="startRoundButton" type="button">블라인드 라운드 시작</button>
+        </div>
+
+        <aside class="score-panel panel" aria-labelledby="scoreboardTitle">
+          <div class="panel-heading"><div><p class="eyebrow">SCOREBOARD</p><h2 id="scoreboardTitle">누적 점수</h2></div><button class="text-button" id="resetScoresButton" type="button">초기화</button></div>
+          <div class="score-list" id="scoreList"></div>
+          <div class="score-note"><b>점수 방식</b><p>정답 100점에 힌트 절약 보너스를 더합니다. 풀이팀은 유효 전달 1개당 3점, 도움 조는 결과에 따라 +5점 또는 −3점을 받습니다.</p></div>
+        </aside>
+      </section>
+
+      <section id="roundView" hidden>
+        <section class="round-status panel" aria-label="현재 라운드 상태">
+          <div><span>현재 역할</span><strong id="roleStatus">풀이팀</strong></div>
+          <div><span>문제</span><strong id="problemStatus">쉬움 A</strong></div>
+          <div><span>사용 힌트</span><strong><b id="hintCountStatus">0</b>개 · <i id="tierStatus">상</i></strong></div>
+          <div><span>남은 시간</span><strong class="clock" id="clockStatus">08:00</strong></div>
+          <button class="ghost-button" id="quitRoundButton" type="button">라운드 나가기</button>
+        </section>
+
+        <section id="solverStage" class="stage panel" aria-labelledby="solverTitle">
+          <div class="stage-kicker"><span>STEP 1</span><b id="solverTeamLabel">풀이팀 전용 화면</b></div>
+          <div class="solver-layout">
+            <div class="equation-card">
+              <p>그래프팀에게 식이나 완성 그래프를 직접 보여 주지 마세요.</p>
+              <h2 id="solverTitle">문제카드</h2>
+              <div class="equation" id="targetEquation">f(x) = x³ − 3x</div>
+              <label>풀이 메모 <textarea id="solverNotes" rows="5" placeholder="미분, 인수분해, 극값 계산을 이곳에 정리하세요."></textarea></label>
+            </div>
+            <aside class="solver-actions">
+              <div class="mission-card"><b>역할 분담</b><ol><li>한 명은 미분·인수분해</li><li>한 명은 극값·증가 구간 검산</li><li>전달할 단서의 우선순위 합의</li></ol></div>
+              <button class="chance-button" id="helpChanceButton" type="button"><span>HELP CHANCE · 1회</span><strong>다른 조에 도움 요청 기록</strong><small>미분 · 인수분해 · 극값 · 증가 구간 중 하나</small></button>
+              <button class="primary-button full" id="finishSolvingButton" type="button">풀이 완료 · 화면 가리기</button>
+            </aside>
+          </div>
+        </section>
+
+        <section id="handoffStage" class="handoff-stage panel" hidden aria-labelledby="handoffTitle">
+          <div class="privacy-shield" aria-hidden="true"><i></i><b></b></div>
+          <p class="eyebrow">PASS THE DEVICE</p>
+          <h2 id="handoffTitle">정답 화면을 가렸습니다.</h2>
+          <p id="handoffMessage">기기를 그래프 그리기팀에게 건네세요. 다음 화면에는 함수식과 답 그래프가 나타나지 않습니다.</p>
+          <button class="primary-button" id="revealGraphStageButton" type="button">그래프팀 준비 완료</button>
+        </section>
+
+        <section id="graphStage" hidden aria-labelledby="graphTitle">
+          <div class="turn-banner" id="turnBanner" aria-live="polite"><span id="turnNumber">1번째 선택</span><strong id="turnOwner">풀이팀이 먼저 정보 카드 하나를 고르세요.</strong><small>고른 카드의 답만 그래프팀에게 전달됩니다.</small></div>
+          <div class="graph-layout">
+            <section class="hint-panel panel" aria-labelledby="graphTitle">
+              <div class="panel-heading"><div><p class="eyebrow">LIMITED QUESTIONS</p><h2 id="graphTitle">질문·정보 카드</h2></div><span>한 번 고른 카드는 다시 쓸 수 없습니다.</span></div>
+              <div class="hint-grid" id="hintGrid"></div>
+            </section>
+
+            <aside class="clue-panel panel" aria-labelledby="clueLogTitle">
+              <div class="panel-heading"><div><p class="eyebrow">CLUE LOG</p><h2 id="clueLogTitle">전달받은 단서</h2></div><span id="contributionStatus">풀이 0 · 그래프 0</span></div>
+              <ol class="clue-log" id="clueLog"><li class="empty-clue">아직 고른 단서가 없습니다.</li></ol>
+            </aside>
+          </div>
+
+          <section class="reconstruction-panel panel" aria-labelledby="reconstructTitle">
+            <div class="panel-heading"><div><p class="eyebrow">RECONSTRUCT</p><h2 id="reconstructTitle">개형을 스케치하고 최종 그래프를 고르세요</h2></div><span>스케치는 채점되지 않으며 풀이 메모로만 사용됩니다.</span></div>
+            <div class="reconstruction-layout">
+              <div class="sketch-wrap">
+                <div class="canvas-toolbar"><strong>자유 스케치</strong><span><button type="button" id="undoSketchButton">되돌리기</button><button type="button" id="clearSketchButton">지우기</button></span></div>
+                <canvas id="sketchCanvas" width="640" height="430" aria-label="마우스나 손가락으로 그래프 개형을 그리는 자유 스케치 영역"></canvas>
+                <p>그래프 선택은 아래 A–D 버튼으로 제출합니다.</p>
+              </div>
+              <div class="candidate-area">
+                <div class="candidate-grid" id="candidateGrid" role="radiogroup" aria-label="최종 그래프 선택"></div>
+                <button class="primary-button full submit-graph" id="submitGraphButton" type="button" disabled>선택한 그래프 제출</button>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section id="resultStage" class="result-stage panel" hidden aria-labelledby="resultTitle">
+          <div class="result-heading"><div class="result-mark" id="resultMark" aria-hidden="true">✓</div><div><p class="eyebrow">ROUND COMPLETE</p><h2 id="resultTitle">정확한 그래프입니다!</h2><p id="resultSummary"></p></div></div>
+          <div class="result-stats"><div><span>라운드 점수</span><strong id="resultScore">120점</strong></div><div><span>힌트 수준</span><strong id="resultTier">상 · 4개 이하</strong></div><div><span>걸린 시간</span><strong id="resultTime">03:21</strong></div><div><span>도움 찬스</span><strong id="resultHelp">사용 안 함</strong></div></div>
+          <section class="evidence-section" aria-labelledby="evidenceTitle"><h3 id="evidenceTitle">과정 중심 평가 관찰</h3><div class="evidence-grid" id="evidenceGrid"></div></section>
+          <section class="answer-review"><div><strong>정답 확인</strong><p id="answerReviewText"></p></div><canvas id="answerCanvas" width="720" height="360" aria-label="정답 함수 그래프"></canvas></section>
+          <div class="result-actions"><button class="secondary-button" id="backToSetupButton" type="button">설정으로</button><button class="primary-button" id="nextRoundButton" type="button">다음 라운드</button></div>
+        </section>
+      </section>
+
+      <section class="history-panel panel" aria-labelledby="historyTitle">
+        <div class="panel-heading"><div><p class="eyebrow">ROUND RECORDS</p><h2 id="historyTitle">라운드 기록</h2></div><button class="text-button" id="clearHistoryButton" type="button">기록 지우기</button></div>
+        <div class="history-wrap"><table><thead><tr><th>시간</th><th>모드·역할</th><th>문제</th><th>결과</th><th>힌트</th><th>점수</th></tr></thead><tbody id="historyBody"></tbody></table><p class="empty-history" id="emptyHistory">완료한 라운드가 여기에 기록됩니다.</p></div>
+      </section>
+    </main>
+
+    <dialog class="modal guide-modal" id="guideDialog">
+      <div class="modal-header"><div><p class="eyebrow">CLASSROOM GUIDE</p><h2>수업 운영 안내</h2></div><button class="icon-button" type="button" data-close-dialog aria-label="닫기">×</button></div>
+      <div class="guide-flow"><article><b>1</b><div><strong>4인 1조 역할 분담</strong><p>2명은 문제를 풀고 2명은 그래프를 준비합니다. 다른 조와 1:1로 연결하거나 같은 조 안에서 진행할 수 있습니다.</p></div></article><article><b>2</b><div><strong>풀이와 도움 찬스</strong><p>10–15분 풀이 뒤 막히면 한 번만 도움을 요청합니다. 다른 조는 미분·인수분해·극값·증가 구간 중 하나만 도울 수 있습니다.</p></div></article><article><b>3</b><div><strong>블라인드 전달</strong><p>화면을 가린 뒤 풀이팀과 그래프팀이 번갈아 카드 하나를 선택합니다. 식과 완성 그래프는 직접 보여 주지 않습니다.</p></div></article><article><b>4</b><div><strong>채점과 되돌아보기</strong><p>4개 이하 ‘상’, 5–6개 ‘중’, 7개 이상 ‘하’입니다. 정답뿐 아니라 어떤 단서가 실제로 도움이 되었는지 말하게 합니다.</p></div></article></div>
+      <section class="guide-rubric"><h3>관찰 요소</h3><div><span><b>의사소통</b>번갈아 묻고 정확히 전달</span><span><b>문제해결</b>미분·인수분해·검산</span><span><b>정보처리</b>필요한 단서를 선별</span><span><b>태도·실천</b>시간 준수와 끝까지 참여</span></div></section>
+      <p class="guide-caution">그래프 보기 A–D는 같은 축 범위를 사용합니다. 색만으로 정답을 구분하지 않으며 키보드로도 선택할 수 있습니다.</p>
+      <button class="primary-button full" type="button" data-close-dialog>활동 준비하기</button>
+    </dialog>
+
+    <dialog class="modal teacher-modal" id="teacherDialog">
+      <div class="modal-header"><div><p class="eyebrow">TEACHER EDITOR</p><h2>다항함수 문제 만들기</h2></div><button class="icon-button" type="button" data-close-dialog aria-label="닫기">×</button></div>
+      <p class="modal-intro">2–4차 다항함수의 계수를 최고차항부터 쉼표로 입력하세요. 힌트·교점·극값·후보 그래프는 자동으로 계산됩니다.</p>
+      <div class="teacher-layout">
+        <section class="custom-list-section"><div class="subheading"><div><strong>저장된 문제</strong><span>이 기기에 자동 보관</span></div><button class="secondary-button small" id="newProblemButton" type="button">+ 새 문제</button></div><div class="custom-problem-list" id="customProblemList"></div></section>
+        <form id="problemForm" class="problem-form">
+          <input id="editProblemId" type="hidden" />
+          <label>문제 이름<input id="editProblemTitle" type="text" maxlength="60" placeholder="예: 도전 D · 대칭 사차함수" required /></label>
+          <label>난이도<select id="editProblemDifficulty"><option value="easy">쉬움</option><option value="normal" selected>보통</option><option value="hard">도전</option></select></label>
+          <label class="wide">계수 <input id="editProblemCoefficients" type="text" inputmode="decimal" placeholder="예: 1, 0, -5, 0, 4" required /><small>예시는 x⁴ − 5x² + 4입니다.</small></label>
+          <label>x축 시작<input id="editXMin" type="number" step="0.5" value="-4" required /></label>
+          <label>x축 끝<input id="editXMax" type="number" step="0.5" value="4" required /></label>
+          <p class="form-error wide" id="problemFormError" role="alert"></p>
+          <div class="form-actions wide"><label class="file-button">JSON 불러오기<input id="problemImportInput" type="file" accept="application/json,.json" /></label><button class="secondary-button" id="exportProblemsButton" type="button">JSON 저장</button><button class="primary-button" type="submit">문제 저장</button></div>
+        </form>
+      </div>
+    </dialog>
+
+    <dialog class="modal help-modal" id="helpDialog">
+      <div class="modal-header"><div><p class="eyebrow">HELP CHANCE · ONCE</p><h2>도움 요청 기록</h2></div><button class="icon-button" type="button" data-close-dialog aria-label="닫기">×</button></div>
+      <p class="modal-intro">다른 조는 아래 네 가지 중 한 가지만 도울 수 있습니다. 같은 라운드에서는 한 번만 기록됩니다.</p>
+      <form id="helpForm" class="help-form"><label>도움을 준 조<select id="helperTeamSelect"></select></label><label>도움 한 가지<select id="helpTypeSelect"><option value="미분">미분해 주기</option><option value="인수분해">인수분해해 주기</option><option value="극값">극댓값·극솟값 구해 주기</option><option value="증가 구간">증가 구간 찾아 주기</option></select></label><fieldset><legend>도움 결과</legend><label><input type="radio" name="helpResult" value="correct" checked /> 정확한 도움 +5점</label><label><input type="radio" name="helpResult" value="wrong" /> 잘못된 도움 −3점</label></fieldset><button class="primary-button full" type="submit">이 도움으로 기록</button></form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./game-logic.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

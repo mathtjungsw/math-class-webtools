@@ -1586,6 +1586,25 @@ body.is-modal-open {
 .classify-bins b:nth-child(2) { border-top-color: var(--orange); }
 .classify-bins b:nth-child(3) { border-top-color: var(--yellow); }
 
+.card-function-blind .tool-visual { background: #edf5f1; }
+.blind-preview { display: grid; grid-template-columns: 1fr auto 1fr; width: 100%; height: 100%; align-items: center; gap: 11px; padding: 24px; }
+.blind-role { position: relative; min-width: 0; height: 140px; padding: 16px; border: 5px solid var(--navy); border-radius: 18px; background: white; box-shadow: 7px 8px 0 rgba(17,28,53,.1); }
+.blind-role small { display: block; color: #64717c; font-size: 11px; font-weight: 900; }
+.blind-role--solver > b { display: block; margin-top: 18px; color: var(--navy); font: 900 22px/1 Georgia, serif; }
+.blind-role--solver > i { display: block; width: 75%; height: 5px; margin-top: 8px; border-radius: 99px; background: #d8e3dd; }
+.blind-role--solver > i:nth-of-type(2) { width: 58%; }
+.blind-role--solver > i:nth-of-type(3) { width: 68%; }
+.blind-pass { display: grid; gap: 4px; color: #8a542c; text-align: center; font-size: 9px; font-weight: 900; }
+.blind-pass b { color: var(--orange); font-size: 28px; }
+.blind-role--graph { overflow: hidden; }
+.blind-role--graph > em { position: absolute; right: 16px; top: 12px; display: grid; width: 30px; height: 30px; place-items: center; border-radius: 50%; background: var(--yellow); color: var(--navy); font-style: normal; font-weight: 950; }
+.blind-axes { position: absolute; inset: 42px 15px 14px; border-left: 3px solid #9aaba3; border-bottom: 3px solid #9aaba3; }
+.blind-axes::before { content: ""; position: absolute; left: 48%; top: -7px; bottom: 0; width: 2px; background: #d5dfda; }
+.blind-axes::after { content: ""; position: absolute; left: 0; right: 0; top: 44%; height: 2px; background: #d5dfda; }
+.blind-axes i, .blind-axes b { position: absolute; display: block; border-radius: 50%; }
+.blind-axes i { left: 8%; top: 12%; width: 76%; height: 74%; border-top: 6px solid var(--orange); transform: rotate(-11deg); }
+.blind-axes b { left: 22%; top: 18%; width: 66%; height: 63%; border-bottom: 6px solid #45a78d; transform: rotate(10deg); }
+
 .card-set .tool-visual { background: #f7f0ff; }
 .card-set .set-preview-card rect { fill: white; stroke: var(--navy); stroke-width: 5; }
 .card-set .set-preview-card circle,
