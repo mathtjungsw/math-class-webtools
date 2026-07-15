@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="로트카–볼테라 연속 모델과 이산 점화식을 같은 조건에서 비교하며 토끼와 여우 개체수 변화를 탐구하는 수학적 모델링 웹툴" />
+    <meta name="theme-color" content="#f5f1e8" />
+    <title>E2 토끼와 여우 생태계 모델</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#simulation">시뮬레이션으로 건너뛰기</a>
+    <header class="topbar">
+      <a class="back-link" href="../../index.html" aria-label="수학 수업 웹툴 모음으로 돌아가기">← <span>웹툴 모음</span></a>
+      <a class="brand" href="#top" aria-label="토끼와 여우 생태계 모델 처음으로">
+        <span class="brand-mark" aria-hidden="true">E2</span>
+        <span><strong>ECOSYSTEM LAB</strong><small>수학적 모델링 탐구</small></span>
+      </a>
+      <nav aria-label="페이지 바로가기">
+        <a href="#models">두 모델</a><a href="#data-lab">관측 자료</a><a href="#missions">탐구 미션</a><button id="guideButton" class="topbar-guide" type="button">? 설명서 보기</button>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero-copy">
+          <p class="eyebrow">E2 · PREDATOR–PREY MODEL</p>
+          <h1 id="page-title">토끼가 늘면 여우도<br /><em>곧바로 늘어날까?</em></h1>
+          <p class="hero-lead">같은 생태계를 미분방정식과 점화식으로 계산하고, 두 종의 최고점 사이에 생기는 시간차를 그래프에서 찾아보세요.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#simulation">모델 시작하기</a>
+            <a class="button ghost" href="#models">식 먼저 보기</a>
+          </div>
+          <ul class="hero-facts" aria-label="주요 기능">
+            <li><b>RK4</b><span>연속 모델</span></li>
+            <li><b>점화식</b><span>이산 모델</span></li>
+            <li><b>2개</b><span>비교 그래프</span></li>
+          </ul>
+        </div>
+        <div class="hero-cycle" aria-label="토끼 증가, 여우 증가, 토끼 감소, 여우 감소가 차례로 이어지는 순환">
+          <div class="cycle-center"><b>시간차</b><span>생태계의 리듬</span></div>
+          <span class="cycle-step step-one"><i aria-hidden="true">🐇</i><b>토끼 증가</b></span>
+          <span class="cycle-step step-two"><i aria-hidden="true">🦊</i><b>여우 증가</b></span>
+          <span class="cycle-step step-three"><i aria-hidden="true">🐇</i><b>토끼 감소</b></span>
+          <span class="cycle-step step-four"><i aria-hidden="true">🦊</i><b>여우 감소</b></span>
+        </div>
+      </section>
+
+      <section class="scenario-section" aria-labelledby="scenario-title">
+        <div class="section-heading compact"><div><p class="eyebrow dark">QUICK START</p><h2 id="scenario-title">어떤 생태계에서 시작할까요?</h2></div><p>프리셋을 고른 뒤 한 조건씩 바꾸어 비교하세요.</p></div>
+        <div class="preset-grid" role="group" aria-label="시나리오 프리셋">
+          <button type="button" data-preset="balance"><span>01</span><b>기본 순환</b><small>안정적인 주기 관찰</small></button>
+          <button type="button" data-preset="rabbitBoom"><span>02</span><b>토끼 급증</b><small>먹이가 갑자기 풍부해짐</small></button>
+          <button type="button" data-preset="foxHeavy"><span>03</span><b>여우 과다</b><small>포식자가 많은 출발</small></button>
+          <button type="button" data-preset="predation"><span>04</span><b>포식률 변화</b><small>사냥 성공률이 높아짐</small></button>
+        </div>
+      </section>
+
+      <section class="simulation-section" id="simulation" aria-labelledby="simulation-title">
+        <div class="section-heading"><div><p class="eyebrow dark">MODEL CONTROL</p><h2 id="simulation-title">조건을 바꾸고 두 계산을 나란히 관찰하세요</h2></div><p>입력값을 바꾸면 전체 기간을 다시 계산합니다. 재생은 계산된 시점을 차례로 보여 줍니다.</p></div>
+
+        <div class="lab-layout">
+          <aside class="control-panel" aria-label="생태계 매개변수">
+            <div class="panel-title"><span>01</span><div><small>PARAMETERS</small><h3>생태계 조건</h3></div></div>
+
+            <fieldset>
+              <legend>변화율</legend>
+              <div class="field-grid">
+                <label><span>토끼 증가율 <i>α</i></span><input id="rabbitGrowth" data-parameter type="number" min="0" max="2" step="0.01" value="0.1" /><small>토끼만 있을 때</small></label>
+                <label><span>포식률 <i>β</i></span><input id="predationRate" data-parameter type="number" min="0" max="0.1" step="0.0001" value="0.002" /><small>토끼×여우 만남</small></label>
+                <label><span>여우 자연 감소율 <i>γ</i></span><input id="foxDeathRate" data-parameter type="number" min="0" max="2" step="0.01" value="0.1" /><small>먹이가 없을 때</small></label>
+                <label><span>여우 증가율 <i>δ</i></span><input id="foxGrowthRate" data-parameter type="number" min="0" max="0.1" step="0.0001" value="0.0004" /><small>먹이를 만났을 때</small></label>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>시작과 시간</legend>
+              <div class="field-grid">
+                <label><span>처음 토끼 수 <i>R₀</i></span><input id="initialRabbits" data-parameter type="number" min="0" max="1000000" step="10" value="300" /></label>
+                <label><span>처음 여우 수 <i>F₀</i></span><input id="initialFoxes" data-parameter type="number" min="0" max="1000000" step="1" value="30" /></label>
+                <label><span>기간 <i>T</i></span><input id="duration" data-parameter type="number" min="0.1" max="1000" step="10" value="120" /><small>시간 단위</small></label>
+                <label><span>간격 <i>Δt</i></span><input id="dt" data-parameter type="number" min="0.001" max="20" step="0.05" value="0.2" /><small>작을수록 촘촘</small></label>
+              </div>
+            </fieldset>
+
+            <div class="capacity-control">
+              <label class="switch-row" for="capacityToggle"><span><b>환경수용력 확장</b><small>토끼가 무한히 늘지 않는 환경</small></span><input id="capacityToggle" type="checkbox" role="switch" /><i aria-hidden="true"></i></label>
+              <label id="capacityField" class="capacity-field" hidden><span>환경수용력 <i>K</i></span><input id="carryingCapacity" data-parameter type="number" min="1" max="1000000" step="50" value="900" /></label>
+            </div>
+
+            <div class="saved-scenarios">
+              <label for="scenarioName">나만의 상황 이름</label>
+              <div class="save-row"><input id="scenarioName" type="text" maxlength="32" placeholder="예: 봄철 먹이 증가" /><button id="saveScenario" type="button">저장</button></div>
+              <div class="save-row"><select id="savedScenario" aria-label="저장한 상황"><option value="">저장한 상황 선택</option></select><button id="loadScenario" type="button">불러오기</button><button id="deleteScenario" class="danger" type="button" aria-label="선택한 저장 상황 삭제">삭제</button></div>
+              <p>이 기기의 브라우저에만 저장됩니다.</p>
+            </div>
+
+            <div id="warningBox" class="warning-box" role="status" hidden></div>
+          </aside>
+
+          <div class="dashboard">
+            <div class="playback-bar" aria-label="시뮬레이션 재생 조작">
+              <div class="playback-buttons">
+                <button id="playButton" class="play" type="button" aria-pressed="false"><span aria-hidden="true">▶</span> 재생</button>
+                <button id="stepButton" type="button"><span aria-hidden="true">↦</span> 한 단계</button>
+                <button id="resetButton" type="button"><span aria-hidden="true">↺</span> 처음</button>
+              </div>
+              <label class="speed-control" for="speedSelect"><span>속도</span><select id="speedSelect"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label>
+              <label class="time-control" for="timeSlider"><span>현재 시점 <output id="timeOutput">0.0</output></span><input id="timeSlider" type="range" min="0" max="600" step="1" value="0" /></label>
+            </div>
+
+            <div class="status-grid" aria-live="polite">
+              <article><span>TIME</span><strong id="currentTime">0.0</strong><small>시간 단위</small></article>
+              <article class="rabbit-status"><span>RABBITS</span><strong id="currentRabbits">300</strong><small>연속 모델</small></article>
+              <article class="fox-status"><span>FOXES</span><strong id="currentFoxes">30</strong><small>연속 모델</small></article>
+              <article class="phase-status"><span>NOW</span><strong id="phaseLabel">여우 추격 단계</strong><small id="directionLabel">토끼 증가 · 여우 증가</small></article>
+            </div>
+
+            <article class="chart-card time-chart-card">
+              <div class="card-heading"><div><span>GRAPH 01</span><h3>시간에 따른 개체수</h3></div><div class="legend" aria-label="그래프 범례"><span class="rabbit solid">토끼 연속</span><span class="fox solid">여우 연속</span><span class="rabbit dashed">토끼 점화식</span><span class="fox dashed">여우 점화식</span><span class="observed">관측값</span></div></div>
+              <canvas id="timeChart" role="img" aria-label="시간에 따른 토끼와 여우 개체수의 연속 모델과 이산 모델 비교 그래프">그래프를 지원하지 않는 브라우저입니다.</canvas>
+            </article>
+
+            <div class="visual-grid">
+              <article class="chart-card phase-chart-card">
+                <div class="card-heading"><div><span>GRAPH 02</span><h3>토끼–여우 위상 평면</h3></div><small>오른쪽: 토끼 증가 · 위쪽: 여우 증가</small></div>
+                <canvas id="phaseChart" role="img" aria-label="가로축 토끼 수, 세로축 여우 수인 위상 평면 그래프">그래프를 지원하지 않는 브라우저입니다.</canvas>
+              </article>
+
+              <article class="scene-card">
+                <div class="card-heading"><div><span>LIVE SCENE</span><h3>현재 생태계</h3></div><small>점 1개는 상대적 규모를 나타냅니다.</small></div>
+                <div id="ecosystemScene" class="ecosystem-scene" role="img" aria-label="현재 토끼 300마리와 여우 30마리의 상대적 규모">
+                  <div class="scene-sky"><span></span><span></span></div><div id="rabbitDots" class="species-dots rabbit-dots" aria-hidden="true"></div><div id="foxDots" class="species-dots fox-dots" aria-hidden="true"></div>
+                </div>
+                <div class="scene-meter"><div><span>토끼</span><b id="rabbitMeterText">300</b><i><em id="rabbitMeter"></em></i></div><div><span>여우</span><b id="foxMeterText">30</b><i><em id="foxMeter"></em></i></div></div>
+              </article>
+            </div>
+
+            <div class="insight-grid">
+              <article class="insight-card equilibrium-card"><span>균형점</span><strong id="equilibriumText">R* = 250 · F* = 50</strong><p id="equilibriumMeaning">두 변화율이 동시에 0이 되는 기준점입니다. 정확히 그 점에서 시작하면 표준 모델의 값은 변하지 않습니다.</p></article>
+              <article class="insight-card lag-card"><span>최고점의 시간차</span><strong id="lagText">계산 중</strong><p id="lagMeaning">토끼가 먼저 늘어 먹이가 많아진 뒤 여우가 증가하므로 두 최고점은 보통 동시에 나타나지 않습니다.</p></article>
+              <article class="insight-card compare-card"><span>두 모델의 차이</span><strong id="differenceText">0.0%</strong><p>점화식은 Δt 간격으로 기울기를 한 번씩 적용합니다. Δt가 크면 연속 모델과 차이가 커지거나 수치적으로 불안정해질 수 있습니다.</p></article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="models-section" id="models" aria-labelledby="models-title">
+        <div class="section-heading"><div><p class="eyebrow dark">TWO REPRESENTATIONS</p><h2 id="models-title">한 생태계를 두 가지 수학 언어로 표현합니다</h2></div><p>연속 모델은 순간 변화율, 이산 모델은 다음 시점의 값을 말합니다.</p></div>
+        <div class="model-cards">
+          <article><span>연속 모델 · 미분방정식</span><h3>dR/dt = αR − βRF<br />dF/dt = δRF − γF</h3><p>매 순간의 변화율을 4차 룽게–쿠타 방법으로 촘촘하게 계산합니다.</p><dl><div><dt>αR</dt><dd>토끼의 자연 증가</dd></div><div><dt>βRF</dt><dd>여우와 만나 줄어드는 토끼</dd></div><div><dt>δRF</dt><dd>먹이로 늘어나는 여우</dd></div><div><dt>γF</dt><dd>여우의 자연 감소</dd></div></dl></article>
+          <article><span>이산 모델 · 점화식</span><h3>Rₙ₊₁ = max(0, Rₙ + Δt(αRₙ − βRₙFₙ))<br />Fₙ₊₁ = max(0, Fₙ + Δt(δRₙFₙ − γFₙ))</h3><p>현재 값을 이용해 다음 값을 한 단계씩 계산하는 오일러 점화식입니다.</p><dl><div><dt>n</dt><dd>현재 계산 단계</dd></div><div><dt>n+1</dt><dd>다음 계산 단계</dd></div><div><dt>Δt</dt><dd>한 단계의 시간 간격</dd></div><div><dt>max(0, ·)</dt><dd>음수 개체수 방지</dd></div></dl></article>
+        </div>
+
+        <article class="table-card">
+          <div class="card-heading"><div><span>CALCULATION LOG</span><h3>현재 시점 주변의 계산표</h3></div><small>연속(RK4)과 점화식(Euler) 결과</small></div>
+          <div class="table-wrap"><table><thead><tr><th>단계 n</th><th>시간 t</th><th>연속 토끼</th><th>연속 여우</th><th>점화식 토끼</th><th>점화식 여우</th><th>토끼 차이</th><th>여우 차이</th></tr></thead><tbody id="calculationRows"></tbody></table></div>
+        </article>
+      </section>
+
+      <section class="data-section" id="data-lab" aria-labelledby="data-title">
+        <div class="section-heading"><div><p class="eyebrow dark">DATA LAB</p><h2 id="data-title">관측 자료를 모델 위에 겹쳐 보세요</h2></div><p>시간, 토끼 수, 여우 수의 세 열을 입력하면 그래프에 점으로 표시됩니다.</p></div>
+        <div class="data-layout">
+          <article class="data-input-card">
+            <label for="observationInput">관측 자료 <small>첫 줄 제목은 생략해도 됩니다.</small></label>
+            <textarea id="observationInput" rows="8" spellcheck="false">time,rabbits,foxes
+0,300,30
+20,470,43
+40,225,70
+60,135,35</textarea>
+            <div class="data-actions"><button id="applyObservation" class="button primary" type="button">그래프에 적용</button><label class="file-button" for="csvFile">CSV 파일 열기<input id="csvFile" type="file" accept=".csv,text/csv" /></label><button id="clearObservation" class="button ghost" type="button">관측값 지우기</button></div>
+            <p id="observationStatus" role="status">예시 관측값 4개가 준비되어 있습니다.</p>
+          </article>
+          <article class="export-card"><span>RESULT EXPORT</span><h3>계산 결과를 수업 기록으로 저장</h3><p>모든 시점의 연속·이산 모델 값과 같은 시각의 관측값을 CSV로 내보냅니다.</p><button id="exportCsv" class="button dark" type="button">결과 CSV 내보내기</button><ul><li>외부 서버로 자료를 보내지 않습니다.</li><li>소수점 셋째 자리까지 저장합니다.</li><li>현재 매개변수도 파일 위쪽에 기록합니다.</li></ul></article>
+        </div>
+      </section>
+
+      <section class="missions-section" id="missions" aria-labelledby="missions-title">
+        <div class="section-heading"><div><p class="eyebrow">INVESTIGATION MISSIONS</p><h2 id="missions-title">숫자를 바꾸기 전에 먼저 예상하세요</h2></div><p>한 번에 한 조건만 바꾸면 원인을 설명하기 쉬워집니다.</p></div>
+        <div class="mission-grid">
+          <article><span>MISSION 01</span><b>누가 먼저 최고점에 도달할까?</b><p>기본 순환에서 첫 토끼 최고점과 첫 여우 최고점의 시각을 계산표와 그래프로 확인하세요.</p><label><input type="checkbox" /> 예상과 결과를 비교했다</label></article>
+          <article><span>MISSION 02</span><b>주기와 진폭을 바꾸어라</b><p>α, β, γ, δ 가운데 하나만 바꾸어 주기와 최대·최소 개체수의 변화를 설명하세요.</p><label><input type="checkbox" /> 한 조건만 바꾸었다</label></article>
+          <article><span>MISSION 03</span><b>사라지는 조건을 찾아라</b><p>처음 개체수와 변화율을 조절해 어느 한 종이 1보다 작아지는 조건을 찾고 생태학적 의미를 토론하세요.</p><label><input type="checkbox" /> 경계 상황을 기록했다</label></article>
+          <article><span>MISSION 04</span><b>두 모델을 멀어지게 하라</b><p>Δt를 조금씩 크게 바꾸며 점화식과 연속 모델의 차이가 커지는 지점을 찾으세요.</p><label><input type="checkbox" /> Δt와 차이를 기록했다</label></article>
+        </div>
+        <aside class="question-strip"><span>오늘의 핵심 질문</span><p>모델이 실제 자료와 다르다면, 모델이 틀렸다고만 말해야 할까요? 어떤 가정이나 매개변수를 먼저 살펴봐야 할까요?</p></aside>
+      </section>
+    </main>
+
+    <footer><p><b>E2 · 토끼와 여우 생태계 모델</b><span>2026년 『경남수학교육』 2분기(중등) “수학적 모델링을 통해 살펴본 생태계의 균형” 수업 아이디어를 바탕으로 구성</span></p><a href="#top">맨 위로 ↑</a></footer>
+    <dialog id="guideDialog" class="guide-dialog" aria-labelledby="guideTitle" aria-describedby="guideIntro">
+      <div class="guide-dialog__head">
+        <div><p>E2 · CLASS GUIDE</p><h2 id="guideTitle">토끼와 여우 생태계 모델 설명서</h2><span id="guideIntro">수업 시작 전 핵심 흐름과 모델의 한계를 함께 확인하세요.</span></div>
+        <button id="guideCloseButton" type="button" aria-label="설명서 닫기">×</button>
+      </div>
+      <div class="guide-dialog__body">
+        <section class="guide-quick"><span>10분 빠른 시작</span><ol><li><b>기본 순환</b>을 선택하고 어느 종이 먼저 최고점에 도달할지 예상합니다.</li><li><b>재생</b>을 누르고 시간 그래프와 현재 생태계 장면을 함께 봅니다.</li><li>첫 토끼·여우 최고점의 <b>시간차</b>를 확인합니다.</li><li>매개변수 하나만 바꾸어 주기와 진폭의 변화를 설명합니다.</li></ol></section>
+        <div class="guide-grid">
+          <section><span>01 · 수학 모델</span><h3>네 항의 의미</h3><p><b>αR</b> 토끼의 자연 증가<br /><b>βRF</b> 포식으로 줄어드는 토끼<br /><b>δRF</b> 먹이로 늘어나는 여우<br /><b>γF</b> 여우의 자연 감소</p><p>연속 모델은 RK4, 점화식은 Euler 방법으로 같은 조건을 계산합니다.</p></section>
+          <section><span>02 · 추천 수업 흐름</span><h3>예상 → 관찰 → 설명</h3><p>변화 순서 예상 → 두 식 읽기 → 기본 순환 재생 → 최고점 시간차 찾기 → 위상 평면의 균형점 해석 → 한 조건 변화 → Δt 오차 비교 → 실제 자료와 모델 토론</p></section>
+          <section><span>03 · 조작 방법</span><h3>키보드도 사용할 수 있어요</h3><p><b>Space</b> 재생·일시정지<br /><b>→</b> 한 단계 진행<br /><b>Home</b> 처음 시점</p><p>나만의 상황은 현재 브라우저에 저장되며 관측 자료와 계산 결과는 CSV로 다룰 수 있습니다.</p></section>
+          <section><span>04 · 탐구 질문</span><h3>숫자보다 이유를 묻기</h3><p>왜 토끼와 여우의 최고점은 동시에 나타나지 않을까요? α·β·γ·δ 중 하나를 바꾸면 주기와 진폭은 어떻게 달라질까요? 실제 자료와 모델이 다르면 어떤 가정을 먼저 점검해야 할까요?</p></section>
+        </div>
+        <aside><b>모델 사용 주의</b><p>표준 로트카–볼테라 모델은 계절, 질병, 나이 구조, 공간 이동 등을 생략한 이상화된 모형입니다. 큰 Δt에서 점화식이 크게 흔들리는 현상은 실제 생태계 변화가 아니라 수치 계산 오차일 수 있습니다. 화면의 값은 실제 동물 수 예측에 사용하지 않습니다.</p></aside>
+      </div>
+    </dialog>
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+    <script src="./model.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

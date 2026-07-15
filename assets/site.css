@@ -2680,3 +2680,58 @@ body.is-modal-open {
   color: #f2c85b;
   font: 800 10px/1 sans-serif;
 }
+
+.card-ecosystem .tool-visual {
+  background:
+    radial-gradient(circle at 72% 24%, rgba(240, 201, 94, 0.22), transparent 25%),
+    linear-gradient(145deg, #153f38, #0e2f2a);
+}
+
+.ecosystem-preview {
+  position: relative;
+  width: min(82%, 310px);
+  height: 154px;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.24);
+}
+
+.ecosystem-preview__rabbit,
+.ecosystem-preview__fox {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 25px;
+}
+
+.ecosystem-preview__rabbit { left: 22px; top: 25px; }
+.ecosystem-preview__fox { right: 20px; top: 66px; }
+
+.ecosystem-preview__curve {
+  position: absolute;
+  width: 188px;
+  height: 68px;
+  border-top: 4px solid #61d5bd;
+  border-radius: 50%;
+  transform: rotate(7deg);
+}
+
+.ecosystem-preview__curve.curve-a { left: 58px; top: 32px; }
+.ecosystem-preview__curve.curve-b { left: 66px; top: 68px; border-color: #ef806d; transform: rotate(-9deg); }
+
+.ecosystem-preview > b,
+.ecosystem-preview > small {
+  position: absolute;
+  z-index: 3;
+  color: white;
+  font: 800 9px/1 sans-serif;
+  letter-spacing: 0.08em;
+}
+
+.ecosystem-preview > b { left: 22px; bottom: 13px; color: #f2c85b; }
+.ecosystem-preview > small { right: 16px; top: 8px; color: #b7cec8; }
