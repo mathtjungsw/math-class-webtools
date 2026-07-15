@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="포물면의 반사 성질과 원뿔 절단면의 변화를 조작하며 탐구하는 수학 수업 웹툴" />
+    <meta name="theme-color" content="#101c2d" />
+    <title>포물면 반사·원뿔곡선 실험실</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23101c2d'/%3E%3Cpath d='M10 12q18 20 0 40M15 32h37' fill='none' stroke='%2367e0c1' stroke-width='5'/%3E%3Ccircle cx='24' cy='32' r='4' fill='%23ffc857'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./style.css?v=20260715-1" />
+  </head>
+  <body>
+    <a class="skip-link" href="#lab">실험실로 바로가기</a>
+    <header class="site-header">
+      <a class="brand" href="../../index.html" aria-label="수학 수업 웹툴 모음으로 돌아가기">
+        <span class="brand-mark" aria-hidden="true">∩</span>
+        <span><strong>포물면 반사·원뿔곡선 실험실</strong><small>REFLECTION &amp; CONIC LAB</small></span>
+      </a>
+      <nav aria-label="페이지 메뉴">
+        <a href="#lab">실험</a><a href="#concepts">개념</a><a href="#missions">탐구 질문</a>
+        <a class="home-link" href="../../index.html">웹툴 모음</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> ONE SURFACE, FOUR CURVES</p>
+          <h1 id="page-title">빛의 길을 꺾고,<br /><em>원을 포물선으로</em> 바꿔 보세요.</h1>
+          <p>초점과 평행광 사이의 반사 법칙을 한 광선씩 관찰하고, 이중 원뿔을 자르는 평면을 기울여 네 원뿔곡선의 경계를 찾습니다.</p>
+          <div class="hero-actions">
+            <a class="primary-link" href="#lab">실험 시작 <span aria-hidden="true">→</span></a>
+            <button type="button" data-hero-example>포물선 경계 바로 보기</button>
+          </div>
+          <dl class="hero-facts">
+            <div><dt>2</dt><dd>탐구 모듈</dd></div><div><dt>4</dt><dd>원뿔곡선</dd></div><div><dt>0</dt><dd>외부 연결</dd></div>
+          </dl>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="dish-figure"><i class="dish"></i><b class="focus-dot"></b><span class="beam beam-1"></span><span class="beam beam-2"></span><span class="beam beam-3"></span><em>F</em></div>
+          <div class="cone-figure"><i class="cone-top"></i><i class="cone-bottom"></i><b class="cut-plane"></b><span>β = 58°</span></div>
+        </div>
+      </section>
+
+      <section class="lab-section" id="lab" aria-labelledby="lab-title">
+        <div class="section-heading">
+          <div><p class="eyebrow"><span></span> INTERACTIVE LAB</p><h2 id="lab-title">어느 실험부터 시작할까요?</h2></div>
+          <p>탭은 ← → 키로도 바꿀 수 있습니다.</p>
+        </div>
+
+        <div class="module-tabs" role="tablist" aria-label="탐구 모듈">
+          <button id="tab-reflection" type="button" role="tab" aria-selected="true" aria-controls="panel-reflection" tabindex="0" data-tab="reflection"><b>A</b><span><strong>포물면 반사 실험</strong><small>초점 · 법선 · 입사각과 반사각</small></span></button>
+          <button id="tab-conic" type="button" role="tab" aria-selected="false" aria-controls="panel-conic" tabindex="-1" data-tab="conic"><b>B</b><span><strong>원뿔곡선 3D 탐구</strong><small>절단 평면 · 경계각 · 2D 단면</small></span></button>
+        </div>
+
+        <section class="module-panel" id="panel-reflection" role="tabpanel" aria-labelledby="tab-reflection" data-panel="reflection">
+          <div class="module-intro">
+            <div><span class="module-number">MODULE A</span><h3>빛은 왜 한 방향으로 나아갈까요?</h3><p>포물선 <b>y² = 4fx</b> 위의 모든 점에서 반사 법칙을 계산합니다. 강조 광선을 골라 입사 → 법선 확인 → 반사 순서로 살펴보세요.</p></div>
+            <div class="live-rule" aria-live="polite"><small>현재 관찰</small><strong data-reflection-summary>초점 → 평행광</strong><span data-reflection-angle>입사각 = 반사각</span></div>
+          </div>
+
+          <div class="experiment-grid reflection-grid">
+            <aside class="control-panel" aria-label="포물면 반사 조작">
+              <fieldset class="mode-picker"><legend>빛의 진행 방향</legend>
+                <button class="choice-button is-active" type="button" data-reflection-mode="focus-to-parallel" aria-pressed="true"><span>F</span><b>초점에서 출발</b><small>반사 뒤 축과 평행</small></button>
+                <button class="choice-button" type="button" data-reflection-mode="parallel-to-focus" aria-pressed="false"><span>⇠</span><b>평행하게 입사</b><small>반사 뒤 초점에 모임</small></button>
+              </fieldset>
+
+              <div class="control-group">
+                <label class="range-row"><span>초점거리 f <output data-output="focal">1.40</output></span><input type="range" min="0.7" max="2.5" value="1.4" step="0.1" data-reflection-control="focal" /></label>
+                <label class="range-row"><span>광선 수 <output data-output="rayCount">7</output></span><input type="range" min="1" max="13" value="7" step="2" data-reflection-control="rayCount" /></label>
+                <label class="range-row"><span>입사 범위 <output data-output="aperture">5.0</output></span><input type="range" min="2" max="7" value="5" step="0.2" data-reflection-control="aperture" /></label>
+                <label class="range-row"><span>입사 위치 이동 <output data-output="offset">0.0</output></span><input type="range" min="-1.5" max="1.5" value="0" step="0.1" data-reflection-control="offset" /></label>
+              </div>
+
+              <div class="selected-ray-control">
+                <div><span>강조 광선</span><output data-selected-ray>4 / 7</output></div>
+                <div><button type="button" data-ray-previous aria-label="이전 광선 선택">←</button><input type="range" min="1" max="7" value="4" step="1" aria-label="강조할 광선 번호" data-ray-select /><button type="button" data-ray-next aria-label="다음 광선 선택">→</button></div>
+              </div>
+
+              <div class="teacher-controls" aria-label="교사용 재생 조작">
+                <button class="primary-button" type="button" data-reflection-play aria-pressed="false"><span aria-hidden="true">▶</span> 재생</button>
+                <button type="button" data-reflection-step>한 단계</button><button type="button" data-reflection-reset>초기화</button>
+              </div>
+              <div class="toggle-row">
+                <label><input type="checkbox" checked data-toggle-values /><span></span>값 표시</label>
+                <label><input type="checkbox" checked data-toggle-guides /><span></span>법선·각도</label>
+              </div>
+              <div class="preset-row"><span>예시 장면</span><button type="button" data-reflection-preset="wide">넓은 접시</button><button type="button" data-reflection-preset="vertex">꼭짓점 광선</button></div>
+            </aside>
+
+            <div class="visual-column">
+              <section class="canvas-card">
+                <div class="canvas-heading"><div><span>RAY VIEW</span><h4>포물선 단면과 광선</h4></div><p data-reflection-stage aria-live="polite">전체 경로</p></div>
+                <div class="canvas-wrap reflection-canvas-wrap"><canvas data-reflection-canvas aria-label="포물선 초점과 반사 광선 시뮬레이션"></canvas><div class="canvas-legend"><span><i class="legend-in"></i>입사</span><span><i class="legend-out"></i>반사</span><span><i class="legend-normal"></i>법선</span></div></div>
+                <p class="canvas-description" data-reflection-description>초점 F에서 나온 광선이 포물면에 닿은 뒤 축과 평행하게 진행합니다.</p>
+              </section>
+              <section class="math-strip" data-reflection-values>
+                <div><small>포물선</small><strong data-equation>y² = 5.60x</strong></div><div><small>초점</small><strong data-focus>F(1.40, 0)</strong></div><div><small>준선</small><strong data-directrix>x = −1.40</strong></div><div><small>선택 광선</small><strong data-ray-angle>θᵢ = θᵣ = 0.0°</strong></div>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <section class="module-panel" id="panel-conic" role="tabpanel" aria-labelledby="tab-conic" data-panel="conic" hidden>
+          <div class="module-intro">
+            <div><span class="module-number">MODULE B</span><h3>평면의 기울기가 곡선의 이름을 정합니다.</h3><p>반각 32°인 이중 원뿔의 모선은 수평면과 <b>58°</b>를 이룹니다. 절단 평면이 이 경계를 지나는 순간 타원이 포물선으로 바뀝니다.</p></div>
+            <div class="conic-badge" data-conic-badge data-type="circle"><small>자동 분류</small><strong data-conic-name>원</strong><span data-conic-symbol>○</span></div>
+          </div>
+
+          <div class="experiment-grid conic-grid">
+            <aside class="control-panel" aria-label="원뿔곡선 절단 조작">
+              <div class="control-group">
+                <label class="range-row"><span>절단면 기울기 β <output data-output="planeAngle">0°</output></span><input type="range" min="0" max="76" value="0" step="1" data-conic-control="planeAngle" /></label>
+                <label class="range-row"><span>절단면 위치 h <output data-output="planeOffset">1.6</output></span><input type="range" min="0.6" max="2.8" value="1.6" step="0.1" data-conic-control="planeOffset" /></label>
+                <label class="range-row"><span>화면 확대 <output data-output="zoom">100%</output></span><input type="range" min="70" max="150" value="100" step="5" data-conic-control="zoom" /></label>
+                <label class="range-row"><span>회전 보기 <output data-output="yaw">−28°</output></span><input type="range" min="-70" max="70" value="-28" step="1" data-conic-control="yaw" /></label>
+              </div>
+              <div class="boundary-meter" aria-label="포물선 경계와 현재 기울기">
+                <div><span>수평 0°</span><b>경계 58°</b><span>수직 90°</span></div><div class="meter-track"><i data-angle-marker></i><b></b></div><p data-boundary-reason>수평 절단이므로 원입니다.</p>
+              </div>
+              <div class="preset-row conic-presets"><span>예시 장면</span><button class="is-active" type="button" data-conic-preset="circle">원 0°</button><button type="button" data-conic-preset="ellipse">타원 36°</button><button type="button" data-conic-preset="parabola">포물선 58°</button><button type="button" data-conic-preset="hyperbola">쌍곡선 70°</button></div>
+              <div class="teacher-controls"><button class="primary-button" type="button" data-conic-play aria-pressed="false"><span aria-hidden="true">▶</span> 연속 변화</button><button type="button" data-conic-reset-view>보기 초기화</button><button type="button" data-conic-reset>전체 초기화</button></div>
+              <div class="toggle-row"><label><input type="checkbox" checked data-conic-values /><span></span>값 표시</label><label><input type="checkbox" checked data-conic-features /><span></span>초점·점근선</label></div>
+              <p class="drag-hint"><b>3D 조작</b> 그림을 드래그해 회전하고, 마우스 휠로 확대할 수 있습니다.</p>
+            </aside>
+
+            <div class="paired-canvases">
+              <section class="canvas-card"><div class="canvas-heading"><div><span>3D CUT</span><h4>이중 원뿔과 절단 평면</h4></div><p>드래그하여 회전</p></div><div class="canvas-wrap conic-canvas-wrap"><canvas data-conic-3d aria-label="회전 가능한 이중 원뿔과 절단 평면의 의사 3D 장면" tabindex="0"></canvas></div></section>
+              <section class="canvas-card"><div class="canvas-heading"><div><span>2D SECTION</span><h4>절단면 위의 실제 곡선</h4></div><p data-section-feature>중심 · 반지름</p></div><div class="canvas-wrap conic-canvas-wrap"><canvas data-conic-2d aria-label="절단면에 생긴 원뿔곡선의 2D 그래프"></canvas></div></section>
+              <section class="math-strip conic-values" data-conic-value-panel><div><small>분류 조건</small><strong data-classification-rule>β = 0°</strong></div><div><small>경계각</small><strong>90° − 32° = 58°</strong></div><div><small>절단면</small><strong data-plane-equation>y = 1.60</strong></div><div><small>핵심 요소</small><strong data-feature-value>r = 1.00</strong></div></section>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section class="concept-section" id="concepts" aria-labelledby="concept-title">
+        <div class="section-heading"><div><p class="eyebrow"><span></span> WHY IT WORKS</p><h2 id="concept-title">두 실험을 하나의 기하로 연결하기</h2></div></div>
+        <div class="concept-grid">
+          <article><span>01</span><h3>초점과 준선</h3><p>포물선 위의 점은 초점까지의 거리와 준선까지의 거리가 같습니다. <b>y² = 4fx</b>에서 초점은 F(f, 0), 준선은 x = −f입니다.</p><code>PF = 점 P와 준선 사이 거리</code></article>
+          <article><span>02</span><h3>입사각 = 반사각</h3><p>빛이 표면에 닿은 점에서 법선을 그으면, 들어오는 광선과 나가는 광선이 법선과 이루는 각이 같습니다. 포물선에서는 이 성질이 모든 반사광을 축과 평행하게 만듭니다.</p><code>θᵢ = θᵣ</code></article>
+          <article><span>03</span><h3>기울기의 경계</h3><p>원뿔의 모선보다 절단면이 완만하면 닫힌 타원, 평행하면 포물선, 더 가파르면 두 원뿔을 모두 지나 쌍곡선이 됩니다.</p><code>β ↔ 90° − 원뿔 반각</code></article>
+          <article><span>04</span><h3>생활 속 반사면</h3><p>위성 접시·자동차 전조등·태양열 조리기는 포물면의 초점 성질을 이용합니다. 송신과 수신의 방향을 바꾸어도 같은 길을 거슬러 갈 수 있습니다.</p><code>초점 ⇄ 평행광</code></article>
+        </div>
+      </section>
+
+      <section class="mission-section" id="missions" aria-labelledby="mission-title">
+        <div class="mission-heading"><p class="eyebrow"><span></span> CLASSROOM MISSIONS</p><h2 id="mission-title">관찰하고, 기록하고, 근거로 말해 보세요.</h2><p>체크한 내용은 이 기기의 브라우저에만 저장됩니다.</p><button type="button" data-clear-records>관찰 기록 지우기</button></div>
+        <div class="mission-grid">
+          <article><label><input type="checkbox" data-mission="reflection" /><span></span><b>미션 1</b></label><h3>초점거리를 바꾸면?</h3><p>f를 작게 또는 크게 바꿨을 때 포물선의 폭과 반사광의 방향은 각각 어떻게 달라지는지 기록하세요.</p><textarea rows="3" data-note="reflection" aria-label="미션 1 관찰 기록" placeholder="관찰한 변화를 적어 보세요."></textarea></article>
+          <article><label><input type="checkbox" data-mission="boundary" /><span></span><b>미션 2</b></label><h3>57° · 58° · 59° 비교</h3><p>경계 바로 전, 정확한 경계, 경계 바로 뒤에서 3D 장면과 2D 곡선이 어떻게 달라지는지 설명하세요.</p><textarea rows="3" data-note="boundary" aria-label="미션 2 관찰 기록" placeholder="세 각도의 차이를 적어 보세요."></textarea></article>
+          <article><label><input type="checkbox" data-mission="reason" /><span></span><b>미션 3</b></label><h3>왜 ‘역방향’도 성립할까?</h3><p>초점에서 나간 빛의 경로를 거꾸로 따라가면 평행광이 초점에 모이는 이유를 반사각으로 설명하세요.</p><textarea rows="3" data-note="reason" aria-label="미션 3 관찰 기록" placeholder="나의 설명을 적어 보세요."></textarea></article>
+        </div>
+      </section>
+    </main>
+
+    <footer><a href="../../index.html">← 수학 수업 웹툴 모음</a><p>모든 계산은 브라우저 안에서 실행됩니다.</p></footer>
+    <div class="toast" role="status" aria-live="polite" data-toast hidden></div>
+    <script src="./geometry.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

@@ -839,6 +839,114 @@ h2 {
   box-shadow: 0 8px 22px rgba(0,0,0,.28);
 }
 
+.card-conic-lab .tool-visual {
+  color: white;
+  background: #101c2d;
+}
+
+.conic-preview {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 24% 50%, rgba(113, 201, 255, .16), transparent 28%),
+    radial-gradient(circle at 78% 45%, rgba(157, 140, 255, .16), transparent 31%);
+}
+
+.conic-preview__dish {
+  width: 96px;
+  height: 148px;
+  position: absolute;
+  left: 35px;
+  top: 26px;
+  border: 5px solid #71c9ff;
+  border-right: 0;
+  border-radius: 100% 0 0 100%;
+}
+
+.conic-preview__focus {
+  width: 13px;
+  height: 13px;
+  position: absolute;
+  left: 110px;
+  top: 94px;
+  border: 3px solid #101c2d;
+  border-radius: 50%;
+  background: #ffc857;
+  box-shadow: 0 0 0 5px rgba(255, 200, 87, .16);
+}
+
+.conic-preview__ray {
+  width: 125px;
+  height: 2px;
+  position: absolute;
+  left: 116px;
+  top: 101px;
+  background: #67e0c1;
+  transform-origin: left;
+}
+
+.conic-preview__ray::before {
+  width: 74px;
+  height: 2px;
+  position: absolute;
+  right: 100%;
+  background: #ffc857;
+  content: "";
+}
+
+.conic-preview .ray-a { transform: rotate(-19deg); }
+.conic-preview .ray-b { transform: rotate(0deg); }
+.conic-preview .ray-c { transform: rotate(19deg); }
+
+.conic-preview__cone {
+  width: 0;
+  height: 0;
+  position: absolute;
+  right: 38px;
+  top: 21px;
+  border-left: 57px solid transparent;
+  border-right: 57px solid transparent;
+  border-bottom: 82px solid rgba(157, 140, 255, .35);
+}
+
+.conic-preview__cone::after {
+  width: 0;
+  height: 0;
+  position: absolute;
+  left: -57px;
+  top: 82px;
+  border-left: 57px solid transparent;
+  border-right: 57px solid transparent;
+  border-top: 82px solid rgba(113, 201, 255, .25);
+  content: "";
+}
+
+.conic-preview__plane {
+  width: 142px;
+  height: 42px;
+  position: absolute;
+  right: 21px;
+  top: 80px;
+  border: 2px solid #ffc857;
+  background: rgba(255, 200, 87, .13);
+  transform: rotate(-16deg) skewX(-12deg);
+}
+
+.conic-preview em {
+  position: absolute;
+  left: 31px;
+  bottom: 20px;
+  padding: 6px 8px;
+  border-radius: 7px;
+  color: #101c2d;
+  background: #67e0c1;
+  font: 800 8px/1 ui-monospace, monospace;
+  font-style: normal;
+  letter-spacing: .08em;
+}
+
 .golden-measure i {
   width: 20px;
   height: 20px;
