@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="겉결과와 동가능한 미시 사건을 구분하며 표본공간을 수사하는 확률 탐구 웹툴" />
+    <meta name="theme-color" content="#14233b" />
+    <title>동가능성 탐정 | 표본공간 수사실</title>
+    <link rel="stylesheet" href="./style.css?v=20260716-1" />
+  </head>
+  <body>
+    <a class="skip-link" href="#caseStage">현재 사건으로 건너뛰기</a>
+
+    <header class="site-header">
+      <a class="home-link" href="../../index.html" aria-label="수학 수업 웹툴 모음으로 돌아가기">← 웹툴 모음</a>
+      <a class="wordmark" href="#top" aria-label="동가능성 탐정 처음으로">
+        <span class="wordmark__mark" aria-hidden="true"><i></i><b>?</b></span>
+        <span><strong>동가능성 탐정</strong><small>EQUIPROBABILITY DETECTIVE</small></span>
+      </a>
+      <div class="header-actions">
+        <button class="quiet-button" id="helpButton" type="button">수사 안내</button>
+        <button class="quiet-button" id="printButton" type="button">기록 인쇄</button>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="pageTitle">
+        <div class="hero-copy">
+          <p class="eyebrow"><span>O4</span> SAMPLE SPACE INVESTIGATION</p>
+          <h1 id="pageTitle">결과 이름이 같다고,<br /><em>확률까지 같을까?</em></h1>
+          <p class="hero-lead">
+            다섯 사건의 겉모습을 의심하고, 실제 무작위 절차에서 무엇이 동가능한지 찾아내세요.
+            정답보다 먼저 <strong>어떤 표본공간을 선택했는지</strong>를 수사합니다.
+          </p>
+          <div class="hero-actions">
+            <a class="primary-link" href="#missions">첫 사건 수사하기 <span aria-hidden="true">→</span></a>
+            <span class="save-status" id="saveStatus" role="status" aria-live="polite">이 기기에 자동 저장</span>
+          </div>
+          <dl class="hero-facts" aria-label="탐구 구성">
+            <div><dt>5</dt><dd>단계별 사건</dd></div>
+            <div><dt>20점</dt><dd>사건별 수사 점수</dd></div>
+            <div><dt>정확값 + 실험</dt><dd>두 증거의 교차 확인</dd></div>
+          </dl>
+        </div>
+
+        <div class="hero-board" aria-label="거시적 결과 두 종류가 미시적 사건 여섯 개로 나뉘는 수사 보드">
+          <div class="board-pin board-pin--one"></div><div class="board-pin board-pin--two"></div>
+          <div class="case-note"><small>CASE O4</small><strong>‘두 종류’</strong><span>정말 1 : 1?</span></div>
+          <div class="board-thread board-thread--a"></div><div class="board-thread board-thread--b"></div>
+          <div class="macro-file"><b>겉결과</b><span>A</span><span>B</span></div>
+          <div class="micro-file"><b>미시 사건</b><span class="micro-dot micro-dot--a"></span><span class="micro-dot micro-dot--a"></span><span class="micro-dot micro-dot--a"></span><span class="micro-dot micro-dot--a"></span><span class="micro-dot micro-dot--b"></span><span class="micro-dot micro-dot--b"></span><strong>4 : 2</strong></div>
+          <div class="magnifier" aria-hidden="true"><i></i></div>
+        </div>
+      </section>
+
+      <section class="mode-section" aria-labelledby="modeTitle">
+        <div>
+          <p class="section-kicker">INVESTIGATION MODE</p>
+          <h2 id="modeTitle">누구와 수사하나요?</h2>
+        </div>
+        <div class="mode-switch" id="modeSwitch" role="group" aria-label="탐구 모드 선택">
+          <button type="button" data-mode="solo" aria-pressed="true"><span>01</span><b>개인 탐구</b><small>내 예상과 점수 저장</small></button>
+          <button type="button" data-mode="team" aria-pressed="false"><span>02</span><b>모둠 대결</b><small>A·B 모둠 점수 경쟁</small></button>
+          <button type="button" data-mode="teacher" aria-pressed="false"><span>03</span><b>교사용 진행</b><small>예상 수집 뒤 증거 공개</small></button>
+        </div>
+        <div class="mode-dashboard" id="modeDashboard" aria-live="polite"></div>
+      </section>
+
+      <section class="mission-section" id="missions" aria-labelledby="missionTitle">
+        <div class="section-heading">
+          <div><p class="section-kicker">FIVE CASE FILES</p><h2 id="missionTitle">사건을 하나씩 열어 보세요</h2></div>
+          <p><kbd>1</kbd>~<kbd>5</kbd> 키로 사건 이동 · 예상과 근거를 고른 뒤 증거 공개</p>
+        </div>
+        <nav class="mission-nav" id="missionNav" aria-label="탐구 미션"></nav>
+      </section>
+
+      <section class="case-stage" id="caseStage" tabindex="-1" aria-labelledby="caseTitle">
+        <div class="case-heading">
+          <div class="case-number" id="caseNumber">01</div>
+          <div>
+            <p class="case-label" id="caseLabel">CASE FILE · FAIR COINS</p>
+            <h2 id="caseTitle">공정한 동전과 첫 표본공간</h2>
+            <p id="caseBrief">서로 구별되는 두 동전을 동시에 던졌습니다. 겉결과와 미시 결과를 구분해 봅시다.</p>
+          </div>
+          <div class="case-status" id="caseStatus"><span></span>미수사</div>
+        </div>
+
+        <div class="investigation-grid">
+          <section class="prediction-panel" aria-labelledby="predictionTitle">
+            <div class="panel-heading">
+              <span>STEP 1</span>
+              <div><h3 id="predictionTitle">먼저 예상하기</h3><p>증거를 보기 전의 생각을 기록합니다.</p></div>
+            </div>
+            <fieldset class="choice-fieldset">
+              <legend id="questionText">앞면이 정확히 한 개 나올 확률은?</legend>
+              <div class="answer-choices" id="answerChoices"></div>
+            </fieldset>
+            <fieldset class="choice-fieldset assumption-fieldset">
+              <legend>그렇게 판단한 가장 큰 근거는?</legend>
+              <div class="assumption-choices" id="assumptionChoices"></div>
+            </fieldset>
+            <label class="note-field">나의 수사 메모 <span>선택</span>
+              <textarea id="studentNote" rows="3" maxlength="300" placeholder="어떤 결과들을 같은 가능성으로 보았는지 적어 보세요."></textarea>
+            </label>
+            <button class="reveal-button" id="revealButton" type="button" disabled>
+              <span class="reveal-button__icon" aria-hidden="true">?</span>
+              <span><b>예상 잠그고 증거 공개</b><small>Alt + E</small></span>
+            </button>
+            <p class="prediction-hint" id="predictionHint">예상과 판단 근거를 모두 선택하면 공개할 수 있어요.</p>
+          </section>
+
+          <section class="evidence-panel" id="evidencePanel" aria-labelledby="evidenceTitle" data-revealed="false">
+            <div class="panel-heading evidence-heading">
+              <span>STEP 2</span>
+              <div><h3 id="evidenceTitle">표본공간 다시 보기</h3><p>겉결과와 동가능한 기본사건을 나란히 놓습니다.</p></div>
+              <div class="verdict-chip" id="verdictChip">증거 대기</div>
+            </div>
+
+            <div class="evidence-lock" id="evidenceLock">
+              <span aria-hidden="true">?</span>
+              <strong>아직 봉인된 증거입니다</strong>
+              <p>왼쪽에서 예상과 근거를 남긴 뒤 공개하세요.</p>
+            </div>
+
+            <div class="evidence-content" id="evidenceContent" aria-hidden="true">
+              <div class="config-panel" id="configPanel"></div>
+
+              <div class="compare-board">
+                <article class="comparison-card macro-card">
+                  <header><span>MACRO</span><h4>겉으로 부른 결과</h4></header>
+                  <p>이름이나 모양으로 묶은 결과입니다. 카드 수만 세면 함정에 빠질 수 있어요.</p>
+                  <div id="macroView" class="macro-view"></div>
+                </article>
+                <div class="comparison-arrow" aria-hidden="true"><span>확대</span>→</div>
+                <article class="comparison-card micro-card">
+                  <header><span>MICRO</span><h4>무작위 절차의 기본사건</h4></header>
+                  <p id="microIntro">실제로 같은 확률을 갖는 더 작은 결과를 확인합니다.</p>
+                  <div id="microView" class="micro-view"></div>
+                </article>
+              </div>
+
+              <article class="diagnosis-card">
+                <div class="diagnosis-icon" aria-hidden="true">!</div>
+                <div><span>ASSUMPTION CHECK</span><h4 id="diagnosisTitle">어디서 동가능성을 잘못 가정했을까?</h4><p id="diagnosisText"></p></div>
+              </article>
+
+              <div class="calculation-grid">
+                <article class="formula-card">
+                  <span>EXACT EVIDENCE</span>
+                  <h4>정확한 계산</h4>
+                  <div class="formula-line" id="formulaLine"></div>
+                  <p id="formulaNote"></p>
+                </article>
+                <article class="verdict-card">
+                  <span>VERDICT</span>
+                  <strong id="exactAnswer">—</strong>
+                  <p id="verdictText"></p>
+                </article>
+              </div>
+
+              <section class="simulation-panel" aria-labelledby="simulationTitle">
+                <div class="simulation-heading">
+                  <div><span>STEP 3 · MONTE CARLO</span><h4 id="simulationTitle">반복 실험으로 교차 확인</h4><p id="simulationPrompt">같은 무작위 절차를 반복해 이론값과 비교합니다.</p></div>
+                  <label>실험 번호<input id="seedInput" type="number" min="1" max="2147483646" value="2026" inputmode="numeric" /></label>
+                </div>
+                <div class="simulation-actions" role="group" aria-label="반복 실험 횟수">
+                  <button type="button" data-trials="1"><b>1회</b><span>한 번 관찰</span></button>
+                  <button type="button" data-trials="100"><b>100회</b><span>빠른 점검</span></button>
+                  <button type="button" data-trials="1000"><b>1,000회</b><span>분포 비교</span></button>
+                  <button type="button" data-trials="10000"><b>10,000회</b><span>이론에 접근</span></button>
+                  <button class="simulation-reset" id="simulationReset" type="button">실험 초기화</button>
+                </div>
+                <div class="simulation-result" id="simulationResult" aria-live="polite"></div>
+              </section>
+            </div>
+          </section>
+        </div>
+
+        <aside class="teacher-cue" id="teacherCue" hidden>
+          <span>TEACHER CUE</span><strong id="teacherQuestion"></strong><p id="teacherNote"></p>
+        </aside>
+      </section>
+
+      <section class="summary-section" aria-labelledby="summaryTitle">
+        <div class="summary-heading">
+          <div><p class="section-kicker">CASE REPORT</p><h2 id="summaryTitle">나의 동가능성 수사 기록</h2><p>예상, 가정, 정확한 답을 한 표에서 비교합니다. 기록은 이 브라우저에 저장됩니다.</p></div>
+          <div class="score-seal"><span>TOTAL</span><strong id="totalScore">0</strong><small>/ 100</small></div>
+        </div>
+        <div class="record-list" id="recordList"></div>
+        <div class="summary-actions">
+          <button class="primary-button" id="nextMissionButton" type="button">다음 미수사 사건으로</button>
+          <button class="secondary-button" id="resetAllButton" type="button">모든 기록 초기화</button>
+        </div>
+      </section>
+
+      <section class="principle-section" aria-labelledby="principleTitle">
+        <p class="section-kicker">THE DETECTIVE'S RULE</p>
+        <h2 id="principleTitle">“몇 가지인가?”보다 먼저<br />“무엇이 같은 가능성인가?”</h2>
+        <ol>
+          <li><span>01</span><b>무작위 절차를 적는다</b><p>무엇을 먼저 고르고, 그다음 무엇을 고르는지 순서를 분명히 합니다.</p></li>
+          <li><span>02</span><b>동가능한 기본사건을 찾는다</b><p>이름이 아니라 실제 생성 확률이 같은 가장 작은 결과를 확인합니다.</p></li>
+          <li><span>03</span><b>겉결과의 가중치를 합친다</b><p>각 겉결과에 들어가는 미시 사건 수 또는 경로 확률을 합합니다.</p></li>
+        </ol>
+      </section>
+    </main>
+
+    <section class="print-sheet" id="printSheet" aria-hidden="true">
+      <header><p>O4 · 확률과 통계 탐구 기록</p><h1>동가능성 탐정 수사 보고서</h1><span>이름 ____________________  모둠 ______  날짜 __________</span></header>
+      <table><thead><tr><th>사건</th><th>나의 예상</th><th>판단 근거</th><th>정확한 답</th><th>점수</th></tr></thead><tbody id="printRows"></tbody></table>
+      <div class="print-reflection"><h2>최종 진술</h2><p>어떤 결과들이 동가능하다고 말하려면 무엇을 먼저 확인해야 하는가?</p><div></div><div></div><div></div><p>오늘 가장 크게 바뀐 생각은?</p><div></div><div></div></div>
+    </section>
+
+    <footer>
+      <strong>동가능성 탐정</strong>
+      <p>표본공간과 동가능성의 선택에 집중한 독립 확률 탐구 도구</p>
+      <span>키보드: 1~5 사건 이동 · Alt+E 증거 공개 · Alt+S 1,000회 실험</span>
+    </footer>
+
+    <dialog id="helpDialog">
+      <div class="dialog-heading"><div><span>INVESTIGATION GUIDE</span><h2>수사 안내</h2></div><button id="closeHelpButton" type="button" aria-label="수사 안내 닫기">×</button></div>
+      <ol>
+        <li><b>예상부터 남기세요.</b><p>확률값과 그 판단을 만든 가정을 함께 선택합니다.</p></li>
+        <li><b>겉결과와 미시 사건을 비교하세요.</b><p>카드·표·트리에서 실제로 같은 확률인 기본사건을 찾습니다.</p></li>
+        <li><b>정확값과 반복 실험을 교차 확인하세요.</b><p>실험값은 흔들리지만, 시행이 쌓이면 이론값 주변으로 모입니다.</p></li>
+        <li><b>설정을 바꿔 새 사건을 만드세요.</b><p>직육면체 면 가중치와 상자 구성을 바꾸면 계산도 즉시 갱신됩니다.</p></li>
+      </ol>
+      <div class="dialog-note"><b>핵심 원칙</b><p>“모든 결과가 동가능하다”가 아니라, <strong>지금 정한 무작위 절차에서 무엇이 동가능한지</strong>를 말해야 합니다.</p></div>
+      <button class="dialog-start" id="dialogStartButton" type="button">수사 시작</button>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./model.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

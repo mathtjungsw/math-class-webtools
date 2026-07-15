@@ -1463,6 +1463,83 @@ body.is-modal-open {
 .card-bayes .positive-group .true-positive { fill: var(--mint); stroke: var(--navy); stroke-width: 4; }
 .card-bayes .positive-group .false-positive { fill: var(--yellow); stroke: var(--navy); stroke-width: 4; }
 .card-bayes .positive-group path { fill: none; stroke: var(--orange); stroke-linecap: round; stroke-width: 7; }
+.card-equiprobability .tool-visual { background: #eef1f8; }
+.equiprobability-preview {
+  position: relative;
+  display: grid;
+  width: min(88%, 338px);
+  grid-template-columns: 104px 62px 1fr;
+  align-items: center;
+  gap: 9px;
+  padding: 21px;
+  border: 1px solid #cad2e1;
+  border-radius: 18px;
+  background: #f9f6ee;
+  box-shadow: 0 17px 32px rgba(17, 28, 53, .12);
+  transform: rotate(-2deg);
+}
+.equiprobability-preview::before,
+.equiprobability-preview::after {
+  position: absolute;
+  top: -7px;
+  width: 13px;
+  height: 13px;
+  border: 3px solid white;
+  border-radius: 50%;
+  background: var(--orange);
+  box-shadow: 0 3px 7px rgba(17, 28, 53, .2);
+  content: "";
+}
+.equiprobability-preview::before { left: 28px; }
+.equiprobability-preview::after { right: 28px; background: var(--blue); }
+.equiprobability-preview__macro {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px;
+}
+.equiprobability-preview__macro span {
+  display: grid;
+  height: 52px;
+  place-items: center;
+  border: 3px solid var(--navy);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--navy);
+  font: 900 21px/1 Georgia, serif;
+}
+.equiprobability-preview__macro small,
+.equiprobability-preview__micro small {
+  grid-column: 1 / -1;
+  color: #6f7889;
+  font-size: 7px;
+  font-weight: 850;
+  text-align: center;
+}
+.equiprobability-preview__question {
+  color: var(--orange);
+  font-size: 12px;
+  text-align: center;
+}
+.equiprobability-preview__micro {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.equiprobability-preview__micro i {
+  display: block;
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--navy);
+  border-radius: 50%;
+  background: var(--mint);
+}
+.equiprobability-preview__micro i:nth-child(-n + 4) { background: var(--orange); }
+.equiprobability-preview__micro strong {
+  grid-column: 1 / -1;
+  color: var(--navy);
+  font: 900 15px/1 Georgia, serif;
+  text-align: center;
+}
 .monty-visual .ground { fill: none; stroke: #e6c7b0; stroke-linecap: round; stroke-width: 3; }
 .monty-visual .goat { fill: #fffaf1; stroke: var(--navy); stroke-linecap: round; stroke-linejoin: round; stroke-width: 5; }
 .monty-visual .goat circle { fill: var(--navy); stroke: none; }
