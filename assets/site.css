@@ -2523,7 +2523,81 @@ body.is-modal-open {
   letter-spacing: 0.1em;
 }
 
-/* Benford lab card */
+/* Graph framing lab card */
+.card-graph-framing .tool-visual {
+  background: linear-gradient(145deg, #102a43, #1e5260);
+}
+
+.framing-preview {
+  position: relative;
+  display: grid;
+  width: min(88%, 340px);
+  height: 150px;
+  grid-template-columns: 1fr 42px 1fr;
+  align-items: center;
+}
+
+.framing-preview__chart {
+  position: relative;
+  height: 116px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, .07);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, .14);
+}
+
+.framing-preview__chart::before,
+.framing-preview__chart::after {
+  position: absolute;
+  right: 12px;
+  left: 12px;
+  height: 1px;
+  background: rgba(255, 255, 255, .14);
+  content: "";
+}
+
+.framing-preview__chart::before { top: 42px; }
+.framing-preview__chart::after { top: 78px; }
+.framing-preview__chart > span { position: absolute; left: 10px; top: 9px; color: #a7c1c7; font: 800 7px ui-monospace, monospace; }
+.framing-preview__chart > small { position: absolute; right: 10px; bottom: 7px; color: #8eb1b7; font-size: 6px; font-weight: 900; letter-spacing: .08em; }
+.framing-preview__chart i,
+.framing-preview__chart b,
+.framing-preview__chart em {
+  position: absolute;
+  left: 18px;
+  display: block;
+  width: 102px;
+  height: 3px;
+  border-radius: 5px;
+  transform-origin: left center;
+}
+
+.framing-preview__chart i { top: 61px; background: #56b4e9; transform: rotate(9deg); }
+.framing-preview__chart b { top: 73px; background: #e69f00; transform: rotate(-11deg); }
+.framing-preview__chart em { top: 65px; height: 1px; background: rgba(255, 255, 255, .28); transform: rotate(0); }
+.framing-preview__chart--cut { transform: rotate(2deg); }
+.framing-preview__chart--cut i,
+.framing-preview__chart--cut b { height: 7px; box-shadow: 0 0 10px rgba(255, 255, 255, .13); }
+.framing-preview__chart--cut i { top: 47px; background: #58d4b2; transform: rotate(22deg); }
+.framing-preview__chart--cut b { top: 78px; background: #ff8c68; transform: rotate(-28deg); }
+.framing-preview__chart--cut > small { color: #ffd166; }
+.framing-preview__arrow {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  min-height: 25px;
+  place-items: center;
+  margin: 0 -5px;
+  color: #102a43;
+  background: #ffd166;
+  border-radius: 999px;
+  font-size: 6px;
+  font-weight: 950;
+  transform: rotate(-5deg);
+}
+
+/* Law of large numbers card */
 .card-large-numbers .tool-visual {
   background: #173c46;
 }

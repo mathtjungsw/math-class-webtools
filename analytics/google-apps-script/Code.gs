@@ -15,6 +15,7 @@ const TOOL_SEED = [
   ["monty-hall", "몬티홀 딜레마 실험"],
   ["conditional-probability", "조건부 확률 실험기"],
   ["sampling-studio", "표본추출 스튜디오"],
+  ["graph-framing-lab", "그래프 프레이밍·왜곡 실험실"],
   ["law-of-large-numbers", "확률 대수의 법칙 실험실"],
   ["genetics-simulator", "유전 확률 시뮬레이터"],
   ["benford-lab", "벤포드 법칙 실험기"],
