@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f6f1" />
+    <meta name="description" content="정다면체의 성질과 대수식의 종류를 클릭 또는 드래그로 분류하는 수학 수업 카드 게임" />
+    <title>수학 분류 카드 게임 | 수학 수업 웹툴 모음</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="back-link" href="../../index.html#math-game" aria-label="수학 게임 목록으로 돌아가기">
+        <span aria-hidden="true">←</span><span>수학 게임</span>
+      </a>
+      <div class="brand" aria-label="수학 분류 카드 게임">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span><strong>수학 분류 카드 게임</strong><small>G3 · CLASSIFY &amp; EXPLAIN</small></span>
+      </div>
+      <div class="header-actions">
+        <button class="ghost-button" id="guideButton" type="button">수업·개념 안내</button>
+        <button class="teacher-button" id="editorButton" type="button">교사용 편집</button>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section class="intro-panel" aria-labelledby="pageTitle">
+        <div>
+          <p class="eyebrow">SORT · REASON · CHECK</p>
+          <h1 id="pageTitle">근거를 찾으면, 분류가 선명해집니다.</h1>
+          <p id="setSubtitle">카드에 담긴 성질을 살펴보고 다섯 정다면체의 집으로 보내세요.</p>
+        </div>
+        <div class="mode-tabs" role="group" aria-label="문제 세트 선택">
+          <button class="mode-tab is-active" type="button" data-set-key="solids" aria-pressed="true"><b>G1</b><span>정다면체 성질<small>중1 · 20장</small></span></button>
+          <button class="mode-tab" type="button" data-set-key="algebra" aria-pressed="false"><b>G2</b><span>대수식 종류<small>중2 · 21장</small></span></button>
+          <button class="mode-tab" id="customSetTab" type="button" data-set-key="custom" aria-pressed="false" hidden><b>MY</b><span>나의 문제 세트<small>교사 제작</small></span></button>
+        </div>
+      </section>
+
+      <section class="settings-panel" aria-label="게임 설정">
+        <div class="setting-group">
+          <span class="setting-label">채점</span>
+          <div class="segmented" role="group" aria-label="채점 방식">
+            <button type="button" data-check-mode="instant" aria-pressed="true">즉시 확인</button>
+            <button type="button" data-check-mode="submit" aria-pressed="false">모아서 제출</button>
+          </div>
+        </div>
+        <div class="setting-group">
+          <span class="setting-label">시간</span>
+          <div class="segmented" role="group" aria-label="시간 방식">
+            <button type="button" data-play-mode="practice" aria-pressed="true">연습 모드</button>
+            <button type="button" data-play-mode="timed" aria-pressed="false">제한시간</button>
+          </div>
+          <label class="duration-select" id="durationWrap" hidden>제한시간
+            <select id="durationSelect">
+              <option value="180">3분</option><option value="300" selected>5분</option><option value="600">10분</option>
+            </select>
+          </label>
+        </div>
+        <button class="primary-button" id="startButton" type="button">카드 섞어 시작</button>
+      </section>
+
+      <section class="status-strip" aria-label="게임 현황">
+        <div><span>진행률</span><strong id="progressText">0 / 20</strong></div>
+        <div class="progress-cell"><span>완료</span><div class="progress-track" role="progressbar" aria-label="분류 진행률" aria-valuemin="0" aria-valuemax="20" aria-valuenow="0"><i id="progressBar"></i></div></div>
+        <div><span>점수</span><strong><b id="scoreText">0</b>점</strong></div>
+        <div><span id="clockLabel">연습 시간</span><strong class="clock" id="clockText">00:00</strong></div>
+      </section>
+
+      <section class="interaction-hint" id="interactionHint" aria-live="polite">
+        <span aria-hidden="true">①</span><strong>카드를 먼저 선택하세요.</strong>
+        <p>카드를 누른 뒤 분류 항목의 ‘여기에 놓기’를 누르세요. 큰 화면에서는 드래그할 수도 있습니다.</p>
+      </section>
+
+      <section class="game-layout" aria-label="분류 게임 영역">
+        <section class="category-panel" aria-labelledby="categoryTitle">
+          <div class="panel-heading">
+            <div><p class="eyebrow">CATEGORY BOARD</p><h2 id="categoryTitle">분류 항목</h2></div>
+            <span id="categoryCount">5개 항목</span>
+          </div>
+          <div class="category-grid" id="categoryGrid"></div>
+        </section>
+
+        <aside class="card-panel" aria-labelledby="cardTitle">
+          <div class="panel-heading">
+            <div><p class="eyebrow">CARD DECK</p><h2 id="cardTitle">남은 카드</h2></div>
+            <span class="remaining-badge" id="remainingCount">20장</span>
+          </div>
+          <div class="card-pool" id="cardPool" aria-label="분류할 카드 목록"></div>
+          <p class="empty-pool" id="emptyPool" hidden>모든 카드를 항목에 놓았습니다.</p>
+          <button class="primary-button full" id="submitButton" type="button" hidden disabled>분류 결과 제출</button>
+        </aside>
+      </section>
+
+      <section class="feedback-panel is-neutral" id="feedbackPanel" aria-live="polite" aria-atomic="true">
+        <span class="feedback-icon" id="feedbackIcon" aria-hidden="true">i</span>
+        <div><strong id="feedbackTitle">분류 근거를 말해 보세요.</strong><p id="feedbackText">면의 모양, 식의 최고차항처럼 눈에 보이는 근거를 먼저 찾으면 좋습니다.</p></div>
+      </section>
+
+      <section class="concept-section" aria-labelledby="conceptTitle">
+        <div class="panel-heading">
+          <div><p class="eyebrow">QUICK CONCEPT</p><h2 id="conceptTitle">핵심 개념 한눈에 보기</h2></div>
+          <button class="text-button" id="openGuideFromConcept" type="button">수업 활용안 보기 →</button>
+        </div>
+        <div class="concept-grid" id="conceptGrid"></div>
+      </section>
+    </main>
+
+    <dialog class="modal guide-modal" id="guideDialog">
+      <div class="modal-header"><div><p class="eyebrow">CLASSROOM GUIDE</p><h2>수업 활용과 개념 요약</h2></div><button class="icon-button" type="button" data-close-dialog aria-label="닫기">×</button></div>
+      <div class="guide-callout"><strong>추천 흐름 · 15~25분</strong><span>개별 분류 7분 → 짝과 근거 비교 5분 → 오답 카드 토론 5분 → 개념 정리</span></div>
+      <div class="guide-grid">
+        <article><b>1</b><div><strong>예상부터 기록</strong><p>카드를 놓기 전에 ‘그렇게 생각한 단서’를 한 단어로 말하거나 적게 합니다.</p></div></article>
+        <article><b>2</b><div><strong>오답을 반례로 사용</strong><p>정답명만 확인하지 말고 다른 항목이 될 수 없는 이유까지 짝과 설명합니다.</p></div></article>
+        <article><b>3</b><div><strong>교사 제작 세트</strong><p>교사용 편집에서 항목·카드·근거를 바꾸고 JSON으로 저장해 다른 기기에서 불러옵니다.</p></div></article>
+      </div>
+      <section class="modal-concepts"><h3 id="guideConceptTitle">정다면체 핵심 요약</h3><div id="guideConceptBody"></div></section>
+      <button class="primary-button full" type="button" data-close-dialog>활동 시작하기</button>
+    </dialog>
+
+    <dialog class="modal result-modal" id="resultDialog">
+      <div class="result-mark" id="resultMark" aria-hidden="true">✓</div>
+      <p class="eyebrow">ROUND COMPLETE</p>
+      <h2 id="resultTitle">분류를 마쳤습니다!</h2>
+      <p id="resultSummary">결과 요약</p>
+      <div class="result-stats"><div><span>점수</span><strong id="resultScore">100점</strong></div><div><span>정답</span><strong id="resultCorrect">20 / 20</strong></div><div><span>시간</span><strong id="resultTime">00:00</strong></div></div>
+      <div class="result-actions"><button class="secondary-button" id="reviewBoardButton" type="button">결과판 보기</button><button class="secondary-button" id="retryWrongButton" type="button">오답 다시 풀기</button><button class="primary-button" id="retryAllButton" type="button">전체 다시 풀기</button></div>
+    </dialog>
+
+    <dialog class="modal editor-modal" id="editorDialog">
+      <div class="modal-header"><div><p class="eyebrow">TEACHER EDITOR</p><h2>나의 분류 문제 세트</h2></div><button class="icon-button" type="button" data-close-editor aria-label="닫기">×</button></div>
+      <p class="editor-intro">항목 2개 이상과 카드를 만들고 각 카드의 정답·설명 근거를 지정하세요. 이 기기에 자동 보관되며 JSON으로 옮길 수 있습니다.</p>
+      <label class="field-label">문제 세트 이름<input id="editorTitle" type="text" maxlength="70" /></label>
+      <section class="editor-section"><div class="editor-heading"><div><strong>분류 항목</strong><span>이름과 핵심 판단 기준</span></div><button class="secondary-button small" id="addCategoryButton" type="button">+ 항목 추가</button></div><div class="editor-list" id="editorCategoryList"></div></section>
+      <section class="editor-section"><div class="editor-heading"><div><strong>분류 카드</strong><span>카드 내용·정답 항목·피드백 근거</span></div><button class="secondary-button small" id="addCardButton" type="button">+ 카드 추가</button></div><div class="editor-list card-editor-list" id="editorCardList"></div></section>
+      <p class="editor-error" id="editorError" role="alert"></p>
+      <div class="editor-footer"><label class="file-button">JSON 불러오기<input id="importInput" type="file" accept="application/json,.json" /></label><button class="secondary-button" id="exportButton" type="button">JSON 저장</button><button class="primary-button" id="saveCustomButton" type="button">이 세트로 시작</button></div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./game-logic.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
