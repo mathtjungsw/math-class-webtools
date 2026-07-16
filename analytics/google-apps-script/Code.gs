@@ -22,6 +22,7 @@ const TOOL_SEED = [
   ["benford-lab", "벤포드 법칙 실험기"],
   ["huffman-compression-lab", "허프만 부호·파일 압축 실험실"],
   ["pixel-matrix-lab", "픽셀 행렬·이미지 필터 실험실"],
+  ["ai-data-bias-detective", "AI 데이터 편향 탐정"],
   ["image-supervised-learning", "이미지 지도학습 AI 만들기"],
   ["sentiment-ai", "감성 분석 AI 실습"],
   ["trendline-prediction", "추세선으로 예측하기"],

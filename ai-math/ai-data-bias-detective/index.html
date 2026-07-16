@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="합성 데이터의 숨은 상관관계와 지름길 학습을 교차표, 나이브 베이즈, 반사실적 검사로 찾고 고치는 수업용 웹툴" />
+    <title>AI 데이터 편향 탐정</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#mainContent">본문으로 건너뛰기</a>
+
+    <header class="tool-topbar">
+      <a class="brand" href="../../" aria-label="수학 수업 웹툴 모음 홈">
+        <span class="brand-mark" aria-hidden="true">O15</span>
+        <span><strong>AI 데이터 편향 탐정</strong><small>인공지능 수학 · 독립 웹툴</small></span>
+      </a>
+      <nav class="top-actions" aria-label="상단 메뉴">
+        <button class="ghost-button" id="openGuideButton" type="button">수업 설명서</button>
+        <button class="ghost-button" id="openTeacherButton" type="button">교사 편집</button>
+        <button class="ghost-button" id="fullscreenButton" type="button">전체화면</button>
+        <a class="ghost-button" href="../../">전체 웹툴</a>
+      </nav>
+    </header>
+
+    <dialog class="modal guide-dialog" id="guideDialog" aria-labelledby="guideTitle">
+      <header class="modal-header">
+        <div><p class="eyebrow">TEACHER &amp; STUDENT GUIDE</p><h2 id="guideTitle">높은 정확도 뒤의 숨은 규칙 찾기</h2></div>
+        <button class="icon-button" type="button" data-close-dialog="guideDialog" aria-label="수업 설명서 닫기">×</button>
+      </header>
+      <div class="modal-body guide-body">
+        <section class="guide-lead">
+          <h3>핵심 질문</h3>
+          <p>훈련과 비슷한 시험에서 100%를 맞힌 모델은 정말 목표 특징을 배웠을까요? 목표는 그대로 두고 배경만 바꾼 자료로 그 주장을 검사합니다.</p>
+        </section>
+        <ol class="guide-steps">
+          <li><b>1 · 예상</b><span>카드의 목표 특징과 배경·날씨·카메라 중 모델이 무엇을 쓸지 적습니다.</span></li>
+          <li><b>2 · 훈련</b><span>훈련 카드의 포함 여부를 고르고, 라플라스 평활을 쓴 범주형 나이브 베이즈를 훈련합니다.</span></li>
+          <li><b>3 · 반사실적 검사</b><span>목표는 유지한 채 배경을 뒤집거나 특징을 가려 예측이 바뀌는지 확인합니다.</span></li>
+          <li><b>4 · 수정</b><span>반례 추가, 배경 균형화, 무작위화, 지름길 특징 제거를 비교합니다.</span></li>
+          <li><b>5 · 재평가</b><span>훈련·검증·일반·분포이동 정확도와 조합별 최저 성능을 함께 봅니다.</span></li>
+        </ol>
+
+        <section>
+          <h3>계산은 어떻게 하나요?</h3>
+          <p class="formula">점수(c) = log P(c) + Σ log P(특징값 | c)</p>
+          <p>각 조건부 확률은 <b>(횟수+1) ÷ (그 클래스 카드 수+가능한 값 수)</b>로 계산합니다. 0번 본 값도 확률이 0이 되지 않습니다. 두 클래스의 로그 점수 차이를 특징별로 펼쳐 모델이 어느 증거에 의존했는지 보여 줍니다.</p>
+        </section>
+
+        <section>
+          <h3>편향은 한 종류가 아닙니다</h3>
+          <div class="concept-grid">
+            <article><b>표본 선택</b><p>특정 클래스가 특정 배경에서만 모였습니다.</p></article>
+            <article><b>측정</b><p>카메라 틀·장소 같은 수집 장치가 값에 섞였습니다.</p></article>
+            <article><b>라벨</b><p>정답이 잘못되거나 일관되지 않게 붙었습니다.</p></article>
+            <article><b>대리변수</b><p>목표 대신 쉽게 얻은 배경·검색량을 사용합니다.</p></article>
+            <article><b>분포 변화</b><p>훈련 뒤 환경과 특징의 관계가 달라졌습니다.</p></article>
+            <article><b>평가</b><p>검증 자료가 훈련과 같은 편향만 반복합니다.</p></article>
+          </div>
+        </section>
+
+        <section class="history-note">
+          <h3>교사용 배경 설명</h3>
+          <p><b>탱크·날씨 이야기</b>는 목표물 유무와 맑음·흐림이 함께 묶여 모델이 날씨를 배웠다는 널리 알려진 경고 사례입니다. 역사적 세부는 출처마다 달라 확정된 실제 군사 실험으로 단정하지 않습니다. 그러나 수집 조건이 지름길 학습을 만들 수 있다는 교훈은 이 도구의 합성 실험으로 직접 검증할 수 있습니다.</p>
+          <p><b>Google Flu Trends</b>는 검색량을 독감 활동의 대리변수로 활용한 실제 사례입니다. 검색 행동·추천 시스템·환경의 변화로 관계가 흔들릴 수 있어 실제 관측 자료와 계속 보정·검증해야 한다는 교훈을 줍니다. “완전히 쓸모없었다”거나 “검색만으로 질병을 판정했다”고 단순화하지 않습니다.</p>
+        </section>
+
+        <section class="safety-note">
+          <h3>안전과 한계</h3>
+          <p>이 웹툴은 도형·동물·식물·가상 로봇의 합성 특징만 사용합니다. 실제 사람의 성별·인종·건강·채용·능력을 평가하거나 분류하는 도구가 아니며, 그런 용도로 확장하지 마세요. 높은 정확도만으로 올바른 특징을 학습했다고 결론내릴 수 없습니다.</p>
+        </section>
+      </div>
+      <footer class="modal-footer"><button class="primary-button" type="button" data-close-dialog="guideDialog">설명서 닫고 시작</button></footer>
+    </dialog>
+
+    <dialog class="modal teacher-dialog" id="teacherDialog" aria-labelledby="teacherTitle">
+      <header class="modal-header">
+        <div><p class="eyebrow">TEACHER EDITOR</p><h2 id="teacherTitle">수업 프리셋 편집</h2></div>
+        <button class="icon-button" type="button" data-close-dialog="teacherDialog" aria-label="교사 편집 닫기">×</button>
+      </header>
+      <div class="modal-body teacher-body">
+        <p class="panel-note">설정을 적용하면 합성 카드가 새로 생성됩니다. 현재 실험은 JSON으로 먼저 저장할 수 있습니다.</p>
+        <div class="teacher-grid">
+          <label>합성 사례
+            <select id="teacherScenario">
+              <option value="robot">로봇 차체</option>
+              <option value="animal">동물 귀 모양</option>
+              <option value="plant">식물 상태</option>
+            </select>
+          </label>
+          <label>편향 강도 <output id="biasStrengthOutput" for="teacherBiasStrength">100%</output>
+            <input id="teacherBiasStrength" type="range" min="50" max="100" step="10" value="100" />
+          </label>
+          <label>클래스 A 이름<input id="teacherClassA" type="text" maxlength="40" /></label>
+          <label>클래스 B 이름<input id="teacherClassB" type="text" maxlength="40" /></label>
+          <label>목표 특징 이름<input id="teacherTargetName" type="text" maxlength="40" /></label>
+          <label>배경 특징 이름<input id="teacherBackgroundName" type="text" maxlength="40" /></label>
+          <label>날씨·조명 특징 이름<input id="teacherWeatherName" type="text" maxlength="40" /></label>
+          <label>카메라 특징 이름<input id="teacherCameraName" type="text" maxlength="40" /></label>
+          <label>데이터 예산<input id="teacherBudget" type="number" min="4" max="60" step="1" /></label>
+          <label>반례 미션 기준<input id="teacherCounterexamples" type="number" min="1" max="30" step="1" /></label>
+          <label>작은 집단 기준<input id="teacherGroupSize" type="number" min="1" max="10" step="1" /></label>
+          <label>결정적 생성 씨앗<input id="teacherSeed" type="text" maxlength="60" /></label>
+        </div>
+        <section class="file-panel" aria-labelledby="presetTitle">
+          <h3 id="presetTitle">프리셋·특징 데이터</h3>
+          <div class="button-row">
+            <button class="plain-button" id="saveJsonButton" type="button">프리셋 JSON 저장</button>
+            <label class="file-button">JSON 불러오기<input id="loadJsonInput" type="file" accept="application/json,.json" /></label>
+            <button class="plain-button" id="exportCsvButton" type="button">카드 CSV 저장</button>
+            <label class="file-button">CSV 불러오기<input id="loadCsvInput" type="file" accept="text/csv,.csv" /></label>
+          </div>
+          <p>CSV 열: <code>id, sceneId, split, label, target, background, weather, camera, included</code>. 값은 현재 스키마의 <code>classA/classB</code>, <code>a/b</code>를 사용합니다.</p>
+        </section>
+        <section aria-labelledby="cardEditorTitle">
+          <div class="section-heading compact-heading"><div><p class="eyebrow">CARD COMBINATIONS</p><h3 id="cardEditorTitle">카드 조합 빠른 편집</h3></div><button class="plain-button" id="addCardButton" type="button">훈련 카드 추가</button></div>
+          <div class="table-wrap editor-table-wrap">
+            <table class="editor-table">
+              <thead><tr><th>사용</th><th>분할</th><th>정답</th><th>목표</th><th>배경</th><th>날씨</th><th>카메라</th><th>삭제</th></tr></thead>
+              <tbody id="cardEditorBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+      <footer class="modal-footer">
+        <button class="plain-button" type="button" data-close-dialog="teacherDialog">취소</button>
+        <button class="primary-button" id="applyTeacherSettingsButton" type="button">설정 적용·새 카드 생성</button>
+      </footer>
+    </dialog>
+
+    <main class="tool-workspace" id="mainContent">
+      <section class="intro-band" aria-labelledby="toolTitle">
+        <div class="intro-copy">
+          <p class="eyebrow">O15 · SHORTCUT LEARNING LAB</p>
+          <h1 id="toolTitle">정확도 100% 모델의<br /><em>숨은 규칙을 찾아라</em></h1>
+          <p>합성 카드의 목표 특징과 배경·날씨·카메라를 분리해 보고, 반사실적 검사로 모델이 무엇을 셌는지 추적하세요.</p>
+          <div class="safe-badge"><span aria-hidden="true">✓</span> 사람을 평가하지 않는 교육용 합성 데이터 · 외부 AI/API 없음</div>
+        </div>
+        <ol class="step-strip" aria-label="활동 순서">
+          <li><b>1</b><span>예상</span></li>
+          <li><b>2</b><span>훈련</span></li>
+          <li><b>3</b><span>반사실 검사</span></li>
+          <li><b>4</b><span>수정</span></li>
+          <li><b>5</b><span>재평가</span></li>
+        </ol>
+      </section>
+
+      <p class="status-message" id="statusMessage" role="status" aria-live="polite">기본 로봇 자료를 준비했습니다. 먼저 모델이 무엇을 배울지 예상해 보세요.</p>
+
+      <section class="card setup-card" aria-labelledby="setupTitle">
+        <div class="section-heading">
+          <div><p class="eyebrow">01 · 사건 파일</p><h2 id="setupTitle">숨은 상관관계가 있는 합성 자료</h2></div>
+          <div class="scenario-actions">
+            <label for="scenarioSelect">사례</label>
+            <select id="scenarioSelect"><option value="robot">로봇</option><option value="animal">동물</option><option value="plant">식물</option></select>
+            <button class="plain-button" id="resetExperimentButton" type="button">처음 상태</button>
+          </div>
+        </div>
+        <div class="case-summary">
+          <div class="case-symbol" id="caseSymbol" aria-hidden="true">⌁</div>
+          <div><h3 id="caseTitle"></h3><p id="caseDescription"></p></div>
+          <dl><div><dt>목표</dt><dd id="targetFeatureName"></dd></div><div><dt>의심 특징</dt><dd id="shortcutFeatureNames"></dd></div><div><dt>편향 강도</dt><dd id="biasStrengthLabel"></dd></div></dl>
+        </div>
+        <label class="stacked-label" for="expectationInput">나의 예상 — 모델이 가장 많이 사용할 특징과 그 까닭</label>
+        <textarea id="expectationInput" rows="3" maxlength="2000" placeholder="예: 배경색이 정답과 항상 함께 보여서 배경색을 사용할 것 같다."></textarea>
+      </section>
+
+      <section class="card dataset-card" aria-labelledby="datasetTitle">
+        <div class="section-heading">
+          <div><p class="eyebrow">02 · 데이터 수집 기록</p><h2 id="datasetTitle">카드를 포함하거나 빼며 훈련 세트 구성</h2></div>
+          <span class="count-badge" id="trainingCountBadge">훈련 0장</span>
+        </div>
+        <div class="feature-legend" id="featureLegend" aria-label="특징 범례"></div>
+        <div class="split-tabs" role="tablist" aria-label="데이터 분할">
+          <button role="tab" aria-selected="true" data-split-tab="train" type="button">훈련 후보 <span></span></button>
+          <button role="tab" aria-selected="false" data-split-tab="validation" type="button">검증 <span></span></button>
+          <button role="tab" aria-selected="false" data-split-tab="general" type="button">일반 테스트 <span></span></button>
+          <button role="tab" aria-selected="false" data-split-tab="counterfactual" type="button">배경 반전 <span></span></button>
+        </div>
+        <div class="split-explanation" id="splitExplanation"></div>
+        <div class="data-grid" id="dataCardGrid" role="list"></div>
+        <div class="button-row dataset-actions">
+          <button class="plain-button" id="selectAllTrainingButton" type="button">훈련 후보 모두 포함</button>
+          <button class="plain-button" id="restoreBiasedTrainingButton" type="button">기본 편향 세트만</button>
+        </div>
+      </section>
+
+      <section class="card model-card" aria-labelledby="modelTitle">
+        <div class="section-heading">
+          <div><p class="eyebrow">03 · 투명한 모델</p><h2 id="modelTitle">조건부 빈도로 훈련하고 네 시험 비교</h2></div>
+          <button class="primary-button" id="trainButton" type="button">모델 훈련·기록</button>
+        </div>
+        <div class="model-rule">
+          <p><b>범주형 나이브 베이즈</b> · 라플라스 평활 α=1</p>
+          <code>log P(클래스) + Σ log P(특징값 | 클래스)</code>
+          <div id="activeFeatureChips" class="active-feature-chips"></div>
+        </div>
+        <div class="metric-grid" id="metricGrid" aria-live="polite"></div>
+        <p class="metric-warning" id="metricWarning"></p>
+
+        <div class="analysis-grid">
+          <section aria-labelledby="associationTitle">
+            <div class="subheading"><div><p class="eyebrow">자료의 연관성</p><h3 id="associationTitle">클래스 × 특징 교차표</h3></div><label>특징<select id="associationFeatureSelect"></select></label></div>
+            <div id="associationPanel"></div>
+          </section>
+          <section aria-labelledby="importanceTitle">
+            <div class="subheading"><div><p class="eyebrow blue">모델의 의존</p><h3 id="importanceTitle">평균 절대 로그 점수 기여</h3></div></div>
+            <div class="importance-chart" id="importanceChart" role="img" aria-label="특징별 모델 의존도"></div>
+            <p class="small-note">자료 연관성은 수집 구조를, 로그 점수 기여는 현재 모델 계산에서 각 특징이 점수를 얼마나 움직였는지를 나타냅니다.</p>
+          </section>
+        </div>
+
+        <div class="analysis-grid lower-analysis">
+          <section aria-labelledby="confusionTitle"><div class="subheading"><div><p class="eyebrow">분포이동 시험</p><h3 id="confusionTitle">혼동행렬</h3></div><label>시험<select id="matrixSplitSelect"><option value="train">훈련</option><option value="validation">검증</option><option value="general">일반</option><option value="counterfactual" selected>배경 반전</option></select></label></div><div id="confusionMatrix"></div></section>
+          <section aria-labelledby="groupTitle"><div class="subheading"><div><p class="eyebrow blue">희귀 조합 점검</p><h3 id="groupTitle">목표 × 배경 조합별 정확도</h3></div></div><div id="groupPerformance"></div></section>
+        </div>
+      </section>
+
+      <section class="card counterfactual-card" aria-labelledby="counterfactualTitle">
+        <div class="section-heading">
+          <div><p class="eyebrow">04 · 반사실적 현미경</p><h2 id="counterfactualTitle">한 가지만 바꾸면 예측도 바뀔까?</h2></div>
+          <label>검사 카드<select id="counterfactualCardSelect"></select></label>
+        </div>
+        <div class="counterfactual-actions">
+          <button class="primary-button" type="button" data-counterfactual="background">배경만 바꾸기</button>
+          <button class="plain-button" type="button" data-counterfactual="target">목표만 바꾸기</button>
+          <label>가릴 특징<select id="maskFeatureSelect"></select></label>
+          <button class="plain-button" type="button" data-counterfactual="mask">특징 가리기</button>
+          <button class="plain-button" id="resetCounterfactualButton" type="button">원본으로</button>
+        </div>
+        <div class="pair-grid">
+          <article><h3>원본 카드</h3><div id="originalCardView"></div><div id="originalPrediction" class="prediction-detail"></div></article>
+          <div class="pair-arrow" aria-hidden="true">→</div>
+          <article><h3>바꾼 카드</h3><div id="changedCardView"></div><div id="changedPrediction" class="prediction-detail"></div></article>
+        </div>
+        <p class="counterfactual-verdict" id="counterfactualVerdict" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="card repair-card" aria-labelledby="repairTitle">
+        <div class="section-heading"><div><p class="eyebrow">05 · 편향 수리소</p><h2 id="repairTitle">자료와 평가 방법을 고쳐 다시 검사</h2></div><span class="count-badge" id="actionCountBadge">수정 0회</span></div>
+        <div class="repair-grid">
+          <button type="button" data-repair="counterexamples"><span>반례 추가</span><small>보기 드문 반대 조합 후보를 훈련에 넣습니다.</small></button>
+          <button type="button" data-repair="balance"><span>클래스별 배경 균형화</span><small>각 클래스에서 8가지 지름길 조합을 같은 수로 만듭니다.</small></button>
+          <button type="button" data-repair="randomize"><span>지름길 특징 무작위화</span><small>정답과 무관하게 배경·날씨·카메라를 다시 배치합니다.</small></button>
+          <button type="button" data-repair="mask"><span>지름길 특징 제거</span><small>배경·날씨·카메라 항을 모델 점수에서 제외합니다.</small></button>
+          <button type="button" data-repair="split"><span>분할 다시 점검</span><small>훈련과 겹치지 않는 검증·일반·분포이동 시험을 재생성합니다.</small></button>
+          <button type="button" data-repair="unmask"><span>모든 특징 복원</span><small>특징 제거를 취소하고 다시 비교합니다.</small></button>
+        </div>
+        <div class="repair-explanation" id="repairExplanation">수정 방법을 선택하면 데이터 분포와 평가가 즉시 갱신됩니다.</div>
+      </section>
+
+      <section class="mission-section" aria-labelledby="missionTitle">
+        <div class="section-heading light-heading"><div><p class="eyebrow">MISSION BOARD</p><h2 id="missionTitle">탐정 미션</h2></div><span id="missionScore">0 / 4 해결</span></div>
+        <div class="mission-grid">
+          <article id="missionRule"><span class="mission-number">1</span><h3>숨은 규칙 찾기</h3><p>훈련 정확도는 90% 이상인데 배경 반전 정확도는 50% 이하인 모델을 만들고 가장 의심되는 특징을 고르세요.</p><label>의심 특징<select id="suspectFeatureSelect"></select></label><button class="mission-button" id="checkSuspectButton" type="button">근거 확인</button><strong class="mission-status"></strong></article>
+          <article id="missionCounter"><span class="mission-number">2</span><h3>최소 반례로 지름길 깨기</h3><p><b id="counterexampleMissionCount">8장</b> 이내의 후보 반례를 포함해 배경 반전 정확도 75% 이상을 만드세요.</p><strong class="mission-status"></strong></article>
+          <article id="missionBudget"><span class="mission-number">3</span><h3>한정 예산 데이터 설계</h3><p>훈련 <b id="budgetMissionCount">20장</b> 이내에서 배경 반전 정확도와 신뢰 가능한 최저 조합 정확도를 모두 75% 이상으로 만드세요.</p><strong class="mission-status"></strong></article>
+          <article id="missionChoice"><span class="mission-number">4</span><h3>실제 환경 모델 선택</h3><p>A: 기본 편향 모델 · B: 균형화 모델 중 더 견고한 모델을 고르고 수치 근거를 쓰세요.</p><div class="model-comparison" id="modelComparison"></div><div class="choice-row"><label><input type="radio" name="modelChoice" value="A" /> 모델 A</label><label><input type="radio" name="modelChoice" value="B" /> 모델 B</label></div><textarea id="modelChoiceReason" rows="3" maxlength="2000" placeholder="일반·배경 반전·최저 조합 성능을 근거로…"></textarea><button class="mission-button" id="checkModelChoiceButton" type="button">선택 확인</button><strong class="mission-status"></strong></article>
+        </div>
+      </section>
+
+      <section class="card record-card" aria-labelledby="recordTitle">
+        <div class="section-heading"><div><p class="eyebrow">06 · 탐구 기록</p><h2 id="recordTitle">예상 → 검사 → 수정 → 결론 비교</h2></div><div class="button-row"><button class="plain-button" id="printButton" type="button">탐구 기록 인쇄</button><button class="plain-button" id="clearHistoryButton" type="button">기록 지우기</button></div></div>
+        <div class="record-fields">
+          <label>검사에서 찾은 근거<textarea id="evidenceInput" rows="4" maxlength="2000" placeholder="교차표, 특징 중요도, 반사실적 예측 변화를 근거로 적어 보세요."></textarea></label>
+          <label>수정 뒤 결론<textarea id="conclusionInput" rows="4" maxlength="2000" placeholder="어떤 수정이 왜 효과가 있었으며, 아직 어떤 한계가 남았나요?"></textarea></label>
+        </div>
+        <div class="history-table-wrap table-wrap">
+          <table class="history-table"><thead><tr><th>기록</th><th>훈련</th><th>검증</th><th>일반</th><th>배경 반전</th><th>최저 조합</th><th>활성 특징</th></tr></thead><tbody id="historyBody"></tbody></table>
+        </div>
+      </section>
+    </main>
+
+    <footer class="tool-footer">
+      <p><b>AI 데이터 편향 탐정</b> · 교육용 합성 데이터 실험</p>
+      <p>모델의 출력만으로 데이터 수집 가정의 타당성이 입증되지는 않습니다. 독립적인 검증과 책임 있는 판단이 필요합니다.</p>
+    </footer>
+
+    <script src="./model.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
