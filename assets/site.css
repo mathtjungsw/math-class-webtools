@@ -2920,6 +2920,100 @@ body.is-modal-open {
 .benford-preview > strong { left: 20px; color: #57d4b4; }
 .benford-preview > em { right: 20px; color: #ff9d5b; }
 
+.card-anomaly-lab .tool-visual {
+  background: #13233a;
+}
+
+.anomaly-preview {
+  position: relative;
+  width: min(84%, 320px);
+  height: 154px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .045);
+}
+
+.anomaly-preview__grid {
+  position: absolute;
+  inset: 0;
+  opacity: .28;
+  background-image:
+    linear-gradient(rgba(255,255,255,.14) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.14) 1px, transparent 1px);
+  background-size: 34px 34px;
+}
+
+.anomaly-preview .trace {
+  position: absolute;
+  z-index: 1;
+  height: 2px;
+  border-radius: 99px;
+  background: #57d4b4;
+  transform-origin: left center;
+}
+
+.anomaly-preview .trace-a { width: 48px; left: 24px; top: 91px; transform: rotate(-9deg); }
+.anomaly-preview .trace-b { width: 52px; left: 70px; top: 83px; transform: rotate(12deg); }
+.anomaly-preview .trace-c { width: 54px; left: 121px; top: 94px; transform: rotate(-4deg); }
+.anomaly-preview .trace-d { width: 54px; left: 174px; top: 90px; transform: rotate(-50deg); }
+
+.anomaly-preview .dot {
+  position: absolute;
+  z-index: 2;
+  width: 11px;
+  height: 11px;
+  border: 2px solid #13233a;
+  border-radius: 50%;
+  background: #57d4b4;
+}
+
+.anomaly-preview .dot-a { left: 20px; top: 86px; }
+.anomaly-preview .dot-b { left: 67px; top: 78px; }
+.anomaly-preview .dot-c { left: 118px; top: 89px; }
+.anomaly-preview .dot-e { left: 171px; top: 85px; }
+.anomaly-preview .dot-alert { left: 221px; top: 39px; width: 15px; height: 15px; border: 3px solid #13233a; border-radius: 3px; background: #ff8d4b; transform: rotate(45deg); box-shadow: 0 0 0 4px rgba(255,141,75,.18); }
+
+.anomaly-preview > em {
+  position: absolute;
+  z-index: 3;
+  top: 13px;
+  left: 16px;
+  padding: 5px 7px;
+  border-radius: 6px;
+  color: #13233a;
+  background: #f2cc62;
+  font: 850 7px/1 ui-monospace, monospace;
+  font-style: normal;
+  letter-spacing: .1em;
+}
+
+.anomaly-preview__matrix {
+  position: absolute;
+  z-index: 3;
+  right: 12px;
+  bottom: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 24px);
+  gap: 3px;
+  padding: 5px;
+  border-radius: 7px;
+  background: #fff;
+}
+
+.anomaly-preview__matrix b {
+  display: grid;
+  height: 18px;
+  place-items: center;
+  border-radius: 4px;
+  color: #185786;
+  background: #dcebfa;
+  font: 850 6px/1 ui-monospace, monospace;
+}
+
+.anomaly-preview__matrix b:nth-child(2),
+.anomaly-preview__matrix b:nth-child(3) { color: #9a471f; background: #ffe7d8; }
+
 .card-genetics .tool-visual {
   background:
     radial-gradient(circle at 78% 22%, rgba(239, 128, 109, 0.2), transparent 28%),

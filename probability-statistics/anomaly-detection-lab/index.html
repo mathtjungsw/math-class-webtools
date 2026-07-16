@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="합성 자료의 변동을 관찰하고 임계값, 혼동행렬, 오류 비용으로 이상 탐지 기준을 비교하는 확률과 통계 수업용 웹툴" />
+    <meta name="theme-color" content="#13233a" />
+    <title>이상 징후 탐지 연구소 | 확률과 통계</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#lab">탐지 실험실로 건너뛰기</a>
+    <header class="topbar">
+      <a class="back-link" href="../../index.html"><span aria-hidden="true">←</span> 웹툴 모음</a>
+      <a class="wordmark" href="#top" aria-label="이상 징후 탐지 연구소 맨 위로">
+        <span class="wordmark-mark" aria-hidden="true">O11</span>
+        <span><strong>ANOMALY LAB</strong><small>이상 징후 탐지 연구소</small></span>
+      </a>
+      <div class="top-actions">
+        <button id="helpButton" type="button">설명서 보기</button>
+        <button id="fullscreenButton" type="button">전체화면</button>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="pageTitle">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> THRESHOLD DECISION STUDIO</p>
+          <h1 id="pageTitle">흔들림 속에서<br /><em>경고선을 어디에 그을까?</em></h1>
+          <p class="hero-description">정상 자료도 매번 같지 않습니다. 먼저 점을 관찰해 직접 골라 보고, 정답을 공개한 뒤 임계값이 거짓 경보와 놓침을 어떻게 바꾸는지 실험하세요.</p>
+          <div class="hero-pills"><span>4가지 합성 상황</span><span>5가지 탐지 기준</span><span>혼동행렬·오류 비용</span></div>
+          <a class="hero-cta" href="#lab">관찰부터 시작하기 <b aria-hidden="true">↓</b></a>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="signal-card">
+            <div class="signal-grid"></div>
+            <i class="signal-line line-a"></i><i class="signal-line line-b"></i><i class="signal-line line-c"></i>
+            <span class="signal-point p1"></span><span class="signal-point p2"></span><span class="signal-point p3"></span><span class="signal-point p4"></span><span class="signal-point p5"></span>
+            <b class="threshold-label">경고선 ?</b>
+          </div>
+          <div class="matrix-mini"><span>TP</span><span>FP</span><span>FN</span><span>TN</span></div>
+          <div class="hero-note"><small>NORMAL ≠ SAME</small><strong>정상도 흔들린다</strong></div>
+        </div>
+      </section>
+
+      <aside class="ethics-note" aria-label="교육용 자료 안내">
+        <b>교육용 합성 자료</b>
+        <p>이 도구의 공장·센서·자연 신호·가상 거래 자료는 실제 사람이나 기관의 정보가 아닙니다. 알고리즘의 경고는 <strong>조사할 후보</strong>일 뿐 확정 판결이 아니며, 어떤 임계값도 항상 완벽하지 않습니다.</p>
+      </aside>
+
+      <section class="setup-section" aria-labelledby="setupTitle">
+        <div class="section-title"><b>01</b><div><span>BUILD A DATA STORY</span><h2 id="setupTitle">탐지할 상황을 고르세요</h2></div></div>
+        <div class="scenario-grid" id="scenarioGrid" aria-label="합성 자료 상황"></div>
+
+        <div class="setup-shell">
+          <article class="parameter-panel">
+            <div class="panel-head"><div><span>SYNTHETIC DATA</span><h3>자료 조건</h3></div><span class="local-badge">기기 안에서만 처리</span></div>
+            <div class="parameter-grid">
+              <label class="range-control">
+                <span><b>표본 수</b><output id="sampleSizeOutput" for="sampleSizeRange">120개</output></span>
+                <input id="sampleSizeRange" type="range" min="20" max="300" step="10" value="120" />
+              </label>
+              <label class="range-control">
+                <span><b>이상 비율·기저율</b><output id="baseRateOutput" for="baseRateRange">8%</output></span>
+                <input id="baseRateRange" type="range" min="1" max="30" step="1" value="8" />
+              </label>
+              <label class="range-control">
+                <span><b>정상 변동의 크기</b><output id="noiseOutput" for="noiseRange">1.0</output></span>
+                <input id="noiseRange" type="range" min="0" max="3" step="0.1" value="1" />
+              </label>
+              <label class="range-control">
+                <span><b>이상 신호의 크기</b><output id="signalOutput" for="signalRange">3.0</output></span>
+                <input id="signalRange" type="range" min="0" max="6" step="0.1" value="3" />
+              </label>
+              <label class="range-control wide">
+                <span><b>후반부 분포 이동</b><output id="shiftOutput" for="shiftRange">0.0σ</output></span>
+                <input id="shiftRange" type="range" min="-3" max="3" step="0.25" value="0" />
+                <small>자료의 65% 지점 이후 정상 중심이 이동합니다.</small>
+              </label>
+            </div>
+            <div class="seed-row">
+              <label for="seedInput"><span>재현 시드</span><small>같은 조건 + 같은 시드 = 같은 자료</small></label>
+              <div><input id="seedInput" type="number" min="1" max="2147483646" value="11011" /><button id="randomSeedButton" type="button" aria-label="무작위 시드 만들기">↻</button></div>
+            </div>
+            <div class="setup-actions">
+              <button class="primary-button" id="generateButton" type="button">새 자료 만들기</button>
+              <button id="reuseButton" type="button">같은 자료 다시 쓰기</button>
+              <button id="resetActivityButton" type="button">선택만 초기화</button>
+            </div>
+          </article>
+
+          <aside class="teacher-quick-panel">
+            <div class="panel-head"><div><span>CLASS PRESET</span><h3>교사 빠른 설정</h3></div></div>
+            <label for="presetSelect">수업 프리셋</label>
+            <select id="presetSelect">
+              <option value="balanced">균형 잡힌 품질 검사</option>
+              <option value="rare">드문 자연 이상 신호</option>
+              <option value="shift">센서 분포 이동 도전</option>
+              <option value="missCost">놓침 비용이 큰 미션</option>
+              <option value="falseAlarmCost">거짓 경보 비용이 큰 미션</option>
+            </select>
+            <button id="applyPresetButton" type="button">프리셋 적용</button>
+            <dl class="data-summary">
+              <div><dt>자료 ID</dt><dd id="dataId">—</dd></div>
+              <div><dt>값·특성</dt><dd id="featureNames">—</dd></div>
+              <div><dt>정답 상태</dt><dd id="truthState">숨김</dd></div>
+            </dl>
+            <p>학생 화면에서는 정답 라벨이 공개 전까지 그래프와 표 어디에도 표시되지 않습니다.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="lab-section" id="lab" aria-labelledby="labTitle">
+        <div class="lab-intro">
+          <div class="section-title light"><b>02</b><div><span>LOOK BEFORE LABELS</span><h2 id="labTitle">먼저 보고, 의심되는 점을 고르세요</h2></div></div>
+          <p>그래프를 바꾸어 보며 자연스러운 흔들림과 이상 징후를 구분해 보세요. 점을 클릭하거나 키보드의 ← →와 Space를 사용할 수 있습니다.</p>
+        </div>
+
+        <div class="lab-shell">
+          <article class="plot-card">
+            <div class="plot-head">
+              <div><span id="plotKicker">QUALITY · SYNTHETIC</span><h3 id="dataTitle">물체 무게 품질 검사</h3><p id="dataSubtitle">생산 순서에 따른 무게를 살펴보세요.</p></div>
+              <span class="truth-badge" id="truthBadge">정답 라벨 숨김</span>
+            </div>
+            <div class="plot-toolbar" aria-label="그래프 종류">
+              <button class="active" type="button" data-plot="time" aria-pressed="true">시계열</button>
+              <button type="button" data-plot="scatter" aria-pressed="false">산점도</button>
+              <button type="button" data-plot="histogram" aria-pressed="false">히스토그램</button>
+            </div>
+            <div class="canvas-wrap">
+              <canvas id="plotCanvas" tabindex="0" role="img" aria-label="합성 자료 그래프. 좌우 화살표로 점을 이동하고 스페이스 키로 이상 의심 여부를 바꿀 수 있습니다."></canvas>
+              <div class="canvas-axis x-axis" id="xAxisLabel">생산 순서</div>
+              <div class="canvas-axis y-axis" id="yAxisLabel">무게(g)</div>
+            </div>
+            <div class="plot-legend" id="plotLegend">
+              <span><i class="legend-normal"></i>관측값</span>
+              <span><i class="legend-picked"></i>내가 고른 점</span>
+              <span class="after-reveal"><i class="legend-anomaly"></i>실제 이상</span>
+              <span class="after-reveal"><i class="legend-alert"></i>규칙의 경고</span>
+            </div>
+            <div class="selection-strip">
+              <p><b id="manualCount">0개</b>를 이상이라고 선택함 <span id="selectionHint">· 그래프의 점을 눌러 선택</span></p>
+              <button id="clearManualButton" type="button">내 선택 지우기</button>
+            </div>
+            <p class="sr-only" id="selectedNarration" aria-live="polite"></p>
+          </article>
+
+          <aside class="decision-panel">
+            <div class="panel-head"><div><span>SET THE RULE</span><h3>탐지 기준과 임계값</h3></div><span class="live-dot">LIVE</span></div>
+            <label class="select-control" for="methodSelect">탐지 방법
+              <select id="methodSelect">
+                <option value="distance">평균에서 고정 거리</option>
+                <option value="zscore" selected>z점수·표준편차</option>
+                <option value="iqr">사분위범위(IQR)</option>
+                <option value="moving">이동평균·최근 구간</option>
+                <option value="twoFeature">두 특성 함께 보기</option>
+              </select>
+            </label>
+            <p class="method-hint" id="methodHint">평균에서 몇 표준편차 이상 떨어졌는지 비교합니다.</p>
+            <label class="threshold-control" for="thresholdRange">
+              <span><b id="thresholdLabel">|z| 임계값</b><output id="thresholdOutput" for="thresholdRange">2.00</output></span>
+              <input id="thresholdRange" type="range" min="0.5" max="4" step="0.05" value="2" />
+              <small><span>낮게: 많이 경고</span><span>높게: 신중하게 경고</span></small>
+            </label>
+            <label class="window-control" id="windowControl" for="windowRange" hidden>
+              <span><b>최근 구간 크기</b><output id="windowOutput" for="windowRange">8개</output></span>
+              <input id="windowRange" type="range" min="3" max="30" step="1" value="8" />
+            </label>
+            <div class="rule-preview"><span>현재 규칙의 경고</span><strong id="alertCount">—</strong><small id="ruleText">|z| &gt; 2.00</small></div>
+            <label class="evidence-label" for="evidenceText">공개 전 판단 근거 한 문장
+              <textarea id="evidenceText" rows="3" placeholder="예: 주변 점과 비교해 갑자기 크게 튀는 점을 골랐다."></textarea>
+            </label>
+            <button class="reveal-button" id="revealButton" type="button"><span>정답 라벨 공개</span><small>선택을 확정하고 결과 비교하기</small></button>
+            <p class="reveal-note">공개 후에도 임계값과 비용을 바꾸어 실험할 수 있습니다.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="results-section is-locked" id="results" aria-labelledby="resultsTitle">
+        <div class="results-lock" id="resultsLock"><span aria-hidden="true">?</span><p>먼저 자료를 관찰하고 이상이라고 생각하는 점을 선택한 뒤 <b>정답 라벨 공개</b>를 누르세요.</p></div>
+        <div class="results-content" id="resultsContent" aria-hidden="true">
+          <div class="results-heading">
+            <div class="section-title"><b>03</b><div><span>REVEAL &amp; EVALUATE</span><h2 id="resultsTitle">경고는 무엇을 맞히고 놓쳤을까요?</h2></div></div>
+            <div class="result-actions"><button id="downloadCsvButton" type="button">자료 CSV</button><button id="printButton" type="button">탐구 결과 인쇄</button></div>
+          </div>
+
+          <div class="evaluation-grid">
+            <article class="matrix-card">
+              <div class="card-head"><div><span>CONFUSION MATRIX</span><h3>현재 임계값 규칙</h3></div><span id="evaluatedRule">z점수 · 2.00</span></div>
+              <div class="matrix-axis-top"><span></span><b>실제 이상</b><b>실제 정상</b></div>
+              <div class="confusion-matrix">
+                <b class="matrix-row-label">경고함</b><div class="matrix-cell tp"><span>TP · 제대로 경고</span><strong id="tpValue">0</strong></div><div class="matrix-cell fp"><span>FP · 거짓 경보</span><strong id="fpValue">0</strong></div>
+                <b class="matrix-row-label">경고 안 함</b><div class="matrix-cell fn"><span>FN · 놓친 이상</span><strong id="fnValue">0</strong></div><div class="matrix-cell tn"><span>TN · 정상 통과</span><strong id="tnValue">0</strong></div>
+              </div>
+              <div class="manual-result"><span>내가 직접 고른 점</span><strong id="manualResultText">TP 0 · FP 0 · FN 0</strong></div>
+            </article>
+
+            <article class="metric-card">
+              <div class="card-head"><div><span>PERFORMANCE</span><h3>평가 지표</h3></div><span id="baseRateBadge">실제 이상 0%</span></div>
+              <div class="metric-grid">
+                <div><span>정확도</span><strong id="accuracyValue">—</strong><small>전체 중 맞힌 비율</small></div>
+                <div><span>정밀도</span><strong id="precisionValue">—</strong><small>경고 중 실제 이상</small></div>
+                <div><span>재현율·민감도</span><strong id="recallValue">—</strong><small>이상 중 찾아낸 비율</small></div>
+                <div><span>특이도</span><strong id="specificityValue">—</strong><small>정상을 통과시킨 비율</small></div>
+                <div><span>거짓 경보율</span><strong id="falseAlarmValue">—</strong><small>정상 중 잘못 경고</small></div>
+              </div>
+              <p class="metric-insight" id="metricInsight">임계값을 움직여 지표 사이의 교환 관계를 찾아보세요.</p>
+            </article>
+          </div>
+
+          <article class="cost-lab">
+            <div class="cost-copy"><span>ERROR COST LAB</span><h3>틀림의 종류마다 비용이 다르다면?</h3><p>정확도가 같아도 상황에 맞는 결정은 달라질 수 있습니다. 비용과 목적을 먼저 읽고 임계값을 정하세요.</p></div>
+            <div class="cost-controls">
+              <label for="fpCostRange"><span>거짓 양성 FP 1회의 비용 <output id="fpCostOutput" for="fpCostRange">2</output></span><input id="fpCostRange" type="range" min="0" max="20" step="1" value="2" /></label>
+              <label for="fnCostRange"><span>거짓 음성 FN 1회의 비용 <output id="fnCostOutput" for="fnCostRange">8</output></span><input id="fnCostRange" type="range" min="0" max="20" step="1" value="8" /></label>
+            </div>
+            <div class="total-cost"><span>총 오류 비용</span><strong id="totalCostValue">0</strong><small id="costFormula">FP × 2 + FN × 8</small></div>
+          </article>
+
+          <div class="explain-grid">
+            <article class="point-explainer">
+              <div class="card-head"><div><span>POINT X-RAY</span><h3>한 자료점의 판정 과정</h3></div><label for="pointSelect">자료점 <select id="pointSelect"></select></label></div>
+              <div class="point-summary" id="pointSummary"></div>
+              <ol class="calculation-steps" id="calculationSteps"></ol>
+            </article>
+            <aside class="stat-panel">
+              <div class="card-head"><div><span>SUMMARY</span><h3>전체 요약 통계</h3></div></div>
+              <dl id="summaryStats"></dl>
+              <p>정답 라벨을 사용하지 않고 모든 관측값으로 계산했습니다. 극단값이 평균과 표준편차 자체를 움직일 수 있다는 점도 살펴보세요.</p>
+            </aside>
+          </div>
+
+          <article class="method-comparison">
+            <div class="comparison-head"><div><span>FIVE LENSES</span><h3>같은 자료, 다섯 가지 탐지 기준</h3><p>카드를 누르면 그 방법으로 전환됩니다. 각 방법은 자료의 다른 구조를 봅니다.</p></div></div>
+            <div class="method-grid" id="methodGrid"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="mission-section" aria-labelledby="missionTitle">
+        <div class="mission-copy">
+          <div class="section-title light"><b>04</b><div><span>DECIDE WITH PURPOSE</span><h2 id="missionTitle">최고 정확도 말고, 목적에 맞는 선을 찾으세요</h2></div></div>
+          <p>아래 상황을 하나 고르고 비용을 읽은 뒤 임계값을 결정하세요. 친구와 서로 다른 선택을 비교하면 하나의 정답 대신 결정의 근거가 보입니다.</p>
+        </div>
+        <div class="mission-grid">
+          <button class="mission-card active" type="button" data-mission="balanced"><span>MISSION A</span><strong>균형 잡힌 검사</strong><p>FP와 FN을 비슷하게 줄이되 재현율 70% 이상을 목표로 합니다.</p><small>FP 비용 3 · FN 비용 4</small></button>
+          <button class="mission-card" type="button" data-mission="safety"><span>MISSION B</span><strong>놓침을 줄여라</strong><p>추가 확인이 조금 늘어도 실제 이상을 가능한 한 놓치지 않습니다.</p><small>FP 비용 1 · FN 비용 12</small></button>
+          <button class="mission-card" type="button" data-mission="review"><span>MISSION C</span><strong>검사 자원이 부족하다</strong><p>경고를 확인할 시간이 적어 거짓 경보를 강하게 줄입니다.</p><small>FP 비용 10 · FN 비용 3</small></button>
+        </div>
+        <div class="mission-status" id="missionStatus"><span>현재 미션</span><strong>정답 공개 후 임계값을 조정해 보세요.</strong></div>
+
+        <div class="group-lab">
+          <div><span>PAIR &amp; COMPARE</span><h3>모둠 활동 · 서로 다른 기준 저장하기</h3><p>A는 놓침을 줄이는 낮은 임계값, B는 거짓 경보를 줄이는 높은 임계값을 선택한 뒤 결과와 이유를 비교하세요.</p></div>
+          <div class="snapshot-grid">
+            <article><span>기준 A</span><strong id="snapshotAText">아직 저장 안 함</strong><button type="button" data-snapshot="a">현재 기준을 A에 저장</button></article>
+            <article><span>기준 B</span><strong id="snapshotBText">아직 저장 안 함</strong><button type="button" data-snapshot="b">현재 기준을 B에 저장</button></article>
+          </div>
+          <label for="reflectionText">우리 모둠의 결정 근거
+            <textarea id="reflectionText" rows="3" placeholder="어떤 오류를 더 중요하게 보았고, 그래서 어느 임계값을 선택했는지 적어 보세요."></textarea>
+          </label>
+        </div>
+      </section>
+
+      <section class="teacher-section" aria-labelledby="teacherTitle">
+        <details>
+          <summary><span><b>교사 도구</b><small>CSV · JSON · 저장과 다시 불러오기</small></span><i aria-hidden="true">+</i></summary>
+          <div class="teacher-content">
+            <div class="teacher-copy"><span>LOCAL DATA TOOLS</span><h2 id="teacherTitle">내 자료와 활동 상태 사용하기</h2><p>파일은 서버로 전송되지 않습니다. 실제 금융·건강·학생 개인정보 대신 익명화되거나 합성된 자료를 사용하세요.</p></div>
+            <div class="file-grid">
+              <label class="file-card" for="csvInput"><span>CSV 불러오기</span><strong>값 · 두 번째 특성 · 시간 · 정답</strong><small>열 이름 예: value, feature2, time, label</small><input id="csvInput" type="file" accept=".csv,text/csv" /></label>
+              <button class="file-card" id="saveStateButton" type="button"><span>활동 JSON 저장</span><strong>조건·자료·선택·결과</strong><small>동일 자료를 다음 수업에서 이어서 사용</small></button>
+              <label class="file-card" for="jsonInput"><span>활동 JSON 불러오기</span><strong>저장한 상태 복원</strong><small>이 도구가 만든 version 1 형식</small><input id="jsonInput" type="file" accept=".json,application/json" /></label>
+            </div>
+            <div class="csv-format"><b>CSV 예시</b><code>value,feature2,time,label<br />100.2,50.1,1,0<br />108.7,54.2,2,1</code><p>결측값이나 숫자가 아닌 행은 건너뜁니다. 정답 열이 없으면 모든 점을 정상으로 두므로 평가 지표보다 관찰·기준 비교용으로만 사용하세요.</p></div>
+          </div>
+        </details>
+      </section>
+    </main>
+
+    <footer>
+      <strong>ANOMALY DETECTION LAB · O11</strong>
+      <p>수학 수업 웹툴 모음 · 확률과 통계</p>
+      <span>경고는 질문의 시작입니다. 자료의 맥락, 기저율, 오류 비용과 후속 조사 절차를 함께 판단하세요.</span>
+    </footer>
+
+    <dialog class="manual-dialog" id="helpDialog">
+      <div class="dialog-head"><div><span>USER &amp; TEACHER MANUAL</span><h2>이상 징후 탐지 연구소 설명서</h2></div><button id="closeHelpButton" type="button" aria-label="설명서 닫기">×</button></div>
+      <div class="manual-body">
+        <p class="manual-lead">정상 자료의 흔들림을 먼저 관찰하고, 탐지 기준을 직접 정한 뒤 오류의 종류와 비용을 비교하는 수업용 도구입니다. 실제 사람을 평가하는 용도로 사용하지 않습니다.</p>
+
+        <section class="manual-section" aria-labelledby="manualFlowTitle">
+          <h3 id="manualFlowTitle">빠른 사용 순서</h3>
+          <ol>
+            <li><b>합성 상황과 조건 선택</b><span>기저율·정상 변동·이상 신호·표본 수·분포 이동을 정하고 시드로 자료를 만듭니다.</span></li>
+            <li><b>라벨 없이 관찰</b><span>시계열·산점도·히스토그램을 바꾸고 점을 클릭해 이상 의심 자료를 고릅니다.</span></li>
+            <li><b>규칙과 임계값 설정</b><span>다섯 방법 중 하나를 선택하고 낮은 선과 높은 선의 경고 수를 예상합니다.</span></li>
+            <li><b>정답 공개와 평가</b><span>TP·FP·TN·FN, 정확도·정밀도·재현율·특이도·거짓 경보율을 확인합니다.</span></li>
+            <li><b>비용 미션과 토론</b><span>FP·FN 비용을 바꾸고 모둠의 기준 A·B를 저장해 결정 근거를 비교합니다.</span></li>
+          </ol>
+        </section>
+
+        <div class="manual-grid">
+          <section class="manual-section">
+            <h3>탐지 방법 읽기</h3>
+            <dl class="manual-methods">
+              <div><dt>고정 거리</dt><dd>|값−평균|이 정한 거리보다 큰지 비교</dd></div>
+              <div><dt>z점수</dt><dd>평균과의 차이를 표준편차 단위로 비교</dd></div>
+              <div><dt>IQR</dt><dd>Q1−k·IQR과 Q3+k·IQR 울타리 사용</dd></div>
+              <div><dt>이동평균</dt><dd>현재 값을 바로 앞 최근 구간과 비교</dd></div>
+              <div><dt>두 특성</dt><dd>두 z점수를 합친 2차원 거리 사용</dd></div>
+            </dl>
+          </section>
+          <section class="manual-section">
+            <h3>지표 해석</h3>
+            <dl class="manual-methods">
+              <div><dt>정밀도</dt><dd>경고한 것 중 실제 이상인 비율</dd></div>
+              <div><dt>재현율</dt><dd>실제 이상 중 찾아낸 비율</dd></div>
+              <div><dt>특이도</dt><dd>실제 정상 중 통과시킨 비율</dd></div>
+              <div><dt>거짓 경보율</dt><dd>실제 정상 중 잘못 경고한 비율</dd></div>
+              <div><dt>오류 비용</dt><dd>FP×FP 비용 + FN×FN 비용</dd></div>
+            </dl>
+          </section>
+        </div>
+
+        <section class="manual-section">
+          <h3>키보드·파일·재현 기능</h3>
+          <ul class="manual-list">
+            <li>그래프에 초점을 둔 뒤 <kbd>←</kbd> <kbd>→</kbd>로 점을 이동하고 <kbd>Space</kbd> 또는 <kbd>Enter</kbd>로 선택합니다.</li>
+            <li>같은 조건과 같은 시드는 같은 합성 자료를 만듭니다. 활동 JSON은 자료·선택·임계값·비용·기록을 함께 저장합니다.</li>
+            <li>CSV 열 이름은 <code>value, feature2, time, label</code>을 권장합니다. label은 1/0, true/false, 이상/정상 형식을 인식합니다.</li>
+            <li>실제 금융·건강·학생 개인정보 대신 합성 또는 충분히 익명화한 자료만 사용하세요.</li>
+          </ul>
+        </section>
+
+        <div class="guide-tip"><b>50분 수업 예시</b><p>개별 관찰 8분 → 라벨 공개와 지표 12분 → 방법 비교 12분 → 비용 미션·모둠 토론 15분 → 정리 3분</p></div>
+      </div>
+      <button class="dialog-start" id="startHelpButton" type="button">설명서를 닫고 탐구 시작하기</button>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="./logic.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
