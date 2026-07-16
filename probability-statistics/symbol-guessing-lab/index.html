@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="낯선 인공 기호의 두 선택지 중 하나를 고르고 점수를 이항분포 B(n, 0.5), 반복 시뮬레이션, 학급 자료와 비교하는 확률 실험" />
+    <meta name="description" content="아랍어부터 고대 이집트 상형문자·산스크리트어·수메르 설형문자까지 낯선 단어 뜻을 찍고 점수를 이항분포 B(n, 0.5)와 비교하는 확률 실험" />
     <meta name="theme-color" content="#102f38" />
     <title>낯선 문자 찍기 확률 실험</title>
     <link rel="stylesheet" href="./style.css" />
@@ -24,8 +24,8 @@
         <div class="hero-copy">
           <p class="eyebrow"><i></i> CHOOSE WITHOUT KNOWING</p>
           <h1>모르고 고른 점수에도<br /><em>모양이 있을까?</em></h1>
-          <p>의미 없는 인공 기호를 보고 두 선택지 중 하나를 고르세요. 각 문항을 서로 독립적으로, 맞힐 확률 <strong>1/2</strong>로 선택했다면 총점은 <strong>B(n, 0.5)</strong>를 따릅니다.</p>
-          <div class="hero-pills"><span>개인 20·30·50문항</span><span>최대 10,000회 모의실험</span><span>학급 CSV</span></div>
+          <p>아랍어를 비롯한 낯선 언어의 단어를 보고 두 뜻 중 하나를 고르세요. 뜻을 모르고 각 문항을 서로 독립적으로, 맞힐 확률 <strong>1/2</strong>로 선택했다면 총점은 <strong>B(n, 0.5)</strong>를 따릅니다.</p>
+          <div class="hero-pills"><span>현대·고대 7개 언어</span><span>3가지 혼합 모드</span><span>개인 20·30·50문항</span><span>최대 10,000회 모의실험</span><span>학급 CSV</span></div>
         </div>
         <div class="hero-model" aria-label="이항분포 모형 요약">
           <div class="formula-card"><small>MODEL</small><strong>X ~ B(n, 0.5)</strong><span>X = 맞힌 문항 수</span></div>
@@ -36,7 +36,7 @@
 
       <aside class="purpose-note">
         <strong>이것은 언어·문화 능력 시험이 아닙니다.</strong>
-        <p>글꼴과 배경지식에 기대지 않는 인공 기호로 ‘무작위 선택의 점수 분포’를 관찰합니다. 높은 점수는 가정 아래에서 드물 수 있다는 뜻일 뿐, 실력이나 부정행위를 판정하는 근거가 아닙니다.</p>
+        <p>대부분의 학습자에게 낯선 문자 체계를 흥미로운 실험 재료로 사용해 ‘무작위 선택의 점수 분포’를 관찰합니다. 선택한 언어를 아는 학생은 다른 언어를 고르세요. 높은 점수는 가정 아래에서 드물 수 있다는 뜻일 뿐, 실력이나 부정행위를 판정하는 근거가 아닙니다.</p>
       </aside>
 
       <nav class="mode-tabs" aria-label="실험 모드">
@@ -57,6 +57,26 @@
         <div class="personal-layout">
           <article class="panel prediction-panel" id="predictionPanel">
             <header class="panel-title"><span>STEP 1</span><div><h3>결과를 먼저 예상하기</h3><p>계산하지 말고 분포의 모양과 범위를 그려 보세요.</p></div></header>
+            <div class="language-setting">
+              <label for="languageSelect">단어 언어</label>
+              <select id="languageSelect">
+                <optgroup label="현대 언어">
+                  <option value="arabic">아랍어 — العربية</option>
+                  <option value="georgian">조지아어 — ქართული</option>
+                  <option value="armenian">아르메니아어 — Հայերեն</option>
+                  <option value="amharic">암하라어 — አማርኛ</option>
+                  <option value="mixed">현대 문자 혼합 — 4개 언어</option>
+                </optgroup>
+                <optgroup label="고대 언어와 문자">
+                  <option value="egyptian">고대 이집트어 — 𓂋𓏏𓈖𓆎𓅓𓏏</option>
+                  <option value="sanskrit">산스크리트어 — संस्कृतम्</option>
+                  <option value="sumerian">수메르어 — 𒅴𒂠</option>
+                  <option value="ancient_mixed">고대 문자 혼합 — 3개 언어</option>
+                </optgroup>
+                <option value="all_mixed">전체 언어 혼합 — 7개 언어</option>
+              </select>
+              <div class="language-preview" id="languagePreview" aria-live="polite"></div>
+            </div>
             <div class="setting-row">
               <label for="questionCountSelect">문항 수</label>
               <select id="questionCountSelect"><option value="20">20문항</option><option value="30">30문항</option><option value="50">50문항</option></select>
@@ -73,9 +93,9 @@
           </article>
 
           <article class="panel how-panel">
-            <header class="panel-title"><span>HOW</span><div><h3>선택 규칙</h3><p>기호의 의미나 정답 규칙을 찾는 시험이 아닙니다.</p></div></header>
+            <header class="panel-title"><span>HOW</span><div><h3>선택 규칙</h3><p>언어 실력을 재거나 정답 규칙을 찾는 시험이 아닙니다.</p></div></header>
             <ol class="steps-list">
-              <li><b>1</b><span>인공 기호를 보고 <strong>왼쪽·오른쪽</strong> 중 하나를 고릅니다.</span></li>
+              <li><b>1</b><span>낯선 단어와 두 가지 한국어 뜻을 보고 <strong>왼쪽·오른쪽</strong> 중 하나를 고릅니다.</span></li>
               <li><b>2</b><span>매 문항의 선택은 다른 문항에 영향을 주지 않는다고 가정합니다.</span></li>
               <li><b>3</b><span>제출 뒤 실제 점수를 <strong>B(n, 0.5)</strong>와 비교합니다.</span></li>
             </ol>
@@ -89,11 +109,11 @@
             <div><span id="questionProgressText">1 / 20</span><div class="progress-track"><i id="questionProgressBar"></i></div></div>
             <div class="timer-chip" id="timerChip" hidden><small>남은 시간</small><strong id="timerText">01:00</strong></div>
           </div>
-          <div class="question-prompt"><small>이 기호가 뜻한다고 느껴지는 쪽을 고르세요</small><strong id="questionNumber">문항 1</strong></div>
-          <div class="glyph-card" id="glyphCard" aria-label="의미 없는 인공 기호"></div>
+          <div class="question-prompt"><small>이 단어의 뜻이라고 생각하는 쪽을 고르세요</small><strong id="questionNumber">문항 1</strong></div>
+          <div class="glyph-card word-card" id="glyphCard" aria-label="뜻을 맞힐 낯선 언어 단어"></div>
           <div class="choice-grid">
-            <button class="choice-button left" id="leftChoiceButton" type="button"><span class="key-hint">← · 1</span><b id="leftChoiceLabel">모양 A</b><small>왼쪽 선택</small></button>
-            <button class="choice-button right" id="rightChoiceButton" type="button"><span class="key-hint">→ · 2</span><b id="rightChoiceLabel">모양 B</b><small>오른쪽 선택</small></button>
+            <button class="choice-button left" id="leftChoiceButton" type="button"><span class="key-hint">← · 1</span><b id="leftChoiceLabel">뜻 A</b><small>왼쪽 선택</small></button>
+            <button class="choice-button right" id="rightChoiceButton" type="button"><span class="key-hint">→ · 2</span><b id="rightChoiceLabel">뜻 B</b><small>오른쪽 선택</small></button>
           </div>
           <div class="answer-dots" id="answerDots" aria-label="응답 진행 상황"></div>
           <button class="secondary-button" id="cancelExperimentButton" type="button">실험 나가기</button>
@@ -122,6 +142,10 @@
               <p><i class="pattern-left"></i> 왼쪽 <i class="pattern-right"></i> 오른쪽 <b>✓</b> 맞은 선택</p>
             </section>
           </div>
+          <details class="word-review">
+            <summary>제출한 단어와 정답 뜻 보기 <span>+</span></summary>
+            <div class="word-review-grid" id="wordReview"></div>
+          </details>
           <div class="result-actions"><button class="primary-button" type="button" data-go-view="simulation">반복 모의실험과 비교</button><button class="secondary-button" id="restartExperimentButton" type="button">새 개인 실험</button></div>
         </article>
       </section>
@@ -211,15 +235,14 @@
         <div class="teacher-layout">
           <form class="panel teacher-form" id="teacherForm">
             <div class="form-grid">
-              <label for="teacherQuestionCount">문항 수<input id="teacherQuestionCount" type="number" min="10" max="100" value="20" /></label>
+              <label for="teacherLanguage">기본 언어<select id="teacherLanguage"><optgroup label="현대 언어"><option value="arabic">아랍어</option><option value="georgian">조지아어</option><option value="armenian">아르메니아어</option><option value="amharic">암하라어</option><option value="mixed">현대 문자 혼합</option></optgroup><optgroup label="고대 언어와 문자"><option value="egyptian">고대 이집트어</option><option value="sanskrit">산스크리트어</option><option value="sumerian">수메르어</option><option value="ancient_mixed">고대 문자 혼합</option></optgroup><option value="all_mixed">전체 언어 혼합</option></select></label>
+              <label for="teacherQuestionCount">문항 수<input id="teacherQuestionCount" type="number" min="10" max="50" value="20" /></label>
               <label for="teacherTimeLimit">제한시간<select id="teacherTimeLimit"><option value="0">제한 없음</option><option value="30">30초</option><option value="60">60초</option><option value="90">90초</option><option value="120">120초</option><option value="180">180초</option></select></label>
-              <label for="teacherLeftLabel">왼쪽 선택지<input id="teacherLeftLabel" type="text" maxlength="20" value="모양 A" /></label>
-              <label for="teacherRightLabel">오른쪽 선택지<input id="teacherRightLabel" type="text" maxlength="20" value="모양 B" /></label>
               <label for="teacherAnswerPattern">정답 패턴<select id="teacherAnswerPattern"><option value="balanced">좌우 균형 무작위</option><option value="random">매 문항 무작위</option><option value="alternating">좌우 번갈아</option><option value="custom">직접 입력</option></select></label>
               <label for="teacherSeed">문항 세트 번호<input id="teacherSeed" type="number" min="1" max="999999999" value="2026" /></label>
             </div>
             <label class="custom-pattern" for="teacherCustomPattern" id="customPatternLabel" hidden>직접 패턴 <span>L=왼쪽 정답, R=오른쪽 정답. 짧으면 반복됩니다.</span><input id="teacherCustomPattern" type="text" value="LR" pattern="[LRlr]+" /></label>
-            <div class="teacher-warning"><strong>정답 패턴은 학생에게 보여 주지 마세요.</strong><p>‘좌우 균형’은 정답 위치만 균형 있게 섞습니다. 학생이 매 문항을 독립적으로 1/2 확률로 고른다는 가정이 있어야 총점이 B(n, 0.5)를 따릅니다.</p></div>
+            <div class="teacher-warning"><strong>정답 패턴은 학생에게 보여 주지 마세요.</strong><p>‘좌우 균형’은 정답 위치만 균형 있게 섞습니다. 선택 언어를 실제로 아는 학생은 다른 언어를 고르게 하세요. 학생이 뜻을 모르고 매 문항을 독립적으로 1/2 확률로 골라야 총점이 B(n, 0.5)를 따릅니다.</p></div>
             <button class="primary-button" type="submit">현재 설정 적용</button>
           </form>
           <article class="panel preset-panel">
@@ -256,14 +279,16 @@
     <dialog id="helpDialog" aria-labelledby="helpTitle">
       <div class="dialog-head"><div><p>CLASS GUIDE</p><h2 id="helpTitle">45분 수업 운영 예시</h2></div><button id="closeHelpButton" type="button" aria-label="안내 닫기">×</button></div>
       <div class="dialog-body">
-        <ol><li><b>5분</b><span>평균과 최고점 범위를 예상하고 분포를 그립니다.</span></li><li><b>8분</b><span>개인 실험을 진행합니다. 제출 전에는 정답 규칙을 말하지 않습니다.</span></li><li><b>10분</b><span>개인 점수와 정확한 B(n, 0.5), 누적확률을 읽습니다.</span></li><li><b>10분</b><span>학급 점수를 익명으로 모아 이론분포와 비교합니다.</span></li><li><b>12분</b><span>p·편향·독립성 가정을 바꾸고 판단의 한계를 토론합니다.</span></li></ol>
-        <aside><strong>해석 원칙</strong><p>극단적인 점수는 모형의 가정 아래에서 확률적으로 희귀할 수 있습니다. 화면은 원인을 판정하지 않으며, 언어 능력·문화적 배경·부정행위를 평가하지 않습니다.</p></aside>
+        <ol><li><b>준비</b><span>현대 네 언어, 고대 이집트어·산스크리트어·수메르어, 또는 혼합 모드 중 학급에 가장 낯선 것을 고릅니다.</span></li><li><b>5분</b><span>평균과 최고점 범위를 예상하고 분포를 그립니다.</span></li><li><b>8분</b><span>개인 실험을 진행합니다. 제출 전에는 단어 뜻과 정답 위치를 보여 주지 않습니다.</span></li><li><b>10분</b><span>개인 점수와 정확한 B(n, 0.5), 누적확률을 읽습니다.</span></li><li><b>10분</b><span>학급 점수를 익명으로 모아 이론분포와 비교합니다.</span></li><li><b>12분</b><span>p·편향·독립성 가정을 바꾸고 판단의 한계를 토론합니다.</span></li></ol>
+        <aside><strong>해석 원칙</strong><p>극단적인 점수는 모형의 가정 아래에서 확률적으로 희귀할 수 있습니다. 실제로 단어를 알거나 추론할 수 있다면 p=0.5 가정이 깨집니다. 화면은 원인을 판정하지 않으며, 언어 능력·문화적 배경·부정행위를 평가하지 않습니다.</p></aside>
+        <p class="source-note">단어는 수업용 기본 어휘로 선별했습니다. 자료: <a href="https://en.wiktionary.org/wiki/Appendix:Arabic_Swadesh_list" target="_blank" rel="noreferrer">아랍어</a> · <a href="https://en.wiktionary.org/wiki/Appendix:Georgian_Swadesh_list" target="_blank" rel="noreferrer">조지아어</a> · <a href="https://en.wiktionary.org/wiki/Appendix:Armenian_Swadesh_list" target="_blank" rel="noreferrer">아르메니아어</a> · <a href="https://en.wiktionary.org/wiki/Appendix:Amharic_Swadesh_list" target="_blank" rel="noreferrer">암하라어</a> · <a href="https://en.wiktionary.org/wiki/Appendix:Egyptian_Swadesh_list" target="_blank" rel="noreferrer">고대 이집트어</a> · <a href="https://en.wiktionary.org/wiki/Appendix:Sanskrit_Swadesh_list" target="_blank" rel="noreferrer">산스크리트어</a> · <a href="https://en.wiktionary.org/wiki/Appendix:Sumerian_Swadesh_list" target="_blank" rel="noreferrer">수메르어</a> 기본 어휘 목록. 고대 이집트어 상형문자는 음역의 자음 음가를 일렬로 옮긴 교육용 표시이며 실제 비문의 철자 배열은 아닙니다. 수메르 설형문자는 시대와 문헌에 따라 다른 부호·철자가 쓰일 수 있는 대표 표기입니다.</p>
       </div>
       <button class="primary-button dialog-close" id="dialogStartButton" type="button">실험 화면으로 돌아가기</button>
     </dialog>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script src="./probability.js"></script>
+    <script src="./words.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>

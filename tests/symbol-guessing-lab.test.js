@@ -16,6 +16,14 @@ const {
   summarizeValues,
   totalVariation,
 } = require("../probability-statistics/symbol-guessing-lab/probability.js");
+const {
+  ANCIENT_LANGUAGE_IDS,
+  LANGUAGE_META,
+  MEANINGS,
+  MODERN_LANGUAGE_IDS,
+  WORD_SETS,
+  buildQuestionSet,
+} = require("../probability-statistics/symbol-guessing-lab/words.js");
 
 test("조합은 경계와 큰 값을 정확히 계산한다", () => {
   assert.equal(combination(0, 0), 1);
@@ -102,10 +110,11 @@ test("정답 패턴 생성과 채점은 정답·미응답을 구분한다", () =
 });
 
 test("교사 프리셋은 범위와 허용 패턴을 안전하게 정리한다", () => {
-  const preset = sanitizePreset({ name: "  실험반  ", questionCount: 999, leftLabel: "", rightLabel: "오른쪽", answerPattern: "hidden", customPattern: "L-X-r", timeLimit: -10, seed: 0 });
+  const preset = sanitizePreset({ name: "  실험반  ", questionCount: 999, language: "unknown", leftLabel: "", rightLabel: "오른쪽", answerPattern: "hidden", customPattern: "L-X-r", timeLimit: -10, seed: 0 });
   assert.deepEqual(preset, {
     name: "실험반",
-    questionCount: 100,
+    questionCount: 50,
+    language: "arabic",
     leftLabel: "모양 A",
     rightLabel: "오른쪽",
     answerPattern: "balanced",
@@ -113,4 +122,44 @@ test("교사 프리셋은 범위와 허용 패턴을 안전하게 정리한다",
     timeLimit: 0,
     seed: 2026,
   });
+  assert.equal(sanitizePreset({ language: "sumerian" }).language, "sumerian");
+  assert.equal(sanitizePreset({ language: "ancient_mixed" }).language, "ancient_mixed");
+});
+
+test("현대·고대 일곱 언어 어휘 세트는 50개 문항을 제공한다", () => {
+  assert.equal(MEANINGS.length, 50);
+  assert.deepEqual(MODERN_LANGUAGE_IDS, ["arabic", "georgian", "armenian", "amharic"]);
+  assert.deepEqual(ANCIENT_LANGUAGE_IDS, ["egyptian", "sanskrit", "sumerian"]);
+  assert.deepEqual(Object.keys(WORD_SETS), [...MODERN_LANGUAGE_IDS, ...ANCIENT_LANGUAGE_IDS]);
+  Object.entries(WORD_SETS).forEach(([language, words]) => {
+    assert.equal(words.length, MEANINGS.length, language);
+    assert.ok(words.every((word) => typeof word === "string" && word.trim().length > 0));
+    assert.ok(LANGUAGE_META[language]);
+  });
+});
+
+test("실제 언어 문항은 정답 위치에 맞춰 두 뜻을 배치하고 50문항을 넘지 않는다", () => {
+  const answerKey = Array.from({ length: 60 }, (_, index) => index % 2);
+  const questions = buildQuestionSet({ language: "arabic", n: 60, answerKey, random: mulberry32(77) });
+  assert.equal(questions.length, 50);
+  questions.forEach((question, index) => {
+    assert.equal(question.languageId, "arabic");
+    assert.equal(question.options[question.correctSide], question.meaning);
+    assert.equal(question.correctSide, answerKey[index]);
+  });
+});
+
+test("혼합 모드는 네 언어를 모두 사용하고 같은 시드에서 재현된다", () => {
+  const options = { language: "mixed", n: 20, answerKey: Array(20).fill(0) };
+  const first = buildQuestionSet({ ...options, random: mulberry32(2026) });
+  const second = buildQuestionSet({ ...options, random: mulberry32(2026) });
+  assert.deepEqual(first, second);
+  assert.deepEqual(new Set(first.map((question) => question.languageId)), new Set(["arabic", "georgian", "armenian", "amharic"]));
+});
+
+test("고대 문자 혼합은 세 고대어를 모두 사용하고 음역 정보를 보존한다", () => {
+  const questions = buildQuestionSet({ language: "ancient_mixed", n: 20, answerKey: Array(20).fill(1), random: mulberry32(404) });
+  assert.deepEqual(new Set(questions.map((question) => question.languageId)), new Set(["egyptian", "sanskrit", "sumerian"]));
+  assert.ok(questions.filter((question) => question.languageId === "egyptian" || question.languageId === "sumerian").every((question) => question.reading));
+  assert.ok(questions.every((question) => question.options[1] === question.meaning));
 });
