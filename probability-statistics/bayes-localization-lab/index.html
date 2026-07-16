@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="움직임 예측과 센서 관측을 반복해 위치 확률을 갱신하는 이산 베이즈 필터 수업용 실험실" />
+    <meta name="theme-color" content="#10243b" />
+    <title>자율주행 베이즈 위치 추정 실험실</title>
+    <link rel="stylesheet" href="./style.css?v=20260716-1" />
+  </head>
+  <body>
+    <header class="tool-topbar">
+      <a class="brand" href="../../" aria-label="수학 수업 웹툴 모음 홈">
+        <span class="brand-mark" aria-hidden="true">O14</span>
+        <span><strong>베이즈 위치 추정 실험실</strong><small>확률과 통계 · 인공지능 수학</small></span>
+      </a>
+      <nav class="top-actions" aria-label="상단 메뉴">
+        <button class="ghost-button" id="openGuideButton" type="button">수업 안내</button>
+        <button class="ghost-button" id="openTeacherButton" type="button">교사 설정</button>
+        <button class="ghost-button" id="fullscreenButton" type="button">전체화면</button>
+        <a class="ghost-button" href="../../">전체 웹툴</a>
+      </nav>
+    </header>
+
+    <dialog class="dialog guide-dialog" id="guideDialog" aria-labelledby="guideTitle">
+      <div class="dialog-header">
+        <div><p class="eyebrow">교사·학생 공용 안내</p><h2 id="guideTitle">차는 어디에 있다고 믿어야 할까?</h2></div>
+        <button class="icon-button" type="button" data-close-dialog="guideDialog" aria-label="안내 닫기">×</button>
+      </div>
+      <div class="dialog-body guide-body">
+        <p class="model-notice"><b>이 도구는 실제 자율주행·산업용 SLAM이 아닙니다.</b> 알려진 유한 지도 위에서 위치를 칸 단위로 나타낸 <b>이산 베이즈 필터 교육 모형</b>입니다. 센서 결과와 최고확률 위치는 확정된 진실이 아니라 현재 모형이 가진 불확실한 추정입니다.</p>
+        <ol class="guide-steps">
+          <li><b>1. 사전분포</b><span>이동 전, 차가 각 칸에 있을 확률을 확인합니다.</span></li>
+          <li><b>2. 이동 예측</b><span>명령과 이동 오차를 적용해 확률을 주변 칸으로 퍼뜨립니다.</span></li>
+          <li><b>3. 센서 관측</b><span>관측이 각 위치에서 나올 가능도 P(관측|위치)를 비교합니다.</span></li>
+          <li><b>4. 곱하고 정규화</b><span>예측확률×가능도를 계산한 뒤 전체 합으로 나눕니다.</span></li>
+          <li><b>5. 반복</b><span>사후분포를 다음 단계의 사전분포로 사용합니다.</span></li>
+        </ol>
+        <div class="guide-columns">
+          <article><h3>권장 수업 흐름</h3><p><b>도입 5분</b> 실제 위치와 믿음 구분 → <b>1차원 15분</b> 한 칸 계산 → <b>2차원 20분</b> 두 센서 비교 → <b>정리 10분</b> SLAM 개념과 모형의 한계</p></article>
+          <article><h3>키보드·색각 접근성</h3><p>모든 조작은 Tab과 Enter로 실행할 수 있습니다. 히트맵은 색뿐 아니라 확률 숫자와 막대 높이를 함께 표시합니다.</p></article>
+        </div>
+      </div>
+      <div class="dialog-footer"><button class="primary-button" id="startGuideButton" type="button">안내 닫고 실험 시작</button></div>
+    </dialog>
+
+    <dialog class="dialog teacher-dialog" id="teacherDialog" aria-labelledby="teacherTitle">
+      <div class="dialog-header">
+        <div><p class="eyebrow">교사용 시나리오 편집기</p><h2 id="teacherTitle">지도·확률·미션 설정</h2></div>
+        <button class="icon-button" type="button" data-close-dialog="teacherDialog" aria-label="교사 설정 닫기">×</button>
+      </div>
+      <div class="dialog-body teacher-body">
+        <section class="teacher-section">
+          <div class="section-heading"><div><span class="section-kicker">01</span><h3>지도 크기와 칸 편집</h3></div></div>
+          <div class="form-grid compact-form">
+            <label>모드<select id="teacherMode"><option value="1d">1차원 도로</option><option value="2d">2차원 도시</option></select></label>
+            <label>가로 칸<input id="teacherWidth" type="number" min="3" max="12" value="8" /></label>
+            <label>세로 칸<input id="teacherHeight" type="number" min="1" max="12" value="1" /></label>
+            <label>도로 경계<select id="teacherTopology"><option value="cycle">순환 도로</option><option value="finite">유한 도로</option></select></label>
+          </div>
+          <div class="editor-tools" role="toolbar" aria-label="지도 칸 편집 도구">
+            <button type="button" data-editor-tool="road" aria-pressed="true">도로</button>
+            <button type="button" data-editor-tool="blue">파랑 도로</button>
+            <button type="button" data-editor-tool="yellow">노랑 도로</button>
+            <button type="button" data-editor-tool="school">학교</button>
+            <button type="button" data-editor-tool="park">공원</button>
+            <button type="button" data-editor-tool="signal">신호등</button>
+            <button type="button" data-editor-tool="wall">벽·장애물</button>
+            <button type="button" data-editor-tool="actual">실제 시작 위치</button>
+            <button type="button" data-editor-tool="target">도전 목적지</button>
+          </div>
+          <p class="help-copy">도구를 고른 뒤 아래 칸을 클릭하세요. 막힌 칸은 사전확률과 실제 위치로 사용할 수 없습니다.</p>
+          <div id="teacherMap" class="teacher-map" role="grid" aria-label="교사용 지도 편집 격자"></div>
+        </section>
+
+        <section class="teacher-section">
+          <div class="section-heading"><div><span class="section-kicker">02</span><h3>시작 분포와 이동 오차</h3></div></div>
+          <div class="form-grid">
+            <label>시작 분포<select id="teacherPrior"><option value="uniform">균등분포</option><option value="biased">실제 위치 주변 편향</option><option value="selected">선택 칸 55% 편향</option></select></label>
+            <label>제자리 확률<input id="motionStay" type="number" min="0" max="1" step="0.01" value="0.10" /></label>
+            <label>덜 이동 확률<input id="motionUnder" type="number" min="0" max="1" step="0.01" value="0.10" /></label>
+            <label>정확한 이동 확률<input id="motionExact" type="number" min="0" max="1" step="0.01" value="0.70" /></label>
+            <label>더 이동 확률<input id="motionOver" type="number" min="0" max="1" step="0.01" value="0.10" /></label>
+          </div>
+          <p class="sum-check" id="motionSumCheck" role="status">이동 확률 합: 1.00</p>
+        </section>
+
+        <section class="teacher-section">
+          <div class="section-heading"><div><span class="section-kicker">03</span><h3>센서와 도전 목표</h3></div></div>
+          <div class="sensor-editor-grid">
+            <fieldset><legend>센서 A</legend><label>종류<select id="teacherSensorA"><option value="terrain">도로색</option><option value="landmark">랜드마크</option><option value="distance-wall">가까운 벽까지 거리</option><option value="distance-landmark">가까운 랜드마크까지 거리</option></select></label><label>정확도<input id="sensorAAccuracy" type="number" min="0" max="1" step="0.01" value="0.85" /></label><label>오인식 가능도<input id="sensorAFp" type="number" min="0" max="1" step="0.01" value="0.10" /></label></fieldset>
+            <fieldset><legend>센서 B</legend><label>종류<select id="teacherSensorB"><option value="landmark">랜드마크</option><option value="terrain">도로색</option><option value="distance-wall">가까운 벽까지 거리</option><option value="distance-landmark">가까운 랜드마크까지 거리</option></select></label><label>정확도<input id="sensorBAccuracy" type="number" min="0" max="1" step="0.01" value="0.90" /></label><label>오인식 가능도<input id="sensorBFp" type="number" min="0" max="1" step="0.01" value="0.05" /></label></fieldset>
+          </div>
+          <div class="form-grid">
+            <label>미션 설명<input id="teacherMissionGoal" type="text" maxlength="200" value="센서 4회 안에 최고확률을 70% 이상으로 만들기" /></label>
+            <label>센서 사용 제한<input id="teacherMaxSensors" type="number" min="1" max="20" value="4" /></label>
+          </div>
+        </section>
+
+        <section class="teacher-section json-section">
+          <div><h3>프리셋 JSON</h3><p>모든 설정은 이 기기에서 파일로 저장되며 외부 서버로 전송되지 않습니다.</p></div>
+          <div class="button-row"><button class="plain-button" id="saveScenarioButton" type="button">JSON 저장</button><label class="file-button">JSON 불러오기<input id="loadScenarioInput" type="file" accept="application/json,.json" /></label></div>
+        </section>
+      </div>
+      <div class="dialog-footer"><button class="plain-button" data-close-dialog="teacherDialog" type="button">취소</button><button class="primary-button" id="applyTeacherButton" type="button">설정 적용</button></div>
+    </dialog>
+
+    <main class="tool-workspace">
+      <section class="intro-band" aria-labelledby="toolTitle">
+        <div class="intro-copy">
+          <p class="eyebrow"><span></span> O14 · 움직임과 관측으로 믿음 갱신하기</p>
+          <h1 id="toolTitle">보이지 않는 위치를<br /><em>확률로 추적한다</em></h1>
+          <p>차량이 움직일 때는 믿음이 퍼지고, 센서가 지도를 관측하면 다시 좁혀집니다. 한 칸의 정답이 아니라 <b>모든 위치의 확률분포</b>가 어떻게 바뀌는지 따라가 보세요.</p>
+          <div class="intro-actions"><a class="primary-button" href="#laboratory">실험 시작</a><button class="plain-button" id="heroGuideButton" type="button">모형의 한계 먼저 보기</button></div>
+        </div>
+        <div class="pipeline-hero" aria-label="베이즈 위치 추정 다섯 단계">
+          <article><span>01</span><b>사전분포</b><small>이동 전 믿음</small></article>
+          <i aria-hidden="true">→</i>
+          <article><span>02</span><b>이동 예측</b><small>오차로 퍼짐</small></article>
+          <i aria-hidden="true">→</i>
+          <article><span>03</span><b>센서 가능도</b><small>관측의 그럴듯함</small></article>
+          <i aria-hidden="true">→</i>
+          <article><span>04</span><b>곱·정규화</b><small>합을 다시 1로</small></article>
+        </div>
+      </section>
+
+      <p id="statusMessage" class="status-message" role="status" aria-live="polite">1차원 순환 도로를 준비했습니다. 이동 전에 가장 가능성 높은 위치를 먼저 예상해 보세요.</p>
+
+      <section class="laboratory" id="laboratory" aria-label="베이즈 위치 추정 실험">
+        <aside class="control-column">
+          <section class="panel scenario-panel">
+            <div class="panel-heading"><div><span class="section-kicker">실험 조건</span><h2>시나리오 준비</h2></div><button class="icon-text-button" id="resetButton" type="button">↺ 처음으로</button></div>
+            <label class="stacked-label" for="presetSelect">수업 프리셋</label>
+            <select id="presetSelect">
+              <option value="loop">1D · 반복 표지판 순환도로</option>
+              <option value="drift">1D · 이동 오차 누적</option>
+              <option value="city">2D · 알려진 격자 도시</option>
+              <option value="wrong">2D · 잘못 설정된 센서</option>
+            </select>
+            <p id="presetDescription" class="help-copy"></p>
+            <div class="mode-switch" role="tablist" aria-label="실험 차원">
+              <button type="button" role="tab" aria-selected="true" data-mode="1d">1차원 도로</button>
+              <button type="button" role="tab" aria-selected="false" data-mode="2d">2차원 도시</button>
+            </div>
+            <div class="seed-row"><label for="seedInput">난수 시드</label><input id="seedInput" type="text" value="O14-2026" maxlength="40" /><button class="plain-button small-button" id="replayButton" type="button">같은 시나리오 다시</button></div>
+            <label class="switch-row"><span><b>학생 모드</b><small>실제 위치를 숨깁니다.</small></span><input id="studentModeToggle" type="checkbox" checked /></label>
+            <button class="plain-button full-button" id="revealActualButton" type="button">실제 위치 잠깐 공개</button>
+          </section>
+
+          <section class="panel action-panel">
+            <div class="panel-heading"><div><span class="section-kicker">1단계</span><h2>움직임 예측</h2></div><span id="motionSummary" class="mini-badge">정확 70%</span></div>
+            <p class="help-copy">실제 차의 이동 결과와 필터의 예측은 따로 계산됩니다.</p>
+            <div class="move-pad" aria-label="차량 이동 명령">
+              <button type="button" data-move="up" aria-label="위로 한 칸">↑</button>
+              <button type="button" data-move="left" aria-label="왼쪽 한 칸">←</button>
+              <button type="button" data-move="right" class="is-primary" aria-label="오른쪽 한 칸">→</button>
+              <button type="button" data-move="down" aria-label="아래로 한 칸">↓</button>
+            </div>
+            <div class="move-options"><label for="moveSteps">명령 거리</label><select id="moveSteps"><option value="1">1칸</option><option value="2">2칸</option><option value="3">3칸</option></select></div>
+            <button class="primary-button full-button" id="predictMoveButton" type="button">이동 명령 적용 → 예측분포</button>
+          </section>
+
+          <section class="panel action-panel">
+            <div class="panel-heading"><div><span class="section-kicker">2단계</span><h2>센서 관측</h2></div><span id="sensorBudgetBadge" class="mini-badge">제한 없음</span></div>
+            <div class="sensor-control">
+              <label for="sensorASelect"><b>센서 A</b><small id="sensorAMeta">정확도 85%</small></label>
+              <select id="sensorASelect"><option value="terrain">도로색</option><option value="landmark">랜드마크</option><option value="distance-wall">벽까지 거리</option><option value="distance-landmark">랜드마크까지 거리</option></select>
+              <button type="button" class="plain-button" data-observe="A">A 관측</button>
+            </div>
+            <div class="sensor-control">
+              <label for="sensorBSelect"><b>센서 B</b><small id="sensorBMeta">정확도 90%</small></label>
+              <select id="sensorBSelect"><option value="landmark">랜드마크</option><option value="terrain">도로색</option><option value="distance-wall">벽까지 거리</option><option value="distance-landmark">랜드마크까지 거리</option></select>
+              <button type="button" class="plain-button" data-observe="B">B 관측</button>
+            </div>
+            <div class="observation-readout" aria-live="polite"><span>최근 관측</span><strong id="observationText">아직 관측하지 않음</strong></div>
+            <button class="primary-button full-button" id="compareSensorsButton" type="button">A→B 순차 / A×B 동시 비교</button>
+          </section>
+        </aside>
+
+        <div class="visual-column">
+          <section class="panel map-panel" aria-labelledby="mapTitle">
+            <div class="panel-heading map-heading">
+              <div><span class="section-kicker">현재 믿음</span><h2 id="mapTitle">위치 확률 히트맵</h2></div>
+              <div class="map-legend" aria-label="지도 범례"><span><i class="legend-low"></i>낮음</span><span><i class="legend-high"></i>높음</span><span><i class="legend-actual"></i>실제 위치</span></div>
+            </div>
+            <div class="map-shell">
+              <div id="probabilityMap" class="probability-map" role="grid" aria-label="각 위치의 사후확률. 칸을 선택하면 계산을 확인합니다."></div>
+              <div id="actualHiddenNotice" class="actual-hidden-notice"><span>?</span><p><b>실제 차량 위치 숨김</b><small>확률분포만 보고 추론하세요.</small></p></div>
+            </div>
+            <div class="map-footer">
+              <div><span>최고확률 위치</span><strong id="bestLocation">—</strong></div>
+              <div><span>최고확률</span><strong id="bestProbability">—</strong></div>
+              <div><span>엔트로피</span><strong id="entropyValue">—</strong></div>
+              <div><span>확률 합</span><strong id="probabilitySum">1.000000</strong></div>
+            </div>
+            <div class="prediction-prompt">
+              <label for="studentPrediction">관측 전에 가장 가능성 높은 위치를 예상해 보세요.</label>
+              <div><select id="studentPrediction"></select><button class="plain-button" id="recordPredictionButton" type="button">예상 기록</button></div>
+              <p id="predictionFeedback">아직 예상하지 않았습니다.</p>
+            </div>
+          </section>
+
+          <section class="panel pipeline-panel" aria-labelledby="pipelineTitle">
+            <div class="panel-heading"><div><span class="section-kicker">분리해서 보기</span><h2 id="pipelineTitle">한 번의 베이즈 갱신을 다섯 장면으로</h2></div><button class="icon-text-button" id="animateStagesButton" type="button">▶ 단계 재생</button></div>
+            <div class="stage-tabs" role="tablist" aria-label="분포 단계 선택">
+              <button type="button" role="tab" aria-selected="true" data-stage="prior"><span>01</span>이동 전 믿음</button>
+              <button type="button" role="tab" aria-selected="false" data-stage="prediction"><span>02</span>예측분포</button>
+              <button type="button" role="tab" aria-selected="false" data-stage="likelihood"><span>03</span>센서 가능도</button>
+              <button type="button" role="tab" aria-selected="false" data-stage="unnormalized"><span>04</span>정규화 전 곱</button>
+              <button type="button" role="tab" aria-selected="false" data-stage="posterior"><span>05</span>사후분포</button>
+            </div>
+            <div id="distributionStages" class="distribution-stages" aria-live="polite"></div>
+            <p id="stageExplanation" class="stage-explanation">사전분포는 이동하기 전 각 위치에 대한 믿음입니다. 모든 칸의 합은 1입니다.</p>
+          </section>
+
+          <div class="analysis-grid">
+            <section class="panel calculation-panel" aria-labelledby="calculationTitle">
+              <div class="panel-heading"><div><span class="section-kicker">선택한 칸</span><h2 id="calculationTitle">베이즈 계산 펼쳐보기</h2></div><span id="selectedCellBadge" class="mini-badge">1번 칸</span></div>
+              <div class="formula-box" id="formulaBox">P(위치 | 관측) = P(관측 | 위치) × P예측(위치) ÷ P(관측)</div>
+              <div class="table-wrap"><table><thead><tr><th scope="col">계산 요소</th><th scope="col">선택 칸 값</th><th scope="col">전체 합과의 관계</th></tr></thead><tbody id="calculationBody"></tbody></table></div>
+              <p id="normalizationExplanation" class="math-note"></p>
+            </section>
+            <section class="panel history-panel" aria-labelledby="historyTitle">
+              <div class="panel-heading"><div><span class="section-kicker">불확실성 기록</span><h2 id="historyTitle">최고확률과 엔트로피</h2></div><button class="icon-text-button" id="clearHistoryButton" type="button">기록 지우기</button></div>
+              <canvas id="historyChart" width="760" height="320" role="img" aria-label="단계별 최고확률과 정규화한 엔트로피 변화 그래프"></canvas>
+              <div class="chart-legend"><span><i class="line-confidence"></i>최고확률</span><span><i class="line-entropy"></i>정규화 엔트로피</span></div>
+            </section>
+          </div>
+
+          <section class="panel comparison-panel" id="comparisonPanel" aria-labelledby="comparisonTitle" hidden>
+            <div class="panel-heading"><div><span class="section-kicker">두 센서 비교</span><h2 id="comparisonTitle">순차 갱신과 동시 갱신</h2></div><span id="comparisonDifference" class="mini-badge">최대 차이 0</span></div>
+            <div class="comparison-grid">
+              <article><h3>A → B 순서대로</h3><div id="sequentialDistribution" class="mini-distribution"></div><p id="sequentialSummary"></p></article>
+              <article><h3>A × B 함께</h3><div id="togetherDistribution" class="mini-distribution"></div><p id="togetherSummary"></p></article>
+            </div>
+            <p class="concept-note"><b>조건부 독립을 가정하면</b> 두 가능도를 곱해 한 번에 정규화한 결과와, 하나씩 관측해 두 번 정규화한 결과가 같습니다. 실제 센서가 서로 의존하면 별도 모형이 필요합니다.</p>
+          </section>
+        </div>
+      </section>
+
+      <section class="activity-grid" aria-label="학생 탐구와 도전">
+        <section class="panel mission-panel" aria-labelledby="missionTitle">
+          <div class="panel-heading"><div><span class="section-kicker">학생 탐구 미션</span><h2 id="missionTitle">같은 지도를 다르게 믿어 보기</h2></div><span id="missionProgress" class="mini-badge">0 / 6 탐구</span></div>
+          <div class="mission-tabs" id="missionTabs" role="tablist" aria-label="탐구 미션 선택"></div>
+          <article class="mission-brief">
+            <div><span id="missionNumber">MISSION 01</span><h3 id="missionName">관측 전 최고확률 예상</h3><p id="missionDescription"></p></div>
+            <button class="primary-button" id="loadMissionButton" type="button">이 조건으로 실험</button>
+          </article>
+          <div class="mission-checklist"><label><input id="missionPredictCheck" type="checkbox" /> 예측을 먼저 기록했다</label><label><input id="missionCompareCheck" type="checkbox" /> 두 조건을 비교했다</label><label><input id="missionExplainCheck" type="checkbox" /> 확률 변화의 이유를 설명했다</label></div>
+          <label class="stacked-label" for="missionNotes">나의 예측 · 관찰 · 결론</label>
+          <textarea id="missionNotes" rows="5" placeholder="예측: …&#10;관찰: …&#10;결론: …"></textarea>
+        </section>
+
+        <section class="panel challenge-panel" aria-labelledby="challengeTitle">
+          <div class="panel-heading"><div><span class="section-kicker">게임 · 도전</span><h2 id="challengeTitle">최소 관측 위치 특정</h2></div><span id="challengeScore" class="score-badge">—점</span></div>
+          <p id="challengeGoal">센서 4회 안에 최고확률을 70% 이상으로 만드세요.</p>
+          <div class="challenge-metrics"><article><span>남은 센서</span><strong id="challengeSensors">4</strong></article><article><span>현재 불확실성</span><strong id="challengeUncertainty">—</strong></article><article><span>이동 횟수</span><strong id="challengeMoves">0</strong></article></div>
+          <div class="button-row"><button class="primary-button" id="startChallengeButton" type="button">도전 시작</button><button class="plain-button" id="finishChallengeButton" type="button" disabled>위치를 특정했다</button></div>
+          <p id="challengeFeedback" class="feedback" role="status">도전을 시작하면 센서 사용 횟수가 제한됩니다. 점수는 남은 관측 수와 불확실성을 함께 반영합니다.</p>
+        </section>
+      </section>
+
+      <section class="panel slam-panel" aria-labelledby="slamTitle">
+        <div class="panel-heading"><div><span class="section-kicker">개념 확장 · SLAM</span><h2 id="slamTitle">지도를 아는가, 위치를 아는가</h2></div><span class="mini-badge">구현 핵심: 알려진 지도에서 위치 추정</span></div>
+        <div class="slam-grid">
+          <article><span>LOCALIZATION</span><h3>지도를 알며 위치 찾기</h3><p>현재 실험실의 핵심입니다. 지도는 고정하고, 움직임과 관측으로 위치 확률을 갱신합니다.</p></article>
+          <article><span>MAPPING</span><h3>위치를 알며 지도 만들기</h3><p>내 위치가 확실하다고 보고, 관측한 벽과 랜드마크를 지도에 기록합니다.</p></article>
+          <article><span>SLAM</span><h3>둘을 동시에 풀기</h3><p>위치도 지도도 불확실해 서로의 추정을 함께 고칩니다. 실제 SLAM은 이 모형보다 훨씬 복잡합니다.</p></article>
+        </div>
+        <div class="mapping-log"><div><h3>작은 지도 기록장</h3><p>관측할 때마다 센서 기록을 남겨, 지도 작성에 어떤 정보가 필요할지 생각해 봅니다.</p></div><ol id="mappingLog"><li>아직 관측 기록이 없습니다.</li></ol><button class="plain-button" id="clearMappingLogButton" type="button">기록 비우기</button></div>
+      </section>
+
+      <section class="panel worksheet-panel" aria-labelledby="worksheetTitle">
+        <div class="panel-heading"><div><span class="section-kicker">수업 기록</span><h2 id="worksheetTitle">탐구 결과 정리</h2></div><div class="button-row"><button class="plain-button" id="exportRecordButton" type="button">기록 TXT</button><button class="plain-button" id="printButton" type="button">인쇄용 활동지</button></div></div>
+        <div class="worksheet-grid"><article><b>① 이동은 왜 확률을 퍼뜨렸나요?</b><p>이동 오차와 벽·경계 처리를 포함해 설명해 보세요.</p></article><article><b>② 관측은 언제 위치를 잘 좁혔나요?</b><p>반복 랜드마크와 고유 랜드마크를 비교해 보세요.</p></article><article><b>③ 최고확률 위치는 진실인가요?</b><p>실제 숨은 위치와 확률적 추정의 차이를 설명해 보세요.</p></article></div>
+        <label class="stacked-label" for="studentNotes">종합 결론</label><textarea id="studentNotes" rows="5" placeholder="이번 실험에서 알게 된 베이즈 위치 추정의 원리를 적어 보세요."></textarea>
+      </section>
+
+      <footer class="tool-footer"><p><b>모형의 범위</b> · 유한한 칸, 단순 이동 오차, 조건부 독립 센서 가능도를 사용한 교육용 이산 베이즈 필터</p><a href="../../">수학 수업 웹툴 모음으로 돌아가기 →</a></footer>
+    </main>
+
+    <script src="./bayes-filter.js?v=20260716-1"></script>
+    <script src="./app.js?v=20260716-1"></script>
+  </body>
+</html>

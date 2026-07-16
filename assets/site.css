@@ -1540,6 +1540,24 @@ body.is-modal-open {
   font: 900 15px/1 Georgia, serif;
   text-align: center;
 }
+.card-bayes-localization .tool-visual { background: #e8f4f5; }
+.bayes-localization-preview { position: relative; width: 100%; height: 100%; }
+.localization-road { position: absolute; right: 34px; bottom: 36px; left: 34px; display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.localization-road i { height: 58px; border: 4px solid var(--navy); border-radius: 8px; background: #d8e1e5; box-shadow: inset 0 -7px 0 #77848f; }
+.localization-road i:nth-child(1), .localization-road i:nth-child(5) { background: #92c9ea; }
+.localization-road i:nth-child(3), .localization-road i:nth-child(7) { background: #f5d46c; }
+.localization-bars { position: absolute; right: 42px; bottom: 102px; left: 42px; display: flex; height: 56px; align-items: flex-end; gap: 8px; }
+.localization-bars b { flex: 1; height: 18%; border-radius: 5px 5px 0 0; background: #16877e; }
+.localization-bars b:nth-child(2) { height: 42%; }
+.localization-bars b:nth-child(3) { height: 78%; }
+.localization-bars b:nth-child(4) { height: 30%; }
+.localization-bars b:nth-child(5) { height: 94%; background: var(--orange); }
+.localization-bars b:nth-child(6) { height: 36%; }
+.localization-bars b:nth-child(7) { height: 16%; }
+.localization-car { position: absolute; right: 92px; bottom: 48px; display: grid; width: 42px; height: 32px; place-items: center; border: 4px solid var(--navy); border-radius: 10px; background: var(--yellow); color: var(--navy); font-size: 11px; font-weight: 950; transform: rotate(-4deg); }
+.localization-sensor { position: absolute; top: 23px; right: 42px; padding: 6px 9px; border: 3px solid var(--navy); border-radius: 10px; background: white; color: var(--navy); font-size: 10px; font-weight: 900; }
+.localization-sensor::after { position: absolute; top: 31px; left: 50%; height: 34px; border-left: 3px dashed var(--orange); content: ""; transform: rotate(17deg); transform-origin: top; }
+.bayes-localization-preview > strong { position: absolute; top: 24px; left: 33px; color: var(--navy); font: 900 17px Georgia, serif; }
 .monty-visual .ground { fill: none; stroke: #e6c7b0; stroke-linecap: round; stroke-width: 3; }
 .monty-visual .goat { fill: #fffaf1; stroke: var(--navy); stroke-linecap: round; stroke-linejoin: round; stroke-width: 5; }
 .monty-visual .goat circle { fill: var(--navy); stroke: none; }
