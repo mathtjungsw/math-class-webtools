@@ -2,6 +2,7 @@
   "use strict";
 
   const P = window.SymbolGuessingProbability;
+  const W = window.SymbolGuessingWords;
   const $ = (selector, parent = document) => parent.querySelector(selector);
   const $$ = (selector, parent = document) => [...parent.querySelectorAll(selector)];
   const PRESET_KEY = "symbol-guessing-lab-presets-v1";
@@ -11,6 +12,7 @@
     experimentNumber: 0,
     answers: [],
     answerKey: [],
+    questionSet: [],
     currentQuestion: 0,
     timer: null,
     remainingSeconds: 0,
@@ -87,6 +89,29 @@
     renderPredictionDraw();
   }
 
+  function renderLanguagePreview() {
+    const language = $("#languageSelect").value;
+    const meta = W.LANGUAGE_META[language];
+    const previewLanguages = language === "mixed"
+      ? W.MODERN_LANGUAGE_IDS
+      : language === "ancient_mixed"
+        ? W.ANCIENT_LANGUAGE_IDS
+        : language === "all_mixed"
+          ? W.LANGUAGE_IDS
+          : [language];
+    $("#languagePreview").innerHTML = `
+      <div>
+        <strong>${escapeHtml(meta.name)}</strong>
+        <span>${escapeHtml(meta.note)}</span>
+      </div>
+      <p>${previewLanguages.map((languageId, index) => {
+        const item = W.LANGUAGE_META[languageId];
+        const words = W.WORD_SETS[languageId];
+        const word = words[(index * 7) % words.length];
+        return `<b lang="${item.lang}" dir="${item.dir}" title="${escapeHtml(item.name)}">${escapeHtml(word)}</b>`;
+      }).join("")}</p>`;
+  }
+
   function renderPredictionDraw() {
     const n = Number($("#questionCountSelect").value);
     $("#predictionDraw").innerHTML = state.predictionLevels.map((level, index) => {
@@ -111,22 +136,14 @@
     });
   }
 
-  function glyphMarkup(index) {
-    const code = (state.config.seed * 31 + index * 47 + 17) >>> 0;
-    const inset = 12 + code % 19;
-    const radius = ["50%", "13%", "45% 18%", "12% 50%", "50% 12% 45% 18%"][code % 5];
-    const angle = [-37, -19, 0, 22, 41][Math.floor(code / 5) % 5];
-    const crossAngle = [-28, -12, 13, 31][Math.floor(code / 11) % 4];
-    const tickAngle = [0, 45, 90, 135][Math.floor(code / 17) % 4];
-    return `<div class="glyph" style="--inset:${inset}px;--radius:${radius};--angle:${angle}deg;--cross-angle:${crossAngle}deg;--tick-angle:${tickAngle}deg"><i class="ring"></i><i class="axis"></i><i class="cross"></i><i class="dot one"></i>${code % 3 ? '<i class="dot two"></i>' : ""}<i class="tick"></i></div>`;
-  }
-
   function startExperiment() {
     const n = Number($("#questionCountSelect").value);
-    state.config = P.sanitizePreset({ ...state.config, questionCount: n });
+    state.config = P.sanitizePreset({ ...state.config, questionCount: n, language: $("#languageSelect").value });
     state.experimentNumber += 1;
     const rng = P.mulberry32(state.config.seed + state.experimentNumber * 1009);
     state.answerKey = P.generateAnswerKey(n, state.config.answerPattern, state.config.customPattern, rng);
+    state.questionSet = W.buildQuestionSet({ language: state.config.language, n, answerKey: state.answerKey, random: rng });
+    state.answerKey = state.questionSet.map((question) => question.correctSide);
     state.answers = Array(n).fill(null);
     state.currentQuestion = 0;
     state.predictionSnapshot = {
@@ -139,8 +156,6 @@
     $("#personalResult").hidden = true;
     $("#questionStage").hidden = false;
     setNavigationLocked(true);
-    $("#leftChoiceLabel").textContent = state.config.leftLabel;
-    $("#rightChoiceLabel").textContent = state.config.rightLabel;
     renderAnswerDots();
     renderQuestion();
     startTimer();
@@ -150,11 +165,14 @@
   function renderQuestion() {
     const n = state.config.questionCount;
     const index = state.currentQuestion;
+    const question = state.questionSet[index];
     $("#questionProgressText").textContent = `${index + 1} / ${n}`;
     $("#questionProgressBar").style.width = `${index / n * 100}%`;
-    $("#questionNumber").textContent = `문항 ${index + 1}`;
-    $("#glyphCard").innerHTML = glyphMarkup(index);
-    $("#glyphCard").setAttribute("aria-label", `문항 ${index + 1}의 의미 없는 인공 기호`);
+    $("#questionNumber").textContent = `문항 ${index + 1} · ${question.languageName}`;
+    $("#glyphCard").innerHTML = `<span class="language-chip">${escapeHtml(question.languageName)}</span><strong class="word-display" lang="${question.lang}" dir="${question.dir}">${escapeHtml(question.word)}</strong>${question.reading ? `<small class="word-reading">${escapeHtml(question.reading)}</small>` : ""}`;
+    $("#glyphCard").setAttribute("aria-label", `문항 ${index + 1}, ${question.languageName} 단어 ${question.word}`);
+    $("#leftChoiceLabel").textContent = question.options[0];
+    $("#rightChoiceLabel").textContent = question.options[1];
   }
 
   function renderAnswerDots() {
@@ -241,6 +259,20 @@
       const correctClass = result.correctness[index] ? "correct" : "";
       return `<span class="${sideClass} ${correctClass}" title="${index + 1}번: ${answer === null ? "미응답" : answer === 0 ? "왼쪽" : "오른쪽"}, ${result.correctness[index] ? "정답" : "오답"}">${label}</span>`;
     }).join("");
+    const languageMeta = W.LANGUAGE_META[state.config.language];
+    $("#patternSummary").insertAdjacentHTML("beforeend", `<div class="language-summary"><span>단어 언어</span><strong>${escapeHtml(languageMeta.name)}</strong></div>`);
+    $("#wordReview").innerHTML = state.questionSet.map((question, index) => {
+      const answer = state.answers[index];
+      const correct = result.correctness[index];
+      const chosenMeaning = answer === 0 || answer === 1 ? question.options[answer] : "미응답";
+      return `<article class="${correct ? "correct" : "incorrect"}">
+        <span>${index + 1}</span>
+        <strong lang="${question.lang}" dir="${question.dir}">${escapeHtml(question.word)}</strong>
+        <small>${escapeHtml(question.languageName)}${question.reading ? ` · ${escapeHtml(question.reading)}` : ""}</small>
+        <p>정답 <b>${escapeHtml(question.meaning)}</b></p>
+        <p>나의 선택 ${escapeHtml(chosenMeaning)}</p>
+      </article>`;
+    }).join("");
     updateCountOption($("#simulationN"), n);
     refreshSimulationTheory();
   }
@@ -249,6 +281,7 @@
     clearInterval(state.timer);
     state.answers = [];
     state.answerKey = [];
+    state.questionSet = [];
     state.currentQuestion = 0;
     setNavigationLocked(false);
     $("#questionStage").hidden = true;
@@ -400,8 +433,7 @@
     return P.sanitizePreset({
       name: $("#presetName").value,
       questionCount: $("#teacherQuestionCount").value,
-      leftLabel: $("#teacherLeftLabel").value,
-      rightLabel: $("#teacherRightLabel").value,
+      language: $("#teacherLanguage").value,
       answerPattern: $("#teacherAnswerPattern").value,
       customPattern: $("#teacherCustomPattern").value,
       timeLimit: $("#teacherTimeLimit").value,
@@ -412,8 +444,7 @@
   function fillTeacherForm(config) {
     const preset = P.sanitizePreset(config);
     $("#teacherQuestionCount").value = preset.questionCount;
-    $("#teacherLeftLabel").value = preset.leftLabel;
-    $("#teacherRightLabel").value = preset.rightLabel;
+    $("#teacherLanguage").value = preset.language;
     $("#teacherAnswerPattern").value = preset.answerPattern;
     $("#teacherCustomPattern").value = preset.customPattern;
     updateCountOption($("#teacherTimeLimit"), preset.timeLimit, "초");
@@ -425,10 +456,10 @@
     if (event) event.preventDefault();
     state.config = readTeacherForm();
     syncQuestionCounts(state.config.questionCount);
+    $("#languageSelect").value = state.config.language;
+    renderLanguagePreview();
     resetPersonal();
-    $("#leftChoiceLabel").textContent = state.config.leftLabel;
-    $("#rightChoiceLabel").textContent = state.config.rightLabel;
-    toast(`${state.config.questionCount}문항 설정을 적용했어요.`);
+    toast(`${W.LANGUAGE_META[state.config.language].name} ${state.config.questionCount}문항 설정을 적용했어요.`);
   }
 
   function readPresets() {
@@ -486,6 +517,8 @@
     $("#presetName").value = preset.name;
     state.config = preset;
     syncQuestionCounts(preset.questionCount);
+    $("#languageSelect").value = preset.language;
+    renderLanguagePreview();
     resetPersonal();
     toast(`‘${preset.name}’ 설정을 불러왔어요.`);
   }
@@ -510,6 +543,7 @@
     $$('[data-view-button]').forEach((button) => button.addEventListener("click", () => setView(button.dataset.viewButton)));
     $$('[data-go-view]').forEach((button) => button.addEventListener("click", () => setView(button.dataset.goView)));
     $("#questionCountSelect").addEventListener("change", updatePredictionBounds);
+    $("#languageSelect").addEventListener("change", renderLanguagePreview);
     $("#startExperimentButton").addEventListener("click", startExperiment);
     $("#leftChoiceButton").addEventListener("click", () => chooseAnswer(0));
     $("#rightChoiceButton").addEventListener("click", () => chooseAnswer(1));
@@ -573,6 +607,8 @@
   function init() {
     fillTeacherForm(state.config);
     syncQuestionCounts(state.config.questionCount);
+    $("#languageSelect").value = state.config.language;
+    renderLanguagePreview();
     renderPredictionDraw();
     refreshSimulationTheory();
     updateClassFeedback();

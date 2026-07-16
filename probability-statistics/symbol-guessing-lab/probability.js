@@ -197,9 +197,11 @@
   function sanitizePreset(input) {
     const source = input && typeof input === "object" ? input : {};
     const patternOptions = ["balanced", "random", "alternating", "custom"];
+    const languageOptions = ["arabic", "georgian", "armenian", "amharic", "egyptian", "sanskrit", "sumerian", "mixed", "ancient_mixed", "all_mixed"];
     return {
       name: String(source.name || "수업 프리셋").trim().slice(0, 40) || "수업 프리셋",
-      questionCount: clamp(Math.round(Number(source.questionCount) || 20), 10, 100),
+      questionCount: clamp(Math.round(Number(source.questionCount) || 20), 10, 50),
+      language: languageOptions.includes(source.language) ? source.language : "arabic",
       leftLabel: String(source.leftLabel || "모양 A").trim().slice(0, 20) || "모양 A",
       rightLabel: String(source.rightLabel || "모양 B").trim().slice(0, 20) || "모양 B",
       answerPattern: patternOptions.includes(source.answerPattern) ? source.answerPattern : "balanced",

@@ -3203,54 +3203,28 @@ body.is-modal-open {
   overflow: hidden;
 }
 
-.symbol-guessing-preview__glyph {
+.symbol-guessing-preview__word {
   position: absolute;
   left: 22px;
   top: 21px;
-  width: 82px;
-  height: 76px;
-  border: 5px solid #f2c95c;
-  border-radius: 50% 18%;
+  display: grid;
+  width: 92px;
+  height: 78px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
 }
 
-.symbol-guessing-preview__glyph i,
-.symbol-guessing-preview__glyph b,
-.symbol-guessing-preview__glyph em,
-.symbol-guessing-preview__glyph span {
-  position: absolute;
-  display: block;
+.symbol-guessing-preview__word b {
+  color: #f2c95c;
+  font: 750 28px/1.1 "Traditional Arabic", "Segoe UI", sans-serif;
 }
 
-.symbol-guessing-preview__glyph i {
-  top: -9px;
-  bottom: -9px;
-  left: 36px;
-  width: 5px;
-  border-radius: 4px;
-  background: #54d2aa;
-  transform: rotate(25deg);
+.symbol-guessing-preview__word span {
+  color: #9ed8c7;
+  font: 700 10px/1.1 "Segoe UI", sans-serif;
 }
-
-.symbol-guessing-preview__glyph b {
-  top: 34px;
-  right: -12px;
-  left: -12px;
-  height: 4px;
-  border-radius: 4px;
-  background: #ef806d;
-  transform: rotate(-17deg);
-}
-
-.symbol-guessing-preview__glyph em,
-.symbol-guessing-preview__glyph span {
-  width: 12px;
-  height: 12px;
-  border: 3px solid #fff;
-  border-radius: 50%;
-}
-
-.symbol-guessing-preview__glyph em { left: -8px; top: -8px; }
-.symbol-guessing-preview__glyph span { right: -8px; bottom: -8px; }
 
 .symbol-guessing-preview__choices {
   position: absolute;
@@ -3262,7 +3236,7 @@ body.is-modal-open {
 
 .symbol-guessing-preview__choices span {
   display: grid;
-  width: 38px;
+  width: 43px;
   height: 25px;
   place-items: center;
   border: 1px solid rgba(255, 255, 255, 0.25);
