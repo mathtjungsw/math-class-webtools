@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="합성 평점 행렬에서 유사도와 가중평균으로 추천을 만들고 오차·희소성·콜드스타트·인기 편향을 탐구하는 수업용 웹툴" />
+    <title>평점 기반 추천 알고리즘 실험실</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23111c35'/%3E%3Cpath d='M16 44V20l16 12 16-12v24' fill='none' stroke='%235dd2b2' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./style.css?v=20260716-2" />
+  </head>
+  <body>
+    <header class="tool-topbar">
+      <a class="brand" href="../../" aria-label="수학 수업 웹툴 모음 홈">
+        <span class="brand-mark" aria-hidden="true">O9</span>
+        <span><strong>평점 기반 추천 알고리즘 실험실</strong><small>인공지능 수학 · 행렬과 유사도</small></span>
+      </a>
+      <nav class="top-actions" aria-label="상단 메뉴">
+        <button class="ghost-button" id="tutorialButton" type="button">설명서 보기</button>
+        <button class="ghost-button" id="teacherButton" type="button">교사용 안내</button>
+        <button class="ghost-button" id="fullscreenButton" type="button">전체화면</button>
+        <button class="ghost-button" id="printButton" type="button">결과 인쇄</button>
+        <a class="ghost-button" href="../../">전체 웹툴</a>
+      </nav>
+    </header>
+
+    <dialog id="tutorialDialog" aria-labelledby="tutorialTitle">
+      <div class="dialog-head">
+        <div><p class="eyebrow">처음 5분</p><h2 id="tutorialTitle">예상 → 실험 → 해석 사용 설명서</h2></div>
+        <button class="icon-button" type="button" data-close-dialog aria-label="설명서 닫기">×</button>
+      </div>
+      <div class="dialog-body">
+        <ol class="guide-steps">
+          <li><b>1 · 예상</b><span>비어 있는 평점 하나를 골라 어떤 값이 나올지, 누구와 취향이 비슷할지 먼저 적습니다.</span></li>
+          <li><b>2 · 입력</b><span>1~5 입력 도구를 고른 뒤 행렬의 칸을 누릅니다. 키보드 숫자키와 Delete도 사용할 수 있습니다.</span></li>
+          <li><b>3 · 빈칸 선택</b><span>‘예측 칸’ 도구를 누르고 빈칸을 선택하면 공통 평점부터 가중평균까지 다섯 단계가 펼쳐집니다.</span></li>
+          <li><b>4 · 조건 변화</b><span>사용자/아이템 기반, 유사도, k, 최소 공통 수와 인기 가중치를 한 가지씩 바꿉니다.</span></li>
+          <li><b>5 · 해석</b><span>예측이 달라진 이유와 설명 가능성, 데이터 부족과 편향을 함께 기록합니다.</span></li>
+          <li><b>6 · 대회</b><span>실제 평점을 잠시 숨긴 뒤 정답을 공개하여 절대오차·MAE·RMSE로 설정을 비교합니다.</span></li>
+        </ol>
+        <div class="notice"><b>기억할 점</b><p>이 모형은 작은 합성 자료의 평점 패턴을 이용합니다. 사람의 취향을 완전히 안다고 말할 수 없으며 실제 서비스의 복잡한 모델을 재현한 것도 아닙니다.</p></div>
+      </div>
+      <div class="dialog-foot"><button class="primary-button" id="tutorialStartButton" type="button">영화 프리셋으로 시작</button></div>
+    </dialog>
+
+    <dialog id="teacherDialog" aria-labelledby="teacherTitle">
+      <div class="dialog-head">
+        <div><p class="eyebrow">교사용 진행 안내</p><h2 id="teacherTitle">45~50분 수업 운영안</h2></div>
+        <button class="icon-button" type="button" data-close-dialog aria-label="교사용 안내 닫기">×</button>
+      </div>
+      <div class="dialog-body teacher-guide">
+        <article><b>도입 · 7분</b><p>합성 영화 표에서 한 빈칸을 보여 주고, 주변 평점만으로 무엇을 알 수 있을지 예상하게 합니다. 과거의 공개 추천 알고리즘 대회는 ‘관측된 평점에서 숨은 평점을 얼마나 잘 예측하는가’라는 문제를 널리 알린 맥락으로만 소개합니다.</p></article>
+        <article><b>개념 · 12분</b><p>초급의 일치도부터 시작해 공통 평점, 벡터, 유사도, k개 이웃, 가중평균 순서로 한 칸을 함께 계산합니다. 공통 자료가 없는 두 벡터는 비교할 근거가 없다는 점을 먼저 확인합니다.</p></article>
+        <article><b>실험 · 18분</b><p>모둠마다 한 조건만 바꾸어 추천 순위와 오차를 기록합니다. 사용자 기반과 아이템 기반을 나누어 맡기거나 k·최소 공통 평가 수를 다르게 지정하면 비교가 선명합니다.</p></article>
+        <article><b>정리 · 10분</b><p>MAE가 가장 작은 설정만 뽑지 말고, 콜드스타트·희소성·인기 편향·취향 좁아짐 시나리오에서 어떤 추천이 설명하기 쉽고 다양한지도 함께 발표하게 합니다.</p></article>
+        <div class="notice"><b>개인정보와 표현</b><p>가명과 합성 콘텐츠만 사용하세요. 실제 계정·실명·시청 기록을 입력하지 않으며, 결과는 ‘이 데이터와 설정에서 나온 예상’이라고 표현합니다.</p></div>
+      </div>
+      <div class="dialog-foot"><button class="primary-button" type="button" data-close-dialog>안내 닫기</button></div>
+    </dialog>
+
+    <main class="workspace">
+      <section class="hero" aria-labelledby="toolTitle">
+        <div>
+          <p class="eyebrow">O9 · 평점의 빈칸을 수학으로 추측하기</p>
+          <h1 id="toolTitle">나와 비슷한 평점은<br /><em>무엇을 추천할까?</em></h1>
+          <p>가상의 영화·책·음악 평점을 행렬로 만들고, 공통 평가와 유사도, 가까운 이웃의 가중평균으로 빈칸을 예측하세요. 추천 순위뿐 아니라 오차와 편향도 함께 살펴봅니다.</p>
+        </div>
+        <div class="hero-matrix" aria-hidden="true">
+          <span class="axis-label axis-user">사용자</span><span class="axis-label axis-item">콘텐츠</span>
+          <div class="mini-grid"><i>5</i><i>4</i><i>?</i><i>1</i><i>5</i><i>4</i><i>2</i><i>?</i><i>5</i></div>
+          <b>sim = 0.92</b><strong>예상 4.6 ★</strong>
+        </div>
+      </section>
+
+      <ol class="flow-strip" aria-label="탐구 순서">
+        <li><b>01</b><span>예상</span></li><li><b>02</b><span>평점 행렬</span></li><li><b>03</b><span>유사도</span></li><li><b>04</b><span>예측·추천</span></li><li><b>05</b><span>오차·편향</span></li>
+      </ol>
+
+      <p class="status" id="statusMessage" role="status" aria-live="polite">프리셋을 살펴보거나 평점 행렬의 빈칸을 선택해 보세요.</p>
+
+      <section class="panel control-panel" aria-labelledby="controlTitle">
+        <div class="section-heading">
+          <div><p class="eyebrow">실험 조건</p><h2 id="controlTitle">한 번에 한 조건씩 바꿔 보기</h2></div>
+          <div class="mode-switch" role="group" aria-label="활동 모드"><button class="is-active" id="personalModeButton" type="button" aria-pressed="true">개인 탐구</button><button id="groupModeButton" type="button" aria-pressed="false">모둠 대결</button></div>
+        </div>
+        <div class="control-grid">
+          <label>합성 데이터 프리셋<select id="presetSelect"><option value="movies">가상 영화관</option><option value="books">가상 도서관</option><option value="music">가상 음악실</option></select></label>
+          <button class="secondary-button align-end" id="loadPresetButton" type="button">프리셋 불러오기</button>
+          <fieldset><legend>협업 필터링 기준</legend><label><input type="radio" name="basis" value="user" checked /> 사용자 기반</label><label><input type="radio" name="basis" value="item" /> 아이템 기반</label></fieldset>
+          <label>수학 수준<select id="mathLevel"><option value="beginner">초급 · 거리/일치도</option><option value="advanced">확장 · 벡터 유사도</option></select></label>
+          <label>유사도 방법<select id="similarityMethod"><option value="agreement">평점 일치도</option><option value="cosine">코사인 유사도</option><option value="pearson">평균 중심 피어슨</option></select></label>
+          <label class="range-label"><span>이웃 수 k <output id="kOutput">2</output></span><input id="neighborK" type="range" min="1" max="5" value="2" /></label>
+          <label class="range-label"><span>최소 공통 평가 <output id="minCommonOutput">2</output></span><input id="minCommon" type="range" min="1" max="4" value="2" /></label>
+          <label class="range-label"><span>인기 가중치 <output id="popularityOutput">0.0</output></span><input id="popularityWeight" type="range" min="0" max="1.5" step="0.1" value="0" /></label>
+        </div>
+        <p class="control-note" id="controlNote">평점 차이가 작을수록 1에 가까운 ‘일치도’를 사용합니다. 직관적으로 비교하기 좋은 초급 방법입니다.</p>
+      </section>
+
+      <section class="panel matrix-panel" id="matrixSection" aria-labelledby="matrixTitle">
+        <div class="section-heading">
+          <div><p class="eyebrow">01 · 데이터 만들기</p><h2 id="matrixTitle">사용자 × 콘텐츠 평점 행렬</h2></div>
+          <span class="privacy-badge">합성 자료 · 가명만 사용</span>
+        </div>
+
+        <div class="matrix-tools" aria-label="평점 입력 도구">
+          <span>입력 도구</span>
+          <div class="rating-palette" role="toolbar" aria-label="클릭할 평점 선택">
+            <button type="button" data-rating-tool="target" class="is-active" aria-pressed="true">예측 칸</button>
+            <button type="button" data-rating-tool="null" aria-pressed="false">빈칸</button>
+            <button type="button" data-rating-tool="1" aria-pressed="false">1</button><button type="button" data-rating-tool="2" aria-pressed="false">2</button><button type="button" data-rating-tool="3" aria-pressed="false">3</button><button type="button" data-rating-tool="4" aria-pressed="false">4</button><button type="button" data-rating-tool="5" aria-pressed="false">5</button>
+          </div>
+          <small>숫자키 1~5 입력 · Delete/0 비우기 · 방향키 이동</small>
+        </div>
+
+        <div class="table-scroll matrix-scroll">
+          <table class="rating-matrix"><caption class="sr-only">사용자별 콘텐츠 평점 행렬. 빈칸은 아직 평가하지 않은 항목입니다.</caption><thead id="matrixHead"></thead><tbody id="matrixBody"></tbody></table>
+        </div>
+
+        <div class="matrix-summary" aria-live="polite">
+          <article><span>관측 평점</span><strong id="observedCount">—</strong></article>
+          <article><span>행렬 밀도</span><strong id="densityValue">—</strong></article>
+          <article><span>선택한 빈칸</span><strong id="selectedCellLabel">선택 전</strong></article>
+          <article><span>현재 예상</span><strong id="selectedPrediction">—</strong></article>
+        </div>
+
+        <details class="data-editor">
+          <summary>교사용 행렬 만들기 · CSV/JSON 저장과 불러오기</summary>
+          <div class="editor-grid">
+            <label>사용자 가명(쉼표로 구분)<textarea id="userNamesInput" rows="3"></textarea></label>
+            <label>합성 콘텐츠 이름(쉼표로 구분)<textarea id="itemNamesInput" rows="3"></textarea></label>
+          </div>
+          <div class="button-row">
+            <button class="secondary-button" id="createMatrixButton" type="button">빈 행렬 만들기</button>
+            <button class="secondary-button" id="saveCsvButton" type="button">행렬 CSV 저장</button>
+            <label class="file-button">CSV 불러오기<input id="loadCsvInput" type="file" accept=".csv,text/csv" /></label>
+            <button class="secondary-button" id="saveJsonButton" type="button">활동 JSON 저장</button>
+            <label class="file-button">JSON 불러오기<input id="loadJsonInput" type="file" accept=".json,application/json" /></label>
+          </div>
+          <p>CSV 첫 행에는 콘텐츠 이름, 첫 열에는 사용자 가명을 둡니다. 평점은 1~5 또는 빈칸만 사용합니다.</p>
+        </details>
+      </section>
+
+      <section class="panel prediction-panel" id="predictionSection" aria-labelledby="predictionTitle">
+        <div class="section-heading">
+          <div><p class="eyebrow">02 · 한 칸 예측하기</p><h2 id="predictionTitle">공통 평점에서 가중평균까지</h2></div>
+          <span class="step-badge" id="targetBadge">빈칸을 선택하세요</span>
+        </div>
+
+        <div class="compare-grid" aria-label="사용자 기반과 아이템 기반 비교">
+          <article id="userCompareCard"><span>사용자 기반</span><strong>—</strong><small>비슷한 사람의 평점 사용</small></article>
+          <article id="itemCompareCard"><span>아이템 기반</span><strong>—</strong><small>비슷한 콘텐츠의 평점 사용</small></article>
+        </div>
+
+        <div class="calculation-steps">
+          <article class="calc-step" id="commonStep"><header><b>1</b><div><h3>공통으로 평가한 콘텐츠·사용자 찾기</h3><p>같은 위치에 값이 있는 칸만 비교합니다.</p></div></header><div class="step-content" id="commonContent"><p class="empty-copy">예측할 빈칸을 선택하면 후보별 공통 평가가 표시됩니다.</p></div></article>
+          <article class="calc-step" id="vectorStep"><header><b>2</b><div><h3>두 평점 벡터 비교</h3><p>가장 가까운 후보와 나란히 놓습니다.</p></div></header><div class="step-content" id="vectorContent"><p class="empty-copy">비교 벡터가 여기에 표시됩니다.</p></div></article>
+          <article class="calc-step" id="similarityStep"><header><b>3</b><div><h3>유사도 계산</h3><p>식의 각 항을 실제 숫자로 확인합니다.</p></div></header><div class="step-content" id="similarityContent"><p class="empty-copy">유사도 식과 계산 항목이 여기에 표시됩니다.</p></div></article>
+          <article class="calc-step" id="neighborStep"><header><b>4</b><div><h3>가까운 이웃 k개 선택</h3><p>최소 공통 평가 수를 통과한 양의 유사도만 사용합니다.</p></div></header><div class="step-content" id="neighborContent"><p class="empty-copy">선택된 이웃이 여기에 표시됩니다.</p></div></article>
+          <article class="calc-step result-step" id="weightedStep"><header><b>5</b><div><h3>유사도 가중평균으로 예상 평점 계산</h3><p>더 비슷한 이웃의 평점이 더 큰 영향을 줍니다.</p></div></header><div class="step-content" id="weightedContent"><p class="empty-copy">가중평균 계산이 여기에 표시됩니다.</p></div></article>
+        </div>
+      </section>
+
+      <section class="two-column">
+        <section class="panel" aria-labelledby="mapTitle">
+          <div class="section-heading"><div><p class="eyebrow">03 · 유사도 지도</p><h2 id="mapTitle">누가, 무엇이 가까울까?</h2></div></div>
+          <div class="similarity-map" id="similarityMap" role="img" aria-label="선택 대상과 후보의 유사도 지도"><p class="empty-copy">빈칸을 선택하면 유사도가 높은 후보부터 나타납니다.</p></div>
+        </section>
+
+        <section class="panel" aria-labelledby="rankingTitle">
+          <div class="section-heading"><div><p class="eyebrow">04 · 추천 순위</p><h2 id="rankingTitle">예상 평점과 인기 보너스</h2></div><label class="compact-label">사용자<select id="rankingUserSelect"></select></label></div>
+          <div class="ranking-list" id="rankingList"><p class="empty-copy">평점이 비어 있는 콘텐츠의 추천 순위가 표시됩니다.</p></div>
+          <p class="bias-meter" id="biasMeter">인기 가중치가 0이면 예측값만으로 정렬합니다.</p>
+        </section>
+      </section>
+
+      <section class="panel competition-panel" aria-labelledby="competitionTitle">
+        <div class="section-heading">
+          <div><p class="eyebrow">05 · 추천 알고리즘 대회</p><h2 id="competitionTitle">숨긴 평점을 얼마나 가깝게 맞힐까?</h2></div>
+          <span class="competition-badge" id="competitionBadge">준비</span>
+        </div>
+        <div class="competition-actions">
+          <label>숨길 평점 수<select id="holdoutCount"><option>3</option><option selected>4</option><option>5</option><option>6</option></select></label>
+          <button class="primary-button" id="startCompetitionButton" type="button">평점 숨기고 예측 시작</button>
+          <button class="secondary-button" id="revealCompetitionButton" type="button" disabled>채점 · 정답 공개</button>
+          <button class="secondary-button" id="restoreCompetitionButton" type="button" disabled>원래 행렬 복원</button>
+        </div>
+        <div class="metric-grid competition-metrics">
+          <article><span>평균 절대오차 MAE</span><strong id="maeValue">—</strong><small>절대오차의 평균</small></article>
+          <article><span>제곱평균제곱근 RMSE</span><strong id="rmseValue">—</strong><small>큰 오차를 더 크게 반영</small></article>
+          <article><span>평균 이웃 수</span><strong id="averageNeighbors">—</strong><small>예측에 실제 사용</small></article>
+          <article><span>평균값 대체</span><strong id="fallbackCount">—</strong><small>이웃 부족 경고</small></article>
+        </div>
+        <div class="comparison-chart" id="answerChart" aria-label="예측 평점과 실제 평점 비교"><p class="empty-copy">먼저 실제 평점을 숨기고, 설정을 조정한 뒤 정답을 공개하세요.</p></div>
+        <div class="table-scroll"><table class="answer-table"><thead><tr><th>빈칸</th><th>예측값</th><th>실제값</th><th>절대오차</th></tr></thead><tbody id="answerTableBody"><tr><td colspan="4">아직 공개된 정답이 없습니다.</td></tr></tbody></table></div>
+      </section>
+
+      <section class="panel scenario-panel" aria-labelledby="scenarioTitle">
+        <div class="section-heading"><div><p class="eyebrow">06 · 한계와 편향 실험</p><h2 id="scenarioTitle">정확한 숫자만으로 충분할까?</h2></div></div>
+        <div class="scenario-grid">
+          <article><span>01</span><h3>콜드스타트</h3><p>평점이 없는 신규 사용자와 신규 콘텐츠를 추가합니다. 비교할 패턴이 없을 때 어떤 기준값이 나오는지 보세요.</p><button type="button" data-scenario="cold">시나리오 적용</button></article>
+          <article><span>02</span><h3>평점 희소성</h3><p>관측 평점을 크게 줄입니다. 최소 공통 평가 수가 같아도 이웃 수와 오차가 어떻게 달라질까요?</p><button type="button" data-scenario="sparse">시나리오 적용</button></article>
+          <article><span>03</span><h3>인기 편향</h3><p>한 콘텐츠에 평점이 몰린 자료를 만듭니다. 인기 가중치를 높일 때 상위 추천의 다양성을 살펴보세요.</p><button type="button" data-scenario="popular">시나리오 적용</button></article>
+          <article><span>04</span><h3>취향이 좁아짐</h3><p>서로 다른 두 취향 집단을 만듭니다. 익숙한 취향만 반복 추천되는지 비교하세요.</p><button type="button" data-scenario="bubble">시나리오 적용</button></article>
+        </div>
+        <div class="exploration-grid">
+          <label>예상<textarea id="predictionNotes" rows="4" placeholder="조건을 바꾸면 어떤 결과가 나올지 먼저 적어 보세요."></textarea></label>
+          <label>실험 관찰<textarea id="observationNotes" rows="4" placeholder="추천 순위, 이웃 수, MAE·RMSE에서 달라진 점을 적어 보세요."></textarea></label>
+          <label>해석<textarea id="interpretationNotes" rows="4" placeholder="왜 달라졌는지, 누구에게 어떤 영향이 생길지 설명해 보세요."></textarea></label>
+        </div>
+      </section>
+
+      <section class="panel group-panel" id="groupPanel" hidden aria-labelledby="groupTitle">
+        <div class="section-heading"><div><p class="eyebrow">모둠 대결</p><h2 id="groupTitle">오차·설명·편향을 함께 비교하기</h2></div><button class="secondary-button" id="recordTeamButton" type="button">현재 결과 기록</button></div>
+        <div class="team-input"><label>기록할 모둠<select id="activeTeam"><option value="0">1모둠</option><option value="1">2모둠</option><option value="2">3모둠</option><option value="3">4모둠</option></select></label><p>기본 점수는 MAE·RMSE로 계산하고, 발표에서 설명 가능성과 편향 분석을 별도로 토론하세요.</p></div>
+        <div class="team-grid" id="teamGrid"></div>
+      </section>
+
+      <section class="panel reflection-panel" aria-labelledby="reflectionTitle">
+        <div class="section-heading"><div><p class="eyebrow">07 · 탐구 정리</p><h2 id="reflectionTitle">추천을 믿을 근거와 의심할 근거</h2></div><button class="primary-button" id="printResultButton" type="button">탐구 결과 인쇄</button></div>
+        <div class="question-grid">
+          <article><b>설명 가능성</b><p>이 예측에 가장 큰 영향을 준 이웃과 평점은 무엇인가요?</p></article>
+          <article><b>오차</b><p>MAE와 RMSE의 순위가 다르다면 어떤 큰 오차 때문인가요?</p></article>
+          <article><b>편향</b><p>인기 가중치를 높였을 때 덜 알려진 콘텐츠는 어떤 불이익을 받나요?</p></article>
+          <article><b>한계</b><p>같은 평점 패턴이 같은 이유나 같은 취향을 뜻한다고 단정할 수 있을까요?</p></article>
+        </div>
+        <p class="concept-warning"><b>해석 원칙:</b> 추천값은 관측된 합성 평점과 선택한 방법에서 나온 추정입니다. 공통 평점이 적거나 모두 같은 경우, 신규 사용자·콘텐츠인 경우에는 유사도를 계산하지 못해 평균 기준값을 사용합니다. 높은 예측값이 사람의 실제 선택을 보장하지 않습니다.</p>
+      </section>
+    </main>
+
+    <footer>외부 API·실제 계정·실제 이용자 데이터 없이 브라우저 안에서 작동합니다. 실제 작품·상표·포스터를 사용하지 않습니다.</footer>
+    <script src="./recommender.js?v=20260716-2"></script>
+    <script src="./app.js?v=20260716-2"></script>
+  </body>
+</html>
