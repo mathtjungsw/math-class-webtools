@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#153f3a" />
+    <meta name="description" content="미적분 문제 카드와 이동 보드, 규칙을 만들고 실제 턴을 시험하는 모둠 프로젝트 제작 도구" />
+    <title>미적분 보드게임 제작기 | 수학 수업 웹툴 모음</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./game-logic.js" defer></script>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#makerMain">제작 화면으로 건너뛰기</a>
+    <header class="app-header">
+      <a class="brand" href="../../index.html#tools" aria-label="수학 수업 웹툴 모음으로 돌아가기">
+        <span class="brand-mark" aria-hidden="true"><i>∫</i></span>
+        <span><strong>미적분 보드게임 제작기</strong><small>CALCULUS GAME STUDIO</small></span>
+      </a>
+      <p class="save-status" id="saveStatus" aria-live="polite"><span></span> 이 기기에 자동 저장됨</p>
+      <button class="manual-button" id="manualButton" type="button">설명서</button>
+      <button class="button button-dark compact" id="headerPlayButton" type="button">▶ 플레이 테스트</button>
+    </header>
+
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">O7 · 4차시 모둠 프로젝트</p>
+        <h1>문제를 푸는 길을<br /><em>우리 손으로 설계하다.</em></h1>
+        <p>이동 보드, 카드 덱, 턴 규칙을 차례로 만들고 바로 플레이해 보세요. 자동 검사기는 빈틈을 찾고, 마지막 판단은 여러분의 모둠이 합니다.</p>
+        <div class="hero-actions">
+          <button class="button button-accent" id="loadTutorialButton" type="button">튜토리얼 예제 보기</button>
+          <button class="button button-ghost" id="newProjectButton" type="button">빈 프로젝트</button>
+        </div>
+      </div>
+      <div class="hero-dashboard" aria-label="현재 프로젝트 요약">
+        <div class="dashboard-top"><span>PROJECT PULSE</span><b id="readinessText">설계 중</b></div>
+        <div class="dashboard-score">
+          <strong id="readinessScore">0</strong><span>%</span>
+          <div><b id="heroTitle">나의 미적분 보드게임</b><small id="heroConcept">한 줄 기획을 입력해 보세요.</small></div>
+        </div>
+        <div class="dashboard-grid">
+          <p><span>보드 칸</span><b id="heroSpaceCount">14</b></p>
+          <p><span>카드</span><b id="heroCardCount">0</b></p>
+          <p><span>수학 주제</span><b><i id="heroTopicCount">0</i>/5</b></p>
+        </div>
+        <div class="topic-meter"><i id="heroMeter"></i></div>
+      </div>
+    </section>
+
+    <nav class="stage-nav" aria-label="제작 단계">
+      <div class="stage-track" id="stageTrack">
+        <button type="button" class="stage-button is-active" data-step="plan" aria-current="step"><span>1</span><b>기획</b><small>게임의 중심</small></button>
+        <button type="button" class="stage-button" data-step="board"><span>2</span><b>보드 만들기</b><small>길과 칸</small></button>
+        <button type="button" class="stage-button" data-step="cards"><span>3</span><b>카드/문제</b><small>수학 덱</small></button>
+        <button type="button" class="stage-button" data-step="rules"><span>4</span><b>규칙 정리</b><small>판정 기준</small></button>
+        <button type="button" class="stage-button" data-step="play"><span>5</span><b>플레이 테스트</b><small>턴 실험</small></button>
+        <button type="button" class="stage-button" data-step="share"><span>6</span><b>인쇄/공유</b><small>제작물 완성</small></button>
+      </div>
+    </nav>
+
+    <main id="makerMain" tabindex="-1">
+      <section class="stage-panel is-active" data-panel="plan" aria-labelledby="planHeading">
+        <div class="section-heading">
+          <div><span class="section-number">01</span><p class="eyebrow">GAME PITCH</p><h2 id="planHeading">어떤 경험을 만들까요?</h2></div>
+          <p>완성품을 따라 하기보다, 모둠이 만들고 싶은 한 번의 재미있는 장면부터 떠올려 보세요.</p>
+        </div>
+        <div class="plan-grid">
+          <div class="paper-card form-card">
+            <label class="field field-wide"><span>게임 제목 <b>필수</b></span><input id="gameTitle" maxlength="80" placeholder="예: 변화율 탐험대" /></label>
+            <label class="field field-wide"><span>한 줄 기획 <b>필수</b></span><textarea id="gameConcept" rows="4" maxlength="500" placeholder="누가, 무엇을 하며, 어떤 선택에서 재미를 느끼나요?"></textarea></label>
+            <label class="field"><span>추천 대상</span><input id="gameAudience" maxlength="120" /></label>
+            <label class="field"><span>모둠 메모</span><input id="gameNote" maxlength="800" placeholder="역할, 준비물, 다음 시간 할 일 등" /></label>
+          </div>
+          <aside class="tutorial-card">
+            <span class="pin" aria-hidden="true"></span>
+            <p class="eyebrow">4 PERIOD ROUTE</p>
+            <h3>네 번의 수업, 여섯 단계</h3>
+            <ol>
+              <li><b>1차시</b><span>핵심 재미와 수학 주제 분담</span></li>
+              <li><b>2차시</b><span>보드·카드·규칙의 첫 버전</span></li>
+              <li><b>3차시</b><span>실물 제작과 반복 플레이 테스트</span></li>
+              <li><b>4차시</b><span>오류 수정, 인쇄, 동료 피드백</span></li>
+            </ol>
+            <p class="tutorial-tip"><b>창작 질문</b> 정답을 맞히는 것 말고도, 플레이어가 고민할 선택은 무엇인가요?</p>
+          </aside>
+        </div>
+        <div class="panel-footer"><span></span><button class="button button-dark next-step" data-next="board" type="button">보드 길 만들기 →</button></div>
+      </section>
+
+      <section class="stage-panel" data-panel="board" aria-labelledby="boardHeading" hidden>
+        <div class="section-heading">
+          <div><span class="section-number">02</span><p class="eyebrow">BOARD ROUTE</p><h2 id="boardHeading">플레이어가 걸을 길을 만드세요.</h2></div>
+          <p>칸을 탭해 편집하고 화살표로 순서를 바꾸세요. 큰 화면에서는 칸을 직접 끌어 재배열할 수 있습니다.</p>
+        </div>
+        <div class="template-toolbar" aria-label="보드 템플릿">
+          <span>빠른 뼈대</span>
+          <button type="button" data-template="path"><i aria-hidden="true">→</i><b>경로형</b><small>출발에서 도착까지</small></button>
+          <button type="button" data-template="loop"><i aria-hidden="true">↻</i><b>순환형</b><small>되풀이되는 코스</small></button>
+          <button type="button" data-template="branch"><i aria-hidden="true">⑂</i><b>갈림길형</b><small>선택이 있는 길</small></button>
+        </div>
+        <div class="board-workspace">
+          <div class="board-area paper-card">
+            <div class="board-area-head"><div><b id="boardTemplateName">경로형 보드</b><span id="boardConnectionSummary">연결 13개</span></div><button class="small-button" id="addSpaceButton" type="button">＋ 칸 추가</button></div>
+            <div class="board-stage" id="boardStage" aria-label="보드 칸 편집 영역"></div>
+            <p class="board-help">점선은 다음 이동 연결입니다. 갈림길 칸은 두 개 이상의 연결을 가질 수 있습니다.</p>
+          </div>
+          <aside class="inspector paper-card" id="spaceInspector" aria-labelledby="spaceInspectorTitle">
+            <div class="inspector-head"><div><p class="eyebrow">SPACE EDITOR</p><h3 id="spaceInspectorTitle">칸 편집</h3></div><span id="selectedSpaceOrder">1 / 14</span></div>
+            <label class="field"><span>칸 종류</span><select id="spaceType"><option value="start">출발</option><option value="finish">도착</option><option value="problem">문제</option><option value="event">이벤트</option><option value="reward">보상</option><option value="penalty">벌칙</option><option value="normal">일반</option></select></label>
+            <label class="field"><span>칸 문구</span><input id="spaceLabel" maxlength="40" /></label>
+            <div class="split-fields"><label class="field"><span>아이콘/글자</span><input id="spaceIcon" maxlength="8" /></label><label class="field"><span>색상</span><input id="spaceColor" type="color" /></label></div>
+            <fieldset class="connection-field"><legend>이 칸에서 이동할 다음 칸</legend><div id="connectionPicker"></div></fieldset>
+            <div class="space-actions"><button type="button" id="moveSpaceBack">← 앞 순서</button><button type="button" id="moveSpaceForward">뒤 순서 →</button><button type="button" class="danger" id="deleteSpaceButton">칸 삭제</button></div>
+          </aside>
+        </div>
+        <div class="panel-footer"><button class="button button-ghost prev-step" data-next="plan" type="button">← 기획</button><button class="button button-dark next-step" data-next="cards" type="button">카드 덱 만들기 →</button></div>
+      </section>
+
+      <section class="stage-panel" data-panel="cards" aria-labelledby="cardsHeading" hidden>
+        <div class="section-heading">
+          <div><span class="section-number">03</span><p class="eyebrow">CALCULUS DECK</p><h2 id="cardsHeading">풀이와 선택을 카드에 담으세요.</h2></div>
+          <p>최소 다섯 주제를 골고루 사용하세요. 일반 텍스트와 유니코드 수식 기호를 써서 오프라인에서도 안전하게 표시합니다.</p>
+        </div>
+        <div class="topic-dashboard"><div><b><span id="topicCount">0</span>/5 주제 사용</b><small>내용이 입력된 카드만 집계</small></div><div id="topicChips" class="topic-chips" aria-label="미적분 주제 사용 현황"></div></div>
+        <div class="card-workspace">
+          <aside class="deck-sidebar paper-card">
+            <div class="deck-head"><div><p class="eyebrow">MY DECK</p><h3><span id="cardCount">0</span>장</h3></div><button class="small-button" id="addCardButton" type="button">＋ 카드</button></div>
+            <div class="card-list" id="cardList"></div>
+          </aside>
+          <div class="card-editor paper-card" id="cardEditor">
+            <div class="empty-editor" id="emptyCardEditor"><b>첫 카드를 만들어 보세요.</b><span>문제 카드뿐 아니라 선택을 바꾸는 행동 카드도 만들 수 있습니다.</span></div>
+            <div id="cardEditorFields" hidden>
+              <div class="editor-head"><div><p class="eyebrow">CARD EDITOR</p><h3 id="cardEditorTitle">카드 1</h3></div><div><button class="small-button" id="duplicateCardButton" type="button">복제</button><button class="small-button danger" id="deleteCardButton" type="button">삭제</button></div></div>
+              <div class="editor-grid">
+                <label class="field"><span>카드 종류</span><select id="cardType"><option value="choice">객관식</option><option value="short">단답형</option><option value="explain">설명형</option><option value="action">행동 카드</option></select></label>
+                <label class="field"><span>미적분 주제</span><select id="cardTopic"></select></label>
+                <label class="field field-wide"><span>문제 또는 행동</span><textarea id="cardQuestion" rows="4" maxlength="1000" placeholder="예: f(x)=x³-3x의 극값을 구하세요."></textarea></label>
+                <div class="symbol-row field-wide" aria-label="수식 기호 입력"><span>기호 넣기</span><button type="button" data-symbol="∫">∫</button><button type="button" data-symbol="lim">lim</button><button type="button" data-symbol="→">→</button><button type="button" data-symbol="√">√</button><button type="button" data-symbol="²">x²</button><button type="button" data-symbol="′">f′</button><small><code>^2</code>도 미리보기에서 ²로 표시됩니다.</small></div>
+                <div class="math-preview field-wide"><span>안전한 수식 미리보기</span><p id="mathPreview">카드 내용을 입력하세요.</p></div>
+                <label class="field field-wide" id="choicesField"><span>선택지 (한 줄에 하나)</span><textarea id="cardChoices" rows="4" maxlength="1000"></textarea></label>
+                <label class="field"><span>정답</span><input id="cardAnswer" maxlength="400" placeholder="복수 허용: 답1|답2" /></label>
+                <label class="field"><span>힌트</span><input id="cardHint" maxlength="500" /></label>
+                <label class="field field-wide"><span>풀이·해설</span><textarea id="cardSolution" rows="4" maxlength="1200"></textarea></label>
+                <label class="field"><span>난이도</span><select id="cardDifficulty"><option value="1">1 · 준비</option><option value="2">2 · 도전</option><option value="3">3 · 심화</option></select></label>
+                <label class="field"><span>점수</span><input id="cardPoints" type="number" min="-50" max="100" /></label>
+              </div>
+              <p class="judge-note">자동 판정은 객관식·단답형에서 등록한 문자열과 정확히 일치할 때만 지원합니다. 서로 같은 식인지까지 판정하지 않습니다.</p>
+            </div>
+          </div>
+        </div>
+        <div class="panel-footer"><button class="button button-ghost prev-step" data-next="board" type="button">← 보드</button><button class="button button-dark next-step" data-next="rules" type="button">규칙 정리하기 →</button></div>
+      </section>
+
+      <section class="stage-panel" data-panel="rules" aria-labelledby="rulesHeading" hidden>
+        <div class="section-heading">
+          <div><span class="section-number">04</span><p class="eyebrow">RULE BOOK</p><h2 id="rulesHeading">애매한 순간을 미리 정하세요.</h2></div>
+          <p>누가 이기는지만큼, 틀렸을 때·같은 칸에 만났을 때·동점일 때 무엇을 할지가 중요합니다.</p>
+        </div>
+        <div class="rules-grid">
+          <div class="paper-card rules-form">
+            <div class="rule-pair"><label class="field"><span>최소 인원</span><input id="playersMin" type="number" min="2" max="6" /></label><label class="field"><span>최대 인원</span><input id="playersMax" type="number" min="2" max="6" /></label></div>
+            <label class="field"><span>승리 조건</span><textarea id="victoryCondition" rows="3" placeholder="예: 도착한 사람 중 점수가 가장 높은 플레이어"></textarea></label>
+            <label class="field"><span>턴 순서</span><textarea id="turnOrder" rows="3" placeholder="예: 주사위 → 이동 → 칸 효과 → 카드 해결 → 다음 사람"></textarea></label>
+            <div class="rule-pair"><label class="field"><span>이동 방식</span><select id="movementMode"><option value="dice">주사위</option><option value="fixed">지정 이동</option><option value="custom">사용자 규칙</option></select></label><label class="field"><span>이동 상세</span><input id="movementDetail" placeholder="예: 1~6칸, 갈림길은 이동 전 선택" /></label></div>
+            <div class="rule-pair"><label class="field"><span>정답 처리</span><textarea id="correctAction" rows="3"></textarea></label><label class="field"><span>오답 처리</span><textarea id="wrongAction" rows="3"></textarea></label></div>
+            <div class="rule-pair"><label class="field"><span>같은 칸 충돌</span><textarea id="collisionRule" rows="3"></textarea></label><label class="field"><span>동점 처리</span><textarea id="tieRule" rows="3"></textarea></label></div>
+            <label class="field"><span>그 밖의 규칙</span><textarea id="customRules" rows="5" maxlength="1600"></textarea></label>
+          </div>
+          <aside class="check-column">
+            <div class="paper-card checker-card">
+              <div class="checker-head"><div><p class="eyebrow">RULE CHECKER</p><h3>설계 검사기</h3></div><button class="small-button" id="runCheckButton" type="button">다시 검사</button></div>
+              <div class="checker-summary" id="checkerSummary"></div>
+              <ul class="issue-list" id="issueList" aria-live="polite"></ul>
+            </div>
+            <div class="paper-card quality-card">
+              <p class="eyebrow">SELF REVIEW</p><h3>우리 게임 자체 점검</h3>
+              <label><span><b>수학적 내용</b><small>풀이가 정확하고 주제가 연결되는가?</small></span><input id="qualityMath" type="range" min="1" max="4" /><output for="qualityMath"></output></label>
+              <label><span><b>흥미</b><small>선택과 반전이 다시 하고 싶게 만드는가?</small></span><input id="qualityFun" type="range" min="1" max="4" /><output for="qualityFun"></output></label>
+              <label><span><b>완성도</b><small>재료와 문구를 바로 사용할 수 있는가?</small></span><input id="qualityFinish" type="range" min="1" max="4" /><output for="qualityFinish"></output></label>
+            </div>
+          </aside>
+        </div>
+        <div class="panel-footer"><button class="button button-ghost prev-step" data-next="cards" type="button">← 카드</button><button class="button button-dark next-step" data-next="play" type="button">플레이 테스트 →</button></div>
+      </section>
+
+      <section class="stage-panel" data-panel="play" aria-labelledby="playHeading" hidden>
+        <div class="section-heading">
+          <div><span class="section-number">05</span><p class="eyebrow">TABLE TEST</p><h2 id="playHeading">규칙이 실제로 움직이는지 시험하세요.</h2></div>
+          <p>2~6개 말을 움직이고 카드·점수·이벤트를 기록합니다. 사용자 규칙의 승패와 설명형 답은 직접 판정하세요.</p>
+        </div>
+        <div class="play-setup paper-card"><label class="field"><span>플레이어 수</span><select id="playPlayerCount"><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></label><button class="button button-accent" id="startPlayButton" type="button">새 테스트 시작</button><p>실제 이름 대신 <b>1번 말</b>처럼 기록하면 공유 파일에 개인정보가 남지 않습니다.</p></div>
+        <div class="play-workspace" id="playWorkspace" hidden>
+          <div class="play-main">
+            <div class="player-strip" id="playerStrip" aria-label="플레이어 상태"></div>
+            <div class="turn-console paper-card">
+              <div class="turn-heading"><span id="turnBadge">1턴</span><div><small>현재 차례</small><h3 id="activePlayerName">1번 말</h3></div><b id="activePlayerScore">0점</b></div>
+              <div class="move-controls">
+                <button class="dice-button" id="rollDiceButton" type="button"><span id="diceFace">?</span><b>주사위 굴리기</b></button>
+                <label class="field"><span>지정 이동</span><input id="moveAmount" type="number" min="0" max="50" value="1" /></label>
+                <label class="field" id="branchField" hidden><span>갈림길 선택</span><select id="branchTarget"></select></label>
+                <button class="button button-dark" id="movePlayerButton" type="button">이동 실행</button>
+              </div>
+              <div class="manual-controls"><span>교사/진행자 수동 조정</span><button type="button" data-score="-1">−1점</button><button type="button" data-score="1">＋1점</button><button type="button" data-score="5">＋5점</button><button type="button" id="manualWinnerButton">승자로 표시</button></div>
+            </div>
+            <div class="test-card paper-card">
+              <div class="test-card-head"><div><p class="eyebrow">CARD TEST</p><h3>카드 한 장 시험</h3></div><button class="small-button" id="drawCardButton" type="button">무작위 뽑기</button></div>
+              <div id="drawnCardEmpty" class="drawn-empty">카드를 뽑으면 문제와 판정 도구가 여기에 나타납니다.</div>
+              <div id="drawnCard" hidden><div class="drawn-meta"><span id="drawnTopic"></span><b id="drawnPoints"></b></div><p class="drawn-question" id="drawnQuestion"></p><div id="answerOptions"></div><label class="field" id="playAnswerField"><span>테스트 답안</span><input id="playAnswer" /></label><p class="answer-feedback" id="answerFeedback" aria-live="polite"></p><div class="card-test-actions"><button type="button" id="autoJudgeButton">정확 비교</button><button type="button" id="markCorrectButton">직접 정답 처리</button><button type="button" id="markWrongButton">직접 오답 처리</button><button type="button" id="revealSolutionButton">정답·해설 보기</button></div><div class="solution-box" id="solutionBox" hidden></div></div>
+            </div>
+            <button class="button button-accent next-turn-button" id="nextTurnButton" type="button">다음 사람 차례 →</button>
+          </div>
+          <aside class="play-log paper-card"><div><p class="eyebrow">TURN LOG</p><h3>테스트 기록</h3></div><ol id="playLog"></ol></aside>
+        </div>
+        <div class="panel-footer"><button class="button button-ghost prev-step" data-next="rules" type="button">← 규칙</button><button class="button button-dark next-step" data-next="share" type="button">인쇄/공유 →</button></div>
+      </section>
+
+      <section class="stage-panel" data-panel="share" aria-labelledby="shareHeading" hidden>
+        <div class="section-heading">
+          <div><span class="section-number">06</span><p class="eyebrow">PACK & SHARE</p><h2 id="shareHeading">실물 제작을 위한 파일을 꺼내세요.</h2></div>
+          <p>JSON 하나에 보드·카드·규칙을 저장하고, 필요한 제작물만 골라 인쇄할 수 있습니다.</p>
+        </div>
+        <div class="share-grid">
+          <div class="paper-card export-card">
+            <p class="eyebrow">PROJECT FILE</p><h3>계속 편집하거나 모둠과 공유</h3><p>브라우저 자동 저장은 이 기기에만 남습니다. 중요한 버전은 JSON 파일로 따로 보관하세요.</p>
+            <div class="export-actions"><button id="saveProjectButton" type="button"><span>↓</span><b>JSON 저장</b><small>전체 제작 프로젝트</small></button><label><input id="loadProjectInput" type="file" accept="application/json,.json" /><span>↑</span><b>JSON 불러오기</b><small>기존 프로젝트 이어서</small></label><button id="shareProjectButton" type="button"><span>↗</span><b>파일 공유</b><small>지원 기기에서 공유 창</small></button></div>
+          </div>
+          <aside class="paper-card privacy-card"><span aria-hidden="true">◎</span><div><h3>공유 전 개인정보 점검</h3><p>학생 이름·학번·연락처는 넣지 마세요. 이 도구의 기본 말 이름은 번호만 사용합니다.</p></div></aside>
+        </div>
+        <div class="print-section">
+          <div><p class="eyebrow">PRINT KIT</p><h3>종이 제작 꾸러미</h3></div>
+          <div class="print-grid"><button type="button" data-print="board"><span>01</span><b>보드</b><small>칸과 연결 구조</small></button><button type="button" data-print="cards"><span>02</span><b>문제 카드</b><small>잘라 쓰는 카드 덱</small></button><button type="button" data-print="rules"><span>03</span><b>규칙서</b><small>구조화된 게임 규칙</small></button><button type="button" data-print="answers"><span>04</span><b>정답·해설지</b><small>교사용 카드 풀이</small></button><button type="button" data-print="all"><span>ALL</span><b>전체 인쇄</b><small>한 번에 모두</small></button></div>
+        </div>
+        <div class="final-check paper-card"><div><span id="finalCheckIcon">!</span><div><p class="eyebrow">FINAL CHECK</p><h3 id="finalCheckTitle">조금 더 다듬어 보세요.</h3><p id="finalCheckText"></p></div></div><button class="button button-dark" data-next="rules" id="fixIssuesButton" type="button">검사 결과 보기</button></div>
+        <div class="panel-footer"><button class="button button-ghost prev-step" data-next="play" type="button">← 플레이 테스트</button><span></span></div>
+      </section>
+    </main>
+
+    <div class="manual-modal" id="manualModal" hidden>
+      <div class="manual-backdrop" data-manual-close></div>
+      <section class="manual-dialog" role="dialog" aria-modal="true" aria-labelledby="manualTitle" tabindex="-1">
+        <header>
+          <div><p class="eyebrow">CLASS MANUAL</p><h2 id="manualTitle">미적분 보드게임 제작기 설명서</h2><p>4차시 모둠 프로젝트를 위한 교사·학생 공용 안내</p></div>
+          <button type="button" data-manual-close aria-label="설명서 닫기">×</button>
+        </header>
+        <div class="manual-body">
+          <section><span>01</span><div><h3>수업 목표</h3><p>다항함수의 미분·적분 개념을 문제로만 나열하지 않고 이동 경로, 점수, 보상과 선택이 연결된 게임 시스템으로 재구성합니다. 다른 모둠이 규칙만 읽고도 플레이할 수 있는 완성도를 목표로 합니다.</p></div></section>
+          <section><span>02</span><div><h3>권장 4차시 흐름</h3><ol><li><b>1차시</b> 핵심 재미, 역할, 사용할 미적분 주제 정하기</li><li><b>2차시</b> 보드·카드·규칙의 첫 버전 만들기</li><li><b>3차시</b> 실물 재료 제작과 반복 플레이 테스트</li><li><b>4차시</b> 오류 수정, 인쇄·완성, 동료 플레이와 피드백</li></ol></div></section>
+          <section><span>03</span><div><h3>학생 제작 순서</h3><p>기획 → 보드 만들기 → 카드/문제 만들기 → 규칙 정리 → 플레이 테스트 → 인쇄/공유 순서로 진행합니다. 내용이 입력된 카드에서 최소 5개 미적분 하위 주제를 사용해야 합니다.</p></div></section>
+          <section><span>04</span><div><h3>검사기와 자동 판정의 범위</h3><p>도달 불가능한 칸, 정답 없는 문제, 빈 규칙과 점수 불균형을 보조 점검합니다. 객관식·단답형은 등록 문자열과 정확히 같은지만 비교하며, 식의 동치·설명형 답·사용자 승리 규칙은 모둠 또는 교사가 직접 판정합니다.</p></div></section>
+          <section><span>05</span><div><h3>완성 전 확인</h3><ul><li>규칙만 읽은 다른 모둠도 질문 없이 시작할 수 있는가?</li><li>어려운 문제의 점수와 우회 경로의 이득이 균형적인가?</li><li>수학적 내용·흥미·재료 완성도를 각각 점검했는가?</li><li>공유 JSON에 이름·학번 같은 개인정보가 없는가?</li></ul></div></section>
+        </div>
+        <footer><button class="button button-accent" type="button" data-manual-close>설명서 닫고 만들기</button></footer>
+      </section>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <section class="print-root" id="printRoot" aria-hidden="true"></section>
+  </body>
+</html>

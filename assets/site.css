@@ -2079,6 +2079,86 @@ body.is-modal-open {
   background: #1d2435;
 }
 
+.card-calculus-board-maker .tool-visual {
+  background-color: #e9e2d4;
+  background-image: radial-gradient(#bcb2a1 1px, transparent 1px);
+  background-size: 15px 15px;
+}
+
+.calculus-board-preview {
+  position: relative;
+  width: 248px;
+  height: 154px;
+  transform: rotate(-3deg);
+}
+
+.calculus-route {
+  position: absolute;
+  left: 0;
+  top: 53px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.calculus-route i {
+  position: relative;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 3px solid #183f39;
+  border-radius: 9px;
+  background: #ffcf5a;
+  color: #183f39;
+  box-shadow: 4px 4px 0 rgba(24, 63, 57, 0.2);
+  font-family: Georgia, serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.calculus-route i::after {
+  position: absolute;
+  right: -15px;
+  width: 12px;
+  border-top: 2px dashed #466c65;
+  content: "";
+}
+
+.calculus-route i:first-child,
+.calculus-route i:last-child {
+  width: 47px;
+  color: white;
+  background: #1e5b51;
+  font-family: inherit;
+  font-size: 8px;
+}
+
+.calculus-route i:last-child { background: #e86147; }
+.calculus-route i:last-child::after { display: none; }
+.calculus-route i:nth-child(3) { background: #79d3b2; }
+
+.calculus-card-preview {
+  position: absolute;
+  right: 23px;
+  top: 0;
+  width: 53px;
+  height: 70px;
+  padding: 8px;
+  display: grid;
+  place-items: center;
+  border: 3px solid #183f39;
+  border-radius: 7px;
+  background: white;
+  box-shadow: 5px 6px 0 #183f39;
+  transform: rotate(10deg);
+}
+
+.calculus-card-preview b { color: #e86147; font-family: Georgia, serif; font-size: 29px; }
+.calculus-card-preview small { color: #183f39; font-size: 6px; font-weight: 900; letter-spacing: .12em; }
+.calculus-board-preview > strong { position: absolute; left: 18px; bottom: 2px; padding: 5px 8px; color: white; background: #183f39; border-radius: 4px; font-size: 8px; letter-spacing: .09em; }
+
 .card-pi-day .tool-visual {
   background-color: #fff9ec;
   background-image: radial-gradient(rgba(36, 22, 79, 0.18) 1px, transparent 1px);
