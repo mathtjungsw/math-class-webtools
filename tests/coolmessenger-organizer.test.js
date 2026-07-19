@@ -11,6 +11,11 @@ const context = { console, Date, Intl };
 vm.createContext(context);
 vm.runInContext(parserOnly, context);
 
+test('unfinished filter is the default view', () => {
+  assert.match(script, /filter:'open'/);
+  assert.match(html, /class="filter active" data-filter="open"/);
+});
+
 test('an optional fixture delimiter is accepted but not required', () => {
   const input = `쿨메신저 메시지 실제 내용\n구분은 시작할 때 '로\n\n'\n[교무부]\n오늘 오후까지 복무 신청을 올려주세요.\n\n'\n평가부에서 안내드립니다.\n성적표를 확인해 주세요.`;
   const result = context.parse(input);
