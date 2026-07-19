@@ -1,0 +1,20 @@
+(function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.FoldGeometry=api})(typeof globalThis!=='undefined'?globalThis:this,function(){
+  const EPS=1e-7,MERGE_EPS=1e-4;
+  const sq=(n)=>n*n;
+  function line(a,b,c,id=''){const m=Math.hypot(a,b);if(m<EPS)throw new Error('접기선의 두 점이 같을 수 없습니다.');return{a:a/m,b:b/m,c:c/m,id}}
+  function lineThrough(p,q,id='free'){return line(q.y-p.y,p.x-q.x,-((q.y-p.y)*p.x+(p.x-q.x)*p.y),id)}
+  function signed(p,l){return l.a*p.x+l.b*p.y+l.c}
+  function reflectPoint(p,l){const d=signed(p,l);return{x:p.x-2*d*l.a,y:p.y-2*d*l.b}}
+  function clipPolygon(poly,l,keep=1){const out=[];for(let i=0;i<poly.length;i++){const p=poly[i],q=poly[(i+1)%poly.length],dp=signed(p,l)*keep,dq=signed(q,l)*keep,ip=dp>=-EPS,iq=dq>=-EPS;if(ip)out.push({...p});if(ip!==iq){const t=dp/(dp-dq);out.push({x:p.x+(q.x-p.x)*t,y:p.y+(q.y-p.y)*t})}}return out}
+  function pointInPolygon(p,poly){let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if(Math.abs((b.x-a.x)*(p.y-a.y)-(b.y-a.y)*(p.x-a.x))<EPS&&p.x>=Math.min(a.x,b.x)-EPS&&p.x<=Math.max(a.x,b.x)+EPS&&p.y>=Math.min(a.y,b.y)-EPS&&p.y<=Math.max(a.y,b.y)+EPS)return true;const hit=(a.y>p.y)!==(b.y>p.y)&&p.x<(b.x-a.x)*(p.y-a.y)/(b.y-a.y)+a.x;if(hit)inside=!inside}return inside}
+  function distanceToSegment(p,a,b){const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy||1)));return Math.hypot(p.x-a.x-t*dx,p.y-a.y-t*dy)}
+  function circleInsidePolygon(p,r,poly){return pointInPolygon(p,poly)&&poly.every((a,i)=>distanceToSegment(p,a,poly[(i+1)%poly.length])>=r-EPS)}
+  function mergePoints(points,eps=MERGE_EPS){const out=[];points.forEach(p=>{const found=out.find(q=>sq(q.x-p.x)+sq(q.y-p.y)<=eps*eps);if(found){found.sources=[...new Set([...(found.sources||[]),...(p.sources||[])])]}else out.push({...p,sources:[...(p.sources||[])]})});return out}
+  function unfoldPoints(seed,folds,steps=folds.length){let pts=seed.map((p,i)=>({...p,sources:p.sources||['원본 '+(i+1)]}));const start=Math.max(0,folds.length-steps);for(let i=folds.length-1;i>=start;i--){const l=folds[i].line;pts=mergePoints(pts.concat(pts.map(p=>({...reflectPoint(p,l),sources:[...(p.sources||[]),'접기 '+(i+1)]}))))}return pts.filter(p=>p.x>=-EPS&&p.x<=1+EPS&&p.y>=-EPS&&p.y<=1+EPS)}
+  function clipSegmentPolygon(a,b,poly){let t0=0,t1=1;for(let i=0;i<poly.length;i++){const p=poly[i],q=poly[(i+1)%poly.length],ex=q.x-p.x,ey=q.y-p.y;const nx=-ey,ny=ex,c=-(nx*p.x+ny*p.y);const f0=nx*a.x+ny*a.y+c,f1=nx*b.x+ny*b.y+c;const d=f1-f0;if(Math.abs(d)<EPS){if(f0<-EPS)return null;continue}const t=-f0/d;if(d>0)t0=Math.max(t0,t);else t1=Math.min(t1,t);if(t0>t1+EPS)return null}return[{x:a.x+(b.x-a.x)*t0,y:a.y+(b.y-a.y)*t0},{x:a.x+(b.x-a.x)*t1,y:a.y+(b.y-a.y)*t1}]}
+  function unfoldSegments(seed,folds,steps=folds.length){let segs=seed.map((s,i)=>({a:{...s.a},b:{...s.b},generation:0,id:i}));const start=Math.max(0,folds.length-steps);for(let i=folds.length-1;i>=start;i--){const l=folds[i].line;segs=segs.concat(segs.map(s=>({a:reflectPoint(s.a,l),b:reflectPoint(s.b,l),generation:folds.length-i,id:s.id}))) }return segs.map(s=>{const c=clipSegmentPolygon(s.a,s.b,[{x:0,y:0},{x:1,y:0},{x:1,y:1},{x:0,y:1}]);return c?{...s,a:c[0],b:c[1]}:null}).filter(Boolean)}
+  const presets={vertical:line(1,0,-.5,'세로 중앙선'),horizontal:line(0,1,-.5,'가로 중앙선'),diagDown:line(1,-1,0,'대각선 ↘'),diagUp:line(1,1,-1,'대각선 ↗'),gridX25:line(1,0,-.25,'세로 1/4선'),gridX75:line(1,0,-.75,'세로 3/4선'),gridY25:line(0,1,-.25,'가로 1/4선'),gridY75:line(0,1,-.75,'가로 3/4선')};
+  function applyFold(poly,l,keep){const next=clipPolygon(poly,l,keep);if(next.length<3)throw new Error('종이가 남지 않는 접기입니다.');return next}
+  function centroid(poly){return poly.reduce((s,p)=>({x:s.x+p.x/poly.length,y:s.y+p.y/poly.length}),{x:0,y:0})}
+  return{EPS,MERGE_EPS,line,lineThrough,signed,reflectPoint,clipPolygon,pointInPolygon,circleInsidePolygon,mergePoints,unfoldPoints,clipSegmentPolygon,unfoldSegments,presets,applyFold,centroid};
+});
