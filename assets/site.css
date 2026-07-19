@@ -2028,6 +2028,82 @@ body.is-modal-open {
   letter-spacing: 0.08em;
 }
 
+.card-geometry-rhythm .tool-visual {
+  color: #ffc857;
+  background: #101a2f;
+}
+
+.rhythm-preview {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(85, 214, 177, .12), transparent 42%),
+    linear-gradient(135deg, rgba(255,255,255,.035), transparent 55%);
+}
+
+.rhythm-orbit {
+  width: 146px;
+  height: 146px;
+  position: absolute;
+  left: 82px;
+  top: 25px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+}
+
+.rhythm-orbit i {
+  width: 11px;
+  height: 11px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border: 2px solid #101a2f;
+  border-radius: 50%;
+  background: currentColor;
+  transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-73px);
+}
+
+.orbit-three { color: #ff715b; }
+.orbit-four { color: #4d9de0; transform: rotate(15deg); }
+.orbit-three i:nth-child(1), .orbit-four i:nth-child(1) { --angle: 0deg; }
+.orbit-three i:nth-child(2) { --angle: 120deg; }
+.orbit-three i:nth-child(3) { --angle: 240deg; }
+.orbit-four i:nth-child(2) { --angle: 90deg; }
+.orbit-four i:nth-child(3) { --angle: 180deg; }
+.orbit-four i:nth-child(4) { --angle: 270deg; }
+
+.rhythm-ray {
+  width: 92px;
+  height: 4px;
+  position: absolute;
+  left: 155px;
+  top: 97px;
+  border-radius: 999px;
+  background: #ffc857;
+  box-shadow: 0 0 14px rgba(255,200,87,.55);
+  transform: rotate(-34deg);
+  transform-origin: left center;
+}
+
+.rhythm-preview strong {
+  position: absolute;
+  right: 26px;
+  bottom: 35px;
+  color: white;
+  font: 750 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.rhythm-preview small {
+  position: absolute;
+  right: 26px;
+  bottom: 18px;
+  color: #55d6b1;
+  font: 800 8px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .16em;
+}
+
 .card-school-hub .tool-visual { background: #eef7ff; }
 .card-school-hub .school-window { fill: white; stroke: var(--navy); stroke-width: 5; }
 .card-school-hub .school-window-line { fill: none; stroke: #b9c7dc; stroke-linecap: round; stroke-width: 7; }

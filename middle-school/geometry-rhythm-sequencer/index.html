@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="정다각형의 꼭짓점과 회전하는 반직선으로 리듬을 만들며 최대공약수·최소공배수·주기를 탐구하는 수업용 웹툴" />
+    <meta name="theme-color" content="#101a2f" />
+    <title>도형 리듬 시퀀서</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#sequencer">시퀀서로 바로 가기</a>
+    <header class="topbar">
+      <a class="back-link" href="../../index.html" aria-label="수학 수업 웹툴 모음으로 돌아가기">← 웹툴 모음</a>
+      <div class="brand"><span aria-hidden="true"></span> CT2 · GEOMETRY GROOVE</div>
+      <div class="header-actions">
+        <button id="guideButton" class="icon-button" type="button">? <span>설명서 보기</span></button>
+        <button id="muteButton" class="icon-button" type="button" aria-pressed="false" title="음소거 (M)">🔊 <span>소리 켬</span></button>
+        <button id="fullscreenButton" class="icon-button" type="button">⛶ <span>전체화면</span></button>
+      </div>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="pageTitle">
+        <div>
+          <p class="eyebrow">도형을 보고 · 시간을 계산하고 · 리듬을 듣는 실험</p>
+          <h1 id="pageTitle">도형 리듬 <em>시퀀서</em></h1>
+          <p>같은 원 위의 정다각형을 겹치고 반직선을 돌려 보세요. 꼭짓점이 만나는 순간이 박자가 되고, 최대공약수와 최소공배수가 귀에 들리는 규칙이 됩니다.</p>
+        </div>
+        <div class="assumption-card">
+          <strong>기본 가정</strong>
+          <p>모든 층은 <b>같은 회전 속도</b>로 돌고, 위상 0°이면 <b>같은 시작 방향</b>에서 출발합니다. 위상 이동이 있으면 공통 타격은 별도로 계산합니다.</p>
+        </div>
+      </section>
+
+      <nav class="mode-tabs" aria-label="활동 모드" role="tablist">
+        <button role="tab" aria-selected="true" aria-controls="learnPanel" id="learnTab" data-mode="learn"><span>01</span> 학습</button>
+        <button role="tab" aria-selected="false" aria-controls="createPanel" id="createTab" data-mode="create" tabindex="-1"><span>02</span> 합주·창작</button>
+        <button role="tab" aria-selected="false" aria-controls="gamePanel" id="gameTab" data-mode="game" tabindex="-1"><span>03</span> 모둠 게임</button>
+        <button role="tab" aria-selected="false" aria-controls="teacherPanel" id="teacherTab" data-mode="teacher" tabindex="-1"><span>04</span> 교사 설정</button>
+      </nav>
+
+      <section class="transport" aria-label="재생 제어">
+        <div class="transport-buttons">
+          <button id="playButton" class="play-button" type="button" aria-label="재생 또는 일시정지 (Space)"><span aria-hidden="true">▶</span> 시작</button>
+          <button id="resetButton" type="button"><span aria-hidden="true">↺</span> 처음으로</button>
+          <button id="stepBackButton" type="button" aria-label="공통 격자 한 칸 뒤로 (왼쪽 화살표)">−1칸</button>
+          <button id="stepButton" type="button" aria-label="공통 격자 한 칸 앞으로 (오른쪽 화살표)">+1칸</button>
+        </div>
+        <label class="speed-control" for="bpmInput">
+          <span>속도 <output id="bpmOutput">84 BPM</output></span>
+          <input id="bpmInput" type="range" min="30" max="240" value="84" />
+          <small id="revolutionOutput">한 바퀴 2.86초 (4박)</small>
+        </label>
+        <label class="volume-control" for="masterVolume">
+          <span>전체 음량 <output id="masterVolumeOutput">65%</output></span>
+          <input id="masterVolume" type="range" min="0" max="100" value="65" />
+        </label>
+        <div class="clock-readout" aria-live="polite">
+          <span>현재 위치</span><strong id="clockPosition">0.000 바퀴</strong><small id="gridPosition">격자 0 / 12</small>
+        </div>
+      </section>
+
+      <section class="workspace" id="sequencer">
+        <div class="visual-stage">
+          <div class="stage-heading">
+            <div><p>ROTATING RAY</p><h2>원형 시퀀서</h2></div>
+            <div id="coincidenceBadge" class="coincidence-badge" aria-live="assertive"><span></span> 합동 타격</div>
+          </div>
+          <div class="canvas-wrap">
+            <canvas id="rhythmCanvas" width="900" height="900" aria-label="겹쳐진 정다각형과 회전 반직선"></canvas>
+            <div class="center-readout" aria-hidden="true"><b id="centerBeat">0</b><span>GRID</span></div>
+          </div>
+          <div id="timeline" class="timeline" aria-label="한 바퀴 공통 시간 격자"></div>
+          <p class="visual-help">밝은 점은 소리 나는 꼭짓점, 빈 점은 쉼표입니다. 굵은 테두리는 악센트입니다.</p>
+        </div>
+
+        <aside class="layer-console" aria-labelledby="layerTitle">
+          <div class="console-heading">
+            <div><p>RHYTHM LAYERS</p><h2 id="layerTitle">리듬 층</h2></div>
+            <button id="addLayerButton" type="button">＋ 층 추가</button>
+          </div>
+          <div id="layerList" class="layer-list"></div>
+          <p class="console-note">2~4개 층을 겹칠 수 있습니다. 꼭짓점 버튼은 <b>소리 → 악센트 → 쉼표</b> 순으로 바뀝니다.</p>
+        </aside>
+      </section>
+
+      <section class="math-lab" aria-labelledby="mathTitle">
+        <div class="math-heading">
+          <div><p>THE MATH UNDER THE BEAT</p><h2 id="mathTitle">박자 아래의 수학</h2></div>
+          <div class="pair-selectors">
+            <label>비교 A<select id="mathLayerA"></select></label>
+            <span>×</span>
+            <label>비교 B<select id="mathLayerB"></select></label>
+          </div>
+        </div>
+        <div class="math-summary">
+          <article><span>공통 시간 격자</span><strong id="lcmValue">12칸</strong><p id="lcmFormula">lcm(3, 4) = 12</p></article>
+          <article><span>한 바퀴의 공통 방향</span><strong id="gcdValue">1개</strong><p id="gcdFormula">gcd(3, 4) = 1</p></article>
+          <article><span>리듬 패턴 최소 반복 이동</span><strong id="patternValue">1바퀴</strong><p id="patternFormula">1 ÷ gcd(3, 4)</p></article>
+        </div>
+        <div class="math-detail-grid">
+          <article class="factor-card">
+            <h3>소인수분해로 보기</h3>
+            <div id="factorization"></div>
+            <p>최대공약수는 공통 소인수의 작은 지수, 최소공배수는 모든 소인수의 큰 지수를 사용합니다.</p>
+          </article>
+          <article class="multiples-card">
+            <h3>배수표로 보기</h3>
+            <div id="multiplesTable"></div>
+          </article>
+          <article class="interval-card">
+            <h3>한 바퀴의 타격 간격</h3>
+            <div id="intervalInfo"></div>
+          </article>
+          <article class="phase-card">
+            <h3>위상과 공통 위치</h3>
+            <div id="phaseInfo"></div>
+          </article>
+        </div>
+        <div class="term-guide">
+          <h3>세 용어를 구분해요</h3>
+          <dl>
+            <div><dt>공통 시간 격자</dt><dd>두 리듬의 모든 타격을 정수 칸에 놓기 위한 최소 격자입니다. 한 바퀴를 <b>lcm(n, m)</b>칸으로 나눕니다.</dd></div>
+            <div><dt>공통 꼭짓점 방향</dt><dd>두 도형의 꼭짓점이 실제로 겹치는 방향입니다. 위상이 맞으면 한 바퀴에 <b>gcd(n, m)</b>개입니다.</dd></div>
+            <div><dt>패턴의 최소 반복 이동</dt><dd>모든 꼭짓점을 소리 낼 때 두 층의 타격 배열이 같은 모습으로 되풀이되는 최소 이동은 <b>1/gcd(n, m)</b>바퀴입니다. 이름 붙인 시작 꼭짓점과 반직선까지 완전히 돌아오는 것은 1바퀴입니다.</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="mode-panel" id="learnPanel" role="tabpanel" aria-labelledby="learnTab">
+        <div class="panel-heading"><div><p>PREDICT → TEST → EXPLAIN</p><h2>먼저 예상하고, 회전으로 검증해요</h2></div><button id="printButton" type="button">🖨 탐구 기록 인쇄</button></div>
+        <div class="mission-shell">
+          <aside class="mission-list" id="missionList" aria-label="단계별 미션"></aside>
+          <article class="prediction-card">
+            <p class="mission-label" id="missionLabel">미션 1</p>
+            <h3 id="missionTitle">3과 4는 언제 함께 울릴까요?</h3>
+            <p id="missionPrompt"></p>
+            <div class="prediction-inputs">
+              <label>다음 동시 타격 위치<input id="predictionTime" type="text" inputmode="decimal" placeholder="예: 1바퀴 또는 12칸" /></label>
+              <label>한 바퀴 공통 타격 횟수<input id="predictionCount" type="number" min="0" max="32" placeholder="개수" /></label>
+            </div>
+            <textarea id="predictionReason" rows="3" placeholder="왜 그렇게 예상했는지 적어 보세요."></textarea>
+            <div class="button-row"><button id="checkPrediction" class="primary" type="button">예상 제출</button><button id="revealMission" type="button">시간표와 해석 보기</button></div>
+            <div id="predictionFeedback" class="feedback" aria-live="polite"></div>
+            <div id="missionExplanation" class="mission-explanation" hidden></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="mode-panel" id="createPanel" role="tabpanel" aria-labelledby="createTab" hidden>
+        <div class="panel-heading"><div><p>MAKE · SAVE · SHARE</p><h2>폴리리듬을 만들고 나눠요</h2></div></div>
+        <div class="create-grid">
+          <article><h3>패턴 파일</h3><p>현재 층·꼭짓점·악센트·위상·속도를 JSON으로 저장하거나 다시 불러옵니다.</p><div class="button-row"><button id="savePatternButton" class="primary" type="button">JSON 저장</button><label class="file-button">JSON 불러오기<input id="loadPatternInput" type="file" accept="application/json,.json" /></label></div></article>
+          <article><h3>짧은 공유 문자열</h3><p>인터넷 없이도 문자열을 복사해 같은 패턴을 열 수 있습니다.</p><textarea id="shareCode" rows="3" placeholder="공유 문자열이 여기에 표시됩니다."></textarea><div class="button-row"><button id="makeShareButton" class="primary" type="button">문자열 만들기</button><button id="loadShareButton" type="button">문자열 불러오기</button></div></article>
+          <article><h3>합주 아이디어</h3><ul><li>서로소인 5와 7로 긴 호흡 만들기</li><li>4와 8에서 배수 관계의 겹침 듣기</li><li>한 층을 30° 옮겨 공통 타격 사라지게 하기</li><li>강박만 악센트로 바꾸고 쉼표 넣기</li></ul></article>
+        </div>
+        <div id="createStatus" class="status-line" aria-live="polite"></div>
+      </section>
+
+      <section class="mode-panel" id="gamePanel" role="tabpanel" aria-labelledby="gameTab" hidden>
+        <div class="panel-heading"><div><p>TEAM CHALLENGE</p><h2>소리와 조건으로 두 수를 찾아요</h2></div><div class="scoreboard"><span>점수 <b id="gameScore">0</b></span><span>남은 시간 <b id="gameTimer">60</b>초</span></div></div>
+        <div class="game-grid">
+          <article class="game-control">
+            <label>게임 종류<select id="gameType"><option value="listen">들려주는 두 등분 수 맞히기</option><option value="target">목표 동시 타격 횟수 만들기</option><option value="condition">최대공약수·최소공배수 조건 맞히기</option></select></label>
+            <button id="newRoundButton" class="primary" type="button">새 라운드</button>
+            <button id="hearQuestionButton" type="button">▶ 문제 리듬 듣기</button>
+          </article>
+          <article class="game-question"><p id="gameRoundLabel">준비</p><h3 id="gameQuestion">새 라운드를 눌러 시작하세요.</h3><div class="game-answer"><label>첫 번째 수<input id="gameAnswerA" type="number" min="2" max="16" /></label><label>두 번째 수<input id="gameAnswerB" type="number" min="2" max="16" /></label><button id="submitGameAnswer" type="button">정답 확인</button></div><div id="gameFeedback" class="feedback" aria-live="polite"></div></article>
+          <article class="round-log"><h3>라운드 기록</h3><ol id="roundLog"></ol></article>
+        </div>
+      </section>
+
+      <section class="mode-panel" id="teacherPanel" role="tabpanel" aria-labelledby="teacherTab" hidden>
+        <div class="panel-heading"><div><p>TEACHER PRESET</p><h2>수업 조건을 미리 정해요</h2></div></div>
+        <div class="teacher-grid">
+          <label>허용 최소 수<input id="teacherMin" type="number" min="2" max="15" value="2" /></label>
+          <label>허용 최대 수<input id="teacherMax" type="number" min="3" max="32" value="16" /></label>
+          <label>목표 개념<select id="teacherConcept"><option value="gcd-lcm">최대공약수와 최소공배수</option><option value="coprime">서로소</option><option value="multiple">배수 관계</option><option value="phase">위상 차이</option></select></label>
+          <label>제한시간(초)<input id="teacherTime" type="number" min="15" max="600" value="60" /></label>
+          <label class="wide">미션 순서<input id="teacherMissions" type="text" value="3×4, 4×6, 6×8, 서로소" /></label>
+          <label class="wide">사용 음색<select id="teacherTimbres" multiple size="5"><option value="wood" selected>우드</option><option value="bell" selected>벨</option><option value="kick" selected>킥</option><option value="click" selected>클릭</option><option value="clap">클랩</option></select></label>
+        </div>
+        <div class="button-row"><button id="saveTeacherButton" class="primary" type="button">이 기기에 저장</button><button id="exportTeacherButton" type="button">프리셋 JSON 저장</button><label class="file-button">프리셋 불러오기<input id="importTeacherInput" type="file" accept="application/json,.json" /></label></div>
+        <div id="teacherStatus" class="status-line" aria-live="polite"></div>
+      </section>
+
+      <section class="print-record" aria-label="인쇄용 탐구 기록">
+        <h1>도형 리듬 시퀀서 · 탐구 기록</h1>
+        <p>이름 ____________  모둠 ____________  날짜 ____________</p>
+        <div id="printSummary"></div>
+        <h2>1. 나의 예상</h2><div class="write-lines"></div>
+        <h2>2. 관찰한 공통 타격 위치</h2><div class="write-lines"></div>
+        <h2>3. gcd와 lcm이 각각 뜻하는 것</h2><div class="write-lines tall"></div>
+        <h2>4. 만든 리듬의 특징과 느낌</h2><div class="write-lines tall"></div>
+      </section>
+    </main>
+
+    <dialog id="guideDialog" class="guide-dialog" aria-labelledby="guideTitle">
+      <button id="guideClose" class="dialog-close" type="button" aria-label="설명서 닫기">×</button>
+      <p class="eyebrow">HOW TO USE · TEACHER &amp; STUDENT</p>
+      <h2 id="guideTitle">도형 리듬 시퀀서 사용법</h2>
+      <p class="guide-lead">정다각형을 보는 경험, 시간표를 계산하는 경험, 실제 리듬을 듣는 경험을 한 화면에서 연결합니다.</p>
+      <ol>
+        <li><b>1</b><div><strong>두 등분 수를 고르고 먼저 예상하세요.</strong><p>학습 모드의 3×4, 4×6, 6×8, 5×7 미션에서 다음 동시 타격 위치와 한 바퀴 공통 타격 횟수를 적습니다.</p></div></li>
+        <li><b>2</b><div><strong>시작을 눌러 눈과 귀로 검증하세요.</strong><p>노란 반직선이 꼭짓점을 지날 때 점·선·시간 격자가 함께 밝아집니다. 두 층이 같은 순간에 울리면 ‘합동 타격’이 표시됩니다.</p></div></li>
+        <li><b>3</b><div><strong>세 수학 용어를 구분하세요.</strong><p>공통 시간 격자는 lcm(n,m)칸, 위상이 맞을 때 공통 방향은 gcd(n,m)개입니다. 모든 꼭짓점 리듬의 최소 반복 이동은 1/gcd(n,m)바퀴이며, 이름 붙인 시작 꼭짓점과 반직선까지 완전히 돌아오는 것은 1바퀴입니다.</p></div></li>
+        <li><b>4</b><div><strong>리듬을 바꾸어 창작하세요.</strong><p>꼭짓점 버튼을 누르면 소리→악센트→쉼표로 바뀝니다. 층을 4개까지 추가하고 위상·음색·음량·색상을 바꾸어 폴리리듬을 만드세요.</p></div></li>
+        <li><b>5</b><div><strong>패턴을 저장하고 공유하세요.</strong><p>합주·창작 모드에서 JSON 파일이나 짧은 공유 문자열로 패턴을 옮길 수 있습니다. 파일과 문자열은 외부 서버 없이 브라우저 안에서 처리됩니다.</p></div></li>
+        <li><b>6</b><div><strong>모둠 게임과 교사 설정을 활용하세요.</strong><p>두 등분 수 맞히기, 목표 gcd·lcm 만들기를 진행할 수 있습니다. 교사 설정에서 허용 숫자, 목표 개념, 제한시간, 음색과 미션 순서를 저장하세요.</p></div></li>
+      </ol>
+      <div class="guide-shortcuts"><span><kbd>Space</kbd> 시작·일시정지</span><span><kbd>←</kbd><kbd>→</kbd> 한 칸 이동</span><span><kbd>M</kbd> 음소거</span></div>
+    </dialog>
+
+    <footer><p>외부 음원·API 없이 브라우저에서 동작합니다. 소리는 첫 재생 조작 뒤 시작됩니다.</p><a href="../../index.html">수학 수업 웹툴 모음</a></footer>
+    <script src="./math.js"></script>
+    <script src="./audio-engine.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
