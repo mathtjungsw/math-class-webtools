@@ -744,6 +744,7 @@ h2 {
   color: #fff4d2;
   background: #173f35;
 }
+.card-fold-punch .tool-visual{background:#173f3a;overflow:hidden}.fold-punch-preview{position:relative;width:100%;height:100%;min-height:180px;background:radial-gradient(circle at 50% 48%,#f4e7c8 0 32%,transparent 33%)}.fold-punch-preview span{position:absolute;width:28px;height:28px;border-radius:50%;background:#ef7f4d;box-shadow:0 0 0 4px #fff9}.fold-punch-preview span:nth-child(1){left:31%;top:29%}.fold-punch-preview span:nth-child(2){right:31%;top:29%}.fold-punch-preview span:nth-child(3){left:31%;bottom:27%}.fold-punch-preview span:nth-child(4){right:31%;bottom:27%}.fold-punch-preview i{position:absolute;left:50%;top:18%;width:2px;height:64%;background:#2c8d84;transform:rotate(45deg);box-shadow:0 0 0 1px #fff5}.fold-punch-preview b{position:absolute;left:0;right:0;bottom:9px;text-align:center;color:#f4b45d;font:700 11px ui-monospace,monospace;letter-spacing:.12em}
 
 .tessellation-preview {
   width: 100%;
