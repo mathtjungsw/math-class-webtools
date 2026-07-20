@@ -16,6 +16,21 @@ test('unfinished filter is the default view', () => {
   assert.match(html, /class="filter active" data-filter="open"/);
 });
 
+test('calendar uses editable keyword and color fields', () => {
+  assert.equal(context.getCalendarDays(2026, 6).length, 42);
+  const item = context.withCalendarFields({ title: '평가계획서 제출 안내' }, 1);
+  assert.match(item.calendarKeyword, /평가계획서/);
+  assert.equal(item.calendarColor, '#376a94');
+  assert.match(html, /data-field="calendarKeyword"/);
+  assert.match(html, /data-field="calendarColor"/);
+});
+
+test('export file includes the complete cross-PC state', () => {
+  assert.match(script, /version:4/);
+  assert.match(html, />내보내기</);
+  assert.match(html, />가져오기</);
+});
+
 test('an optional fixture delimiter is accepted but not required', () => {
   const input = `쿨메신저 메시지 실제 내용\n구분은 시작할 때 '로\n\n'\n[교무부]\n오늘 오후까지 복무 신청을 올려주세요.\n\n'\n평가부에서 안내드립니다.\n성적표를 확인해 주세요.`;
   const result = context.parse(input);
