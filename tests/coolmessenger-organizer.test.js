@@ -31,6 +31,15 @@ test('export file includes the complete cross-PC state', () => {
   assert.match(html, />가져오기</);
 });
 
+test('calendar and input panels have persistent visibility toggles', () => {
+  assert.match(html, /id="toggleInput"/);
+  assert.match(html, /id="toggleCalendar"/);
+  assert.match(script, /inputVisible:state\.inputVisible/);
+  assert.match(script, /calendarVisible:state\.calendarVisible/);
+  assert.match(script, /메시지 입력창 보이기/);
+  assert.match(script, /달력 보이기/);
+});
+
 test('an optional fixture delimiter is accepted but not required', () => {
   const input = `쿨메신저 메시지 실제 내용\n구분은 시작할 때 '로\n\n'\n[교무부]\n오늘 오후까지 복무 신청을 올려주세요.\n\n'\n평가부에서 안내드립니다.\n성적표를 확인해 주세요.`;
   const result = context.parse(input);
