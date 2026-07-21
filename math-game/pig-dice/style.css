@@ -28,6 +28,17 @@
   box-sizing: border-box;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 html {
   min-width: 320px;
   background: var(--cream);
@@ -487,6 +498,21 @@ p {
   margin-top: 19px;
 }
 
+.manual-score-note {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 10px 0 -7px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.manual-score-note span {
+  color: var(--blue);
+  font-size: 16px;
+}
+
 .player-card {
   position: relative;
   min-width: 0;
@@ -535,6 +561,40 @@ p {
   margin-left: 3px;
   color: var(--muted);
   font-weight: 800;
+}
+
+.manual-score-field {
+  display: flex;
+  align-items: baseline;
+  width: fit-content;
+}
+
+.manual-score-input {
+  width: 82px;
+  min-width: 0;
+  padding: 2px 5px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 27px;
+  font-weight: 850;
+  line-height: 1.15;
+  transition: 150ms ease;
+}
+
+.manual-score-input:hover:not(:disabled) {
+  border-color: var(--line);
+  background: white;
+}
+
+.manual-score-input:focus {
+  border-color: var(--blue);
+  background: white;
+}
+
+.manual-score-input:disabled {
+  opacity: 0.65;
 }
 
 .active-label {
@@ -722,6 +782,29 @@ p {
   grid-row: span 2;
   color: var(--pink-dark);
   font-size: 27px;
+}
+
+.turn-score-editor {
+  display: flex;
+  align-items: baseline;
+}
+
+.turn-score-editor input {
+  width: 94px;
+  padding: 2px 6px;
+  border: 1px solid rgba(201, 54, 85, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: 1.15;
+  text-align: right;
+}
+
+.turn-score-editor input:focus {
+  border-color: var(--pink-dark);
+  background: white;
 }
 
 .turn-score-card small {
@@ -1088,7 +1171,7 @@ dialog::backdrop {
 
 .winner-actions {
   display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
+  grid-template-columns: 1.2fr 1fr 1fr;
   gap: 9px;
 }
 

@@ -108,6 +108,7 @@
             </div>
             <div class="round-badge"><span>차례</span><strong id="turnNumber">1</strong></div>
           </div>
+          <p class="manual-score-note"><span aria-hidden="true">✎</span> 점수 칸을 눌러 직접 수정할 수 있어요.</p>
           <div class="scoreboard" id="scoreboard"></div>
         </section>
 
@@ -139,7 +140,7 @@
 
             <div class="turn-score-card">
               <span>이번 턴 점수</span>
-              <strong><span id="turnScore">0</span>점</strong>
+              <strong class="turn-score-editor"><input id="turnScore" type="number" min="0" max="9999" step="1" value="0" inputmode="numeric" aria-label="이번 턴 점수 직접 수정" />점</strong>
               <small>1이 나오면 이번 턴 점수는 사라져요.</small>
             </div>
 
@@ -554,6 +555,7 @@
               <div><p class="eyebrow">변형 게임 점수판</p><h2 id="variantScoreTitle">먼저 <strong id="variantTargetDisplay">50점</strong>에 도전!</h2></div>
               <div class="round-badge"><span>차례</span><strong id="variantTurnNumber">1</strong></div>
             </div>
+            <p class="manual-score-note"><span aria-hidden="true">✎</span> 점수 칸을 눌러 직접 수정할 수 있어요.</p>
             <div class="scoreboard" id="variantScoreboard"></div>
           </section>
 
@@ -568,7 +570,7 @@
                 <p class="status-message" id="variantStatusMessage" aria-live="polite">주사위를 던져 변형 규칙을 체험하세요.</p>
               </div>
               <div class="turn-score-card variant-turn-score">
-                <span>이번 턴 점수</span><strong><span id="variantTurnScore">0</span>점</strong>
+                <span>이번 턴 점수</span><strong class="turn-score-editor"><input id="variantTurnScore" type="number" min="0" max="9999" step="1" value="0" inputmode="numeric" aria-label="변형 게임 이번 턴 점수 직접 수정" />점</strong>
                 <small id="variantScoreHint">실패 조건이 나오면 이번 턴 점수는 사라집니다.</small>
               </div>
               <div class="play-actions">
@@ -620,6 +622,7 @@
         <p id="winnerSummary">목표 점수에 도달했습니다.</p>
         <div class="winner-actions">
           <button class="primary-action" id="rematchButton" type="button">같은 설정으로 다시</button>
+          <button class="hold-button" id="correctWinnerScoreButton" type="button">점수 수정하기</button>
           <button class="hold-button" id="changeSettingsButton" type="button">설정 바꾸기</button>
         </div>
       </div>
@@ -633,6 +636,7 @@
         <p id="variantWinnerSummary">목표 점수에 도달했습니다.</p>
         <div class="winner-actions">
           <button class="primary-action" id="variantRematchButton" type="button">같은 규칙으로 다시</button>
+          <button class="hold-button" id="correctVariantWinnerScoreButton" type="button">점수 수정하기</button>
           <button class="hold-button" id="variantChangeSettingsButton" type="button">규칙 바꾸기</button>
         </div>
       </div>

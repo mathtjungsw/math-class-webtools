@@ -45,6 +45,7 @@ const elements = {
   winnerName: $("#winnerName"),
   winnerSummary: $("#winnerSummary"),
   rematchButton: $("#rematchButton"),
+  correctWinnerScoreButton: $("#correctWinnerScoreButton"),
   changeSettingsButton: $("#changeSettingsButton"),
   riskScoreSlider: $("#riskScoreSlider"),
   riskScoreValue: $("#riskScoreValue"),
@@ -105,6 +106,7 @@ const elements = {
   variantWinnerName: $("#variantWinnerName"),
   variantWinnerSummary: $("#variantWinnerSummary"),
   variantRematchButton: $("#variantRematchButton"),
+  correctVariantWinnerScoreButton: $("#correctVariantWinnerScoreButton"),
   variantChangeSettingsButton: $("#variantChangeSettingsButton"),
 };
 
@@ -121,6 +123,11 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function normalizeManualScore(value, fallback = 0) {
+  const score = Number(value);
+  return Number.isFinite(score) ? Math.min(9999, Math.max(0, Math.round(score))) : fallback;
 }
 
 function currentNameValues() {
@@ -192,7 +199,8 @@ function renderGame() {
   elements.turnNumber.textContent = state.turnNumber;
   elements.currentPlayerName.textContent = currentPlayer.name;
   elements.currentPlayerName.closest(".turn-banner").style.setProperty("--current-color", currentPlayer.color);
-  elements.turnScore.textContent = state.turnScore;
+  elements.turnScore.value = state.turnScore;
+  elements.turnScore.disabled = state.busy || state.gameOver;
   elements.die.dataset.value = state.dieValue;
   elements.die.setAttribute("aria-label", `주사위 눈 ${state.dieValue}`);
   elements.statusMessage.textContent = state.status.text;
@@ -204,7 +212,11 @@ function renderGame() {
     return `
       <article class="player-card ${isActive ? "active" : ""} ${isWinner ? "winner" : ""}" style="--player-color: ${player.color}">
         <p title="${escapeHtml(player.name)}">${escapeHtml(player.name)}</p>
-        <strong>${player.score}</strong><small>점</small>
+        <label class="manual-score-field">
+          <span class="sr-only">${escapeHtml(player.name)} 누적 점수</span>
+          <input class="manual-score-input" type="number" min="0" max="9999" step="1" inputmode="numeric" value="${player.score}" data-player-index="${index}" aria-label="${escapeHtml(player.name)} 누적 점수 직접 수정" ${state.busy ? "disabled" : ""} />
+          <small>점</small>
+        </label>
         ${isActive ? '<span class="active-label">진행 중</span>' : ""}
         ${isWinner ? '<span class="active-label">우승</span>' : ""}
       </article>
@@ -248,6 +260,14 @@ function renderHistory() {
   }
 
   elements.historyList.innerHTML = state.history.slice(0, 12).map((item) => {
+    if (item.type === "edit") {
+      return `
+        <li>
+          <span class="history-value edit">✎</span>
+          <span><strong>${escapeHtml(item.player)}</strong> · ${item.label} ${item.before}점 → ${item.after}점</span>
+        </li>
+      `;
+    }
     if (item.type === "hold") {
       return `
         <li>
@@ -268,6 +288,66 @@ function renderHistory() {
       </li>
     `;
   }).join("");
+}
+
+function updateBasePlayerScore(input) {
+  if (!state || state.busy) return;
+  const index = Number(input.dataset.playerIndex);
+  const player = state.players[index];
+  if (!player) return;
+  const before = normalizeManualScore(input.dataset.originalScore, player.score);
+  const after = normalizeManualScore(input.value, before);
+  delete input.dataset.originalScore;
+  if (before === after) {
+    input.value = after;
+    return;
+  }
+  player.score = after;
+  state.history.unshift({ type: "edit", player: player.name, label: "누적 점수", before, after });
+  state.status = { text: `${player.name}의 누적 점수를 ${after}점으로 수정했습니다.`, tone: "gain" };
+  state.gameOver = false;
+  state.busy = false;
+  renderGame();
+  if (after >= state.target) {
+    state.gameOver = true;
+    state.status = { text: `${player.name} 승리!`, tone: "gain" };
+    renderGame();
+    elements.winnerName.textContent = player.name;
+    elements.winnerSummary.textContent = `누적 점수를 ${after}점으로 수정하여 목표에 도달했습니다.`;
+    window.setTimeout(() => elements.winnerDialog.showModal(), 150);
+  }
+}
+
+function updateBaseTurnScore() {
+  if (!state || state.busy || state.gameOver) return;
+  const before = normalizeManualScore(elements.turnScore.dataset.originalScore, state.turnScore);
+  const after = normalizeManualScore(elements.turnScore.value, before);
+  delete elements.turnScore.dataset.originalScore;
+  if (before === after) {
+    elements.turnScore.value = after;
+    return;
+  }
+  const player = state.players[state.currentIndex];
+  state.turnScore = after;
+  state.history.unshift({ type: "edit", player: player.name, label: "이번 턴 점수", before, after });
+  state.status = { text: `${player.name}의 이번 턴 점수를 ${after}점으로 수정했습니다.`, tone: "gain" };
+  renderGame();
+}
+
+function syncBasePlayerScoreInput(input) {
+  if (!state || state.busy) return;
+  const player = state.players[Number(input.dataset.playerIndex)];
+  if (!player) return;
+  if (input.dataset.originalScore === undefined) input.dataset.originalScore = player.score;
+  player.score = normalizeManualScore(input.value, player.score);
+}
+
+function syncBaseTurnScoreInput() {
+  if (!state || state.busy || state.gameOver) return;
+  if (elements.turnScore.dataset.originalScore === undefined) elements.turnScore.dataset.originalScore = state.turnScore;
+  state.turnScore = normalizeManualScore(elements.turnScore.value, state.turnScore);
+  elements.holdButton.disabled = state.turnScore === 0;
+  renderMathInsight();
 }
 
 function setRandomDieFace() {
@@ -416,6 +496,14 @@ elements.shuffleNamesButton.addEventListener("click", () => {
 elements.startButton.addEventListener("click", () => initializeGame());
 elements.rollButton.addEventListener("click", rollDice);
 elements.holdButton.addEventListener("click", holdScore);
+elements.turnScore.addEventListener("input", syncBaseTurnScoreInput);
+elements.turnScore.addEventListener("change", updateBaseTurnScore);
+elements.scoreboard.addEventListener("input", (event) => {
+  if (event.target.matches(".manual-score-input")) syncBasePlayerScoreInput(event.target);
+});
+elements.scoreboard.addEventListener("change", (event) => {
+  if (event.target.matches(".manual-score-input")) updateBasePlayerScore(event.target);
+});
 elements.newGameButton.addEventListener("click", requestNewGame);
 elements.rulesButton.addEventListener("click", () => elements.rulesDialog.showModal());
 
@@ -424,6 +512,14 @@ elements.rematchButton.addEventListener("click", () => {
   elements.targetScore.value = state.target;
   elements.winnerDialog.close();
   initializeGame(names);
+});
+
+elements.correctWinnerScoreButton.addEventListener("click", () => {
+  elements.winnerDialog.close();
+  state.gameOver = false;
+  state.busy = false;
+  state.status = { text: "점수 칸을 눌러 올바른 점수로 수정해 주세요.", tone: "" };
+  renderGame();
 });
 
 elements.changeSettingsButton.addEventListener("click", returnToSetup);
@@ -624,6 +720,9 @@ function renderVariantHistory() {
   }
 
   elements.variantHistoryList.innerHTML = variantGameState.history.slice(0, 12).map((item) => {
+    if (item.type === "edit") {
+      return `<li><span class="history-value edit">✎</span><span><strong>${escapeHtml(item.player)}</strong> · ${item.label} ${item.before}점 → ${item.after}점</span></li>`;
+    }
     if (item.type === "hold") {
       return `<li><span class="history-value">✓</span><span><strong>${escapeHtml(item.player)}</strong> · ${item.points}점 저장, 총 ${item.total}점</span></li>`;
     }
@@ -647,7 +746,8 @@ function renderVariantGame() {
   elements.variantTurnNumber.textContent = variantGameState.turnNumber;
   elements.variantCurrentPlayer.textContent = currentPlayer.name;
   elements.variantCurrentPlayer.closest(".turn-banner").style.setProperty("--current-color", currentPlayer.color);
-  elements.variantTurnScore.textContent = variantGameState.turnScore;
+  elements.variantTurnScore.value = variantGameState.turnScore;
+  elements.variantTurnScore.disabled = variantGameState.busy || variantGameState.gameOver;
   elements.variantStatusMessage.textContent = variantGameState.status.text;
   elements.variantStatusMessage.className = `status-message ${variantGameState.status.tone}`.trim();
   elements.variantScoreHint.textContent = variantGameState.ruleKey === "two-one-double"
@@ -660,7 +760,11 @@ function renderVariantGame() {
     return `
       <article class="player-card ${active ? "active" : ""} ${winner ? "winner" : ""}" style="--player-color: ${player.color}">
         <p title="${escapeHtml(player.name)}">${escapeHtml(player.name)}</p>
-        <strong>${player.score}</strong><small>점</small>
+        <label class="manual-score-field">
+          <span class="sr-only">${escapeHtml(player.name)} 누적 점수</span>
+          <input class="manual-score-input" type="number" min="0" max="9999" step="1" inputmode="numeric" value="${player.score}" data-player-index="${index}" aria-label="${escapeHtml(player.name)} 누적 점수 직접 수정" ${variantGameState.busy ? "disabled" : ""} />
+          <small>점</small>
+        </label>
         ${active ? '<span class="active-label">진행 중</span>' : ""}
         ${winner ? '<span class="active-label">우승</span>' : ""}
       </article>
@@ -684,6 +788,67 @@ function renderVariantGame() {
   elements.variantHoldButton.disabled = variantGameState.busy || variantGameState.gameOver || variantGameState.turnScore === 0;
   elements.changeVariantSettingsButton.disabled = variantGameState.busy;
   renderVariantHistory();
+}
+
+function updateVariantPlayerScore(input) {
+  if (!variantGameState || variantGameState.busy) return;
+  const index = Number(input.dataset.playerIndex);
+  const player = variantGameState.players[index];
+  if (!player) return;
+  const before = normalizeManualScore(input.dataset.originalScore, player.score);
+  const after = normalizeManualScore(input.value, before);
+  delete input.dataset.originalScore;
+  if (before === after) {
+    input.value = after;
+    return;
+  }
+  player.score = after;
+  variantGameState.history.unshift({ type: "edit", player: player.name, label: "누적 점수", before, after });
+  variantGameState.status = { text: `${player.name}의 누적 점수를 ${after}점으로 수정했습니다.`, tone: "gain" };
+  variantGameState.gameOver = false;
+  variantGameState.busy = false;
+  renderVariantGame();
+  if (after >= variantGameState.target) {
+    variantGameState.gameOver = true;
+    variantGameState.status = { text: `${player.name} 승리!`, tone: "gain" };
+    renderVariantGame();
+    elements.variantWinnerName.textContent = player.name;
+    elements.variantWinnerSummary.textContent = `누적 점수를 ${after}점으로 수정하여 목표에 도달했습니다.`;
+    window.setTimeout(() => elements.variantWinnerDialog.showModal(), 150);
+  }
+}
+
+function updateVariantTurnScore() {
+  if (!variantGameState || variantGameState.busy || variantGameState.gameOver) return;
+  const before = normalizeManualScore(elements.variantTurnScore.dataset.originalScore, variantGameState.turnScore);
+  const after = normalizeManualScore(elements.variantTurnScore.value, before);
+  delete elements.variantTurnScore.dataset.originalScore;
+  if (before === after) {
+    elements.variantTurnScore.value = after;
+    return;
+  }
+  const player = variantGameState.players[variantGameState.currentIndex];
+  variantGameState.turnScore = after;
+  variantGameState.history.unshift({ type: "edit", player: player.name, label: "이번 턴 점수", before, after });
+  variantGameState.status = { text: `${player.name}의 이번 턴 점수를 ${after}점으로 수정했습니다.`, tone: "gain" };
+  renderVariantGame();
+}
+
+function syncVariantPlayerScoreInput(input) {
+  if (!variantGameState || variantGameState.busy) return;
+  const player = variantGameState.players[Number(input.dataset.playerIndex)];
+  if (!player) return;
+  if (input.dataset.originalScore === undefined) input.dataset.originalScore = player.score;
+  player.score = normalizeManualScore(input.value, player.score);
+}
+
+function syncVariantTurnScoreInput() {
+  if (!variantGameState || variantGameState.busy || variantGameState.gameOver) return;
+  if (elements.variantTurnScore.dataset.originalScore === undefined) {
+    elements.variantTurnScore.dataset.originalScore = variantGameState.turnScore;
+  }
+  variantGameState.turnScore = normalizeManualScore(elements.variantTurnScore.value, variantGameState.turnScore);
+  elements.variantHoldButton.disabled = variantGameState.turnScore === 0;
 }
 
 function evaluateVariantRoll(details, rolls) {
@@ -850,11 +1015,26 @@ elements.variantPlayerCount.addEventListener("change", () => renderVariantPlayer
 elements.startVariantGameButton.addEventListener("click", () => startVariantGame());
 elements.variantRollButton.addEventListener("click", rollVariantDice);
 elements.variantHoldButton.addEventListener("click", holdVariantScore);
+elements.variantTurnScore.addEventListener("input", syncVariantTurnScoreInput);
+elements.variantTurnScore.addEventListener("change", updateVariantTurnScore);
+elements.variantScoreboard.addEventListener("input", (event) => {
+  if (event.target.matches(".manual-score-input")) syncVariantPlayerScoreInput(event.target);
+});
+elements.variantScoreboard.addEventListener("change", (event) => {
+  if (event.target.matches(".manual-score-input")) updateVariantPlayerScore(event.target);
+});
 elements.changeVariantSettingsButton.addEventListener("click", returnToVariantSetup);
 elements.variantRematchButton.addEventListener("click", () => {
   const names = variantGameState.players.map((player) => player.name);
   elements.variantWinnerDialog.close();
   startVariantGame(names);
+});
+elements.correctVariantWinnerScoreButton.addEventListener("click", () => {
+  elements.variantWinnerDialog.close();
+  variantGameState.gameOver = false;
+  variantGameState.busy = false;
+  variantGameState.status = { text: "점수 칸을 눌러 올바른 점수로 수정해 주세요.", tone: "" };
+  renderVariantGame();
 });
 elements.variantChangeSettingsButton.addEventListener("click", returnToVariantSetup);
 
