@@ -40,6 +40,52 @@ test('calendar and input panels have persistent visibility toggles', () => {
   assert.match(script, /달력 보이기/);
 });
 
+test('newly parsed messages are merged without removing existing schedules', () => {
+  const existing = context.withCalendarFields({
+    id: 1,
+    title: '기존 일정',
+    department: '교무부',
+    deadline: '7월 22일',
+    deadlineISO: '2026-07-22T17:00',
+    source: '기존 메시지 원문',
+    done: true,
+    open: false,
+    calendarKeyword: '직접 수정',
+    calendarColor: '#123456'
+  });
+  const duplicate = {
+    id: 2,
+    title: '다시 분석된 기존 일정',
+    department: '교무부',
+    deadline: '7월 22일',
+    deadlineISO: '2026-07-22T17:00',
+    source: '  기존   메시지 원문  ',
+    done: false,
+    open: false
+  };
+  const added = {
+    id: 3,
+    title: '새 일정',
+    department: '연구부',
+    deadline: '7월 24일',
+    deadlineISO: '2026-07-24T17:00',
+    source: '새 메시지 원문',
+    done: false,
+    open: false
+  };
+
+  const merged = context.mergeParsedItems([existing], [duplicate, added]);
+
+  assert.equal(merged.items.length, 2);
+  assert.equal(merged.added, 1);
+  assert.equal(merged.updated, 1);
+  assert.equal(merged.items[0].title, '기존 일정');
+  assert.equal(merged.items[0].done, true);
+  assert.equal(merged.items[0].calendarKeyword, '직접 수정');
+  assert.equal(merged.items[0].calendarColor, '#123456');
+  assert.equal(merged.items[1].title, '새 일정');
+});
+
 test('an optional fixture delimiter is accepted but not required', () => {
   const input = `쿨메신저 메시지 실제 내용\n구분은 시작할 때 '로\n\n'\n[교무부]\n오늘 오후까지 복무 신청을 올려주세요.\n\n'\n평가부에서 안내드립니다.\n성적표를 확인해 주세요.`;
   const result = context.parse(input);
