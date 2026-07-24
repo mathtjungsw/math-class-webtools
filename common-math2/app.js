@@ -1,6 +1,6 @@
 const SUITES = {
   coordinate: {
-    title: "좌표와 직선 통합 탐구실",
+    title: "평면좌표와 직선의 방정식",
     unit: "Ⅰ. 평면좌표와 직선의 방정식",
     accent: "#14796f",
     description:
@@ -32,7 +32,7 @@ const SUITES = {
     ]
   },
   circle: {
-    title: "원과 직선 관계 통합 실험실",
+    title: "원의 방정식",
     unit: "Ⅱ-01~02. 원의 방정식과 원·직선의 위치 관계",
     accent: "#cb5f35",
     description:
@@ -63,7 +63,7 @@ const SUITES = {
     ]
   },
   transform: {
-    title: "도형의 이동 통합 변환기",
+    title: "도형의 이동",
     unit: "Ⅱ-03~04. 평행이동과 대칭이동",
     accent: "#6b58b6",
     description:
@@ -94,7 +94,7 @@ const SUITES = {
     ]
   },
   set: {
-    title: "집합과 연산 통합 탐구실",
+    title: "집합",
     unit: "Ⅲ. 집합",
     accent: "#16795d",
     description:
@@ -127,7 +127,7 @@ const SUITES = {
     ]
   },
   logic: {
-    title: "명제와 증명 통합 논리실",
+    title: "명제",
     unit: "Ⅳ. 명제",
     accent: "#7a4fb0",
     description:
@@ -161,7 +161,7 @@ const SUITES = {
     ]
   },
   function: {
-    title: "함수와 합성함수 통합 기계",
+    title: "함수와 합성함수",
     unit: "Ⅴ-01~02. 함수와 합성함수",
     accent: "#2267a8",
     description:
@@ -194,7 +194,7 @@ const SUITES = {
     ]
   },
   inverse: {
-    title: "역함수 통합 되감기 실험실",
+    title: "역함수",
     unit: "Ⅴ-03. 역함수",
     accent: "#b95c37",
     description:
@@ -225,7 +225,7 @@ const SUITES = {
     ]
   },
   rational: {
-    title: "유리함수 그래프 통합 조종실",
+    title: "유리함수",
     unit: "Ⅵ-01. 유리함수와 그 그래프",
     accent: "#176a89",
     description:
@@ -257,7 +257,7 @@ const SUITES = {
     ]
   },
   radical: {
-    title: "무리함수 그래프 통합 탐구실",
+    title: "무리함수",
     unit: "Ⅵ-02. 무리함수와 그 그래프",
     accent: "#9a5c22",
     description:
@@ -307,10 +307,13 @@ let activeIndex = Math.max(
   suite.tabs.findIndex(([id]) => id === params.get("tab"))
 );
 let lastFocus = null;
+let focusMode = params.get("view") !== "overview";
+let moduleChromeHidden = params.get("chrome") !== "show";
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
 const frame = $("[data-frame]");
+const frameWrap = $(".frame-wrap");
 const loading = $("[data-frame-loading]");
 const manual = $("[data-manual]");
 const manualDialog = $(".manual-dialog");
@@ -372,10 +375,121 @@ function selectTab(index, focus = false) {
   }
 }
 
-frame.addEventListener("load", () => loading.classList.add("is-ready"));
+const embeddedStyle = `
+  html.common2-compact-tool .app > .hero,
+  html.common2-compact-tool .wrap > .hero,
+  html.common2-compact-tool div.app > .hero,
+  html.common2-compact-tool main.app > .hero {
+    display: none !important;
+  }
+  html.common2-compact-tool body > header:not(.hero):not(.topbar):not(.app-header) {
+    display: none !important;
+  }
+  html.common2-compact-tool body > header.topbar .brand,
+  html.common2-compact-tool body > header.app-header .header-inner > :first-child,
+  html.common2-compact-tool body > header.hero .hero-inner > :first-child {
+    display: none !important;
+  }
+  html.common2-compact-tool body > header.topbar .topbar-inner,
+  html.common2-compact-tool body > header.app-header .header-inner,
+  html.common2-compact-tool body > header.hero .hero-inner {
+    justify-content: flex-end !important;
+  }
+  html.common2-compact-tool body > header.topbar,
+  html.common2-compact-tool body > header.app-header,
+  html.common2-compact-tool body > header.hero {
+    min-height: 0 !important;
+    padding: 8px 14px !important;
+  }
+  html.common2-compact-tool .app,
+  html.common2-compact-tool .wrap,
+  html.common2-compact-tool main,
+  html.common2-compact-tool main.shell {
+    padding-top: 10px !important;
+  }
+  html.common2-compact-tool .footer,
+  html.common2-compact-tool .footer-note,
+  html.common2-compact-tool body > footer {
+    display: none !important;
+  }
+`;
+
+function applyModuleChrome() {
+  try {
+    const doc = frame.contentDocument;
+    if (!doc?.documentElement) return;
+    let style = doc.getElementById("common2-embed-style");
+    if (!style) {
+      style = doc.createElement("style");
+      style.id = "common2-embed-style";
+      style.textContent = embeddedStyle;
+      doc.head.append(style);
+    }
+    doc.documentElement.classList.toggle("common2-compact-tool", moduleChromeHidden);
+  } catch {
+    // 새 창으로 연 경우에는 원래 도구 화면을 그대로 사용합니다.
+  }
+}
+
+function syncViewMode(updateUrl = true) {
+  document.body.classList.toggle("focus-view", focusMode);
+  $$("[data-focus-toggle]").forEach((button) => {
+    button.setAttribute("aria-pressed", String(focusMode));
+  });
+  $$("[data-focus-label]").forEach((label) => {
+    label.textContent = focusMode ? "소개 보기" : "집중 보기";
+  });
+  $("[data-module-chrome-toggle]").setAttribute(
+    "aria-pressed",
+    String(moduleChromeHidden)
+  );
+  $("[data-module-chrome-label]").textContent = moduleChromeHidden
+    ? "도구 소개 보기"
+    : "도구 소개 숨기기";
+  applyModuleChrome();
+
+  if (updateUrl) {
+    const nextParams = new URLSearchParams(window.location.search);
+    if (focusMode) nextParams.delete("view");
+    else nextParams.set("view", "overview");
+    if (moduleChromeHidden) nextParams.delete("chrome");
+    else nextParams.set("chrome", "show");
+    history.replaceState(null, "", `${window.location.pathname}?${nextParams.toString()}`);
+  }
+}
+
+frame.addEventListener("load", () => {
+  applyModuleChrome();
+  loading.classList.add("is-ready");
+});
 $("[data-refresh]").addEventListener("click", () => {
   loading.classList.remove("is-ready");
   frame.src = frame.src;
+});
+$$("[data-focus-toggle]").forEach((button) => {
+  button.addEventListener("click", () => {
+    focusMode = !focusMode;
+    syncViewMode();
+    if (!focusMode) {
+      document.querySelector("main")?.scrollIntoView({ block: "start" });
+    }
+  });
+});
+$("[data-module-chrome-toggle]").addEventListener("click", () => {
+  moduleChromeHidden = !moduleChromeHidden;
+  syncViewMode();
+});
+$("[data-fullscreen]").addEventListener("click", async () => {
+  if (document.fullscreenElement) {
+    await document.exitFullscreen?.();
+    return;
+  }
+  await frameWrap.requestFullscreen?.();
+});
+document.addEventListener("fullscreenchange", () => {
+  $("[data-fullscreen]").textContent = document.fullscreenElement
+    ? "전체 화면 닫기"
+    : "전체 화면";
 });
 
 tabList.addEventListener("keydown", (event) => {
@@ -434,5 +548,6 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && !manual.hidden) closeManual();
 });
 
+syncViewMode(false);
 selectTab(activeIndex);
 if (params.get("manual") === "1") openManual();

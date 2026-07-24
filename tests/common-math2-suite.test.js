@@ -34,6 +34,17 @@ const expectedSuiteKeys = [
   "rational",
   "radical"
 ];
+const expectedTitles = {
+  coordinate: "평면좌표와 직선의 방정식",
+  circle: "원의 방정식",
+  transform: "도형의 이동",
+  set: "집합",
+  logic: "명제",
+  function: "함수와 합성함수",
+  inverse: "역함수",
+  rational: "유리함수",
+  radical: "무리함수"
+};
 assert.deepStrictEqual(
   Object.keys(suites),
   expectedSuiteKeys,
@@ -43,6 +54,7 @@ assert.deepStrictEqual(
 const referencedModules = [];
 for (const [suiteKey, suite] of Object.entries(suites)) {
   assert(suite.title && suite.unit && suite.description, `${suiteKey}: 기본 설명이 없습니다.`);
+  assert.strictEqual(suite.title, expectedTitles[suiteKey], `${suiteKey}: 개념명이 아닙니다.`);
   assert(suite.tabs.length >= 6, `${suiteKey}: 통합 탭이 너무 적습니다.`);
   assert.strictEqual(
     new Set(suite.tabs.map(([id]) => id)).size,
@@ -100,12 +112,24 @@ for (const suiteKey of expectedSuiteKeys) {
     indexHtml.includes(`tool=${suiteKey}&amp;manual=1`),
     `${suiteKey}: 설명서 링크가 없습니다.`
   );
+  assert(
+    indexHtml.includes(`<h3>${expectedTitles[suiteKey]}</h3>`),
+    `${suiteKey}: 카드 제목이 개념명과 다릅니다.`
+  );
+  assert(
+    siteSource.includes(`"${expectedTitles[suiteKey]}": {`),
+    `${suiteKey}: 메인 화면 설명서 모달 데이터가 없습니다.`
+  );
 }
 
 assert(indexHtml.includes('data-tag-filter="common-math2"'), "공통수학2 과목 필터가 없습니다.");
 assert(siteSource.includes('"common-math2":'), "공통수학2 태그 메타데이터가 없습니다.");
 assert(suiteHtml.includes("data-manual-sections"), "통합 설명서 영역이 없습니다.");
 assert(suiteHtml.includes("data-frame"), "통합 탭 프레임이 없습니다.");
+assert(suiteHtml.includes("data-focus-toggle"), "집중 보기 버튼이 없습니다.");
+assert(suiteHtml.includes("data-module-chrome-toggle"), "도구 소개 숨기기 버튼이 없습니다.");
+assert(suiteHtml.includes("data-fullscreen"), "전체 화면 버튼이 없습니다.");
+assert(suiteSource.includes("common2-compact-tool"), "내부 도구 상단 접기 기능이 없습니다.");
 
 console.log(
   `PASS: 공통수학2 통합 웹툴 ${expectedSuiteKeys.length}개, 학습 탭 ${referencedModules.length}개, 설명서 ${expectedSuiteKeys.length}개`

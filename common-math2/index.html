@@ -35,6 +35,9 @@
         <button class="soft-button" type="button" data-manual-open>
           <span aria-hidden="true">?</span> 설명서 보기
         </button>
+        <button class="soft-button view-button" type="button" data-focus-toggle>
+          <span aria-hidden="true">↗</span> <b data-focus-label>집중 보기</b>
+        </button>
         <a class="home-button" href="../index.html?tag=common-math2">전체 목록</a>
       </div>
     </header>
@@ -84,10 +87,17 @@
               <p data-tab-description>선택한 탭의 설명입니다.</p>
             </div>
             <div class="workspace-actions">
+              <button type="button" data-module-chrome-toggle>
+                <span data-module-chrome-label>도구 소개 보기</span>
+              </button>
+              <button type="button" data-focus-toggle>
+                <span data-focus-label>소개 보기</span>
+              </button>
+              <button type="button" data-fullscreen>전체 화면</button>
               <button type="button" data-refresh aria-label="현재 탭 초기 상태로 다시 불러오기">
                 다시 시작
               </button>
-              <a href="#" target="_blank" rel="noreferrer" data-open-module>탭만 크게 보기 ↗</a>
+              <a href="#" target="_blank" rel="noreferrer" data-open-module>새 창 ↗</a>
             </div>
           </header>
           <div class="frame-wrap">
