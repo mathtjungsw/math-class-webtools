@@ -989,6 +989,108 @@ h2 {
   height: 190px;
 }
 
+.card-common2 .tool-visual {
+  color: #f8fbff;
+  background: var(--c2-bg, #173f3a);
+}
+
+.c2-coordinate { --c2-bg: #123f3a; --c2-accent: #6ee0c0; }
+.c2-circle { --c2-bg: #572f26; --c2-accent: #ffb46f; }
+.c2-transform { --c2-bg: #332b63; --c2-accent: #b5a6ff; }
+.c2-set { --c2-bg: #174437; --c2-accent: #8ee3ad; }
+.c2-logic { --c2-bg: #3c2857; --c2-accent: #d0a9ff; }
+.c2-function { --c2-bg: #173a5b; --c2-accent: #82c5ff; }
+.c2-inverse { --c2-bg: #563326; --c2-accent: #ffbd8d; }
+.c2-rational { --c2-bg: #17425a; --c2-accent: #82d5ef; }
+.c2-radical { --c2-bg: #4f3921; --c2-accent: #f3c678; }
+
+.common2-preview {
+  width: 100%;
+  height: 100%;
+  min-height: 190px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(255,255,255,.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.055) 1px, transparent 1px),
+    radial-gradient(circle at 78% 30%, color-mix(in srgb, var(--c2-accent) 22%, transparent), transparent 34%);
+  background-size: 28px 28px, 28px 28px, auto;
+}
+
+.common2-preview::before,
+.common2-preview::after {
+  position: absolute;
+  content: "";
+}
+
+.common2-preview::before {
+  width: 260px;
+  height: 260px;
+  right: -95px;
+  bottom: -145px;
+  border: 2px solid color-mix(in srgb, var(--c2-accent) 48%, transparent);
+  border-radius: 50%;
+}
+
+.common2-preview::after {
+  width: 180px;
+  height: 2px;
+  left: 28px;
+  top: 56%;
+  background: linear-gradient(90deg, transparent, var(--c2-accent), transparent);
+  transform: rotate(-21deg);
+}
+
+.common2-preview strong {
+  position: relative;
+  z-index: 2;
+  color: var(--c2-accent);
+  font: 900 clamp(37px, 5vw, 58px)/1 Georgia, "Times New Roman", serif;
+  letter-spacing: -.05em;
+  text-shadow: 0 10px 34px rgba(0,0,0,.28);
+}
+
+.common2-preview > span {
+  position: absolute;
+  z-index: 3;
+  right: 22px;
+  bottom: 18px;
+  padding: 8px 11px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(8,16,30,.62);
+  font: 700 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.common2-tabs {
+  position: absolute;
+  z-index: 3;
+  left: 18px;
+  top: 17px;
+  display: flex;
+  gap: 6px;
+}
+
+.common2-tabs i {
+  padding: 6px 9px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 999px;
+  color: rgba(255,255,255,.78);
+  background: rgba(7,16,28,.34);
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.common2-tabs i:first-child {
+  color: #132139;
+  border-color: var(--c2-accent);
+  background: var(--c2-accent);
+}
+
 .tool-content {
   display: flex;
   flex: 1;

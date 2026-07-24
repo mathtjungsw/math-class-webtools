@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f766e" />
+  <title>거리의 탄생 | 두 점 사이 거리 개념 탐구</title>
+  <style>
+    :root{
+      --bg:#f4fbfa;
+      --panel:#ffffff;
+      --ink:#163331;
+      --muted:#5c7471;
+      --line:#cfe4e1;
+      --teal:#0f766e;
+      --teal-2:#14b8a6;
+      --blue:#2563eb;
+      --orange:#f97316;
+      --pink:#e11d48;
+      --yellow:#facc15;
+      --shadow:0 16px 40px rgba(20, 73, 68, .12);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Pretendard","Noto Sans KR",sans-serif;color:var(--ink);background:
+      radial-gradient(circle at 10% 0%, #d9f7f2 0 14%, transparent 34%),
+      radial-gradient(circle at 100% 20%, #e7efff 0 12%, transparent 34%),
+      var(--bg);}
+    button,input{font:inherit}
+    button{cursor:pointer}
+    .app{width:min(1260px,100%);margin:0 auto;padding:24px}
+    .hero{
+      display:grid;grid-template-columns:1.2fr .8fr;gap:20px;align-items:stretch;
+      margin-bottom:20px;
+    }
+    .hero-main,.hero-side,.card{
+      background:rgba(255,255,255,.94);border:1px solid rgba(207,228,225,.9);
+      border-radius:var(--radius);box-shadow:var(--shadow)
+    }
+    .hero-main{padding:28px 30px;position:relative;overflow:hidden}
+    .hero-main:after{
+      content:"";position:absolute;width:220px;height:220px;border-radius:50%;
+      right:-70px;bottom:-100px;background:linear-gradient(135deg,#99f6e4,#bfdbfe);opacity:.65
+    }
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;font-weight:800;color:var(--teal);font-size:.93rem}
+    .dot{width:10px;height:10px;border-radius:50%;background:var(--teal-2);box-shadow:0 0 0 5px rgba(20,184,166,.14)}
+    h1{margin:9px 0 8px;font-size:clamp(2rem,5vw,3.55rem);letter-spacing:-.055em;line-height:1.05}
+    .lead{margin:0;max-width:730px;color:var(--muted);font-size:1.08rem;line-height:1.72;position:relative;z-index:1}
+    .hero-side{padding:22px;display:grid;gap:12px}
+    .mini-step{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:16px;background:#f8fbfb}
+    .mini-step b{display:grid;place-items:center;min-width:30px;height:30px;border-radius:50%;background:var(--teal);color:white}
+    .mini-step span{line-height:1.5}
+    .tabs{display:flex;gap:10px;margin:0 0 16px;padding:6px;background:#eaf5f3;border-radius:16px;overflow:auto}
+    .tab{
+      border:0;background:transparent;color:#476562;padding:12px 18px;border-radius:12px;
+      font-weight:800;white-space:nowrap;transition:.2s
+    }
+    .tab.active{background:white;color:var(--teal);box-shadow:0 6px 18px rgba(15,118,110,.12)}
+    .workspace{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(310px,.75fr);gap:18px}
+    .canvas-card{padding:16px;min-height:650px}
+    .canvas-head{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:5px 6px 14px}
+    .canvas-title{font-size:1.18rem;font-weight:900}
+    .canvas-sub{font-size:.92rem;color:var(--muted);margin-top:3px}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .btn{
+      border:1px solid var(--line);background:white;color:var(--ink);padding:10px 13px;border-radius:12px;font-weight:800;
+      transition:.15s;box-shadow:0 4px 12px rgba(26,74,69,.06)
+    }
+    .btn:hover{transform:translateY(-1px);border-color:#9ccbc5}
+    .btn.primary{background:var(--teal);color:white;border-color:var(--teal)}
+    .btn.soft{background:#eafaf7;color:var(--teal);border-color:#c9eee7}
+    .stage{
+      position:relative;width:100%;min-height:555px;border-radius:18px;overflow:hidden;
+      background:linear-gradient(#fff,#fbffff);border:1px solid #dcecea
+    }
+    svg{display:block;width:100%;height:555px;touch-action:none;user-select:none}
+    .grid-line{stroke:#dfeceb;stroke-width:1}
+    .grid-line.major{stroke:#bfd7d4;stroke-width:1.35}
+    .axis{stroke:#587370;stroke-width:2.1}
+    .tick-text{fill:#718986;font-size:12px;font-weight:650}
+    .point{cursor:grab;filter:drop-shadow(0 6px 6px rgba(30,64,60,.2))}
+    .point:active{cursor:grabbing}
+    .point:focus{outline:none}
+    .point-halo{opacity:.18}
+    .label-pill{font-weight:900;font-size:14px;paint-order:stroke;stroke:white;stroke-width:5px;stroke-linejoin:round}
+    .coordinate-label{fill:#314d49;font-size:12px;font-weight:750;paint-order:stroke;stroke:white;stroke-width:4px}
+    .right-seg{stroke:var(--blue);stroke-width:5;stroke-linecap:round}
+    .up-seg{stroke:var(--orange);stroke-width:5;stroke-linecap:round}
+    .hyp{stroke:var(--pink);stroke-width:6;stroke-linecap:round}
+    .ghost{stroke-dasharray:8 8;opacity:.8}
+    .brace-text{font-size:14px;font-weight:900;paint-order:stroke;stroke:white;stroke-width:5px}
+    .right-angle{fill:none;stroke:#273c39;stroke-width:2.4}
+    .floating-tip{
+      position:absolute;left:18px;bottom:16px;max-width:min(430px,calc(100% - 36px));
+      padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);
+      border:1px solid #d8e9e6;color:#415d59;font-weight:700;box-shadow:0 10px 26px rgba(27,71,67,.1)
+    }
+    .side{display:grid;gap:14px;align-content:start}
+    .panel{padding:18px}
+    .panel h2{font-size:1.06rem;margin:0 0 12px}
+    .metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .metric{padding:13px;border-radius:16px;background:#f7fbfb;border:1px solid #e0eeec}
+    .metric small{display:block;color:var(--muted);font-weight:750;margin-bottom:5px}
+    .metric strong{font-size:1.25rem}
+    .metric.full{grid-column:1/-1}
+    .formula-box{
+      padding:16px;border-radius:18px;background:linear-gradient(145deg,#ecfdf9,#eff6ff);
+      border:1px solid #cce9e4;overflow:auto
+    }
+    .formula-line{display:flex;gap:9px;align-items:flex-start;margin:9px 0;line-height:1.55}
+    .formula-line .n{display:grid;place-items:center;flex:0 0 25px;height:25px;border-radius:50%;background:white;color:var(--teal);font-weight:900}
+    .math{font-family:"Cambria Math","Times New Roman",serif;font-size:1.1rem}
+    .step-control{display:grid;gap:10px}
+    .step-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .step-badges{display:flex;gap:6px;flex-wrap:wrap}
+    .badge{padding:7px 9px;border-radius:999px;background:#edf4f3;color:#67807c;font-size:.82rem;font-weight:850}
+    .badge.active{background:var(--teal);color:white}
+    input[type="range"]{width:100%;accent-color:var(--teal)}
+    .observation{
+      margin:0;padding:14px 15px;border-left:5px solid var(--yellow);border-radius:12px;background:#fffbea;
+      color:#5e5530;line-height:1.65;font-weight:700
+    }
+    .question-list{display:grid;gap:9px}
+    .q{padding:11px 12px;border-radius:13px;background:#f8fbfb;border:1px solid #e2eeec;line-height:1.48}
+    .one-d-wrap{display:none}
+    .two-d-wrap{display:block}
+    body.mode-1d .one-d-wrap{display:block}
+    body.mode-1d .two-d-wrap{display:none}
+    .numberline-stage{display:grid;place-items:center;height:555px;padding:20px}
+    .numberline-box{width:100%;max-width:900px}
+    .numberline-title{text-align:center;font-weight:900;font-size:1.12rem;margin-bottom:42px}
+    .numberline{position:relative;height:150px;margin:0 28px}
+    .nl-axis{position:absolute;left:0;right:0;top:70px;height:3px;background:#587370;border-radius:99px}
+    .nl-tick{position:absolute;top:62px;width:2px;height:19px;background:#75908c}
+    .nl-tick span{position:absolute;top:23px;left:50%;transform:translateX(-50%);font-size:.78rem;color:#68817e;font-weight:750}
+    .nl-segment{position:absolute;top:63px;height:17px;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--pink));opacity:.8}
+    .nl-point{
+      position:absolute;top:42px;width:56px;height:56px;border:0;border-radius:50%;color:white;font-weight:950;
+      transform:translateX(-50%);box-shadow:0 8px 18px rgba(23,61,57,.22);touch-action:none
+    }
+    .nl-point.a{background:var(--blue)}
+    .nl-point.b{background:var(--pink)}
+    .nl-point .coord{display:block;font-size:.73rem;font-weight:750;opacity:.95}
+    .nl-arrow{position:absolute;top:13px;transform:translateX(-50%);font-size:.9rem;font-weight:900;color:#4b6662}
+    .nl-readout{
+      margin:28px auto 0;text-align:center;padding:17px;border-radius:18px;background:#f0f9f7;border:1px solid #d6ece8;
+      font-size:1.12rem;font-weight:900
+    }
+    .nl-readout .math{font-size:1.4rem;color:var(--teal)}
+    .hidden{display:none!important}
+    .legend{display:flex;gap:12px;flex-wrap:wrap;color:#58706d;font-size:.85rem;font-weight:800}
+    .legend span{display:inline-flex;align-items:center;gap:6px}
+    .swatch{width:16px;height:5px;border-radius:999px}
+    .footer-note{text-align:center;color:#6d8581;font-size:.87rem;margin-top:18px}
+    .toast{
+      position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;pointer-events:none;
+      background:#173c38;color:white;padding:11px 16px;border-radius:999px;font-weight:850;transition:.25s;z-index:20
+    }
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    @media (max-width:980px){
+      .hero{grid-template-columns:1fr}
+      .workspace{grid-template-columns:1fr}
+      .canvas-card{min-height:auto}
+      .side{grid-template-columns:1fr 1fr}
+      .side .panel:last-child{grid-column:1/-1}
+    }
+    @media (max-width:680px){
+      .app{padding:12px}
+      .hero-main{padding:23px 20px}
+      .hero-side{padding:14px}
+      .canvas-card{padding:9px}
+      .canvas-head{align-items:flex-start;flex-direction:column}
+      .controls{justify-content:flex-start}
+      svg{height:470px}
+      .stage{min-height:470px}
+      .numberline-stage{height:470px}
+      .side{grid-template-columns:1fr}
+      .side .panel:last-child{grid-column:auto}
+      .metric-grid{grid-template-columns:1fr 1fr}
+      .btn{padding:9px 11px}
+      .floating-tip{font-size:.88rem}
+    }
+    @media print{
+      body{background:white}
+      .controls,.tabs,.footer-note{display:none}
+      .hero,.workspace{display:block}
+      .hero-side{display:none}
+      .side{margin-top:16px}
+      .card,.hero-main{box-shadow:none}
+    }
+  </style>
+</head>
+<body class="mode-2d">
+  <main class="app">
+    <section class="hero">
+      <div class="hero-main">
+        <div class="eyebrow"><span class="dot"></span> 개념 이해형 인터랙티브 웹툴</div>
+        <h1>거리의 탄생</h1>
+        <p class="lead">두 점을 직접 움직이며 수직선의 거리에서 좌표평면의 거리 공식이 어떻게 만들어지는지 관찰해 보세요. 계산 문제 없이, 움직임과 시각화만으로 개념을 이해하도록 구성했습니다.</p>
+      </div>
+      <div class="hero-side">
+        <div class="mini-step"><b>1</b><span><strong>수직선에서</strong><br>두 수의 차이를 절댓값으로 바라봅니다.</span></div>
+        <div class="mini-step"><b>2</b><span><strong>좌표평면에서</strong><br>가로 변화와 세로 변화를 분리합니다.</span></div>
+        <div class="mini-step"><b>3</b><span><strong>피타고라스 정리로</strong><br>직선거리 공식을 완성합니다.</span></div>
+      </div>
+    </section>
+
+    <nav class="tabs" aria-label="학습 단계">
+      <button class="tab" data-mode="1d">1단계 · 수직선의 거리</button>
+      <button class="tab active" data-mode="2d">2단계 · 좌표평면의 거리</button>
+    </nav>
+
+    <section class="workspace">
+      <article class="card canvas-card">
+        <div class="canvas-head">
+          <div>
+            <div class="canvas-title" id="canvasTitle">두 점 A, B를 끌어 움직여 보세요</div>
+            <div class="canvas-sub" id="canvasSub">가로 변화와 세로 변화가 직각삼각형을 만들어요.</div>
+          </div>
+          <div class="controls">
+            <button class="btn soft" id="randomBtn">무작위 위치</button>
+            <button class="btn" id="resetBtn">처음으로</button>
+            <button class="btn primary" id="copyBtn">관찰 문장 복사</button>
+          </div>
+        </div>
+
+        <div class="stage two-d-wrap">
+          <svg id="plane" viewBox="0 0 940 555" role="img" aria-label="두 점 사이 거리 탐구 좌표평면">
+            <g id="grid"></g>
+            <g id="visuals">
+              <polygon id="triangleFill" fill="rgba(20,184,166,.10)" points=""></polygon>
+              <line id="horizontalSeg" class="right-seg" x1="0" y1="0" x2="0" y2="0"></line>
+              <line id="verticalSeg" class="up-seg" x1="0" y1="0" x2="0" y2="0"></line>
+              <line id="hypSeg" class="hyp" x1="0" y1="0" x2="0" y2="0"></line>
+              <path id="rightAngle" class="right-angle" d=""></path>
+              <text id="dxText" class="brace-text" fill="#2563eb"></text>
+              <text id="dyText" class="brace-text" fill="#f97316"></text>
+              <text id="dText" class="brace-text" fill="#e11d48"></text>
+              <circle id="cDot" r="5" fill="#263d39"></circle>
+              <text id="cLabel" class="coordinate-label">C</text>
+            </g>
+            <g id="pointA" class="point" tabindex="0" aria-label="점 A, 방향키로 이동 가능">
+              <circle class="point-halo" r="24" fill="#2563eb"></circle>
+              <circle r="11" fill="#2563eb" stroke="white" stroke-width="4"></circle>
+              <text class="label-pill" x="16" y="-13" fill="#2563eb">A</text>
+              <text id="aCoordText" class="coordinate-label" x="16" y="5"></text>
+            </g>
+            <g id="pointB" class="point" tabindex="0" aria-label="점 B, 방향키로 이동 가능">
+              <circle class="point-halo" r="24" fill="#e11d48"></circle>
+              <circle r="11" fill="#e11d48" stroke="white" stroke-width="4"></circle>
+              <text class="label-pill" x="16" y="-13" fill="#e11d48">B</text>
+              <text id="bCoordText" class="coordinate-label" x="16" y="5"></text>
+            </g>
+          </svg>
+          <div class="floating-tip" id="floatingTip">점 A와 B를 끌거나, 선택한 뒤 방향키를 눌러 이동할 수 있어요.</div>
+        </div>
+
+        <div class="one-d-wrap numberline-stage">
+          <div class="numberline-box">
+            <div class="numberline-title">수직선 위 두 점을 좌우로 움직여 보세요</div>
+            <div class="numberline" id="numberline">
+              <div class="nl-axis"></div>
+              <div id="nlTicks"></div>
+              <div class="nl-segment" id="nlSegment"></div>
+              <div class="nl-arrow" id="nlArrow"></div>
+              <button class="nl-point a" id="nlA" aria-label="수직선의 점 A">
+                A <span class="coord" id="nlAText"></span>
+              </button>
+              <button class="nl-point b" id="nlB" aria-label="수직선의 점 B">
+                B <span class="coord" id="nlBText"></span>
+              </button>
+            </div>
+            <div class="nl-readout">
+              거리 = <span class="math" id="nlFormula"></span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <aside class="side">
+        <section class="card panel">
+          <h2>현재 좌표와 거리</h2>
+          <div class="metric-grid">
+            <div class="metric">
+              <small>점 A</small>
+              <strong id="metricA">(-4, -2)</strong>
+            </div>
+            <div class="metric">
+              <small>점 B</small>
+              <strong id="metricB">(4, 3)</strong>
+            </div>
+            <div class="metric">
+              <small>가로 변화</small>
+              <strong id="metricDx">8</strong>
+            </div>
+            <div class="metric">
+              <small>세로 변화</small>
+              <strong id="metricDy">5</strong>
+            </div>
+            <div class="metric full">
+              <small>두 점 사이 직선거리</small>
+              <strong id="metricD">√89 ≈ 9.43</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="card panel two-d-wrap">
+          <h2>거리 공식이 만들어지는 과정</h2>
+          <div class="step-control">
+            <input type="range" id="stageRange" min="0" max="3" step="1" value="3" aria-label="개념 시각화 단계" />
+            <div class="step-row">
+              <div class="step-badges">
+                <span class="badge" data-stage="0">점</span>
+                <span class="badge" data-stage="1">가로·세로</span>
+                <span class="badge" data-stage="2">직각삼각형</span>
+                <span class="badge active" data-stage="3">거리 공식</span>
+              </div>
+            </div>
+          </div>
+          <div class="formula-box" id="formulaBox">
+            <div class="formula-line"><span class="n">1</span><span>가로 변화: <span class="math" id="formulaDx"></span></span></div>
+            <div class="formula-line"><span class="n">2</span><span>세로 변화: <span class="math" id="formulaDy"></span></span></div>
+            <div class="formula-line"><span class="n">3</span><span class="math" id="formulaSq"></span></div>
+            <div class="formula-line"><span class="n">4</span><span class="math" id="formulaD"></span></div>
+          </div>
+        </section>
+
+        <section class="card panel one-d-wrap">
+          <h2>수직선에서 발견한 것</h2>
+          <p class="observation" id="obs1d"></p>
+        </section>
+
+        <section class="card panel two-d-wrap">
+          <h2>지금 보이는 관계</h2>
+          <p class="observation" id="observation"></p>
+          <div class="legend" style="margin-top:12px">
+            <span><i class="swatch" style="background:#2563eb"></i>가로 변화</span>
+            <span><i class="swatch" style="background:#f97316"></i>세로 변화</span>
+            <span><i class="swatch" style="background:#e11d48"></i>직선거리</span>
+          </div>
+        </section>
+
+        <section class="card panel">
+          <h2>천천히 관찰해 보기</h2>
+          <div class="question-list" id="questionList">
+            <div class="q">두 점의 y좌표를 같게 만들면 거리 공식은 어떻게 단순해질까요?</div>
+            <div class="q">가로 변화와 세로 변화를 서로 바꾸어도 직선거리는 같을까요?</div>
+            <div class="q">두 점을 같은 방향으로 똑같이 옮기면 거리는 변할까요?</div>
+          </div>
+        </section>
+      </aside>
+    </section>
+
+    <p class="footer-note">한 파일로 실행되는 오프라인 웹툴입니다. 브라우저에서 열면 바로 사용할 수 있어요.</p>
+  </main>
+  <div class="toast" id="toast">관찰 문장을 복사했어요.</div>
+
+<script>
+(() => {
+  const plane = document.getElementById('plane');
+  const grid = document.getElementById('grid');
+  const W = 940, H = 555;
+  const xMin = -8, xMax = 8, yMin = -6, yMax = 6;
+  const margin = {l:56, r:34, t:28, b:44};
+  const plotW = W - margin.l - margin.r;
+  const plotH = H - margin.t - margin.b;
+  const snap = 0.5;
+
+  let A = {x:-4, y:-2};
+  let B = {x:4, y:3};
+  let NL = {a:-5, b:4};
+  let drag = null;
+  let stage = 3;
+  let activeMode = '2d';
+
+  const el = id => document.getElementById(id);
+  const toX = x => margin.l + (x - xMin) / (xMax - xMin) * plotW;
+  const toY = y => margin.t + (yMax - y) / (yMax - yMin) * plotH;
+  const fromX = px => xMin + (px - margin.l) / plotW * (xMax - xMin);
+  const fromY = py => yMax - (py - margin.t) / plotH * (yMax - yMin);
+  const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
+  const roundSnap = v => Math.round(v / snap) * snap;
+  const fmt = v => Number.isInteger(v) ? String(v) : v.toFixed(1);
+  const fmtSigned = v => v < 0 ? `(${fmt(v)})` : fmt(v);
+
+  function gcd(a,b){
+    a=Math.abs(Math.round(a)); b=Math.abs(Math.round(b));
+    while(b){ [a,b]=[b,a%b]; }
+    return a || 1;
+  }
+  function sqrtLabel(n){
+    const rounded = Math.round(n * 100) / 100;
+    if (Number.isInteger(rounded)) {
+      const r = Math.sqrt(rounded);
+      if (Number.isInteger(r)) return String(r);
+      let outside = 1, inside = rounded;
+      for(let k=Math.floor(Math.sqrt(rounded)); k>=2; k--){
+        if(rounded % (k*k) === 0){ outside = k; inside = rounded/(k*k); break; }
+      }
+      return outside === 1 ? `√${inside}` : `${outside}√${inside}`;
+    }
+    return `√${rounded}`;
+  }
+
+  function buildGrid(){
+    grid.innerHTML = '';
+    for(let x=xMin; x<=xMax; x++){
+      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1',toX(x)); line.setAttribute('x2',toX(x));
+      line.setAttribute('y1',margin.t); line.setAttribute('y2',H-margin.b);
+      line.setAttribute('class', x===0 ? 'axis' : (x%2===0 ? 'grid-line major':'grid-line'));
+      grid.appendChild(line);
+      if(x!==0){
+        const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+        t.setAttribute('x',toX(x)); t.setAttribute('y',toY(0)+18);
+        t.setAttribute('text-anchor','middle'); t.setAttribute('class','tick-text'); t.textContent=x;
+        grid.appendChild(t);
+      }
+    }
+    for(let y=yMin; y<=yMax; y++){
+      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1',margin.l); line.setAttribute('x2',W-margin.r);
+      line.setAttribute('y1',toY(y)); line.setAttribute('y2',toY(y));
+      line.setAttribute('class', y===0 ? 'axis' : (y%2===0 ? 'grid-line major':'grid-line'));
+      grid.appendChild(line);
+      if(y!==0){
+        const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+        t.setAttribute('x',toX(0)-10); t.setAttribute('y',toY(y)+4);
+        t.setAttribute('text-anchor','end'); t.setAttribute('class','tick-text'); t.textContent=y;
+        grid.appendChild(t);
+      }
+    }
+    const xLabel = document.createElementNS('http://www.w3.org/2000/svg','text');
+    xLabel.setAttribute('x',W-margin.r+4); xLabel.setAttribute('y',toY(0)+5); xLabel.setAttribute('class','tick-text'); xLabel.textContent='x';
+    const yLabel = document.createElementNS('http://www.w3.org/2000/svg','text');
+    yLabel.setAttribute('x',toX(0)+8); yLabel.setAttribute('y',margin.t-7); yLabel.setAttribute('class','tick-text'); yLabel.textContent='y';
+    grid.append(xLabel,yLabel);
+  }
+
+  function update2D(){
+    const ax=toX(A.x), ay=toY(A.y), bx=toX(B.x), by=toY(B.y), cx=bx, cy=ay;
+    const dx=Math.abs(B.x-A.x), dy=Math.abs(B.y-A.y);
+    const d2=dx*dx+dy*dy, d=Math.sqrt(d2);
+
+    el('pointA').setAttribute('transform',`translate(${ax},${ay})`);
+    el('pointB').setAttribute('transform',`translate(${bx},${by})`);
+    el('aCoordText').textContent=`(${fmt(A.x)}, ${fmt(A.y)})`;
+    el('bCoordText').textContent=`(${fmt(B.x)}, ${fmt(B.y)})`;
+
+    el('horizontalSeg').setAttribute('x1',ax); el('horizontalSeg').setAttribute('y1',ay);
+    el('horizontalSeg').setAttribute('x2',cx); el('horizontalSeg').setAttribute('y2',cy);
+    el('verticalSeg').setAttribute('x1',cx); el('verticalSeg').setAttribute('y1',cy);
+    el('verticalSeg').setAttribute('x2',bx); el('verticalSeg').setAttribute('y2',by);
+    el('hypSeg').setAttribute('x1',ax); el('hypSeg').setAttribute('y1',ay);
+    el('hypSeg').setAttribute('x2',bx); el('hypSeg').setAttribute('y2',by);
+    el('triangleFill').setAttribute('points',`${ax},${ay} ${cx},${cy} ${bx},${by}`);
+
+    el('cDot').setAttribute('cx',cx); el('cDot').setAttribute('cy',cy);
+    el('cLabel').setAttribute('x',cx+8); el('cLabel').setAttribute('y',cy-9);
+
+    const s = 14;
+    const sx = ax < bx ? -1 : 1;
+    const sy = ay < by ? -1 : 1;
+    const path = `M ${cx + sx*s} ${cy} L ${cx + sx*s} ${cy + sy*s} L ${cx} ${cy + sy*s}`;
+    el('rightAngle').setAttribute('d',path);
+
+    el('dxText').setAttribute('x',(ax+cx)/2); el('dxText').setAttribute('y',ay + (by<ay?18:-10));
+    el('dxText').setAttribute('text-anchor','middle'); el('dxText').textContent=`|Δx| = ${fmt(dx)}`;
+    el('dyText').setAttribute('x',cx + (bx>ax?12:-12)); el('dyText').setAttribute('y',(cy+by)/2);
+    el('dyText').setAttribute('text-anchor', bx>ax?'start':'end'); el('dyText').textContent=`|Δy| = ${fmt(dy)}`;
+    el('dText').setAttribute('x',(ax+bx)/2); el('dText').setAttribute('y',(ay+by)/2-12);
+    el('dText').setAttribute('text-anchor','middle'); el('dText').textContent=`AB = ${sqrtLabel(d2)}`;
+
+    el('metricA').textContent=`(${fmt(A.x)}, ${fmt(A.y)})`;
+    el('metricB').textContent=`(${fmt(B.x)}, ${fmt(B.y)})`;
+    el('metricDx').textContent=fmt(dx);
+    el('metricDy').textContent=fmt(dy);
+    el('metricD').textContent=`${sqrtLabel(d2)} ≈ ${d.toFixed(2)}`;
+
+    el('formulaDx').textContent=`|${fmt(B.x)} − ${fmtSigned(A.x)}| = ${fmt(dx)}`;
+    el('formulaDy').textContent=`|${fmt(B.y)} − ${fmtSigned(A.y)}| = ${fmt(dy)}`;
+    el('formulaSq').textContent=`AB² = ${fmt(dx)}² + ${fmt(dy)}² = ${fmt(d2)}`;
+    el('formulaD').textContent=`AB = √(${fmt(dx)}² + ${fmt(dy)}²) = ${sqrtLabel(d2)} ≈ ${d.toFixed(2)}`;
+
+    const horiz = B.x > A.x ? '오른쪽' : B.x < A.x ? '왼쪽' : '가로로 움직이지 않고';
+    const vert = B.y > A.y ? '위쪽' : B.y < A.y ? '아래쪽' : '세로로 움직이지 않고';
+    let sentence;
+    if(dx===0 && dy===0){
+      sentence='두 점이 같은 위치에 있으므로 가로 변화와 세로 변화가 모두 0이고, 거리도 0입니다.';
+    }else if(dx===0){
+      sentence=`A에서 B까지 ${vert}으로 ${fmt(dy)}만큼 이동하면 됩니다. 가로 변화가 0이므로 직선거리는 세로 변화와 같습니다.`;
+    }else if(dy===0){
+      sentence=`A에서 B까지 ${horiz}으로 ${fmt(dx)}만큼 이동하면 됩니다. 세로 변화가 0이므로 직선거리는 가로 변화와 같습니다.`;
+    }else{
+      sentence=`A에서 B까지 가로로 ${fmt(dx)}, 세로로 ${fmt(dy)}만큼 차이가 납니다. 이 두 변화가 직각삼각형의 두 변이 되고, 직선거리 ${sqrtLabel(d2)}는 빗변이 됩니다.`;
+    }
+    el('observation').textContent=sentence;
+    applyStage();
+  }
+
+  function applyStage(){
+    const showLegs = stage >= 1;
+    const showTriangle = stage >= 2;
+    const showFormula = stage >= 3;
+    el('horizontalSeg').style.opacity = showLegs ? 1 : 0;
+    el('verticalSeg').style.opacity = showLegs ? 1 : 0;
+    el('dxText').style.opacity = showLegs ? 1 : 0;
+    el('dyText').style.opacity = showLegs ? 1 : 0;
+    el('cDot').style.opacity = showLegs ? 1 : 0;
+    el('cLabel').style.opacity = showLegs ? 1 : 0;
+    el('triangleFill').style.opacity = showTriangle ? 1 : 0;
+    el('rightAngle').style.opacity = showTriangle ? 1 : 0;
+    el('hypSeg').style.opacity = showTriangle ? 1 : .3;
+    el('dText').style.opacity = showFormula ? 1 : 0;
+    el('formulaBox').style.opacity = showFormula ? 1 : .36;
+    document.querySelectorAll('.badge').forEach(b=>b.classList.toggle('active', Number(b.dataset.stage)===stage));
+    const tips=[
+      '먼저 두 점의 위치만 관찰해 보세요.',
+      '이제 A에서 B까지의 가로 변화와 세로 변화를 분리해 봅니다.',
+      '두 변화가 만나 직각삼각형을 만듭니다. 직선거리는 빗변이에요.',
+      '피타고라스 정리로 가로² + 세로² = 거리²가 됩니다.'
+    ];
+    el('floatingTip').textContent=tips[stage];
+  }
+
+  function svgPoint(evt){
+    const rect=plane.getBoundingClientRect();
+    return {
+      x:(evt.clientX-rect.left)*W/rect.width,
+      y:(evt.clientY-rect.top)*H/rect.height
+    };
+  }
+  function movePoint(which, evt){
+    const p=svgPoint(evt);
+    const nx=clamp(roundSnap(fromX(p.x)),xMin,xMax);
+    const ny=clamp(roundSnap(fromY(p.y)),yMin,yMax);
+    if(which==='A') A={x:nx,y:ny}; else B={x:nx,y:ny};
+    update2D();
+  }
+  ['A','B'].forEach(which=>{
+    const node=el('point'+which);
+    node.addEventListener('pointerdown',evt=>{
+      drag=which; node.setPointerCapture(evt.pointerId); movePoint(which,evt);
+    });
+    node.addEventListener('pointermove',evt=>{ if(drag===which) movePoint(which,evt); });
+    node.addEventListener('pointerup',()=>drag=null);
+    node.addEventListener('pointercancel',()=>drag=null);
+    node.addEventListener('keydown',evt=>{
+      const step=evt.shiftKey?1:.5;
+      let target=which==='A'?A:B;
+      let next={...target};
+      if(evt.key==='ArrowLeft') next.x-=step;
+      else if(evt.key==='ArrowRight') next.x+=step;
+      else if(evt.key==='ArrowUp') next.y+=step;
+      else if(evt.key==='ArrowDown') next.y-=step;
+      else return;
+      evt.preventDefault();
+      next.x=clamp(next.x,xMin,xMax); next.y=clamp(next.y,yMin,yMax);
+      if(which==='A') A=next; else B=next;
+      update2D();
+    });
+  });
+
+  function buildNumberline(){
+    const ticks=el('nlTicks');
+    ticks.innerHTML='';
+    for(let v=-10;v<=10;v++){
+      const t=document.createElement('div');
+      t.className='nl-tick';
+      t.style.left=`${(v+10)/20*100}%`;
+      const s=document.createElement('span'); s.textContent=v;
+      t.appendChild(s); ticks.appendChild(t);
+    }
+  }
+  function nlPct(v){ return (v+10)/20*100; }
+  function update1D(){
+    const a=NL.a,b=NL.b,left=Math.min(a,b),right=Math.max(a,b),dist=Math.abs(b-a);
+    el('nlA').style.left=`${nlPct(a)}%`; el('nlB').style.left=`${nlPct(b)}%`;
+    el('nlAText').textContent=`(${fmt(a)})`; el('nlBText').textContent=`(${fmt(b)})`;
+    el('nlSegment').style.left=`${nlPct(left)}%`; el('nlSegment').style.width=`${nlPct(right)-nlPct(left)}%`;
+    el('nlArrow').style.left=`${(nlPct(left)+nlPct(right))/2}%`; el('nlArrow').textContent=`${fmt(dist)}칸`;
+    el('nlFormula').textContent=`|${fmt(b)} − ${fmtSigned(a)}| = ${fmt(dist)}`;
+    el('metricA').textContent=`A(${fmt(a)})`; el('metricB').textContent=`B(${fmt(b)})`;
+    el('metricDx').textContent=fmt(dist); el('metricDy').textContent='—'; el('metricD').textContent=fmt(dist);
+    const dir=b>a?'오른쪽':b<a?'왼쪽':'같은 위치';
+    el('obs1d').textContent = dist===0
+      ? '두 점이 같은 곳에 있으므로 두 수의 차이는 0이고 거리도 0입니다.'
+      : `A에서 B까지 ${dir}으로 ${fmt(dist)}칸 떨어져 있습니다. 방향을 무시한 실제 거리는 두 좌표의 차이에 절댓값을 씌운 ${fmt(dist)}입니다.`;
+  }
+  function setupNLDrag(node,key){
+    let dragging=false;
+    const line=el('numberline');
+    function move(evt){
+      const r=line.getBoundingClientRect();
+      const ratio=clamp((evt.clientX-r.left)/r.width,0,1);
+      NL[key]=roundSnap(-10+ratio*20);
+      update1D();
+    }
+    node.addEventListener('pointerdown',e=>{dragging=true;node.setPointerCapture(e.pointerId);move(e)});
+    node.addEventListener('pointermove',e=>{if(dragging)move(e)});
+    node.addEventListener('pointerup',()=>dragging=false);
+    node.addEventListener('pointercancel',()=>dragging=false);
+    node.addEventListener('keydown',e=>{
+      if(!['ArrowLeft','ArrowRight'].includes(e.key)) return;
+      e.preventDefault();
+      NL[key]=clamp(NL[key]+(e.key==='ArrowRight'?.5:-.5),-10,10);
+      update1D();
+    });
+  }
+
+  document.querySelectorAll('.tab').forEach(tab=>{
+    tab.addEventListener('click',()=>{
+      activeMode=tab.dataset.mode;
+      document.body.classList.toggle('mode-1d',activeMode==='1d');
+      document.body.classList.toggle('mode-2d',activeMode==='2d');
+      document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===tab));
+      el('canvasTitle').textContent=activeMode==='1d'?'두 점 A, B를 수직선 위에서 움직여 보세요':'두 점 A, B를 끌어 움직여 보세요';
+      el('canvasSub').textContent=activeMode==='1d'?'좌표의 순서와 관계없이 실제 거리는 항상 0 이상이에요.':'가로 변화와 세로 변화가 직각삼각형을 만들어요.';
+      el('questionList').innerHTML=activeMode==='1d'
+        ? `<div class="q">A와 B의 위치를 서로 바꾸어도 거리는 같을까요?</div>
+           <div class="q">두 점을 같은 만큼 오른쪽으로 옮기면 거리는 변할까요?</div>
+           <div class="q">좌표의 차이가 음수여도 실제 거리는 왜 음수가 될 수 없을까요?</div>`
+        : `<div class="q">두 점의 y좌표를 같게 만들면 거리 공식은 어떻게 단순해질까요?</div>
+           <div class="q">가로 변화와 세로 변화를 서로 바꾸어도 직선거리는 같을까요?</div>
+           <div class="q">두 점을 같은 방향으로 똑같이 옮기면 거리는 변할까요?</div>`;
+      activeMode==='1d'?update1D():update2D();
+    });
+  });
+
+  el('stageRange').addEventListener('input',e=>{stage=Number(e.target.value);applyStage()});
+  document.querySelectorAll('.badge').forEach(b=>b.addEventListener('click',()=>{
+    stage=Number(b.dataset.stage); el('stageRange').value=stage; applyStage();
+  }));
+
+  el('resetBtn').addEventListener('click',()=>{
+    A={x:-4,y:-2}; B={x:4,y:3}; NL={a:-5,b:4}; stage=3; el('stageRange').value=3;
+    update2D();update1D();
+  });
+  el('randomBtn').addEventListener('click',()=>{
+    if(activeMode==='1d'){
+      NL.a=Math.round(-9+Math.random()*18);
+      do{NL.b=Math.round(-9+Math.random()*18)}while(NL.b===NL.a);
+      update1D();
+    }else{
+      A={x:Math.round(-7+Math.random()*14),y:Math.round(-5+Math.random()*10)};
+      do{B={x:Math.round(-7+Math.random()*14),y:Math.round(-5+Math.random()*10)}}while(B.x===A.x&&B.y===A.y);
+      update2D();
+    }
+  });
+
+  el('copyBtn').addEventListener('click',async()=>{
+    const text = activeMode==='1d' ? el('obs1d').textContent : el('observation').textContent;
+    try{ await navigator.clipboard.writeText(text); }
+    catch{ const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove(); }
+    const toast=el('toast');toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1700);
+  });
+
+  buildGrid();
+  buildNumberline();
+  setupNLDrag(el('nlA'),'a');
+  setupNLDrag(el('nlB'),'b');
+  update2D();
+  update1D();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!doctype html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>역·대우 변환기</title><style>
+:root{
+  --ink:#172033;--muted:#5d6880;--bg:#f4f7fb;--panel:#ffffff;--line:#d8e0ee;
+  --p:#2563eb;--q:#d946ef;--r:#059669;--good:#08783f;--bad:#b42318;--warn:#9a6700;
+  --focus:#111827;--shadow:0 12px 30px rgba(20,33,61,.10);--radius:20px;
+}
+*{box-sizing:border-box}
+html{font-size:18px}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI","Noto Sans KR",sans-serif;background:linear-gradient(180deg,#eef5ff,#f7f7fb 28%,#f4f7fb);color:var(--ink);line-height:1.55}
+button,select,input{font:inherit}
+button{min-height:44px;border:1px solid #b9c6da;border-radius:12px;background:#fff;color:var(--ink);font-weight:750;padding:.62rem .88rem;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
+button:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(20,33,61,.10);border-color:#7b91b1}
+button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:4px solid rgba(37,99,235,.28);outline-offset:2px}
+button[disabled]{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+button.primary{background:#214fc6;color:#fff;border-color:#214fc6}
+button.good{background:#eaf8f0;border-color:#76c89a;color:#075d31}
+button.bad{background:#fff0ee;border-color:#ef9c93;color:#8f1d13}
+button.ghost{background:#f8fafc}
+button.active{box-shadow:0 0 0 4px rgba(37,99,235,.15);border-color:#2563eb;background:#eef4ff}
+.app{max-width:1380px;margin:auto;min-height:100vh;padding:1rem}
+header.hero{background:linear-gradient(135deg,#15264a,#284b87);color:#fff;border-radius:26px;padding:1.2rem 1.35rem;box-shadow:var(--shadow);display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:center}
+.hero h1{font-size:clamp(1.65rem,3vw,2.5rem);line-height:1.16;margin:0 0 .25rem}.hero p{margin:0;color:#e7efff}.hero .tag{display:inline-block;font-size:.82rem;border:1px solid rgba(255,255,255,.45);border-radius:999px;padding:.22rem .62rem;margin-bottom:.4rem;background:rgba(255,255,255,.10)}
+.toolbar{display:flex;flex-wrap:wrap;gap:.48rem;justify-content:flex-end}.toolbar button{background:rgba(255,255,255,.96)}
+.modebar{margin:1rem 0;display:flex;gap:.55rem;flex-wrap:wrap;align-items:center}.modebar .spacer{flex:1}.status-pill{padding:.38rem .7rem;border:2px solid #bac6d8;border-radius:999px;background:#fff;font-weight:800}.status-pill.good{border-color:#5bb581;color:#075d31;background:#ecfbf2}.status-pill.bad{border-color:#e99087;color:#971c12;background:#fff3f1}
+.grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);gap:1rem}.grid.equal{grid-template-columns:1fr 1fr}.stack{display:grid;gap:1rem}.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:1rem;box-shadow:0 7px 22px rgba(20,33,61,.07);min-width:0}.panel h2,.panel h3{margin:.05rem 0 .6rem;line-height:1.25}.panel h2{font-size:1.25rem}.panel h3{font-size:1.05rem}.subtle{color:var(--muted);font-size:.93rem}.math{font-family:"Cambria Math","STIX Two Math",serif;font-weight:750;letter-spacing:.02em}.bigmath{font-size:clamp(1.4rem,3vw,2.15rem);font-weight:850;overflow-wrap:anywhere}.statement{border:2px solid #cad5e7;border-radius:16px;padding:.8rem;background:#fbfdff;overflow-wrap:anywhere}.assumption{border-bottom:4px solid var(--p);font-weight:850}.conclusion{border-bottom:4px solid var(--q);font-weight:850}.label-p{color:#154fb8}.label-q{color:#aa259e}.label-r{color:#087558}.setline{font-size:1.04rem;overflow-wrap:anywhere}.result{border-radius:16px;padding:.8rem;border:2px solid #b9c5d8;background:#f8fafc;font-weight:800}.result.good{border-color:#69bd8b;background:#edf9f2;color:#075d31}.result.bad{border-color:#ee948a;background:#fff1ef;color:#951d13}.feedback{min-height:66px;border-left:6px solid #7c8da8;background:#f8fafc;border-radius:12px;padding:.75rem .9rem}.feedback.good{border-color:#1f9d59;background:#effaf4}.feedback.bad{border-color:#d04437;background:#fff3f1}.choices{display:flex;gap:.5rem;flex-wrap:wrap}.choice{flex:1 1 150px}.tokenrow{display:flex;gap:.5rem;flex-wrap:wrap}.token{border:2px solid #b7c3d6;background:#fff;border-radius:14px;padding:.6rem .8rem;font-weight:850;user-select:none}.token.selected{border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.13)}
+.cards{display:flex;gap:.5rem;flex-wrap:wrap}.element{min-width:50px;border:2px solid #b8c5d9;background:#fff;border-radius:13px;padding:.52rem .65rem;font-weight:850;position:relative}.element.p{border-color:var(--p)}.element.q{box-shadow:inset 0 -5px 0 rgba(217,70,239,.25)}.element.counter{border-color:#c2410c;background:repeating-linear-gradient(135deg,#fff1e9,#fff1e9 8px,#ffd7c2 8px,#ffd7c2 16px)}.element.selected{outline:4px solid rgba(17,24,39,.22)}
+.badge{display:inline-flex;align-items:center;gap:.3rem;border:1px solid #bac5d7;border-radius:999px;padding:.2rem .55rem;background:#fff;font-size:.84rem;font-weight:800}.badge.good{border-color:#79c497;background:#effaf4;color:#076238}.badge.bad{border-color:#e99a91;background:#fff1ef;color:#8f1e15}.badge.p{border-color:#75a3f4;color:#174aa8;background:#eef4ff}.badge.q{border-color:#e490dc;color:#9f258f;background:#fff0fd}
+.controls{display:flex;gap:.45rem;flex-wrap:wrap;align-items:center}.stepread{font-weight:800;color:#34435c}.visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+svg{max-width:100%;height:auto}.svgbox{border:2px solid #d1daea;background:#fbfdff;border-radius:18px;padding:.5rem;overflow:hidden}.legend{display:flex;gap:.7rem;flex-wrap:wrap;font-size:.9rem}.swatch{display:inline-block;width:18px;height:18px;border-radius:5px;vertical-align:-3px;margin-right:.3rem;border:2px solid}.swatch.p{border-color:var(--p);background:rgba(37,99,235,.14)}.swatch.q{border-color:var(--q);background:rgba(217,70,239,.12)}.swatch.counter{border-color:#c2410c;background:repeating-linear-gradient(135deg,#fff1e9,#fff1e9 4px,#ffceb3 4px,#ffceb3 8px)}
+.numberline{width:100%;min-height:150px}.hint{border:1px dashed #e1a82b;background:#fff9e8;border-radius:12px;padding:.65rem .8rem;color:#745000}.hidden{display:none!important}
+dialog{border:0;border-radius:22px;padding:0;max-width:min(760px,92vw);box-shadow:0 30px 80px rgba(0,0,0,.28)}dialog::backdrop{background:rgba(10,18,35,.58)}.modalbody{padding:1.25rem}.modalhead{display:flex;justify-content:space-between;gap:1rem;align-items:center;border-bottom:1px solid #dbe2ee;padding-bottom:.65rem}.modalhead h2{margin:0}.modalbody ul{padding-left:1.25rem}.modalclose{min-width:48px}
+.selftest{margin:1rem 0;border:2px solid #8aa3c8;background:#f7fbff;border-radius:16px;padding:.85rem}.selftest.pass{border-color:#4baa72;background:#effaf4}.selftest.fail{border-color:#db6b60;background:#fff2f0}.testline{font-family:ui-monospace,Consolas,monospace;font-size:.86rem}
+footer{margin:1rem 0;color:#657187;font-size:.82rem;text-align:center}
+@media(max-width:900px){html{font-size:16px}.grid,.grid.equal{grid-template-columns:1fr}header.hero{grid-template-columns:1fr}.toolbar{justify-content:flex-start}.app{padding:.6rem}.panel{padding:.82rem}}
+@media(max-width:520px){button{width:100%}.toolbar button,.modebar button,.controls button,.choices button,.tokenrow button,.cards button{width:auto;flex:1 1 auto}.hero{border-radius:18px}.bigmath{font-size:1.38rem}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;transition-duration:.001ms!important}}
+
+.assembler{display:grid;grid-template-columns:1fr auto 1fr;gap:.7rem;align-items:stretch}.slot{min-height:118px;border:3px dashed #aab8cf;border-radius:18px;background:#fbfdff;display:grid;place-items:center;padding:.8rem;text-align:center}.slot.filled{border-style:solid;border-color:#2563eb;background:#eef4ff}.arrow{display:grid;place-items:center;font-size:2.5rem;font-weight:900}.compare{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem}.compare>div{border:2px solid #c9d5e7;border-radius:16px;padding:.75rem;background:#fbfdff}.target{border:2px solid #f0b429;background:#fff8e6;border-radius:14px;padding:.65rem;font-weight:850}
+@media(max-width:760px){.compare{grid-template-columns:1fr}.assembler{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}}
+</style></head><body><div class="app"><header class="hero"><div><span class="tag">Ⅳ. 명제 · 02. 명제 사이의 관계</span><h1>역·대우 변환기</h1><p>p, q, ~p, ~q 카드를 가정·결론 칸에 배치하여 역 q→p와 대우 ~q→~p를 만듭니다.</p></div><div class="toolbar"><button onclick="goHome()">처음으로</button><button onclick="resetCurrent()">초기화</button><button onclick="newProblem()">새 문제</button><button onclick="openHelp()">도움말</button></div></header>
+<div class="modebar"><button id="exploreBtn" class="active" onclick="setMode('explore')">자유 탐색</button><button id="quizBtn" onclick="setMode('quiz')">문제 해결</button><span class="spacer"></span><span class="status-pill" id="targetPill">대우 만들기</span></div><div id="selftest"></div>
+<main class="stack"><section class="panel"><div class="controls"><label><strong>원래 명제 선택</strong> <select id="exampleSelect"></select></label><button onclick="setTarget('original')">원래 명제</button><button onclick="setTarget('converse')">역</button><button onclick="setTarget('contra')">대우</button></div><div id="originalStatement" class="statement bigmath"></div><p><span class="badge p">가정 p</span> <span id="pText"></span></p><p><span class="badge q">결론 q</span> <span id="qText"></span></p></section>
+<div class="grid equal"><section class="panel"><h2>카드 조립</h2><div id="targetGuide" class="target"></div><div id="tokenRow" class="tokenrow" aria-label="명제 카드"></div><p class="subtle">드래그하여 놓거나, 카드를 선택한 뒤 가정·결론 칸을 누르세요. Tab과 Enter도 사용할 수 있습니다.</p><div class="assembler"><button id="anteSlot" class="slot" onclick="placeSelected('ante')" ondragover="event.preventDefault()" ondrop="dropToken(event,'ante')"><span>가정 칸</span></button><div class="arrow" aria-hidden="true">→</div><button id="consSlot" class="slot" onclick="placeSelected('cons')" ondragover="event.preventDefault()" ondrop="dropToken(event,'cons')"><span>결론 칸</span></button></div><div class="controls" style="margin-top:.75rem"><button class="primary" onclick="checkAssembly()">확인</button><button onclick="clearSlots()">카드 비우기</button></div><div id="assemblyFeedback" class="feedback">목표에 맞게 두 카드를 배치하세요.</div></section>
+<aside class="panel"><h2>자연어 문장</h2><div id="naturalSentence" class="statement">카드를 배치하면 문장이 만들어집니다.</div><h3>기호 형태</h3><div id="symbolSentence" class="result bigmath">□ → □</div><h3>부정 경계 확인</h3><div id="negationNote" class="hint"></div></aside></div>
+<section class="panel"><h2>원래 명제·역·대우 비교</h2><div id="compare" class="compare"></div></section>
+<section class="panel"><h2>변환 애니메이션</h2><div class="controls"><button onclick="animPrev()">이전 단계</button><button id="playBtn" onclick="toggleAnim()">재생</button><button onclick="animNext()">다음 단계</button></div><div id="animText" class="feedback"></div></section>
+<section id="quizPanel" class="panel hidden"><h2>문제 해결</h2><div id="quizQuestion" class="statement"></div><div id="quizChoices" class="choices"></div><div id="quizFeedback" class="feedback">답을 선택하세요.</div></section></main>
+<dialog id="helpDialog" aria-labelledby="helpTitle"><div class="modalbody"><div class="modalhead"><h2 id="helpTitle">도움말</h2><button class="modalclose" onclick="closeHelp()" aria-label="도움말 닫기">닫기</button></div><div id="helpContent"></div><p class="subtle">Esc 키로도 닫을 수 있습니다.</p></div></dialog>
+<footer>역은 자리만 바꾸고, 대우는 각각 부정한 뒤 순서를 바꿉니다.</footer></div><script>
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const set=(a)=>new Set(a), arr=(s)=>[...s], sorted=(s)=>arr(s).sort((a,b)=>String(a).localeCompare(String(b),'ko',{numeric:true}));
+const isSubset=(A,B)=>[...A].every(x=>B.has(x));
+const difference=(A,B)=>new Set([...A].filter(x=>!B.has(x)));
+const union=(A,B)=>new Set([...A,...B]);
+const equalSet=(A,B)=>A.size===B.size&&isSubset(A,B);
+const fmtSet=(S)=>S.size?`{${sorted(S).join(', ')}}`:'∅';
+const esc=(s)=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function ifClause(s){s=String(s).trim().replace(/[.。]$/,'');for(const [a,b] of [['아니다','아니면'],['이다','이면'],['같다','같으면'],['않다','않으면'],['있다','있으면'],['없다','없으면']]){if(s.endsWith(a))return s.slice(0,-a.length)+b}return s+'이면'}
+function asConclusion(s){s=String(s).trim().replace(/[.。]$/,'');return /(?:다)$/.test(s)?s+'.':s+'이다.'}
+let timers=[]; function stopTimers(){timers.forEach(clearInterval);timers.forEach(clearTimeout);timers=[]}
+function later(fn,ms){const id=setTimeout(fn,ms);timers.push(id);return id}
+function openHelp(){const d=$('#helpDialog'); if(!d.open)d.showModal()}
+function closeHelp(){const d=$('#helpDialog'); if(d.open)d.close()}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp()});
+function commonSelfTests(){
+  const U=set([1,2,3,4]);
+  const P1=set([1,2]),Q1=set([1,2,3]);
+  const P2=set([1,3]),Q2=set([3]);
+  const R=set([1,2,3,4]);
+  const Pc=difference(U,P1),Qc=difference(U,Q1);
+  return [
+    ['P={1,2}, Q={1,2,3}: p→q 참',isSubset(P1,Q1)],
+    ['P={1,3}, Q={3}: 거짓·반례 {1}',!isSubset(P2,Q2)&&equalSet(difference(P2,Q2),set([1]))],
+    ['역 q→p의 반례는 Q-P',equalSet(difference(Q2,P2),difference(Q2,P2))],
+    ['대우의 참·거짓은 원래 명제와 동일',isSubset(P1,Q1)===isSubset(Qc,Pc)],
+    ['P⊆Q이면 Q^C⊆P^C',isSubset(P1,Q1)&&isSubset(Qc,Pc)],
+    ['P⊆Q, Q⊈P: 충분·비필요',isSubset(P1,Q1)&&!isSubset(Q1,P1)],
+    ['Q⊆P, P⊈Q: 필요·비충분',isSubset(Q2,P2)&&!isSubset(P2,Q2)],
+    ['P=Q: 필요충분',equalSet(P1,set([1,2]))],
+    ['어느 쪽도 포함 아님',!isSubset(set([1,2]),set([2,3]))&&!isSubset(set([2,3]),set([1,2]))],
+    ['P⊆Q, Q⊆R이면 P⊆R',isSubset(P1,Q1)&&isSubset(Q1,R)&&isSubset(P1,R)]
+  ];
+}
+function renderSelfTest(extra=[]){
+ const box=$('#selftest'); if(!box)return; if(!new URLSearchParams(location.search).has('selftest')){box.classList.add('hidden');return}
+ const tests=[...commonSelfTests(),...extra]; const ok=tests.every(t=>t[1]);
+ box.className=`selftest ${ok?'pass':'fail'}`;
+ box.innerHTML=`<strong>자체 테스트: ${ok?'PASS':'FAIL'}</strong>`+tests.map(([n,p])=>`<div class="testline">${p?'✅':'❌'} ${esc(n)}</div>`).join('');
+}
+
+const problems=[
+{title:'제곱',p:'x=2',q:'x²=4',np:'x≠2',nq:'x²≠4',original:'x=2이면 x²=4이다.',converse:'x²=4이면 x=2이다.',contra:'x²≠4이면 x≠2이다.',note:'x²=4의 부정은 x²≠4입니다.'},
+{title:'부등식 경계',p:'x>3',q:'x>1',np:'x≤3',nq:'x≤1',original:'x>3이면 x>1이다.',converse:'x>1이면 x>3이다.',contra:'x≤1이면 x≤3이다.',note:'x>3의 부정은 x≤3입니다. x=3을 빠뜨리지 않습니다.'},
+{title:'정삼각형',p:'삼각형이 정삼각형이다',q:'세 내각의 크기가 같다',np:'삼각형이 정삼각형이 아니다',nq:'세 내각의 크기가 같지 않다',original:'삼각형이 정삼각형이면 세 내각의 크기가 같다.',converse:'삼각형의 세 내각의 크기가 같으면 정삼각형이다.',contra:'삼각형의 세 내각의 크기가 같지 않으면 정삼각형이 아니다.',note:'전체 대상은 삼각형입니다.'},
+{title:'약수',p:'x는 6의 약수이다',q:'x는 12의 약수이다',np:'x는 6의 약수가 아니다',nq:'x는 12의 약수가 아니다',original:'x가 6의 약수이면 x는 12의 약수이다.',converse:'x가 12의 약수이면 x는 6의 약수이다.',contra:'x가 12의 약수가 아니면 x는 6의 약수가 아니다.',note:'부정은 조건 전체에 적용합니다.'},
+{title:'직사각형',p:'도형이 정사각형이다',q:'도형이 직사각형이다',np:'도형이 정사각형이 아니다',nq:'도형이 직사각형이 아니다',original:'도형이 정사각형이면 직사각형이다.',converse:'도형이 직사각형이면 정사각형이다.',contra:'도형이 직사각형이 아니면 정사각형이 아니다.',note:'전체 대상은 사각형으로 한정합니다.'},
+{title:'방정식',p:'x=2',q:'x²-4x+4=0',np:'x≠2',nq:'x²-4x+4≠0',original:'x=2이면 x²-4x+4=0이다.',converse:'x²-4x+4=0이면 x=2이다.',contra:'x²-4x+4≠0이면 x≠2이다.',note:'방정식의 부정은 등호를 ≠로 바꾼 문장입니다.'}
+];
+const keys=['p','q','np','nq'];let idx=0,target='contra',selected=null,slots={ante:null,cons:null},mode='explore',animStep=0,playing=false,quizIndex=0;
+const targets={original:{label:'원래 명제 p→q',ans:['p','q'],guide:'가정에 p, 결론에 q를 놓으세요.'},converse:{label:'역 q→p',ans:['q','p'],guide:'역은 p와 q의 자리만 바꾸며 부정하지 않습니다.'},contra:{label:'대우 ~q→~p',ans:['nq','np'],guide:'대우는 결론 q를 먼저 부정해 가정으로 놓고, 가정 p를 부정해 결론으로 놓습니다.'}};
+const quizBank=[
+{q:'명제 p→q의 역은?',a:'q→p',c:['q→p','~p→~q','~q→~p'],f:'역은 p와 q의 자리만 바꿉니다.'},
+{q:'명제 p→q의 대우는?',a:'~q→~p',c:['~q→~p','~p→~q','q→p'],f:'대우는 각각 부정하고 순서를 바꿉니다.'},
+{q:'x>3의 부정은?',a:'x≤3',c:['x<3','x≤3','x≥3'],f:'경계값 x=3도 포함해야 하므로 x≤3입니다.'},
+{q:'대우를 ~p→~q로 만들었다. 무엇이 잘못되었나요?',a:'순서를 바꾸지 않았다.',c:['부정을 하면 안 된다.','순서를 바꾸지 않았다.','화살표를 없애야 한다.'],f:'대우는 ~q→~p로 결론의 부정이 먼저 옵니다.'},
+{q:'역을 만들 때 해야 할 일은?',a:'p와 q의 위치만 바꾼다.',c:['p와 q를 모두 부정한다.','p와 q의 위치만 바꾼다.','q만 부정한다.'],f:'역에서는 부정을 사용하지 않습니다.'}
+];
+function init(){problems.forEach((p,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${i+1}. ${p.title}`;$('#exampleSelect').append(o)});$('#exampleSelect').onchange=e=>load(+e.target.value);$('#helpContent').innerHTML='<ul><li>원래 명제 p→q: p는 가정, q는 결론입니다.</li><li>역 q→p: p와 q의 위치만 바꿉니다.</li><li>대우 ~q→~p: q와 p를 각각 부정하고 순서를 바꿉니다.</li><li>부등식의 부정에서 경계값을 빠뜨리지 마세요.</li></ul>';load(0);renderSelfTest([['대우 토큰 순서',targets.contra.ans.join(',')==='nq,np']])}
+function load(i){stopTimers();idx=i;selected=null;clearSlots(false);animStep=0;playing=false;$('#playBtn').textContent='재생';render()}
+function render(){const p=problems[idx];$('#exampleSelect').value=idx;$('#originalStatement').textContent=p.original;$('#pText').textContent=p.p;$('#qText').textContent=p.q;$('#targetPill').textContent=targets[target].label;$('#targetGuide').textContent=targets[target].guide;$('#tokenRow').innerHTML=keys.map(k=>`<button class="token ${selected===k?'selected':''}" draggable="true" ondragstart="dragToken(event,'${k}')" onclick="selectToken('${k}')" aria-pressed="${selected===k}"><span class="math">${tokenSymbol(k)}</span><br><span class="subtle">${esc(p[k])}</span></button>`).join('');renderSlots();$('#negationNote').textContent=p.note;$('#compare').innerHTML=`<div><span class="badge">원래 명제</span><div class="math bigmath">p→q</div><p>${esc(p.original)}</p></div><div><span class="badge">역</span><div class="math bigmath">q→p</div><p>${esc(p.converse)}</p></div><div><span class="badge">대우</span><div class="math bigmath">~q→~p</div><p>${esc(p.contra)}</p></div>`;renderAnim();renderQuiz()}
+function tokenSymbol(k){return ({p:'p',q:'q',np:'~p',nq:'~q'})[k]}
+function selectToken(k){selected=selected===k?null:k;render()}
+function dragToken(e,k){e.dataTransfer.setData('text/plain',k)}
+function dropToken(e,slot){e.preventDefault();const k=e.dataTransfer.getData('text/plain');place(k,slot)}
+function placeSelected(slot){if(selected)place(selected,slot)}
+function place(k,slot){if(!keys.includes(k))return;const other=slot==='ante'?'cons':'ante';if(slots[other]===k)slots[other]=null;slots[slot]=k;selected=null;render()}
+function renderSlots(){const p=problems[idx];for(const s of ['ante','cons']){const el=$('#'+(s==='ante'?'anteSlot':'consSlot'));const k=slots[s];el.classList.toggle('filled',!!k);el.innerHTML=k?`<div><span class="math bigmath">${tokenSymbol(k)}</span><br>${esc(p[k])}</div>`:`<span>${s==='ante'?'가정':'결론'} 칸</span>`}const a=slots.ante,c=slots.cons;$('#symbolSentence').textContent=`${a?tokenSymbol(a):'□'} → ${c?tokenSymbol(c):'□'}`;$('#naturalSentence').textContent=a&&c?`${ifClause(problems[idx][a])} ${asConclusion(problems[idx][c])}`:'카드를 배치하면 문장이 만들어집니다.'}
+function clearSlots(doRender=true){slots={ante:null,cons:null};selected=null;if(doRender)render()}
+function setTarget(t){target=t;clearSlots(false);$('#assemblyFeedback').className='feedback';$('#assemblyFeedback').textContent='목표에 맞게 두 카드를 배치하세요.';render()}
+function checkAssembly(){const ans=targets[target].ans;const ok=slots.ante===ans[0]&&slots.cons===ans[1];let msg='';if(ok)msg=`✅ ${targets[target].label}를 정확히 만들었습니다.`;else if(target==='contra'&&slots.ante==='np'&&slots.cons==='nq')msg='❌ ~p→~q는 대우가 아닙니다. 대우는 결론 q의 부정 ~q가 먼저 옵니다.';else if(target==='converse'&&(String(slots.ante).startsWith('n')||String(slots.cons).startsWith('n')))msg='❌ 역은 p와 q의 자리만 바꾸며 부정하지 않습니다.';else if(target==='contra'&&slots.ante==='nq'&&slots.cons!=='np')msg='❌ 가정 ~q는 맞지만, 결론은 가정 p의 부정 ~p여야 합니다.';else msg=`❌ ${targets[target].guide}`;$('#assemblyFeedback').className=`feedback ${ok?'good':'bad'}`;$('#assemblyFeedback').textContent=msg}
+const animTexts=['원래 명제 p→q에서 p는 가정, q는 결론입니다.','역을 만들 때는 p와 q의 위치만 바꾸어 q→p로 만듭니다.','대우를 만들 때는 q를 부정한 ~q를 가정으로 놓습니다.','p를 부정한 ~p를 결론으로 놓아 ~q→~p를 완성합니다.','원래 명제와 역과 대우의 문장 구조를 한 화면에서 비교합니다.'];
+function renderAnim(){$('#animText').innerHTML=`<b>${animStep+1}/${animTexts.length}</b> ${animTexts[animStep]}`}
+function animNext(){animStep=Math.min(animTexts.length-1,animStep+1);renderAnim()}function animPrev(){animStep=Math.max(0,animStep-1);renderAnim()}
+function toggleAnim(){stopTimers();playing=!playing;$('#playBtn').textContent=playing?'일시정지':'재생';if(playing){const id=setInterval(()=>{if(animStep>=animTexts.length-1){playing=false;$('#playBtn').textContent='재생';clearInterval(id);return}animStep++;renderAnim()},1050);timers.push(id)}}
+function setMode(m){mode=m;$('#exploreBtn').classList.toggle('active',m==='explore');$('#quizBtn').classList.toggle('active',m==='quiz');$('#quizPanel').classList.toggle('hidden',m!=='quiz')}
+function renderQuiz(){const q=quizBank[quizIndex%quizBank.length];$('#quizQuestion').textContent=q.q;$('#quizChoices').innerHTML=q.c.map(c=>`<button onclick="answerQuiz('${esc(c)}')">${esc(c)}</button>`).join('');$('#quizFeedback').className='feedback';$('#quizFeedback').textContent='답을 선택하세요.'}
+function answerQuiz(a){const q=quizBank[quizIndex%quizBank.length],ok=a===q.a;$('#quizFeedback').className=`feedback ${ok?'good':'bad'}`;$('#quizFeedback').textContent=(ok?'✅ 맞았습니다. ':'❌ ')+q.f}
+function newProblem(){stopTimers();if(mode==='quiz'){quizIndex=(quizIndex+1)%quizBank.length;renderQuiz()}else load((idx+1)%problems.length)}function resetCurrent(){load(idx)}function goHome(){setMode('explore');target='contra';load(0);window.scrollTo({top:0,behavior:'smooth'})}
+init();
+</script></body></html>

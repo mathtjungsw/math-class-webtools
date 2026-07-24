@@ -6,6 +6,7 @@ const TAG_META = {
   "middle-school-2": { label: "중학교 수학2", group: "subject" },
   "middle-school-3": { label: "중학교 수학3", group: "subject" },
   "common-math1": { label: "공통수학1", group: "subject" },
+  "common-math2": { label: "공통수학2", group: "subject" },
   "probability-statistics": { label: "확률과 통계", group: "subject" },
   "ai-math": { label: "인공지능 수학", group: "subject" },
   "economic-math": { label: "경제 수학", group: "subject" },

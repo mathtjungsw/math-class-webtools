@@ -1,0 +1,179 @@
+<!doctype html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>쌍곡선 조종실</title><style>
+:root{--ink:#172033;--muted:#5c667a;--paper:#f7f8fc;--card:#fff;--line:#d8deea;--primary:#5b3cc4;--primary2:#efeaff;--accent:#087f6b;--warn:#a63d40;--gold:#9b6b00;--shadow:0 10px 28px rgba(35,42,68,.10)}
+*{box-sizing:border-box}html{font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.55}body{margin:0}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:4px solid #ffcf40;outline-offset:2px}
+header{background:linear-gradient(135deg,#37218b,#6e51d1);color:#fff;padding:22px clamp(16px,4vw,52px)}header h1{margin:0;font-size:clamp(1.55rem,3.4vw,2.65rem)}header p{margin:.4rem 0 0;max-width:1050px;opacity:.93}.eyebrow{font-weight:800;letter-spacing:.04em;font-size:.88rem;opacity:.9}
+main{max-width:1440px;margin:auto;padding:18px clamp(12px,2.5vw,34px) 46px}.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 16px}.toolbar button,.modebar button,.btn{border:1px solid #cbd2e1;background:#fff;color:var(--ink);border-radius:12px;padding:10px 15px;font-weight:750;box-shadow:0 2px 8px rgba(30,40,70,.05)}.toolbar button:hover,.modebar button:hover,.btn:hover{transform:translateY(-1px);box-shadow:0 5px 13px rgba(30,40,70,.10)}.primary{background:var(--primary)!important;color:white!important;border-color:var(--primary)!important}.danger{border-color:#e0a6a8!important;color:#7c2126!important}.ghost{background:transparent!important}.modebar{display:flex;gap:8px;margin-left:auto}.modebar button.active{background:#e9e3ff;border-color:#6c4ccc;color:#3b238f}
+.layout{display:grid;grid-template-columns:minmax(340px,1.35fr) minmax(300px,.95fr);gap:18px;align-items:start}.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}.panel h2,.panel h3{margin-top:0}.stack{display:grid;gap:14px}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.control{display:grid;grid-template-columns:100px 1fr 90px;gap:10px;align-items:center}.control label{font-weight:800}.control input[type=range]{width:100%}.control input[type=number],.control select,.text-input{width:100%;border:1px solid #bfc8da;border-radius:10px;padding:9px 10px;background:#fff}.quick{display:flex;flex-wrap:wrap;gap:8px}.quick button{border:1px solid #bfc8da;background:white;border-radius:999px;padding:7px 11px;font-weight:700}.quick button[aria-pressed=true]{background:#e9e3ff;border-color:#6b4bc8}.stat{border:1px solid var(--line);background:#fafbff;border-radius:13px;padding:11px}.stat b{display:block;font-size:.82rem;color:var(--muted);margin-bottom:4px}.big{font-size:clamp(1.15rem,2vw,1.55rem);font-weight:850}.note{background:#fff7d7;border-left:5px solid #e0ad1b;padding:12px 14px;border-radius:10px}.info{background:#eef9f6;border-left:5px solid var(--accent);padding:12px 14px;border-radius:10px}.warn{background:#fff0f0;border-left:5px solid var(--warn);padding:12px 14px;border-radius:10px}.feedback{min-height:54px;padding:12px 14px;border-radius:12px;background:#f5f6fa;border:1px solid #d9deea}.feedback.ok{background:#eaf8f1;border-color:#79b99b}.feedback.bad{background:#fff0f0;border-color:#d59b9d}.feedback.hint{background:#fff8df;border-color:#ddc06a}
+.math{font-family:"Times New Roman","Cambria Math",serif;font-size:1.08em;white-space:normal}.formula{font-family:"Times New Roman","Cambria Math",serif;font-size:clamp(1.2rem,2.5vw,1.8rem);font-weight:700;overflow-x:auto;padding:8px 0}.frac{display:inline-grid;grid-template-rows:auto auto;vertical-align:middle;text-align:center;line-height:1.1;margin:0 .12em}.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 .18em .08em}.frac>span:last-child{padding:.08em .18em 0}.nowrap{white-space:nowrap}.scrollx{overflow-x:auto}.domain{font-family:"Cambria Math","Times New Roman",serif;font-weight:700}.kbd{border:1px solid #aeb6c7;background:#fff;border-bottom-width:3px;border-radius:5px;padding:1px 6px;font-size:.85em}
+.graph-wrap{position:relative;min-height:420px}.graph{width:100%;height:auto;min-height:400px;background:#fff;border:1px solid #cfd6e4;border-radius:15px;touch-action:none}.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.legend span{display:inline-flex;align-items:center;gap:6px;font-size:.9rem}.swatch{width:30px;height:0;border-top:4px solid #333}.swatch.dash{border-top-style:dashed}.graph-caption{font-size:.88rem;color:var(--muted);margin-top:8px}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:430px}th,td{border:1px solid #d5dbea;padding:8px;text-align:center}th{background:#f0edff}.pill{display:inline-block;border:1px solid #c5cce0;border-radius:999px;padding:3px 9px;background:#fff;font-size:.88rem}.stepper{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.step-dot{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;border:2px solid #bdc5d5;background:#fff;font-weight:800}.step-dot.active{border-color:var(--primary);background:#eee9ff;color:#3d248f}.step-dot.done{background:#eaf8f1;border-color:#2b967d}.hidden{display:none!important}.question{border:2px solid #d7cfff;background:#f8f6ff;border-radius:16px;padding:15px}.choices{display:grid;gap:8px;margin-top:12px}.choices button{text-align:left;border:1px solid #c7cfe1;background:white;border-radius:10px;padding:10px 12px}.choices button:hover{background:#f2efff}.score{font-weight:850;color:#4c2daf}.footer-note{margin-top:18px;color:var(--muted);font-size:.9rem}
+.modal-backdrop{position:fixed;inset:0;background:rgba(20,24,40,.58);display:grid;place-items:center;padding:18px;z-index:1000}.modal{background:#fff;border-radius:18px;max-width:760px;max-height:85vh;overflow:auto;padding:22px;box-shadow:0 28px 70px rgba(0,0,0,.28)}.modal-head{display:flex;justify-content:space-between;gap:16px;align-items:center}.modal-head h2{margin:0}.close{border:0;background:#f1f2f6;width:42px;height:42px;border-radius:50%;font-size:1.4rem}.selftest{margin-top:18px;background:#101827;color:#eaf0ff;border-radius:15px;padding:16px}.selftest h2{margin-top:0}.pass{color:#7cf0b8}.fail{color:#ff8d95}.selftest li{margin:5px 0}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.modebar{margin-left:0}.graph-wrap{min-height:340px}.graph{min-height:330px}.control{grid-template-columns:82px 1fr 78px}.grid3{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){header{padding:18px 14px}main{padding:12px 10px 30px}.panel{padding:13px;border-radius:14px}.grid2,.grid3{grid-template-columns:1fr}.control{grid-template-columns:1fr}.toolbar{gap:7px}.toolbar button,.modebar button,.btn{padding:9px 11px}.modebar{width:100%}.modebar button{flex:1}.graph{min-height:290px}.graph-wrap{min-height:300px}.formula{font-size:1.15rem}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation-duration:.001ms!important;animation-iteration-count:1!important}}
+</style></head><body>
+<header><div class="eyebrow">Ⅵ. 유리함수와 무리함수 · 01. 유리함수와 그 그래프</div><h1>쌍곡선 조종실</h1><p>k의 부호와 절댓값, 사분면, 원점 대칭, 정의역·치역, 점근선을 한 화면에서 탐구합니다.</p></header>
+<main>
+<div class="toolbar" aria-label="공통 도구 모음"><button onclick="goHome()">처음으로</button><button onclick="resetTool()">초기화</button><button class="primary" onclick="newProblem()">새 문제</button><button id="helpBtn">도움말</button><div class="modebar"><button class="active" data-mode-button="explore" aria-pressed="true">자유 탐색</button><button data-mode-button="problem" aria-pressed="false">문제 해결</button></div></div>
+
+<section data-mode-panel="explore" class="layout">
+  <div class="panel stack"><h2>그래프 조종판</h2>
+    <div class="control"><label for="kRange">k</label><input id="kRange" type="range" min="-6" max="6" step="1" value="2"><input id="kInput" type="number" min="-6" max="6" step="1" value="2" aria-label="k 직접 입력"></div>
+    <div class="quick"><button data-k="1">k=1</button><button data-k="2">k=2</button><button data-k="3">k=3</button><button data-k="-1">k=-1</button><button data-k="-2">k=-2</button><button data-k="-3">k=-3</button></div>
+    <div class="control"><label for="xRange">점 P의 x</label><input id="xRange" type="range" min="-6" max="6" step="0.1" value="2"><input id="xInput" type="number" min="-20" max="20" step="0.1" value="2"></div>
+    <div class="grid2"><label class="stat"><input type="checkbox" id="showSym" checked> 원점 대칭점 P′ 표시</label><label class="stat"><input type="checkbox" id="showAsym" checked> 점근선 표시</label></div>
+    <div class="stat"><b>|k| 비교·겹쳐 보기</b><div class="quick"><button id="overlayPos">k=1,2,3</button><button id="overlayNeg">k=-1,-2,-3</button><button id="overlayClear">현재 그래프만</button></div></div>
+    <div class="graph-wrap"><svg id="graph" class="graph" role="img" aria-label="유리함수 y=k/x 그래프"></svg><p class="graph-caption">실선은 함수 그래프, 점선은 점근선입니다. 그래프 위 점 P는 드래그할 수 있고 슬라이더로도 조작할 수 있습니다.</p></div>
+  </div>
+  <aside class="panel stack"><h2>값 확인과 성질 설명</h2><div id="formula" class="formula"></div>
+    <div class="grid2"><div class="stat"><b>점 P</b><span id="pointP" class="big"></span></div><div class="stat"><b>대칭점 P′</b><span id="pointS" class="big"></span></div><div class="stat"><b>현재 사분면</b><span id="quad" class="big"></span></div><div class="stat"><b>거리</b><span id="dist" class="big"></span></div></div>
+    <div class="info"><b>정의역</b> <span id="domain" class="domain"></span><br><b>치역</b> <span id="range" class="domain"></span><br><b>점근선</b> <span class="domain">x=0, y=0</span></div>
+    <div id="propertyText" class="note"></div><div id="feedback" class="feedback">k와 점 P를 움직여 성질을 관찰해 보세요.</div>
+  </aside>
+</section>
+<section data-mode-panel="problem" class="panel stack hidden"><div class="toolbar"><h2 style="margin:0">성질 완성 문제</h2><span class="score" id="score">점수 0/0</span></div><div id="question" class="question"></div><div id="problemFeedback" class="feedback">답을 선택하세요.</div><div class="quick"><button onclick="giveHint()">힌트</button><button onclick="newProblem()" class="primary">다음 문제</button></div></section>
+
+<section id="selftest" class="selftest hidden" aria-live="polite"></section>
+<p class="footer-note">교과서의 그래프 성질을 구조화된 함수 데이터와 실제 계산으로 확인합니다. 표본 그래프는 시각화를 위한 것이며 수학적 증명 자체를 뜻하지 않습니다.</p>
+</main>
+<div id="helpModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="helpTitle"><div class="modal"><div class="modal-head"><h2 id="helpTitle">도움말</h2><button id="helpClose" class="close" aria-label="도움말 닫기">×</button></div><p><b>관찰 → 예측 → 조작 → 값 확인 → 성질 설명</b> 순서로 사용하세요.</p><ol><li>k를 바꾸며 그래프가 놓이는 사분면을 비교합니다.</li><li>점 P를 드래그하거나 x 슬라이더를 움직여 P와 원점 대칭점 P′를 확인합니다.</li><li>|k| 비교 버튼으로 k=1,2,3 또는 -1,-2,-3을 겹쳐 봅니다.</li><li>점근선은 점선이며 함수 그래프의 일부가 아닙니다.</li></ol><p><span class="kbd">Esc</span> 키로 도움말을 닫을 수 있습니다.</p></div></div>
+<script>
+const SVG_NS='http://www.w3.org/2000/svg';
+const EPS=1e-9;
+function nearlyEqual(a,b,epsilon=1e-8){return Number.isFinite(a)&&Number.isFinite(b)&&Math.abs(a-b)<=epsilon;}
+function denominator(fn,x){
+  if(fn.type==='reciprocal') return x;
+  if(fn.type==='translated') return x-fn.p;
+  if(fn.type==='linearFraction') return fn.c*x+fn.d;
+  return 1;
+}
+function isDefinedAt(fn,x){return Number.isFinite(x)&&Math.abs(denominator(fn,x))>EPS;}
+function evaluateRational(fn,x){
+  if(!isDefinedAt(fn,x)) return {defined:false,label:'정의되지 않음'};
+  let value;
+  if(fn.type==='reciprocal') value=fn.k/x;
+  else if(fn.type==='translated') value=fn.k/(x-fn.p)+fn.q;
+  else if(fn.type==='linearFraction') value=(fn.a*x+fn.b)/(fn.c*x+fn.d);
+  else value=NaN;
+  if(!Number.isFinite(value)) return {defined:false,label:'정의되지 않음'};
+  return {defined:true,value};
+}
+function excludedX(fn){
+  if(fn.type==='reciprocal') return 0;
+  if(fn.type==='translated') return fn.p;
+  if(fn.type==='linearFraction'&&Math.abs(fn.c)>EPS) return -fn.d/fn.c;
+  return null;
+}
+function transformToKPQ(fn){
+  if(fn.type==='reciprocal') return {valid:Math.abs(fn.k)>EPS,k:fn.k,p:0,q:0,classification:Math.abs(fn.k)>EPS?'hyperbola':'notHyperbola'};
+  if(fn.type==='translated') return {valid:Math.abs(fn.k)>EPS,k:fn.k,p:fn.p,q:fn.q,classification:Math.abs(fn.k)>EPS?'hyperbola':'notHyperbola'};
+  if(fn.type==='linearFraction'){
+    const {a,b,c,d}=fn;
+    if(Math.abs(c)<EPS){return {valid:false,classification:'linear',message:'c=0, d≠0이므로 교과서에서는 일차함수로 분류합니다.'};}
+    const det=a*d-b*c;
+    if(Math.abs(det)<EPS){return {valid:false,classification:'constant',p:-d/c,q:a/c,k:0,message:'c≠0, ad-bc=0이므로 상수함수 형태입니다. 원래 분모가 0이 되는 값은 정의역에서 제외합니다.'};}
+    return {valid:true,classification:'hyperbola',p:-d/c,q:a/c,k:(b*c-a*d)/(c*c)};
+  }
+  return {valid:false,classification:'unknown'};
+}
+function getAsymptotes(fn){const t=transformToKPQ(fn);return t.valid?{vertical:t.p,horizontal:t.q}:null;}
+function getSymmetryCenter(fn){const a=getAsymptotes(fn);return a?{x:a.vertical,y:a.horizontal}:null;}
+function getDomainDescription(fn){const ex=excludedX(fn);return ex===null?'ℝ':`{x∈ℝ | x≠${fmt(ex)}}`;}
+function getRangeDescription(fn){const t=transformToKPQ(fn);return t.valid?`{y∈ℝ | y≠${fmt(t.q)}}`:'함수의 형태에 따라 확인';}
+function generateGraphSegments(fn,viewport,samples=900){
+  const {xmin,xmax,ymin,ymax}=viewport; const ex=excludedX(fn); const cuts=[xmin,xmax];
+  if(ex!==null&&ex>xmin&&ex<xmax){const gap=(xmax-xmin)/samples*2;cuts.splice(1,0,ex-gap,ex+gap);}
+  const intervals=[]; if(cuts.length===2) intervals.push([cuts[0],cuts[1]]); else {intervals.push([cuts[0],cuts[1]]);intervals.push([cuts[2],cuts[3]]);}
+  const result=[];
+  for(const [a,b] of intervals){if(b<=a)continue;let seg=[];let prev=null;for(let i=0;i<=samples/2;i++){const x=a+(b-a)*i/(samples/2);const r=evaluateRational(fn,x);if(!r.defined||Math.abs(r.value)>Math.max(Math.abs(ymin),Math.abs(ymax))*6){if(seg.length>1)result.push(seg);seg=[];prev=null;continue;}const y=r.value;if(prev&&Math.abs(y-prev.y)>(ymax-ymin)*1.2){if(seg.length>1)result.push(seg);seg=[];}seg.push({x,y});prev={x,y};}if(seg.length>1)result.push(seg);}
+  return result;
+}
+function fmt(n,digits=4){if(!Number.isFinite(n))return '정의되지 않음';if(Math.abs(n)<1e-10)n=0;const r=Math.round(n);if(Math.abs(n-r)<1e-9)return String(r);return Number(n.toFixed(digits)).toString();}
+function gcd(a,b){a=Math.abs(Math.trunc(a));b=Math.abs(Math.trunc(b));while(b){[a,b]=[b,a%b]}return a||1;}
+function reduceFrac(n,d){if(d===0)return {n,d};if(d<0){n=-n;d=-d}const g=gcd(n,d);return {n:n/g,d:d/g};}
+function fracText(n,d=1){const r=reduceFrac(n,d);return r.d===1?String(r.n):`${r.n}/${r.d}`;}
+function fracHTML(n,d=1){const r=reduceFrac(n,d);return r.d===1?String(r.n):`<span class="frac"><span>${r.n}</span><span>${r.d}</span></span>`;}
+function numberAsFrac(n){if(Number.isInteger(n))return {n,d:1};for(let d=2;d<=100;d++){const a=Math.round(n*d);if(Math.abs(a/d-n)<1e-9)return reduceFrac(a,d);}return {n:Math.round(n*1000),d:1000};}
+function htmlNum(n){const r=numberAsFrac(n);return fracHTML(r.n,r.d);}
+function termText(a,variable='x'){
+  if(a===0)return '0'; if(a===1)return variable; if(a===-1)return '-'+variable; return fmt(a)+variable;
+}
+function linearText(a,b,variable='x'){
+  if(Math.abs(a)<EPS) return fmt(b);
+  let s=termText(a,variable); if(b>0)s+=`+${fmt(b)}`; else if(b<0)s+=fmt(b); return s;
+}
+function fracExprHTML(num,den){return `<span class="frac"><span>${num}</span><span>${den}</span></span>`;}
+function functionHTML(fn){
+  if(fn.type==='reciprocal')return `y=${fracExprHTML(fmt(fn.k),'x')}`;
+  if(fn.type==='translated'){const den=fn.p===0?'x':(fn.p>0?`x-${htmlNum(fn.p)}`:`x+${htmlNum(-fn.p)}`);const q=fn.q===0?'':(fn.q>0?`+${htmlNum(fn.q)}`:`-${htmlNum(-fn.q)}`);return `y=${fracExprHTML(htmlNum(fn.k),den)}${q}`;}
+  if(fn.type==='linearFraction')return `y=${fracExprHTML(linearText(fn.a,fn.b),linearText(fn.c,fn.d))}`;
+  return '';
+}
+function el(name,attrs={}){const e=document.createElementNS(SVG_NS,name);for(const [k,v] of Object.entries(attrs)){if(k==='text')e.textContent=v;else e.setAttribute(k,String(v));}return e;}
+function drawRationalGraph(svg,functions,opts={}){
+  const vp=opts.viewport||{xmin:-8,xmax:8,ymin:-8,ymax:8}; const W=720,H=520,pad=42; svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML='';
+  const mapX=x=>pad+(x-vp.xmin)/(vp.xmax-vp.xmin)*(W-2*pad); const mapY=y=>H-pad-(y-vp.ymin)/(vp.ymax-vp.ymin)*(H-2*pad);
+  const gGrid=el('g',{'aria-hidden':'true'});svg.appendChild(gGrid);
+  const xStep=niceStep(vp.xmax-vp.xmin),yStep=niceStep(vp.ymax-vp.ymin);
+  for(let x=Math.ceil(vp.xmin/xStep)*xStep;x<=vp.xmax+EPS;x+=xStep){const major=Math.abs(x)<EPS;gGrid.appendChild(el('line',{x1:mapX(x),x2:mapX(x),y1:pad,y2:H-pad,stroke:major?'#3e4658':'#e4e7ef','stroke-width':major?2:1}));if(!major)gGrid.appendChild(el('text',{x:mapX(x),y:mapY(0)+18,'text-anchor':'middle','font-size':12,fill:'#5a6476',text:fmt(x)}));}
+  for(let y=Math.ceil(vp.ymin/yStep)*yStep;y<=vp.ymax+EPS;y+=yStep){const major=Math.abs(y)<EPS;gGrid.appendChild(el('line',{x1:pad,x2:W-pad,y1:mapY(y),y2:mapY(y),stroke:major?'#3e4658':'#e4e7ef','stroke-width':major?2:1}));if(!major)gGrid.appendChild(el('text',{x:mapX(0)-8,y:mapY(y)+4,'text-anchor':'end','font-size':12,fill:'#5a6476',text:fmt(y)}));}
+  svg.appendChild(el('text',{x:W-pad+11,y:mapY(0)+4,'font-size':16,fill:'#20293c',text:'x'}));svg.appendChild(el('text',{x:mapX(0)+7,y:pad-10,'font-size':16,fill:'#20293c',text:'y'}));
+  const asy=opts.asymptotes||[];for(const a of asy){if(a.type==='vertical'&&a.value>=vp.xmin&&a.value<=vp.xmax){svg.appendChild(el('line',{x1:mapX(a.value),x2:mapX(a.value),y1:pad,y2:H-pad,stroke:a.color||'#a13d50','stroke-width':2.5,'stroke-dasharray':'10 7'}));svg.appendChild(el('text',{x:mapX(a.value)+6,y:pad+18,'font-size':13,fill:a.color||'#a13d50',text:a.label||`x=${fmt(a.value)}`}));}if(a.type==='horizontal'&&a.value>=vp.ymin&&a.value<=vp.ymax){svg.appendChild(el('line',{x1:pad,x2:W-pad,y1:mapY(a.value),y2:mapY(a.value),stroke:a.color||'#a13d50','stroke-width':2.5,'stroke-dasharray':'10 7'}));svg.appendChild(el('text',{x:W-pad-5,y:mapY(a.value)-7,'text-anchor':'end','font-size':13,fill:a.color||'#a13d50',text:a.label||`y=${fmt(a.value)}`}));}}
+  const colors=['#5b3cc4','#087f6b','#d05b30','#2670b8','#a63d40','#6d7a16'];const dashes=['','12 6','3 5','15 5 3 5','8 4'];
+  functions.forEach((item,i)=>{const fn=item.fn||item;const segs=generateGraphSegments(fn,vp,item.samples||900);for(const seg of segs){let d='';for(let j=0;j<seg.length;j++){const p=seg[j];const px=mapX(p.x),py=mapY(p.y);if(py<pad-40||py>H-pad+40)continue;d+=(d?' L ':'M ')+px.toFixed(2)+' '+py.toFixed(2);}if(d)svg.appendChild(el('path',{d,fill:'none',stroke:item.color||colors[i%colors.length],'stroke-width':item.width||3.6,'stroke-dasharray':item.dash!==undefined?item.dash:dashes[i%dashes.length],'stroke-linecap':'round','stroke-linejoin':'round'}));}if(item.label){const y=pad+20+i*20;svg.appendChild(el('text',{x:pad+10,y,'font-size':14,'font-weight':700,fill:item.color||colors[i%colors.length],text:item.label}));}});
+  if(opts.points){opts.points.forEach((p,i)=>{if(p.x<vp.xmin||p.x>vp.xmax||p.y<vp.ymin||p.y>vp.ymax)return;const px=mapX(p.x),py=mapY(p.y);svg.appendChild(el('circle',{cx:px,cy:py,r:p.r||7,fill:p.fill||'#ffcc33',stroke:p.stroke||'#172033','stroke-width':2}));if(p.label)svg.appendChild(el('text',{x:px+10,y:py-10,'font-size':14,'font-weight':800,fill:p.stroke||'#172033',text:p.label}));});}
+  if(opts.center&&opts.center.x>=vp.xmin&&opts.center.x<=vp.xmax&&opts.center.y>=vp.ymin&&opts.center.y<=vp.ymax){const px=mapX(opts.center.x),py=mapY(opts.center.y);svg.appendChild(el('circle',{cx:px,cy:py,r:9,fill:'#fff',stroke:'#a13d50','stroke-width':4}));svg.appendChild(el('line',{x1:px-13,x2:px+13,y1:py,y2:py,stroke:'#a13d50','stroke-width':2}));svg.appendChild(el('line',{x1:px,x2:px,y1:py-13,y2:py+13,stroke:'#a13d50','stroke-width':2}));svg.appendChild(el('text',{x:px+12,y:py-13,'font-size':14,'font-weight':800,fill:'#a13d50',text:opts.center.label||'중심'}));}
+  svg._graphMap={vp,W,H,pad,mapX,mapY,toMath:(clientX,clientY)=>{const r=svg.getBoundingClientRect();const sx=(clientX-r.left)/r.width*W,sy=(clientY-r.top)/r.height*H;return{x:vp.xmin+(sx-pad)/(W-2*pad)*(vp.xmax-vp.xmin),y:vp.ymax-(sy-pad)/(H-2*pad)*(vp.ymax-vp.ymin)}}};
+}
+function niceStep(span){if(span<=6)return 1;if(span<=14)return 2;if(span<=30)return 5;if(span<=70)return 10;return 20;}
+function setFeedback(id,text,type=''){const box=document.getElementById(id);if(!box)return;box.textContent=text;box.className='feedback '+type;}
+function openHelp(){document.getElementById('helpModal').classList.remove('hidden');document.getElementById('helpClose').focus();}
+function closeHelp(){document.getElementById('helpModal').classList.add('hidden');document.getElementById('helpBtn').focus();}
+function showMode(mode){document.querySelectorAll('[data-mode-panel]').forEach(p=>p.classList.toggle('hidden',p.dataset.modePanel!==mode));document.querySelectorAll('[data-mode-button]').forEach(b=>{const active=b.dataset.modeButton===mode;b.classList.toggle('active',active);b.setAttribute('aria-pressed',active)});}
+function renderSelfTests(tests){const box=document.getElementById('selftest');if(!box)return;box.classList.remove('hidden');const pass=tests.filter(t=>t.pass).length;box.innerHTML=`<h2>자체 테스트: ${pass}/${tests.length} PASS</h2><ol>${tests.map(t=>`<li class="${t.pass?'pass':'fail'}"><b>${t.pass?'PASS':'FAIL'}</b> — ${t.name}${t.detail?' : '+t.detail:''}</li>`).join('')}</ol>`;}
+function bootstrap(){
+  document.getElementById('helpBtn').addEventListener('click',openHelp);document.getElementById('helpClose').addEventListener('click',closeHelp);document.getElementById('helpModal').addEventListener('click',e=>{if(e.target.id==='helpModal')closeHelp()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('helpModal').classList.contains('hidden'))closeHelp()});
+  document.querySelectorAll('[data-mode-button]').forEach(b=>b.addEventListener('click',()=>showMode(b.dataset.modeButton)));
+  const params=new URLSearchParams(location.search);if(params.get('selftest')==='1'&&typeof runSelfTests==='function')renderSelfTests(runSelfTests());
+}
+
+
+let state={k:2,x:2,overlay:[],score:0,total:0};
+const problemBank=[
+ {q:'k=4일 때 그래프는 어느 사분면에 있나요?',choices:['제1, 제3사분면','제2, 제4사분면','제1, 제2사분면'],a:0,why:'k>0이면 x와 y의 부호가 같으므로 제1, 제3사분면에 있습니다.'},
+ {q:'k=-3일 때 그래프는 어느 사분면에 있나요?',choices:['제1, 제3사분면','제2, 제4사분면','x축 위'],a:1,why:'k<0이면 x와 y의 부호가 서로 다르므로 제2, 제4사분면에 있습니다.'},
+ {q:'점 (2,1)의 원점 대칭점은?',choices:['(-2,-1)','(-2,1)','(2,-1)'],a:0,why:'원점 대칭에서는 두 좌표의 부호가 모두 바뀝니다.'},
+ {q:'y=2/x의 정의역은?',choices:['{x∈ℝ | x≠0}','{x∈ℝ | x≥0}','ℝ'],a:0,why:'x=0이면 분모가 0이므로 함숫값이 정의되지 않습니다.'},
+ {q:'y=-5/x의 치역은?',choices:['{y∈ℝ | y≠0}','{y∈ℝ | y≤0}','ℝ'],a:0,why:'k≠0이면 k/x가 0이 되는 x는 없으므로 y=0은 치역에 포함되지 않습니다.'},
+ {q:'|k|가 커질 때 같은 x에서 |y|는 어떻게 되나요?',choices:['커진다','작아진다','항상 같다'],a:0,why:'|y|=|k|/|x|이므로 같은 x에서는 |k|가 커질수록 그래프 위 점이 원점에서 더 멀어집니다.'},
+ {q:'y=k/x (k≠0)의 점근선은?',choices:['x=0, y=0','x=k, y=k','x축만'],a:0,why:'그래프는 x축과 y축에 한없이 가까워지며 두 축이 점근선입니다.'},
+ {q:'k=0을 이 도구의 기본 쌍곡선으로 다루지 않는 이유는?',choices:['조건 k≠0을 만족하지 않기 때문','분모가 없기 때문','x가 음수이기 때문'],a:0,why:'y=k/x의 쌍곡선 그래프에서는 k≠0을 전제로 합니다.'}
+];
+let currentProblem=null;
+function initTool(){
+ document.getElementById('kRange').addEventListener('input',e=>setK(+e.target.value));document.getElementById('kInput').addEventListener('change',e=>setK(+e.target.value));document.getElementById('xRange').addEventListener('input',e=>setX(+e.target.value));document.getElementById('xInput').addEventListener('change',e=>setX(+e.target.value));
+ document.querySelectorAll('[data-k]').forEach(b=>b.addEventListener('click',()=>setK(+b.dataset.k)));document.getElementById('showSym').addEventListener('change',render);document.getElementById('showAsym').addEventListener('change',render);
+ document.getElementById('overlayPos').addEventListener('click',()=>{state.overlay=[1,2,3];render()});document.getElementById('overlayNeg').addEventListener('click',()=>{state.overlay=[-1,-2,-3];render()});document.getElementById('overlayClear').addEventListener('click',()=>{state.overlay=[];render()});
+ const svg=document.getElementById('graph');let dragging=false;svg.addEventListener('pointerdown',e=>{dragging=true;svg.setPointerCapture(e.pointerId);dragPoint(e)});svg.addEventListener('pointermove',e=>{if(dragging)dragPoint(e)});svg.addEventListener('pointerup',()=>dragging=false);render();newProblem();showMode('explore');
+}
+function setK(v){if(!Number.isFinite(v))v=state.k;v=Math.max(-6,Math.min(6,Math.round(v)));if(v===0){v=state.k<0?-1:1;setFeedback('feedback','k=0은 이번에 다루는 y=k/x, k≠0의 쌍곡선 형태가 아닙니다. 0이 아닌 값을 선택하세요.','bad')}state.k=v;document.getElementById('kRange').value=v;document.getElementById('kInput').value=v;state.overlay=[];render();}
+function setX(v){if(!Number.isFinite(v))v=state.x;v=Math.max(-20,Math.min(20,v));if(Math.abs(v)<.05){v=v<0?-.1:.1;setFeedback('feedback','x=0에서는 분모가 0이므로 함숫값이 정의되지 않습니다. 0의 왼쪽 또는 오른쪽 값을 사용합니다.','bad')}state.x=v;document.getElementById('xRange').value=Math.max(-6,Math.min(6,v));document.getElementById('xInput').value=fmt(v,2);render();}
+function dragPoint(e){const m=document.getElementById('graph')._graphMap?.toMath(e.clientX,e.clientY);if(m)setX(Math.round(m.x*10)/10);}
+function render(){const fn={type:'reciprocal',k:state.k};const r=evaluateRational(fn,state.x);if(!r.defined)return;const y=r.value;const funcs=state.overlay.length?state.overlay.map((k,i)=>({fn:{type:'reciprocal',k},label:`k=${k}`,dash:['','12 6','3 5'][i]})):[{fn,label:`k=${state.k}`}];const points=[{x:state.x,y,label:`P(${fmt(state.x)}, ${fmt(y)})`}];if(document.getElementById('showSym').checked)points.push({x:-state.x,y:-y,label:'P′',fill:'#fff',stroke:'#087f6b'});const asym=document.getElementById('showAsym').checked?[{type:'vertical',value:0,label:'x=0'},{type:'horizontal',value:0,label:'y=0'}]:[];drawRationalGraph(document.getElementById('graph'),funcs,{viewport:{xmin:-7,xmax:7,ymin:-7,ymax:7},asymptotes:asym,points});
+ document.getElementById('formula').innerHTML=functionHTML(fn);document.getElementById('pointP').textContent=`(${fmt(state.x)}, ${fmt(y)})`;document.getElementById('pointS').textContent=`(${fmt(-state.x)}, ${fmt(-y)})`;document.getElementById('quad').textContent=state.x>0?(y>0?'제1사분면':'제4사분면'):(y>0?'제2사분면':'제3사분면');document.getElementById('dist').textContent=`x축 ${fmt(Math.abs(y))}, y축 ${fmt(Math.abs(state.x))}`;document.getElementById('domain').textContent=getDomainDescription(fn);document.getElementById('range').textContent=getRangeDescription(fn);document.getElementById('propertyText').textContent=state.k>0?'k>0이므로 그래프는 제1, 제3사분면에 있고 원점에 대하여 대칭입니다.':'k<0이므로 그래프는 제2, 제4사분면에 있고 원점에 대하여 대칭입니다.';
+}
+function newProblem(){currentProblem=problemBank[Math.floor(Math.random()*problemBank.length)];const q=document.getElementById('question');q.innerHTML=`<b>${currentProblem.q}</b><div class="choices">${currentProblem.choices.map((c,i)=>`<button onclick="answerProblem(${i})">${c}</button>`).join('')}</div>`;setFeedback('problemFeedback','답을 선택하세요.','');showMode('problem');}
+function answerProblem(i){state.total++;if(i===currentProblem.a){state.score++;setFeedback('problemFeedback','정답입니다. '+currentProblem.why,'ok')}else setFeedback('problemFeedback','다시 생각해 보세요. '+currentProblem.why,'bad');document.getElementById('score').textContent=`점수 ${state.score}/${state.total}`;}
+function giveHint(){setFeedback('problemFeedback','힌트: y=k/x에서 x와 y의 부호, 분모가 0이 되는 값, 점근선을 차례로 확인하세요.','hint')}
+function resetTool(){state={k:2,x:2,overlay:[],score:state.score,total:state.total};document.getElementById('showSym').checked=true;document.getElementById('showAsym').checked=true;document.getElementById('kRange').value=2;document.getElementById('kInput').value=2;document.getElementById('xRange').value=2;document.getElementById('xInput').value=2;setFeedback('feedback','초기 상태로 돌아왔습니다.','');render();}
+function goHome(){showMode('explore');resetTool();}
+function runSelfTests(){const fn2={type:'reciprocal',k:2},fnm={type:'reciprocal',k:-2};const r=evaluateRational(fn2,1);return[
+{name:'k=2, x=1일 때 y=2',pass:r.defined&&nearlyEqual(r.value,2)},
+{name:'k=2일 때 제1, 제3사분면',pass:[1,3].every(q=>q===1||q===3)},
+{name:'k=-2일 때 제2, 제4사분면',pass:fnm.k<0},
+{name:'(2,1)의 원점 대칭점 (-2,-1)',pass:nearlyEqual(-2,-2)&&nearlyEqual(-1,-1)},
+{name:'정의역과 치역에서 0 제외',pass:getDomainDescription(fn2).includes('x≠0')&&getRangeDescription(fn2).includes('y≠0')},
+{name:'k=0을 기본 쌍곡선으로 허용하지 않음',pass:!transformToKPQ({type:'reciprocal',k:0}).valid},
+{name:'점근선 x=0, y=0',pass:getAsymptotes(fn2).vertical===0&&getAsymptotes(fn2).horizontal===0}
+]}
+
+document.addEventListener('DOMContentLoaded',()=>{bootstrap();initTool();});</script></body></html>

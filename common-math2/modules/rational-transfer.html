@@ -1,0 +1,165 @@
+<!doctype html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>파일 전송 속도 실험</title><style>
+:root{--ink:#172033;--muted:#5c667a;--paper:#f7f8fc;--card:#fff;--line:#d8deea;--primary:#5b3cc4;--primary2:#efeaff;--accent:#087f6b;--warn:#a63d40;--gold:#9b6b00;--shadow:0 10px 28px rgba(35,42,68,.10)}
+*{box-sizing:border-box}html{font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.55}body{margin:0}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:4px solid #ffcf40;outline-offset:2px}
+header{background:linear-gradient(135deg,#37218b,#6e51d1);color:#fff;padding:22px clamp(16px,4vw,52px)}header h1{margin:0;font-size:clamp(1.55rem,3.4vw,2.65rem)}header p{margin:.4rem 0 0;max-width:1050px;opacity:.93}.eyebrow{font-weight:800;letter-spacing:.04em;font-size:.88rem;opacity:.9}
+main{max-width:1440px;margin:auto;padding:18px clamp(12px,2.5vw,34px) 46px}.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 16px}.toolbar button,.modebar button,.btn{border:1px solid #cbd2e1;background:#fff;color:var(--ink);border-radius:12px;padding:10px 15px;font-weight:750;box-shadow:0 2px 8px rgba(30,40,70,.05)}.toolbar button:hover,.modebar button:hover,.btn:hover{transform:translateY(-1px);box-shadow:0 5px 13px rgba(30,40,70,.10)}.primary{background:var(--primary)!important;color:white!important;border-color:var(--primary)!important}.danger{border-color:#e0a6a8!important;color:#7c2126!important}.ghost{background:transparent!important}.modebar{display:flex;gap:8px;margin-left:auto}.modebar button.active{background:#e9e3ff;border-color:#6c4ccc;color:#3b238f}
+.layout{display:grid;grid-template-columns:minmax(340px,1.35fr) minmax(300px,.95fr);gap:18px;align-items:start}.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}.panel h2,.panel h3{margin-top:0}.stack{display:grid;gap:14px}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.control{display:grid;grid-template-columns:100px 1fr 90px;gap:10px;align-items:center}.control label{font-weight:800}.control input[type=range]{width:100%}.control input[type=number],.control select,.text-input{width:100%;border:1px solid #bfc8da;border-radius:10px;padding:9px 10px;background:#fff}.quick{display:flex;flex-wrap:wrap;gap:8px}.quick button{border:1px solid #bfc8da;background:white;border-radius:999px;padding:7px 11px;font-weight:700}.quick button[aria-pressed=true]{background:#e9e3ff;border-color:#6b4bc8}.stat{border:1px solid var(--line);background:#fafbff;border-radius:13px;padding:11px}.stat b{display:block;font-size:.82rem;color:var(--muted);margin-bottom:4px}.big{font-size:clamp(1.15rem,2vw,1.55rem);font-weight:850}.note{background:#fff7d7;border-left:5px solid #e0ad1b;padding:12px 14px;border-radius:10px}.info{background:#eef9f6;border-left:5px solid var(--accent);padding:12px 14px;border-radius:10px}.warn{background:#fff0f0;border-left:5px solid var(--warn);padding:12px 14px;border-radius:10px}.feedback{min-height:54px;padding:12px 14px;border-radius:12px;background:#f5f6fa;border:1px solid #d9deea}.feedback.ok{background:#eaf8f1;border-color:#79b99b}.feedback.bad{background:#fff0f0;border-color:#d59b9d}.feedback.hint{background:#fff8df;border-color:#ddc06a}
+.math{font-family:"Times New Roman","Cambria Math",serif;font-size:1.08em;white-space:normal}.formula{font-family:"Times New Roman","Cambria Math",serif;font-size:clamp(1.2rem,2.5vw,1.8rem);font-weight:700;overflow-x:auto;padding:8px 0}.frac{display:inline-grid;grid-template-rows:auto auto;vertical-align:middle;text-align:center;line-height:1.1;margin:0 .12em}.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 .18em .08em}.frac>span:last-child{padding:.08em .18em 0}.nowrap{white-space:nowrap}.scrollx{overflow-x:auto}.domain{font-family:"Cambria Math","Times New Roman",serif;font-weight:700}.kbd{border:1px solid #aeb6c7;background:#fff;border-bottom-width:3px;border-radius:5px;padding:1px 6px;font-size:.85em}
+.graph-wrap{position:relative;min-height:420px}.graph{width:100%;height:auto;min-height:400px;background:#fff;border:1px solid #cfd6e4;border-radius:15px;touch-action:none}.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.legend span{display:inline-flex;align-items:center;gap:6px;font-size:.9rem}.swatch{width:30px;height:0;border-top:4px solid #333}.swatch.dash{border-top-style:dashed}.graph-caption{font-size:.88rem;color:var(--muted);margin-top:8px}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:430px}th,td{border:1px solid #d5dbea;padding:8px;text-align:center}th{background:#f0edff}.pill{display:inline-block;border:1px solid #c5cce0;border-radius:999px;padding:3px 9px;background:#fff;font-size:.88rem}.stepper{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.step-dot{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;border:2px solid #bdc5d5;background:#fff;font-weight:800}.step-dot.active{border-color:var(--primary);background:#eee9ff;color:#3d248f}.step-dot.done{background:#eaf8f1;border-color:#2b967d}.hidden{display:none!important}.question{border:2px solid #d7cfff;background:#f8f6ff;border-radius:16px;padding:15px}.choices{display:grid;gap:8px;margin-top:12px}.choices button{text-align:left;border:1px solid #c7cfe1;background:white;border-radius:10px;padding:10px 12px}.choices button:hover{background:#f2efff}.score{font-weight:850;color:#4c2daf}.footer-note{margin-top:18px;color:var(--muted);font-size:.9rem}
+.modal-backdrop{position:fixed;inset:0;background:rgba(20,24,40,.58);display:grid;place-items:center;padding:18px;z-index:1000}.modal{background:#fff;border-radius:18px;max-width:760px;max-height:85vh;overflow:auto;padding:22px;box-shadow:0 28px 70px rgba(0,0,0,.28)}.modal-head{display:flex;justify-content:space-between;gap:16px;align-items:center}.modal-head h2{margin:0}.close{border:0;background:#f1f2f6;width:42px;height:42px;border-radius:50%;font-size:1.4rem}.selftest{margin-top:18px;background:#101827;color:#eaf0ff;border-radius:15px;padding:16px}.selftest h2{margin-top:0}.pass{color:#7cf0b8}.fail{color:#ff8d95}.selftest li{margin:5px 0}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.modebar{margin-left:0}.graph-wrap{min-height:340px}.graph{min-height:330px}.control{grid-template-columns:82px 1fr 78px}.grid3{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){header{padding:18px 14px}main{padding:12px 10px 30px}.panel{padding:13px;border-radius:14px}.grid2,.grid3{grid-template-columns:1fr}.control{grid-template-columns:1fr}.toolbar{gap:7px}.toolbar button,.modebar button,.btn{padding:9px 11px}.modebar{width:100%}.modebar button{flex:1}.graph{min-height:290px}.graph-wrap{min-height:300px}.formula{font-size:1.15rem}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation-duration:.001ms!important;animation-iteration-count:1!important}}
+</style></head><body>
+<header><div class="eyebrow">Ⅵ. 유리함수와 무리함수 · 01. 유리함수와 그 그래프</div><h1>파일 전송 속도 실험</h1><p>파일 크기와 전송 시간을 조절하며 y=S/x, xy=S와 실생활 정의역 x>0을 확인합니다.</p></header>
+<main>
+<div class="toolbar" aria-label="공통 도구 모음"><button onclick="goHome()">처음으로</button><button onclick="resetTool()">초기화</button><button class="primary" onclick="newProblem()">새 문제</button><button id="helpBtn">도움말</button><div class="modebar"><button class="active" data-mode-button="explore" aria-pressed="true">자유 탐색</button><button data-mode-button="problem" aria-pressed="false">문제 해결</button></div></div>
+
+<section data-mode-panel="explore" class="layout"><div class="panel stack"><h2>파일 전송 실험대</h2>
+ <div class="control"><label for="size5">파일 크기 S</label><select id="size5"><option value="10">10 MB</option><option value="25" selected>25 MB</option><option value="50">50 MB</option><option value="100">100 MB</option></select><input id="size5n" type="number" min="1" max="500" value="25" aria-label="파일 크기 직접 입력"></div>
+ <div class="control"><label for="time5">전송 시간 x</label><input id="time5" type="range" min="1" max="30" step="0.5" value="5"><input id="time5n" type="number" min="0.1" max="300" step="0.5" value="5"></div>
+ <div class="grid2"><label class="stat"><input id="realOnly5" type="checkbox" checked> 실생활 영역 x&gt;0만 보기</label><div class="stat"><b>예측</b><select id="prediction5"><option value="">시간을 2배로 하면?</option><option value="half">속도는 1/2배</option><option value="double">속도는 2배</option><option value="same">속도는 그대로</option></select></div></div>
+ <div class="file-stage" style="border:2px solid #cfd6e4;border-radius:16px;padding:16px;background:#f9fbff"><div style="display:flex;justify-content:space-between;font-weight:800"><span>보내는 장치</span><span>받는 장치</span></div><div style="height:34px;background:#e3e7f1;border-radius:999px;overflow:hidden;margin:16px 0"><div id="progress5" style="height:100%;width:0;background:linear-gradient(90deg,#5b3cc4,#18a083);display:grid;place-items:center;color:white;font-weight:900">0%</div></div><div class="quick"><button id="send5" class="primary">전송 애니메이션</button><button id="pause5">멈춤</button></div><small>표시용 애니메이션 시간은 수학적 전송 시간을 1~7초 범위로 축소하여 나타냅니다.</small></div>
+ <div class="graph-wrap"><svg id="graph5" class="graph" role="img" aria-label="데이터 전송 속도 반비례 그래프"></svg></div></div>
+ <aside class="panel stack"><h2>속도 계산</h2><div id="formula5" class="formula"></div><div class="grid2"><div class="stat"><b>데이터 크기</b><span id="sVal5" class="big"></span></div><div class="stat"><b>전송 시간</b><span id="xVal5" class="big"></span></div><div class="stat"><b>전송 속도</b><span id="yVal5" class="big"></span></div><div class="stat"><b>곱 xy</b><span id="prod5" class="big"></span></div></div>
+ <div class="info">전송 속도 = 데이터 크기 ÷ 전송 시간<br><span class="math">y=S/x, xy=S</span></div><div class="table-wrap"><table><thead><tr><th>x(초)</th><th>y(MB/s)</th><th>xy(MB)</th></tr></thead><tbody id="table5"></tbody></table></div><div id="feedback5" class="feedback">25 MB 발표 자료를 5초에 전송하면 5 MB/s입니다.</div><div class="note">이 화면은 교과서의 이상화된 수학 모형입니다. 실제 인터넷 속도 측정이나 파일 업로드를 하지 않습니다.</div></aside></section>
+<section data-mode-panel="problem" class="panel stack hidden"><div class="toolbar"><h2 style="margin:0">전송 속도 문장제</h2><span class="score" id="score5">점수 0/0</span></div><div id="question5" class="question"></div><div id="problemFeedback5" class="feedback">답을 선택하세요.</div><div class="quick"><button onclick="giveHint()">힌트</button><button onclick="newProblem()" class="primary">다음 문제</button></div></section>
+
+<section id="selftest" class="selftest hidden" aria-live="polite"></section>
+<p class="footer-note">교과서의 그래프 성질을 구조화된 함수 데이터와 실제 계산으로 확인합니다. 표본 그래프는 시각화를 위한 것이며 수학적 증명 자체를 뜻하지 않습니다.</p>
+</main>
+<div id="helpModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="helpTitle"><div class="modal"><div class="modal-head"><h2 id="helpTitle">도움말</h2><button id="helpClose" class="close" aria-label="도움말 닫기">×</button></div><p>전송 속도는 <b>데이터 크기 ÷ 전송 시간</b>입니다.</p><p>교과서 기본 예시는 25 MB 발표 자료이며 <span class="math">y=25/x</span>입니다. 수학적 함수에서는 x≠0을 생각할 수 있지만, 실제 전송 시간은 양수이므로 이 실생활 모형에서는 <b>x&gt;0, y&gt;0</b>만 사용합니다.</p></div></div>
+<script>
+const SVG_NS='http://www.w3.org/2000/svg';
+const EPS=1e-9;
+function nearlyEqual(a,b,epsilon=1e-8){return Number.isFinite(a)&&Number.isFinite(b)&&Math.abs(a-b)<=epsilon;}
+function denominator(fn,x){
+  if(fn.type==='reciprocal') return x;
+  if(fn.type==='translated') return x-fn.p;
+  if(fn.type==='linearFraction') return fn.c*x+fn.d;
+  return 1;
+}
+function isDefinedAt(fn,x){return Number.isFinite(x)&&Math.abs(denominator(fn,x))>EPS;}
+function evaluateRational(fn,x){
+  if(!isDefinedAt(fn,x)) return {defined:false,label:'정의되지 않음'};
+  let value;
+  if(fn.type==='reciprocal') value=fn.k/x;
+  else if(fn.type==='translated') value=fn.k/(x-fn.p)+fn.q;
+  else if(fn.type==='linearFraction') value=(fn.a*x+fn.b)/(fn.c*x+fn.d);
+  else value=NaN;
+  if(!Number.isFinite(value)) return {defined:false,label:'정의되지 않음'};
+  return {defined:true,value};
+}
+function excludedX(fn){
+  if(fn.type==='reciprocal') return 0;
+  if(fn.type==='translated') return fn.p;
+  if(fn.type==='linearFraction'&&Math.abs(fn.c)>EPS) return -fn.d/fn.c;
+  return null;
+}
+function transformToKPQ(fn){
+  if(fn.type==='reciprocal') return {valid:Math.abs(fn.k)>EPS,k:fn.k,p:0,q:0,classification:Math.abs(fn.k)>EPS?'hyperbola':'notHyperbola'};
+  if(fn.type==='translated') return {valid:Math.abs(fn.k)>EPS,k:fn.k,p:fn.p,q:fn.q,classification:Math.abs(fn.k)>EPS?'hyperbola':'notHyperbola'};
+  if(fn.type==='linearFraction'){
+    const {a,b,c,d}=fn;
+    if(Math.abs(c)<EPS){return {valid:false,classification:'linear',message:'c=0, d≠0이므로 교과서에서는 일차함수로 분류합니다.'};}
+    const det=a*d-b*c;
+    if(Math.abs(det)<EPS){return {valid:false,classification:'constant',p:-d/c,q:a/c,k:0,message:'c≠0, ad-bc=0이므로 상수함수 형태입니다. 원래 분모가 0이 되는 값은 정의역에서 제외합니다.'};}
+    return {valid:true,classification:'hyperbola',p:-d/c,q:a/c,k:(b*c-a*d)/(c*c)};
+  }
+  return {valid:false,classification:'unknown'};
+}
+function getAsymptotes(fn){const t=transformToKPQ(fn);return t.valid?{vertical:t.p,horizontal:t.q}:null;}
+function getSymmetryCenter(fn){const a=getAsymptotes(fn);return a?{x:a.vertical,y:a.horizontal}:null;}
+function getDomainDescription(fn){const ex=excludedX(fn);return ex===null?'ℝ':`{x∈ℝ | x≠${fmt(ex)}}`;}
+function getRangeDescription(fn){const t=transformToKPQ(fn);return t.valid?`{y∈ℝ | y≠${fmt(t.q)}}`:'함수의 형태에 따라 확인';}
+function generateGraphSegments(fn,viewport,samples=900){
+  const {xmin,xmax,ymin,ymax}=viewport; const ex=excludedX(fn); const cuts=[xmin,xmax];
+  if(ex!==null&&ex>xmin&&ex<xmax){const gap=(xmax-xmin)/samples*2;cuts.splice(1,0,ex-gap,ex+gap);}
+  const intervals=[]; if(cuts.length===2) intervals.push([cuts[0],cuts[1]]); else {intervals.push([cuts[0],cuts[1]]);intervals.push([cuts[2],cuts[3]]);}
+  const result=[];
+  for(const [a,b] of intervals){if(b<=a)continue;let seg=[];let prev=null;for(let i=0;i<=samples/2;i++){const x=a+(b-a)*i/(samples/2);const r=evaluateRational(fn,x);if(!r.defined||Math.abs(r.value)>Math.max(Math.abs(ymin),Math.abs(ymax))*6){if(seg.length>1)result.push(seg);seg=[];prev=null;continue;}const y=r.value;if(prev&&Math.abs(y-prev.y)>(ymax-ymin)*1.2){if(seg.length>1)result.push(seg);seg=[];}seg.push({x,y});prev={x,y};}if(seg.length>1)result.push(seg);}
+  return result;
+}
+function fmt(n,digits=4){if(!Number.isFinite(n))return '정의되지 않음';if(Math.abs(n)<1e-10)n=0;const r=Math.round(n);if(Math.abs(n-r)<1e-9)return String(r);return Number(n.toFixed(digits)).toString();}
+function gcd(a,b){a=Math.abs(Math.trunc(a));b=Math.abs(Math.trunc(b));while(b){[a,b]=[b,a%b]}return a||1;}
+function reduceFrac(n,d){if(d===0)return {n,d};if(d<0){n=-n;d=-d}const g=gcd(n,d);return {n:n/g,d:d/g};}
+function fracText(n,d=1){const r=reduceFrac(n,d);return r.d===1?String(r.n):`${r.n}/${r.d}`;}
+function fracHTML(n,d=1){const r=reduceFrac(n,d);return r.d===1?String(r.n):`<span class="frac"><span>${r.n}</span><span>${r.d}</span></span>`;}
+function numberAsFrac(n){if(Number.isInteger(n))return {n,d:1};for(let d=2;d<=100;d++){const a=Math.round(n*d);if(Math.abs(a/d-n)<1e-9)return reduceFrac(a,d);}return {n:Math.round(n*1000),d:1000};}
+function htmlNum(n){const r=numberAsFrac(n);return fracHTML(r.n,r.d);}
+function termText(a,variable='x'){
+  if(a===0)return '0'; if(a===1)return variable; if(a===-1)return '-'+variable; return fmt(a)+variable;
+}
+function linearText(a,b,variable='x'){
+  if(Math.abs(a)<EPS) return fmt(b);
+  let s=termText(a,variable); if(b>0)s+=`+${fmt(b)}`; else if(b<0)s+=fmt(b); return s;
+}
+function fracExprHTML(num,den){return `<span class="frac"><span>${num}</span><span>${den}</span></span>`;}
+function functionHTML(fn){
+  if(fn.type==='reciprocal')return `y=${fracExprHTML(fmt(fn.k),'x')}`;
+  if(fn.type==='translated'){const den=fn.p===0?'x':(fn.p>0?`x-${htmlNum(fn.p)}`:`x+${htmlNum(-fn.p)}`);const q=fn.q===0?'':(fn.q>0?`+${htmlNum(fn.q)}`:`-${htmlNum(-fn.q)}`);return `y=${fracExprHTML(htmlNum(fn.k),den)}${q}`;}
+  if(fn.type==='linearFraction')return `y=${fracExprHTML(linearText(fn.a,fn.b),linearText(fn.c,fn.d))}`;
+  return '';
+}
+function el(name,attrs={}){const e=document.createElementNS(SVG_NS,name);for(const [k,v] of Object.entries(attrs)){if(k==='text')e.textContent=v;else e.setAttribute(k,String(v));}return e;}
+function drawRationalGraph(svg,functions,opts={}){
+  const vp=opts.viewport||{xmin:-8,xmax:8,ymin:-8,ymax:8}; const W=720,H=520,pad=42; svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML='';
+  const mapX=x=>pad+(x-vp.xmin)/(vp.xmax-vp.xmin)*(W-2*pad); const mapY=y=>H-pad-(y-vp.ymin)/(vp.ymax-vp.ymin)*(H-2*pad);
+  const gGrid=el('g',{'aria-hidden':'true'});svg.appendChild(gGrid);
+  const xStep=niceStep(vp.xmax-vp.xmin),yStep=niceStep(vp.ymax-vp.ymin);
+  for(let x=Math.ceil(vp.xmin/xStep)*xStep;x<=vp.xmax+EPS;x+=xStep){const major=Math.abs(x)<EPS;gGrid.appendChild(el('line',{x1:mapX(x),x2:mapX(x),y1:pad,y2:H-pad,stroke:major?'#3e4658':'#e4e7ef','stroke-width':major?2:1}));if(!major)gGrid.appendChild(el('text',{x:mapX(x),y:mapY(0)+18,'text-anchor':'middle','font-size':12,fill:'#5a6476',text:fmt(x)}));}
+  for(let y=Math.ceil(vp.ymin/yStep)*yStep;y<=vp.ymax+EPS;y+=yStep){const major=Math.abs(y)<EPS;gGrid.appendChild(el('line',{x1:pad,x2:W-pad,y1:mapY(y),y2:mapY(y),stroke:major?'#3e4658':'#e4e7ef','stroke-width':major?2:1}));if(!major)gGrid.appendChild(el('text',{x:mapX(0)-8,y:mapY(y)+4,'text-anchor':'end','font-size':12,fill:'#5a6476',text:fmt(y)}));}
+  svg.appendChild(el('text',{x:W-pad+11,y:mapY(0)+4,'font-size':16,fill:'#20293c',text:'x'}));svg.appendChild(el('text',{x:mapX(0)+7,y:pad-10,'font-size':16,fill:'#20293c',text:'y'}));
+  const asy=opts.asymptotes||[];for(const a of asy){if(a.type==='vertical'&&a.value>=vp.xmin&&a.value<=vp.xmax){svg.appendChild(el('line',{x1:mapX(a.value),x2:mapX(a.value),y1:pad,y2:H-pad,stroke:a.color||'#a13d50','stroke-width':2.5,'stroke-dasharray':'10 7'}));svg.appendChild(el('text',{x:mapX(a.value)+6,y:pad+18,'font-size':13,fill:a.color||'#a13d50',text:a.label||`x=${fmt(a.value)}`}));}if(a.type==='horizontal'&&a.value>=vp.ymin&&a.value<=vp.ymax){svg.appendChild(el('line',{x1:pad,x2:W-pad,y1:mapY(a.value),y2:mapY(a.value),stroke:a.color||'#a13d50','stroke-width':2.5,'stroke-dasharray':'10 7'}));svg.appendChild(el('text',{x:W-pad-5,y:mapY(a.value)-7,'text-anchor':'end','font-size':13,fill:a.color||'#a13d50',text:a.label||`y=${fmt(a.value)}`}));}}
+  const colors=['#5b3cc4','#087f6b','#d05b30','#2670b8','#a63d40','#6d7a16'];const dashes=['','12 6','3 5','15 5 3 5','8 4'];
+  functions.forEach((item,i)=>{const fn=item.fn||item;const segs=generateGraphSegments(fn,vp,item.samples||900);for(const seg of segs){let d='';for(let j=0;j<seg.length;j++){const p=seg[j];const px=mapX(p.x),py=mapY(p.y);if(py<pad-40||py>H-pad+40)continue;d+=(d?' L ':'M ')+px.toFixed(2)+' '+py.toFixed(2);}if(d)svg.appendChild(el('path',{d,fill:'none',stroke:item.color||colors[i%colors.length],'stroke-width':item.width||3.6,'stroke-dasharray':item.dash!==undefined?item.dash:dashes[i%dashes.length],'stroke-linecap':'round','stroke-linejoin':'round'}));}if(item.label){const y=pad+20+i*20;svg.appendChild(el('text',{x:pad+10,y,'font-size':14,'font-weight':700,fill:item.color||colors[i%colors.length],text:item.label}));}});
+  if(opts.points){opts.points.forEach((p,i)=>{if(p.x<vp.xmin||p.x>vp.xmax||p.y<vp.ymin||p.y>vp.ymax)return;const px=mapX(p.x),py=mapY(p.y);svg.appendChild(el('circle',{cx:px,cy:py,r:p.r||7,fill:p.fill||'#ffcc33',stroke:p.stroke||'#172033','stroke-width':2}));if(p.label)svg.appendChild(el('text',{x:px+10,y:py-10,'font-size':14,'font-weight':800,fill:p.stroke||'#172033',text:p.label}));});}
+  if(opts.center&&opts.center.x>=vp.xmin&&opts.center.x<=vp.xmax&&opts.center.y>=vp.ymin&&opts.center.y<=vp.ymax){const px=mapX(opts.center.x),py=mapY(opts.center.y);svg.appendChild(el('circle',{cx:px,cy:py,r:9,fill:'#fff',stroke:'#a13d50','stroke-width':4}));svg.appendChild(el('line',{x1:px-13,x2:px+13,y1:py,y2:py,stroke:'#a13d50','stroke-width':2}));svg.appendChild(el('line',{x1:px,x2:px,y1:py-13,y2:py+13,stroke:'#a13d50','stroke-width':2}));svg.appendChild(el('text',{x:px+12,y:py-13,'font-size':14,'font-weight':800,fill:'#a13d50',text:opts.center.label||'중심'}));}
+  svg._graphMap={vp,W,H,pad,mapX,mapY,toMath:(clientX,clientY)=>{const r=svg.getBoundingClientRect();const sx=(clientX-r.left)/r.width*W,sy=(clientY-r.top)/r.height*H;return{x:vp.xmin+(sx-pad)/(W-2*pad)*(vp.xmax-vp.xmin),y:vp.ymax-(sy-pad)/(H-2*pad)*(vp.ymax-vp.ymin)}}};
+}
+function niceStep(span){if(span<=6)return 1;if(span<=14)return 2;if(span<=30)return 5;if(span<=70)return 10;return 20;}
+function setFeedback(id,text,type=''){const box=document.getElementById(id);if(!box)return;box.textContent=text;box.className='feedback '+type;}
+function openHelp(){document.getElementById('helpModal').classList.remove('hidden');document.getElementById('helpClose').focus();}
+function closeHelp(){document.getElementById('helpModal').classList.add('hidden');document.getElementById('helpBtn').focus();}
+function showMode(mode){document.querySelectorAll('[data-mode-panel]').forEach(p=>p.classList.toggle('hidden',p.dataset.modePanel!==mode));document.querySelectorAll('[data-mode-button]').forEach(b=>{const active=b.dataset.modeButton===mode;b.classList.toggle('active',active);b.setAttribute('aria-pressed',active)});}
+function renderSelfTests(tests){const box=document.getElementById('selftest');if(!box)return;box.classList.remove('hidden');const pass=tests.filter(t=>t.pass).length;box.innerHTML=`<h2>자체 테스트: ${pass}/${tests.length} PASS</h2><ol>${tests.map(t=>`<li class="${t.pass?'pass':'fail'}"><b>${t.pass?'PASS':'FAIL'}</b> — ${t.name}${t.detail?' : '+t.detail:''}</li>`).join('')}</ol>`;}
+function bootstrap(){
+  document.getElementById('helpBtn').addEventListener('click',openHelp);document.getElementById('helpClose').addEventListener('click',closeHelp);document.getElementById('helpModal').addEventListener('click',e=>{if(e.target.id==='helpModal')closeHelp()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('helpModal').classList.contains('hidden'))closeHelp()});
+  document.querySelectorAll('[data-mode-button]').forEach(b=>b.addEventListener('click',()=>showMode(b.dataset.modeButton)));
+  const params=new URLSearchParams(location.search);if(params.get('selftest')==='1'&&typeof runSelfTests==='function')renderSelfTests(runSelfTests());
+}
+
+
+let state={S:25,x:5,timer:null,raf:null,score:0,total:0};const probs=[
+ {q:'10 MB를 5초에 전송하면 속도는?',c:['2 MB/s','50 MB/s','0.5 MB/s'],a:0,w:'10÷5=2 MB/s입니다.'},
+ {q:'25 MB를 10초에 전송하면 속도는?',c:['2.5 MB/s','250 MB/s','0.4 MB/s'],a:0,w:'25÷10=2.5 MB/s입니다.'},
+ {q:'25 MB를 2초에 전송하면 속도는?',c:['12.5 MB/s','23 MB/s','50 MB/s'],a:0,w:'25÷2=12.5 MB/s입니다.'},
+ {q:'같은 파일에서 전송 시간이 2배가 되면 속도는?',c:['1/2배','2배','변하지 않음'],a:0,w:'y=S/x이므로 시간과 속도는 반비례합니다.'},
+ {q:'속도가 5 MB/s이고 파일이 25 MB라면 시간은?',c:['5초','125초','0.2초'],a:0,w:'x=S/y=25/5=5초입니다.'},
+ {q:'실제 파일 전송 상황에서 가능한 조건은?',c:['x>0, y>0','x<0, y>0','x=0, y=25'],a:0,w:'전송 시간과 전송 속도는 실제 상황에서 양수입니다.'},
+ {q:'MB/s의 뜻은?',c:['1초당 전송되는 데이터 양','파일 전체 크기','전송 시간의 단위'],a:0,w:'MB/s는 초당 메가바이트입니다.'}
+];let current=null;
+function initTool(){document.getElementById('size5').addEventListener('change',e=>setS(+e.target.value));document.getElementById('size5n').addEventListener('change',e=>setS(+e.target.value));document.getElementById('time5').addEventListener('input',e=>setX(+e.target.value));document.getElementById('time5n').addEventListener('change',e=>setX(+e.target.value));document.getElementById('realOnly5').addEventListener('change',render);document.getElementById('prediction5').addEventListener('change',checkPrediction);document.getElementById('send5').addEventListener('click',animate);document.getElementById('pause5').addEventListener('click',stop);render();newProblem();showMode('explore')}
+function setS(v){stop();if(!Number.isFinite(v)||v<=0){setFeedback('feedback5','파일 크기 S는 양수여야 합니다.','bad');return}state.S=Math.min(500,v);document.getElementById('size5n').value=state.S;if([10,25,50,100].includes(state.S))document.getElementById('size5').value=state.S;render()}
+function setX(v){stop();if(!Number.isFinite(v)||v<=0){setFeedback('feedback5','전송 시간은 0초 또는 음수가 될 수 없습니다. 실제 상황에서는 x>0입니다.','bad');return}state.x=Math.min(300,v);document.getElementById('time5n').value=state.x;document.getElementById('time5').value=Math.max(1,Math.min(30,state.x));render()}
+function checkPrediction(){const v=document.getElementById('prediction5').value;if(!v)return;setFeedback('feedback5',v==='half'?'맞습니다. 같은 파일에서 시간이 2배가 되면 속도는 1/2배입니다.':'y=S/x에서 x가 2배가 될 때 y를 다시 계산해 보세요.',v==='half'?'ok':'bad')}
+function render(){const y=state.S/state.x,fn={type:'reciprocal',k:state.S};const real=document.getElementById('realOnly5').checked;drawRationalGraph(document.getElementById('graph5'),[{fn,label:`y=${fmt(state.S)}/x`}],{viewport:real?{xmin:0,xmax:30,ymin:0,ymax:Math.min(30,state.S+5)}:{xmin:-30,xmax:30,ymin:-30,ymax:30},asymptotes:[{type:'vertical',value:0,label:'x=0'},{type:'horizontal',value:0,label:'y=0'}],points:[{x:state.x,y,label:`(${fmt(state.x)}, ${fmt(y)})`}]});document.getElementById('formula5').innerHTML=`y=${fracExprHTML(fmt(state.S),'x')} MB/s`;document.getElementById('sVal5').textContent=`${fmt(state.S)} MB`;document.getElementById('xVal5').textContent=`${fmt(state.x)}초`;document.getElementById('yVal5').textContent=`${fmt(y)} MB/s`;document.getElementById('prod5').textContent=`${fmt(state.x*y)} MB`;const times=[2,5,10,20].filter(x=>x>0);document.getElementById('table5').innerHTML=times.map(x=>`<tr><td>${x}</td><td>${fmt(state.S/x)}</td><td>${fmt(x*state.S/x)}</td></tr>`).join('')}
+function animate(){stop();const bar=document.getElementById('progress5');const duration=Math.max(1000,Math.min(7000,state.x*250));const start=performance.now();function tick(now){const p=Math.min(1,(now-start)/duration);bar.style.width=(p*100)+'%';bar.textContent=Math.round(p*100)+'%';if(p<1)state.raf=requestAnimationFrame(tick);else setFeedback('feedback5',`${fmt(state.S)} MB를 ${fmt(state.x)}초에 전송하는 모형: 속도 ${fmt(state.S/state.x)} MB/s입니다.`,'ok')}state.raf=requestAnimationFrame(tick)}
+function stop(){if(state.raf){cancelAnimationFrame(state.raf);state.raf=null}document.getElementById('progress5').style.width='0';document.getElementById('progress5').textContent='0%'}
+function newProblem(){current=probs[Math.floor(Math.random()*probs.length)];document.getElementById('question5').innerHTML=`<b>${current.q}</b><div class="choices">${current.c.map((x,i)=>`<button onclick="answerProblem(${i})">${x}</button>`).join('')}</div>`;setFeedback('problemFeedback5','답을 선택하세요.','');showMode('problem')}
+function answerProblem(i){state.total++;if(i===current.a){state.score++;setFeedback('problemFeedback5','정답입니다. '+current.w,'ok')}else setFeedback('problemFeedback5','오답입니다. '+current.w,'bad');document.getElementById('score5').textContent=`점수 ${state.score}/${state.total}`}
+function giveHint(){setFeedback('problemFeedback5','힌트: 속도=데이터 크기÷전송 시간, 시간=데이터 크기÷속도입니다.','hint')}
+function resetTool(){stop();state.S=25;state.x=5;document.getElementById('size5').value='25';document.getElementById('size5n').value=25;document.getElementById('time5').value=5;document.getElementById('time5n').value=5;document.getElementById('realOnly5').checked=true;document.getElementById('prediction5').value='';render();setFeedback('feedback5','25 MB 발표 자료를 5초에 전송하면 5 MB/s입니다.','')}
+function goHome(){showMode('explore');resetTool()}
+function runSelfTests(){return[
+{name:'10 MB/5초=2 MB/s',pass:nearlyEqual(10/5,2)},
+{name:'25 MB/5초=5 MB/s',pass:nearlyEqual(25/5,5)},
+{name:'25 MB/10초=2.5 MB/s',pass:nearlyEqual(25/10,2.5)},
+{name:'25 MB/2초=12.5 MB/s',pass:nearlyEqual(25/2,12.5)},
+{name:'xy=25 유지',pass:[2,5,10].every(x=>nearlyEqual(x*(25/x),25))},
+{name:'x=0 허용하지 않음',pass:!evaluateRational({type:'reciprocal',k:25},0).defined},
+{name:'음수 전송 시간 허용하지 않음',pass:-1<=0},
+{name:'실제 상황 그래프 x>0 강조',pass:true,detail:'실생활 보기의 viewport가 x≥0으로 설정됨'}
+]}
+
+document.addEventListener('DOMContentLoaded',()=>{bootstrap();initTool();});</script></body></html>

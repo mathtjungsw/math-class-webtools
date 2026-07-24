@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>직선 미술 스튜디오</title><style>
+:root{--ink:#20323b;--muted:#667a84;--paper:#f7fbfb;--card:#fff;--line:#cfe0df;--green:#0c8a78;--green2:#dff4ef;--blue:#315fb5;--blue2:#e9efff;--orange:#e88a2f;--red:#c74d52;--shadow:0 14px 35px rgba(32,50,59,.11)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:system-ui,-apple-system,"Noto Sans KR","Malgun Gothic",sans-serif;color:var(--ink);background:linear-gradient(180deg,#eef7f5,#f9fbff)}button,input,select{font:inherit}button{cursor:pointer}.app{width:min(1180px,calc(100% - 24px));margin:auto;padding:18px 0 44px}.hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#0b806f,#0b5e92);color:#fff;border-radius:26px;padding:28px;box-shadow:var(--shadow)}.hero:after{content:"∑";position:absolute;right:22px;bottom:-32px;font-size:150px;font-weight:900;opacity:.10}.hero h1{margin:.2rem 0 .55rem;font-size:clamp(1.8rem,4.5vw,3rem)}.hero p{margin:0;max-width:790px;line-height:1.7}.badges{display:flex;flex-wrap:wrap;gap:8px}.badge,.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 10px;font-size:.86rem;font-weight:800}.badge{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35)}.chip{background:var(--green2);color:#075f53}.toolbar{position:sticky;top:6px;z-index:20;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0;padding:10px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);box-shadow:0 8px 24px rgba(32,50,59,.08)}.toolbar button,.btn{border:1px solid #bcd0d1;border-radius:11px;padding:9px 13px;background:#fff;color:var(--ink);font-weight:800}.toolbar button:hover,.btn:hover{transform:translateY(-1px)}.btn.primary{background:var(--green);color:#fff;border-color:var(--green)}.btn.blue{background:var(--blue);color:#fff;border-color:var(--blue)}.btn.warn{background:#fff3e5;color:#8a4c0f;border-color:#f0c58d}.mode{display:flex;gap:4px;padding:4px;border-radius:12px;background:#edf4f4}.mode button{padding:7px 10px;border:0;background:transparent}.mode button.active{background:#fff;color:var(--green);box-shadow:0 2px 8px rgba(0,0,0,.08)}.grid2{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(290px,.85fr);gap:16px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:0 8px 25px rgba(32,50,59,.07);min-width:0}.card h2{font-size:1.15rem;margin:.1rem 0 .85rem}.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:end}.field{display:grid;gap:5px;font-size:.88rem;font-weight:800;color:#425b64}.field input,.field select,input[type=number],select{min-height:40px;border:1px solid #b8cecf;border-radius:10px;padding:7px 9px;background:#fff;color:var(--ink)}input[type=range]{width:100%;accent-color:var(--green)}.formula{padding:12px 14px;background:#f4faf9;border-left:5px solid var(--green);border-radius:10px;font-size:1.08rem;line-height:1.7;overflow-wrap:anywhere}.feedback{margin-top:10px;padding:11px 13px;border-radius:11px;background:#eef4ff;border-left:5px solid var(--blue);line-height:1.55}.feedback.good{background:#eaf8f0;border-color:#198754}.feedback.bad{background:#fff0f0;border-color:var(--red)}.feedback.warn{background:#fff7e8;border-color:var(--orange)}.svgbox{border:1px solid #c9dadd;border-radius:16px;background:#fbfefe;overflow:hidden}.svgbox svg{display:block;width:100%;height:auto;touch-action:none}.metric{display:grid;grid-template-columns:1fr auto;gap:8px;padding:9px 0;border-bottom:1px dashed #d7e3e3}.metric b{font-variant-numeric:tabular-nums}.list{display:grid;gap:8px}.item{border:1px solid #d5e2e2;border-radius:12px;padding:10px;background:#fff}.item.active{outline:3px solid rgba(12,138,120,.25);border-color:var(--green)}.problem-panel[hidden],.explore-only[hidden]{display:none!important}.small{font-size:.87rem;color:var(--muted);line-height:1.55}.footer{text-align:center;color:var(--muted);font-size:.86rem;margin-top:20px}.modal{position:fixed;inset:0;z-index:100;display:none;place-items:center;padding:18px;background:rgba(10,24,31,.55)}.modal.open{display:grid}.modal-box{max-width:680px;max-height:86vh;overflow:auto;background:#fff;border-radius:20px;padding:20px;box-shadow:var(--shadow)}.modal-box h2{margin-top:0}.kbd{font-family:ui-monospace,monospace;border:1px solid #bfcaca;border-bottom-width:3px;border-radius:6px;padding:1px 5px;background:#fff}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.spaced{justify-content:space-between}.canvas-note{padding:8px 10px;border-radius:10px;background:#f6f9fb;color:var(--muted);font-size:.86rem}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{border:1px solid #d6e1e3;padding:8px;text-align:center}th{background:#eff7f6}.hidden{display:none!important}
+@media(max-width:850px){.grid2,.grid3{grid-template-columns:1fr}.toolbar{position:static}.hero{padding:22px}.card{padding:13px}.controls>*{flex:1 1 145px}
+@media(max-width:520px){.app{width:min(100% - 12px,1180px)}.hero{border-radius:18px}.toolbar button{flex:1 1 40%}.field{width:100%}.controls>*{flex:1 1 100%}.formula{font-size:.98rem}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}
+
+#lineList{max-height:360px;overflow:auto}.swatch{width:20px;height:20px;border-radius:6px;border:2px solid #fff;box-shadow:0 0 0 1px #aac0c0}.relation{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.gallery button{min-height:70px;border:1px solid #cddddd;border-radius:12px;background:#f8fbfb;font-weight:800}@media(max-width:580px){.gallery{grid-template-columns:1fr}}
+</style></head><body><main class="app"><section class="hero"><div class="badges"><span class="badge">교과서 23쪽</span><span class="badge">Ⅰ-02 두 직선의 평행과 수직</span><span class="badge">오프라인 SVG</span></div><h1>직선 미술 스튜디오</h1><p>서로 평행한 직선과 서로 수직인 직선을 조합하고, 필요한 구간만 남겨 규칙과 질서가 드러나는 작품을 만듭니다.</p></section>
+<nav class="toolbar"><div class="mode"><button class="active" data-mode="explore">자유 탐색</button><button data-mode="problem">탐구 미션</button></div><button id="home">처음으로</button><button id="reset">초기화</button><button id="newProblem">새 미션</button><button id="help">도움말</button><button class="btn primary" id="savePng">작품 PNG 저장</button></nav>
+<section class="grid2"><article class="card"><h2>1. 직선과 구간으로 작품 만들기</h2><div class="controls"><label class="field">기울기 m<input id="m" step="0.25" type="number" value="1"/></label><label class="field">y절편 n<input id="b" step="0.5" type="number" value="-3"/></label><label class="field">x 시작<input id="xmin" step=".5" type="number" value="-8"/></label><label class="field">x 끝<input id="xmax" step=".5" type="number" value="8"/></label><label class="field">선 색<input id="color" type="color" value="#7e57c2"/></label><label class="field">선 굵기<input id="width" max="10" min="2" type="range" value="4"/></label></div><div class="row" style="margin-top:10px"><button class="btn primary" id="add">직선 추가</button><button class="btn" id="addParallel">선택선과 평행</button><button class="btn" id="addPerp">선택선과 수직</button><button class="btn warn" id="delete">선택선 삭제</button><button class="btn" id="clear">모두 지우기</button></div><div class="svgbox" style="margin-top:12px"><svg aria-label="직선 미술 좌표평면" id="art" viewbox="0 0 760 600"></svg></div><p class="canvas-note">교과서처럼 x의 범위를 정하면 직선의 일부만 그릴 수 있습니다. 목록의 직선을 누르면 선택됩니다.</p></article>
+<aside class="card"><h2>2. 수학 관계 읽기</h2><div class="formula" id="selectedInfo">직선을 추가하거나 선택하세요.</div><div class="feedback" id="relationInfo">평행: 기울기가 같음 · 수직: 두 기울기의 곱이 -1</div><h2 style="margin-top:18px">현재 직선</h2><div class="list" id="lineList"></div><h2 style="margin-top:18px">교과서 출발 작품</h2><div class="gallery"><button data-preset="book">평행·수직 4선</button><button data-preset="diamond">마름모 격자</button><button data-preset="mondrian">직교 분할</button></div></aside></section>
+<section class="card problem-panel" hidden="" id="problemPanel" style="margin-top:16px"><h2>탐구 미션</h2><p id="qText"></p><div class="row" id="qChoices"></div><div class="feedback" id="qFeedback">그림과 기울기를 함께 관찰하세요.</div></section><div class="footer">동아출판 공통수학2 23쪽 「직선을 이용한 미술 작품 만들기」를 바탕으로 재구성한 학습용 웹툴</div></main>
+<div class="modal" id="modal"><div class="modal-box"><h2>도움말</h2><p><b>직선 y=mx+n</b>에서 m은 기울기, n은 y절편입니다. 서로 평행한 두 직선은 기울기가 같고, 서로 수직인 두 직선은 기울기의 곱이 -1입니다.</p><p>직선을 선택한 뒤 평행 또는 수직 버튼을 누르면 관계를 유지한 새 직선이 추가됩니다. x 시작과 x 끝을 바꾸면 선분처럼 일부 구간만 그립니다.</p><p>PNG 저장은 현재 SVG 작품을 브라우저 안에서 그림 파일로 변환합니다.</p><div class="row spaced"><span class="small"><span class="kbd">Esc</span> 닫기</span><button class="btn primary" id="close">닫기</button></div></div></div>
+<script>const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+let lines=[],selected=null,mode='explore',qIndex=0;
+const palette=['#7e57c2','#ef5350','#1e88e5','#43a047','#f9a825','#263238','#00897b'];
+const fmt=x=>Math.abs(x-Math.round(x))<1e-9?String(Math.round(x)):String(Math.round(x*100)/100);
+const sx=x=>380+x*36, sy=y=>300-y*36;
+function eq(l){
+  if(l.type==='vertical') return `x=${fmt(l.x)}`;
+  if(Math.abs(l.m)<1e-9) return `y=${fmt(l.b)}`;
+  let s=l.m===1?'y=x':l.m===-1?'y=-x':`y=${fmt(l.m)}x`;
+  if(l.b>0)s+=`+${fmt(l.b)}`; else if(l.b<0)s+=fmt(l.b);
+  return s;
+}
+function rangeText(l){return l.type==='vertical'?`${fmt(l.y1)}≤y≤${fmt(l.y2)}`:`${fmt(l.x1)}≤x≤${fmt(l.x2)}`}
+function isParallel(a,b){
+  if(a.type==='vertical'||b.type==='vertical')return a.type==='vertical'&&b.type==='vertical';
+  return Math.abs(a.m-b.m)<1e-9;
+}
+function isPerp(a,b){
+  if(a.type==='vertical'||b.type==='vertical'){
+    const other=a.type==='vertical'?b:a;
+    return other.type!=='vertical'&&Math.abs(other.m)<1e-9;
+  }
+  return Math.abs(a.m*b.m+1)<1e-9;
+}
+function render(){
+  let s='<rect width="760" height="600" fill="#fff"/>';
+  for(let i=-10;i<=10;i++){
+    s+=`<line x1="${sx(i)}" y1="20" x2="${sx(i)}" y2="580" stroke="${i===0?'#5d6f77':'#e8eeee'}" stroke-width="${i===0?2:1}"/>`;
+    if(i>-8&&i<8)s+=`<text x="${sx(i)+4}" y="${sy(0)+16}" font-size="12" fill="#789">${i===0?'':i}</text>`;
+  }
+  for(let j=-8;j<=8;j++){
+    s+=`<line x1="20" y1="${sy(j)}" x2="740" y2="${sy(j)}" stroke="${j===0?'#5d6f77':'#e8eeee'}" stroke-width="${j===0?2:1}"/>`;
+    if(j!==0)s+=`<text x="${sx(0)+5}" y="${sy(j)-5}" font-size="12" fill="#789">${j}</text>`;
+  }
+  s+='<text x="730" y="292" font-weight="800">x</text><text x="388" y="30" font-weight="800">y</text>';
+  lines.forEach((l,i)=>{
+    let attrs='';
+    if(l.type==='vertical')attrs=`x1="${sx(l.x)}" y1="${sy(l.y1)}" x2="${sx(l.x)}" y2="${sy(l.y2)}"`;
+    else {const x1=Math.max(-10,l.x1),x2=Math.min(10,l.x2);attrs=`x1="${sx(x1)}" y1="${sy(l.m*x1+l.b)}" x2="${sx(x2)}" y2="${sy(l.m*x2+l.b)}"`;}
+    s+=`<line data-i="${i}" ${attrs} stroke="${l.color}" stroke-width="${l.width}" stroke-linecap="round" opacity=".96" ${selected===i?'filter="drop-shadow(0 0 5px rgba(0,0,0,.5))"':''}/>`;
+  });
+  $('#art').innerHTML=s;
+  $('#art').querySelectorAll('[data-i]').forEach(el=>el.onclick=()=>{selected=+el.dataset.i;syncSelected();render()});
+  renderList();renderInfo();
+}
+function renderList(){
+  $('#lineList').innerHTML=lines.length?lines.map((l,i)=>`<button class="item ${selected===i?'active':''}" data-sel="${i}"><span class="row spaced"><span><span class="swatch" style="display:inline-block;vertical-align:middle;background:${l.color}"></span> <b>${eq(l)}</b></span><span>${rangeText(l)}</span></span></button>`).join(''):'<div class="small">아직 직선이 없습니다.</div>';
+  $$('[data-sel]').forEach(b=>b.onclick=()=>{selected=+b.dataset.sel;syncSelected();render()});
+}
+function renderInfo(){
+  if(selected==null||!lines[selected]){$('#selectedInfo').textContent='직선을 추가하거나 선택하세요.';$('#relationInfo').textContent='평행: 기울기가 같음 · 수직: 두 기울기의 곱이 -1';return}
+  const l=lines[selected];
+  $('#selectedInfo').innerHTML=l.type==='vertical'?`선택: <b>${eq(l)}</b><br>수직선 · ${rangeText(l)}`:`선택: <b>${eq(l)}</b><br>기울기 m=${fmt(l.m)}, y절편=${fmt(l.b)}<br>${rangeText(l)}`;
+  const rel=[];lines.forEach((o,i)=>{if(i===selected)return;if(isParallel(l,o))rel.push(`${i+1}번은 평행`);else if(isPerp(l,o))rel.push(`${i+1}번은 수직`)});
+  $('#relationInfo').textContent=rel.length?rel.join(' · '):'다른 직선과의 평행·수직 관계가 아직 없습니다.';
+}
+function syncSelected(){
+  const l=lines[selected];if(!l)return;
+  $('#color').value=l.color;$('#width').value=l.width;
+  if(l.type==='vertical'){$('#m').value=0;$('#b').value=l.x;$('#xmin').value=l.y1;$('#xmax').value=l.y2;}
+  else{$('#m').value=l.m;$('#b').value=l.b;$('#xmin').value=l.x1;$('#xmax').value=l.x2;}
+}
+function addLine(m=+$('#m').value,b=+$('#b').value,x1=+$('#xmin').value,x2=+$('#xmax').value,color=$('#color').value,width=+$('#width').value){
+  if(![m,b,x1,x2,width].every(Number.isFinite)||x1===x2)return alert('숫자와 서로 다른 x 범위를 확인하세요.');
+  if(x1>x2)[x1,x2]=[x2,x1];lines.push({type:'normal',m,b,x1,x2,color,width});selected=lines.length-1;render();
+}
+function addVertical(x,y1=-8,y2=8,color=palette[lines.length%palette.length],width=4){lines.push({type:'vertical',x,y1,y2,color,width});selected=lines.length-1;render()}
+function preset(name){
+  lines=[];
+  if(name==='book')lines=[
+    {type:'normal',m:1,b:-3,x1:-8,x2:8,color:'#7e57c2',width:4},{type:'normal',m:1,b:7,x1:-8,x2:2,color:'#8d6e63',width:4},
+    {type:'normal',m:-1,b:-3,x1:-8,x2:8,color:'#ef5350',width:4},{type:'normal',m:-1,b:7,x1:-2,x2:8,color:'#f9a825',width:4}
+  ];
+  if(name==='diamond')for(let k=-6;k<=6;k+=3){lines.push({type:'normal',m:1,b:k,x1:-7,x2:7,color:palette[(k+6)/3%palette.length],width:3});lines.push({type:'normal',m:-1,b:k,x1:-7,x2:7,color:palette[((k+6)/3+2)%palette.length],width:3})}
+  if(name==='mondrian'){
+    [-5,-2,1,4].forEach((y,i)=>lines.push({type:'normal',m:0,b:y,x1:-9,x2:9,color:i===1?'#ef5350':'#263238',width:i===1?8:5}));
+    [[-8,-6,6],[-4,-8,8],[0,-5,7],[4,-8,5],[8,-6,8]].forEach((a,i)=>lines.push({type:'vertical',x:a[0],y1:a[1],y2:a[2],color:i===3?'#1e88e5':'#263238',width:i===3?8:5}));
+  }
+  selected=lines.length?0:null;render();
+}
+const questions=[
+{q:'y=x-3과 평행한 직선의 기울기는?',c:['1','-1','3'],a:0,w:'평행한 직선은 기울기가 같습니다.'},
+{q:'y=x+7과 수직인 직선은?',c:['y=-x+2','y=x-2','y=2x+1'],a:0,w:'1과 -1의 곱은 -1입니다.'},
+{q:'두 직선의 기울기가 각각 2, -1/2이면?',c:['서로 수직','서로 평행','판정 불가'],a:0,w:'두 기울기의 곱이 -1입니다.'},
+{q:'직선의 일부만 그리려면 무엇을 정해야 하나요?',c:['x의 범위','y절편만','색만'],a:0,w:'교과서 안내처럼 x의 범위를 입력합니다.'},
+{q:'y=-x-3과 y=-x+7의 관계는?',c:['평행','수직','일치'],a:0,w:'기울기가 모두 -1이고 y절편은 다릅니다.'},
+{q:'작품에서 평행선이 만드는 특징으로 알맞은 것은?',c:['일정한 방향과 간격의 반복','항상 한 점에서 만남','기울기가 서로 반대'],a:0,w:'평행선은 같은 방향을 유지합니다.'}
+];
+function newQ(){const q=questions[qIndex++%questions.length];$('#qText').textContent=q.q;$('#qChoices').innerHTML=q.c.map((x,i)=>`<button class="btn" data-a="${i}">${x}</button>`).join('');$('#qFeedback').className='feedback';$('#qFeedback').textContent='선택하세요.';$$('[data-a]').forEach(b=>b.onclick=()=>{const ok=+b.dataset.a===q.a;$('#qFeedback').className='feedback '+(ok?'good':'bad');$('#qFeedback').textContent=ok?'좋습니다. 관계를 정확히 읽었습니다.':q.w})}
+$$('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;$$('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));$('#problemPanel').hidden=mode!=='problem';if(mode==='problem')newQ()});
+$('#add').onclick=()=>addLine();
+$('#addParallel').onclick=()=>{if(selected==null||!lines[selected])return alert('직선을 선택하세요.');const l=lines[selected];if(l.type==='vertical')addVertical(l.x+2,l.y1,l.y2,palette[lines.length%palette.length],l.width);else addLine(l.m,l.b+2,l.x1,l.x2,palette[lines.length%palette.length],l.width)};
+$('#addPerp').onclick=()=>{if(selected==null||!lines[selected])return alert('직선을 선택하세요.');const l=lines[selected];if(l.type==='vertical')addLine(0,0,-8,8,palette[lines.length%palette.length],l.width);else if(Math.abs(l.m)<1e-9)addVertical(0,-8,8,palette[lines.length%palette.length],l.width);else addLine(-1/l.m,l.b+1,l.x1,l.x2,palette[lines.length%palette.length],l.width)};
+$('#delete').onclick=()=>{if(selected==null)return;lines.splice(selected,1);selected=lines.length?Math.min(selected,lines.length-1):null;render()};
+$('#clear').onclick=()=>{lines=[];selected=null;render()};$$('[data-preset]').forEach(b=>b.onclick=()=>preset(b.dataset.preset));
+$('#reset').onclick=()=>preset('book');$('#home').onclick=()=>{preset('book');scrollTo({top:0,behavior:'smooth'})};
+$('#newProblem').onclick=()=>{if(mode!=='problem')document.querySelector('[data-mode=problem]').click();else newQ()};
+$('#help').onclick=()=>$('#modal').classList.add('open');$('#close').onclick=()=>$('#modal').classList.remove('open');$('#modal').onclick=e=>{if(e.target.id==='modal')$('#modal').classList.remove('open')};addEventListener('keydown',e=>{if(e.key==='Escape')$('#modal').classList.remove('open')});
+$('#savePng').onclick=()=>{const svg=$('#art').cloneNode(true),xml=new XMLSerializer().serializeToString(svg),img=new Image(),url=URL.createObjectURL(new Blob([xml],{type:'image/svg+xml'}));img.onload=()=>{const c=document.createElement('canvas');c.width=760;c.height=600;const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(img,0,0);URL.revokeObjectURL(url);const a=document.createElement('a');a.download='직선_미술_작품.png';a.href=c.toDataURL('image/png');a.click()};img.src=url};
+preset('book');
+</script></body></html>

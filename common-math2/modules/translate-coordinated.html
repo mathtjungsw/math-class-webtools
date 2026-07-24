@@ -1,0 +1,197 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="theme-color" content="#0f766e"><title>점·그래프·방정식 3중 연동기</title><style>
+:root{
+  --bg:#f4faf9;--panel:#fff;--ink:#173230;--muted:#607875;--line:#d7e9e6;
+  --teal:#0f766e;--teal2:#14b8a6;--blue:#2563eb;--pink:#e11d48;
+  --orange:#f97316;--purple:#7c3aed;--yellow:#facc15;--green:#16a34a;
+  --red:#ef4444;--shadow:0 16px 42px rgba(20,72,68,.10);--radius:22px
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;min-height:100%;
+  font-family:system-ui,-apple-system,"Pretendard","Noto Sans KR",sans-serif;color:var(--ink);
+  background:
+    radial-gradient(circle at 0 0,#d9f8f1 0 15%,transparent 34%),
+    radial-gradient(circle at 100% 12%,#ede9fe 0 12%,transparent 33%),
+    var(--bg)
+}
+button,input,select{font:inherit}button{cursor:pointer}
+.app{width:min(1320px,100%);margin:auto;padding:24px}
+.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;margin-bottom:18px}
+.hero-main,.hero-side,.card{
+  background:rgba(255,255,255,.96);border:1px solid rgba(215,233,230,.95);
+  border-radius:var(--radius);box-shadow:var(--shadow)
+}
+.hero-main{padding:28px 30px;position:relative;overflow:hidden}
+.hero-main:after{
+  content:"";position:absolute;width:270px;height:270px;border-radius:50%;
+  right:-85px;bottom:-125px;background:linear-gradient(135deg,#99f6e4,#c4b5fd);opacity:.68
+}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.93rem;font-weight:900;color:var(--teal)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--teal2);box-shadow:0 0 0 5px rgba(20,184,166,.12)}
+h1{margin:10px 0 8px;font-size:clamp(2rem,5vw,3.45rem);letter-spacing:-.05em;line-height:1.06}
+.lead{margin:0;max-width:780px;position:relative;z-index:1;color:var(--muted);font-size:1.07rem;line-height:1.72}
+.hero-side{padding:18px;display:grid;gap:12px}
+.mini{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:16px;background:#f8fbfb}
+.mini b{display:grid;place-items:center;min-width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff}
+.mini span{line-height:1.52}
+.workspace{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(330px,.82fr);gap:18px}
+.canvas-card{padding:16px;min-height:780px}
+.canvas-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:4px 4px 14px}
+.canvas-title{font-size:1.18rem;font-weight:900}.canvas-sub{font-size:.92rem;color:var(--muted);margin-top:4px}
+.controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.btn{
+  border:1px solid var(--line);background:#fff;color:var(--ink);padding:10px 13px;
+  border-radius:12px;font-weight:850;transition:.15s;box-shadow:0 4px 12px rgba(20,72,68,.06)
+}
+.btn:hover{transform:translateY(-1px);border-color:#9ccbc5}
+.btn.primary{background:var(--teal);color:#fff;border-color:var(--teal)}
+.btn.soft{background:#eafaf7;color:var(--teal);border-color:#caeee7}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;padding:0 4px 12px}
+.toggle{
+  border:1px solid #d5e9e6;background:#f8fbfb;color:#50706c;
+  padding:8px 11px;border-radius:999px;font-size:.86rem;font-weight:850
+}
+.toggle.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+.stage{
+  position:relative;border:1px solid #dcecea;border-radius:18px;overflow:hidden;
+  background:linear-gradient(180deg,#fff,#f8fbfb)
+}
+svg{display:block;width:100%;height:575px;touch-action:none;user-select:none}
+.grid-line{stroke:#dfeceb;stroke-width:1}.grid-line.major{stroke:#bfd7d4;stroke-width:1.35}
+.axis{stroke:#587370;stroke-width:2.1}.tick{fill:#718986;font-size:12px;font-weight:680}
+.guide{stroke:#94a3b8;stroke-width:2;stroke-dasharray:8 7}
+.vector{stroke:#7c3aed;stroke-width:5;stroke-linecap:round}
+.xmove{stroke:#2563eb;stroke-width:5;stroke-linecap:round}
+.ymove{stroke:#f97316;stroke-width:5;stroke-linecap:round}
+.original{stroke:#173230;stroke-width:5;fill:rgba(23,50,48,.06)}
+.moved{stroke:#e11d48;stroke-width:5;fill:rgba(225,29,72,.10)}
+.ghost{stroke:#94a3b8;stroke-width:3;stroke-dasharray:8 7;fill:none}
+.handle{cursor:grab;filter:drop-shadow(0 6px 7px rgba(30,64,60,.2))}
+.handle:active{cursor:grabbing}.halo{opacity:.16}
+.label{font-size:14px;font-weight:900;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round}
+.coord-label{fill:#314d49;font-size:12px;font-weight:760;paint-order:stroke;stroke:#fff;stroke-width:4px}
+.small-label{font-size:13px;font-weight:900;paint-order:stroke;stroke:#fff;stroke-width:5px}
+.floating-tip{
+  position:absolute;left:16px;bottom:16px;max-width:min(570px,calc(100% - 32px));
+  padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.93);
+  backdrop-filter:blur(8px);border:1px solid #d8e9e6;color:#445f5b;
+  font-weight:760;box-shadow:0 10px 26px rgba(27,71,67,.10)
+}
+.below-stage{display:grid;grid-template-columns:1.04fr .96fr;gap:14px;padding-top:14px}
+.info-card{border:1px solid #dcecea;border-radius:18px;padding:14px;background:linear-gradient(180deg,#fbffff,#f7fbfb)}
+.sub-title{font-size:1rem;font-weight:900;margin-bottom:10px}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.metric{padding:13px;border-radius:16px;background:#f7fbfb;border:1px solid #e0eeec}
+.metric small{display:block;color:var(--muted);font-weight:760;margin-bottom:5px}
+.metric strong{font-size:1.05rem;overflow-wrap:anywhere}.metric.full{grid-column:1/-1}
+.side{display:grid;gap:14px;align-content:start}.panel{padding:18px}.panel h2{font-size:1.06rem;margin:0 0 12px}
+.slider-card{padding:14px;border-radius:18px;background:#f7fbfb;border:1px solid #e0eeec}
+.slider-card+.slider-card{margin-top:10px}
+.slider-row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.slider-row strong{font-size:1.3rem;color:var(--teal)}
+input[type=range]{width:100%;accent-color:var(--teal);margin-top:10px}
+input[type=number],select{border:1px solid #cfe2df;border-radius:10px;padding:8px;background:#fff;color:var(--ink);font-weight:850}
+.preset-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chip{border:1px solid #d4e7e4;background:#fff;color:#255451;padding:8px 10px;border-radius:999px;font-size:.85rem;font-weight:850}
+.formula-box{padding:16px;border-radius:18px;background:linear-gradient(145deg,#ecfdf9,#eff6ff);border:1px solid #cce9e4;overflow:auto}
+.formula-line{display:flex;gap:9px;align-items:flex-start;margin:9px 0;line-height:1.55}
+.formula-line .n{display:grid;place-items:center;flex:0 0 25px;height:25px;border-radius:50%;background:#fff;color:var(--teal);font-weight:900}
+.math{font-family:"Cambria Math","Times New Roman",serif}
+.observation{margin:0;padding:14px 15px;border-left:5px solid var(--yellow);border-radius:12px;background:#fffbea;color:#5e5530;line-height:1.65;font-weight:730}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.compare>div{padding:13px;border-radius:15px;background:#fff;border:1px solid #e1eeec}
+.compare small{display:block;color:var(--muted);font-weight:760;margin-bottom:5px}
+.compare strong{font-size:1.15rem}
+.command-grid{display:grid;grid-template-columns:repeat(3,64px);justify-content:center;gap:8px}
+.command-grid button{height:56px;border-radius:15px;border:1px solid #cfe2df;background:#fff;font-weight:950;font-size:1.15rem}
+.command-grid .empty{visibility:hidden}
+.status{display:inline-block;padding:7px 10px;border-radius:999px;font-size:.82rem;font-weight:900}
+.status.ok{background:#dcfce7;color:#166534}.status.warn{background:#fff7d6;color:#854d0e}.status.hit{background:#ffe4e6;color:#be123c}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#173c38;color:#fff;padding:11px 16px;border-radius:999px;font-weight:850;transition:.25s;z-index:20}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.footer-note{text-align:center;color:#6d8581;font-size:.87rem;margin-top:18px}
+@media(max-width:1020px){.hero{grid-template-columns:1fr}.workspace{grid-template-columns:1fr}.side{grid-template-columns:1fr 1fr}.side .panel:last-child{grid-column:1/-1}}
+@media(max-width:720px){.app{padding:12px}.hero-main{padding:23px 20px}.hero-side{padding:14px}.canvas-card{padding:10px}.canvas-head{flex-direction:column}.controls{justify-content:flex-start}svg{height:470px}.below-stage{grid-template-columns:1fr}.side{grid-template-columns:1fr}.side .panel:last-child{grid-column:auto}.metric-grid{grid-template-columns:1fr 1fr}}
+</style></head><body><main class="app"><section class="hero"><div class="hero-main"><div class="eyebrow"><span class="dot"></span> 03. 평행이동 · 원래 목록</div><h1>점·그래프·방정식 3중 연동기</h1><p class="lead">평행이동을 점의 좌표, 그래프의 위치, 방정식의 변화로 동시에 관찰해 보세요. 세 표현이 같은 이동 벡터를 공유한다는 사실을 실시간으로 확인할 수 있습니다.</p></div><div class="hero-side"><div class="mini"><b>1</b><span><strong>점 연동</strong><br>P(x,y)가 P'(x+a,y+b)로 이동합니다.</span></div><div class="mini"><b>2</b><span><strong>그래프 연동</strong><br>원·직선·포물선 전체가 같은 벡터로 이동합니다.</span></div><div class="mini"><b>3</b><span><strong>방정식 연동</strong><br>이동한 도형의 식은 f(x−a,y−b)=0이 됩니다.</span></div></div></section>
+<section class="workspace">
+<article class="card canvas-card">
+  <div class="canvas-head">
+    <div><div class="canvas-title">한 번의 평행이동이 점·그래프·방정식에 동시에 적용됩니다</div><div class="canvas-sub">세 표현이 따로 움직이는 것이 아니라 같은 이동 벡터를 공유합니다.</div></div>
+    <div class="controls"><button class="btn soft" id="circleBtn">원 모드</button><button class="btn" id="lineBtn">직선 모드</button><button class="btn" id="parabolaBtn">포물선 모드</button><button class="btn" id="resetBtn">처음으로</button><button class="btn primary" id="copyBtn">3중 정보 복사</button></div>
+  </div>
+  <div class="stage">
+    <svg id="plane" viewBox="0 0 980 575"><g id="grid"></g><g id="originalLayer"></g><g id="movedLayer"></g><line id="pointVector" class="vector"/><g id="pointP" class="handle"><circle r="11" fill="#173230" stroke="#fff" stroke-width="4"/><text class="label" x="17" y="-13">P</text></g><g id="pointP2"><circle r="11" fill="#e11d48" stroke="#fff" stroke-width="4"/><text class="label" x="17" y="-13" fill="#e11d48">P'</text></g></svg>
+    <div class="floating-tip" id="tip"></div>
+  </div>
+  <div class="below-stage">
+    <div class="info-card"><div class="sub-title">점의 변화</div><div class="compare"><div><small>원래 점</small><strong id="pointBefore"></strong></div><div><small>이동한 점</small><strong id="pointAfter"></strong></div></div></div>
+    <div class="info-card"><div class="sub-title">방정식의 변화</div><div class="formula-box"><div class="math" id="equationChange" style="font-size:1.14rem;font-weight:900"></div></div></div>
+  </div>
+</article>
+<aside class="side">
+  <section class="card panel"><h2>공통 이동 벡터</h2><div class="slider-card"><div class="slider-row"><span>a</span><strong id="aText"></strong></div><input id="aSlider" type="range" min="-6" max="6" step=".25"></div><div class="slider-card"><div class="slider-row"><span>b</span><strong id="bText"></strong></div><input id="bSlider" type="range" min="-4" max="4" step=".25"></div></section>
+  <section class="card panel"><h2>세 표현의 연동</h2><div class="metric-grid"><div class="metric full"><small>점</small><strong id="pointRule"></strong></div><div class="metric full"><small>그래프</small><strong id="graphRule"></strong></div><div class="metric full"><small>방정식</small><strong id="equationRule"></strong></div></div></section>
+  <section class="card panel"><h2>지금 보이는 관계</h2><p class="observation" id="observation"></p></section>
+</aside>
+</section>
+<p class="footer-note">점·그래프·방정식을 하나의 평행이동으로 묶어 보여 주는 오프라인 웹툴입니다.</p></main><div class="toast" id="toast">복사했어요.</div><script>
+const W=980,H=575,xMin=-10,xMax=10,yMin=-6,yMax=6,margin={l:54,r:34,t:28,b:42};
+const plotW=W-margin.l-margin.r,plotH=H-margin.t-margin.b;
+const $=id=>document.getElementById(id);
+const toX=x=>margin.l+(x-xMin)/(xMax-xMin)*plotW,toY=y=>margin.t+(yMax-y)/(yMax-yMin)*plotH;
+const fromX=px=>xMin+(px-margin.l)/plotW*(xMax-xMin),fromY=py=>yMax-(py-margin.t)/plotH*(yMax-yMin);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const fmt=v=>{if(!Number.isFinite(v))return '—';if(Math.abs(v)<1e-9)v=0;return Number.isInteger(v)?String(v):v.toFixed(2).replace(/0+$/,'').replace(/\.$/,'')};
+function buildGrid(g){
+  g.innerHTML='';
+  for(let x=xMin;x<=xMax;x++){
+    const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+    l.setAttribute('x1',toX(x));l.setAttribute('x2',toX(x));l.setAttribute('y1',margin.t);l.setAttribute('y2',H-margin.b);
+    l.setAttribute('class',x===0?'axis':(x%2===0?'grid-line major':'grid-line'));g.appendChild(l);
+    if(x!==0){const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',toX(x));t.setAttribute('y',toY(0)+18);t.setAttribute('text-anchor','middle');t.setAttribute('class','tick');t.textContent=x;g.appendChild(t)}
+  }
+  for(let y=yMin;y<=yMax;y++){
+    const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+    l.setAttribute('x1',margin.l);l.setAttribute('x2',W-margin.r);l.setAttribute('y1',toY(y));l.setAttribute('y2',toY(y));
+    l.setAttribute('class',y===0?'axis':(y%2===0?'grid-line major':'grid-line'));g.appendChild(l);
+    if(y!==0){const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',toX(0)-10);t.setAttribute('y',toY(y)+4);t.setAttribute('text-anchor','end');t.setAttribute('class','tick');t.textContent=y;g.appendChild(t)}
+  }
+}
+function svgPoint(svg,e){const r=svg.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}
+function setPoint(id,p){$(id).setAttribute('transform',`translate(${toX(p.x)},${toY(p.y)})`)}
+function setLine(id,p,q){$(id).setAttribute('x1',toX(p.x));$(id).setAttribute('y1',toY(p.y));$(id).setAttribute('x2',toX(q.x));$(id).setAttribute('y2',toY(q.y))}
+function polygonPoints(pts){return pts.map(p=>`${toX(p.x)},${toY(p.y)}`).join(' ')}
+async function copyText(text){
+  try{await navigator.clipboard.writeText(text)}
+  catch{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()}
+  $('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1600)
+}
+
+const svg=$('plane');let mode='circle',a=3,b=2,P={x:-2,y:1},drag=null;
+function clear(id){$(id).innerHTML=''}
+function add(tag,attrs,parent){const e=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);$(parent).appendChild(e);return e}
+function pathParabola(dx,dy){let d='';for(let x=-5;x<=5;x+=.08){const y=.18*x*x-2+dy,px=x+dx;if(y<yMin||y>yMax)continue;d+=(d?'L':'M')+toX(px)+' '+toY(y)}return d}
+function update(){
+  clear('originalLayer');clear('movedLayer');
+  let eq0='',eq1='',graphName='';
+  if(mode==='circle'){
+    const C={x:-2,y:0},r=2.5;add('ellipse',{cx:toX(C.x),cy:toY(C.y),rx:r*plotW/20,ry:r*plotH/12,class:'original'},'originalLayer');add('ellipse',{cx:toX(C.x+a),cy:toY(C.y+b),rx:r*plotW/20,ry:r*plotH/12,class:'moved'},'movedLayer');eq0='(x+2)²+y²=6.25';eq1=`(x ${C.x+a>=0?'−':'+'} ${fmt(Math.abs(C.x+a))})² + (y ${C.y+b>=0?'−':'+'} ${fmt(Math.abs(C.y+b))})² = 6.25`;graphName='원';
+  }else if(mode==='line'){
+    const p1={x:-8,y:-3},p2={x:4,y:3},q1={x:p1.x+a,y:p1.y+b},q2={x:p2.x+a,y:p2.y+b};add('line',{x1:toX(p1.x),y1:toY(p1.y),x2:toX(p2.x),y2:toY(p2.y),class:'original'},'originalLayer');add('line',{x1:toX(q1.x),y1:toY(q1.y),x2:toX(q2.x),y2:toY(q2.y),class:'moved'},'movedLayer');eq0='y=0.5x+1';eq1=`y=0.5(x−${fmt(a)})+1+${fmt(b)}`;graphName='직선';
+  }else{
+    add('path',{d:pathParabola(0,0),class:'original',fill:'none'},'originalLayer');add('path',{d:pathParabola(a,b),class:'moved',fill:'none'},'movedLayer');eq0='y=0.18x²−2';eq1=`y=0.18(x−${fmt(a)})²−2+${fmt(b)}`;graphName='포물선';
+  }
+  const P2={x:P.x+a,y:P.y+b};setPoint('pointP',P);setPoint('pointP2',P2);setLine('pointVector',P,P2);
+  $('pointBefore').textContent=`(${fmt(P.x)}, ${fmt(P.y)})`;$('pointAfter').textContent=`(${fmt(P2.x)}, ${fmt(P2.y)})`;$('equationChange').textContent=`${eq0}  →  ${eq1}`;
+  $('aText').textContent=fmt(a);$('bText').textContent=fmt(b);$('aSlider').value=a;$('bSlider').value=b;
+  $('pointRule').textContent=`(x,y)→(x+${fmt(a)},y+${fmt(b)})`;$('graphRule').textContent=`${graphName} 전체가 같은 방향·거리로 이동`;$('equationRule').textContent=`f(x−${fmt(a)},y−${fmt(b)})=0`;
+  $('observation').textContent=`이동 벡터 (${fmt(a)}, ${fmt(b)}) 하나가 점, ${graphName} 그래프, 방정식에 동시에 적용됩니다. 표현은 세 가지지만 나타내는 이동은 하나입니다.`;
+  $('tip').textContent=`${graphName} 모드 · 벡터 (${fmt(a)}, ${fmt(b)}) · 3중 연동`;
+}
+$('pointP').addEventListener('pointerdown',e=>{drag=true;$('pointP').setPointerCapture(e.pointerId)});
+$('pointP').addEventListener('pointermove',e=>{if(!drag)return;const p=svgPoint(svg,e);P={x:clamp(Math.round(fromX(p.x)*4)/4,-8,8),y:clamp(Math.round(fromY(p.y)*4)/4,-5,5)};update()});
+$('pointP').addEventListener('pointerup',()=>drag=false);
+$('aSlider').oninput=e=>{a=Number(e.target.value);update()};$('bSlider').oninput=e=>{b=Number(e.target.value);update()};
+$('circleBtn').onclick=()=>{mode='circle';update()};$('lineBtn').onclick=()=>{mode='line';update()};$('parabolaBtn').onclick=()=>{mode='parabola';update()};
+$('resetBtn').onclick=()=>{mode='circle';a=3;b=2;P={x:-2,y:1};update()};$('copyBtn').onclick=()=>copyText($('observation').textContent+' '+$('equationChange').textContent);buildGrid($('grid'));update();
+</script></body></html>
