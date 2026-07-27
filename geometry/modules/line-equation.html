@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>점·방향벡터 직선 생성기</title>
+<style>
+:root{--bg:#f3f7fb;--card:#fff;--ink:#172033;--muted:#5b667a;--primary:#2563eb;--primary2:#1d4ed8;--teal:#0f766e;--amber:#b45309;--red:#b91c1c;--line:#dbe4ef;--shadow:0 12px 30px rgba(15,23,42,.09);font-family:"Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;color:var(--ink)}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#eef6ff,#f8fafc 45%,#eefbf8);min-height:100vh}button,input,textarea,select{font:inherit}button{cursor:pointer}.app{max-width:1500px;margin:auto;padding:12px}.topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:12px 14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}.title{display:flex;align-items:center;gap:10px;margin-right:auto}.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#14b8a6);color:#fff;display:grid;place-items:center;font-weight:900}.title h1{font-size:clamp(18px,2.4vw,28px);margin:0}.subtitle{font-size:12px;color:var(--muted)}.btn{border:1px solid #cbd5e1;background:#fff;color:var(--ink);padding:9px 12px;border-radius:12px;font-weight:700}.btn:hover{background:#f8fafc}.btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}.btn.good{background:#0f766e;color:#fff;border-color:#0f766e}.btn.warn{background:#fff7ed;color:#9a3412;border-color:#fdba74}.tabs{display:flex;background:#e9eff7;padding:4px;border-radius:12px}.tab{border:0;background:transparent;padding:8px 12px;border-radius:9px;font-weight:800;color:#475569}.tab.active{background:#fff;color:var(--primary);box-shadow:0 2px 8px rgba(15,23,42,.12)}.grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(330px,.85fr);gap:14px;margin-top:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:14px}.stage-card{padding:10px}.stage-head{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:4px 4px 10px}.seg{display:flex;gap:4px;background:#eef2f7;border-radius:12px;padding:4px}.seg button{border:0;border-radius:9px;padding:8px 12px;font-weight:800;background:transparent}.seg button.active{background:#fff;color:var(--primary);box-shadow:0 2px 8px rgba(15,23,42,.12)}.stage{position:relative;height:min(64vh,650px);min-height:420px;border-radius:16px;overflow:hidden;background:radial-gradient(circle at 50% 30%,#fff,#eef5ff);border:1px solid #cbd5e1;touch-action:none}.stage svg,.stage canvas{width:100%;height:100%;display:block;position:absolute;inset:0}.stage [hidden]{display:none!important}.badge{position:absolute;left:12px;top:12px;background:rgba(255,255,255,.92);border:1px solid #cbd5e1;border-radius:12px;padding:8px 10px;font-weight:800;box-shadow:0 4px 12px rgba(15,23,42,.1);max-width:75%}.hintbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;color:#475569;font-size:13px}.pill{padding:6px 9px;border-radius:999px;background:#eef2ff;border:1px solid #c7d2fe}.side{display:grid;gap:14px;align-content:start}.section h2{font-size:17px;margin:0 0 10px}.control-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.field{display:grid;gap:4px}.field label{font-size:12px;color:#475569;font-weight:800}.field input[type=number]{width:100%;padding:9px;border:1px solid #cbd5e1;border-radius:10px;background:#fff}.range-row{display:grid;grid-template-columns:72px 1fr 64px;align-items:center;gap:8px;margin:9px 0}.range-row label{font-size:13px;font-weight:800}.range-row output{font-variant-numeric:tabular-nums;text-align:right;background:#f1f5f9;padding:5px 7px;border-radius:8px}.equations{display:grid;gap:8px}.eq{background:#f8fafc;border-left:5px solid var(--primary);border-radius:10px;padding:10px 12px;line-height:1.65;overflow-wrap:anywhere}.eq strong{color:#1e40af}.mission{display:none}.mission.active{display:block}.mission-box{background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:12px}.mission-title{font-weight:900;color:#9a3412}.feedback{margin-top:10px;border-radius:12px;padding:10px 12px;display:none;line-height:1.55}.feedback.show{display:block}.feedback.ok{background:#ecfdf5;border:1px solid #86efac;color:#166534}.feedback.no{background:#fff1f2;border:1px solid #fda4af;color:#9f1239}.record textarea{width:100%;min-height:105px;resize:vertical;border:1px solid #cbd5e1;border-radius:12px;padding:10px}.record-actions{display:flex;gap:8px;margin-top:8px}.tiny{font-size:12px;color:var(--muted)}.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#475569}.legend span{display:flex;align-items:center;gap:6px}.swatch{width:24px;height:0;border-top:4px solid}.dash{border-top-style:dashed}.dotshape{width:10px;height:10px;border-radius:50%;background:#dc2626;border:2px solid #fff;box-shadow:0 0 0 1px #991b1b}.modal{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;place-items:center;z-index:99;padding:16px}.modal.show{display:grid}.modal-card{max-width:720px;max-height:88vh;overflow:auto;background:#fff;border-radius:18px;padding:18px;box-shadow:0 24px 60px rgba(0,0,0,.25)}.modal-card h2{margin-top:0}.kbd{font-family:ui-monospace,monospace;border:1px solid #cbd5e1;border-bottom-width:3px;border-radius:6px;padding:1px 6px;background:#f8fafc}.selftest{display:none;position:fixed;right:10px;bottom:10px;z-index:100;background:#052e16;color:#dcfce7;border-radius:10px;padding:8px 10px;font-weight:900}.selftest.fail{background:#7f1d1d;color:#fee2e2}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.stage{height:56vh;min-height:400px}.control-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:560px){.app{padding:7px}.topbar{border-radius:14px;padding:9px}.subtitle{display:none}.btn{padding:8px 9px;font-size:13px}.stage{min-height:360px;height:54vh}.control-grid{grid-template-columns:repeat(2,1fr)}.range-row{grid-template-columns:62px 1fr 55px}.card{padding:11px}.title h1{font-size:18px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="title"><div class="logo">Ⅲ-6</div><div><h1>점·방향벡터 직선 생성기</h1><div class="subtitle">한 점과 방향벡터로 직선을 만들고 매개변수의 뜻을 탐구해요.</div></div></div>
+  <div class="tabs" aria-label="활동 모드"><button class="tab active" id="freeTab">자유 탐색</button><button class="tab" id="missionTab">미션 활동</button></div>
+  <button class="btn" id="homeBtn">처음으로</button><button class="btn" id="resetBtn">초기화</button><button class="btn primary" id="newBtn">새 활동</button><button class="btn" id="helpBtn">도움말</button>
+</header>
+<div class="grid">
+  <section class="card stage-card">
+    <div class="stage-head">
+      <div class="seg" aria-label="차원 선택"><button id="mode2Btn" class="active">평면 직선</button><button id="mode3Btn">공간 직선</button></div>
+      <div class="seg"><button id="frontBtn">정면</button><button id="topBtn">위</button><button id="viewResetBtn">시점 초기화</button></div>
+      <div class="legend"><span><i class="swatch" style="border-color:#dc2626"></i>직선 l</span><span><i class="swatch dash" style="border-color:#7c3aed"></i>k u⃗ 비교</span><span><i class="dotshape"></i>드래그 점</span></div>
+    </div>
+    <div class="stage" id="stage">
+      <svg id="svg2" viewBox="0 0 760 540" role="img" aria-label="평면 직선 탐구 화면"></svg>
+      <canvas id="canvas3" aria-label="공간 직선 탐구 화면" hidden></canvas>
+      <div class="badge" id="signBadge">t=0이면 P는 A와 같습니다.</div>
+    </div>
+    <div class="hintbar"><span class="pill">점 A와 파란 화살표 끝을 드래그</span><span class="pill">3D: 빈 곳 드래그=회전, 휠=확대·축소</span><span class="pill">키보드: 방향키=시점, ±=확대·축소</span></div>
+  </section>
+  <aside class="side">
+    <section class="card section">
+      <h2>좌표와 매개변수</h2>
+      <div class="control-grid" id="coordFields"></div>
+      <div class="range-row"><label for="tRange">t</label><input id="tRange" type="range" min="-5" max="5" step="0.1"><output id="tOut"></output></div>
+      <div class="range-row"><label for="kRange">실수배 k</label><input id="kRange" type="range" min="-3" max="3" step="0.1"><output id="kOut"></output></div>
+      <div class="range-row" id="opacityRow" hidden><label for="opacityRange">평면 투명도</label><input id="opacityRange" type="range" min="0" max="0.8" step="0.05" value="0.22"><output id="opacityOut">0.22</output></div>
+      <div class="tiny">k=0은 방향을 잃으므로 방향벡터가 될 수 없습니다. 비교 표시에서는 0에 가까운 값 대신 ±0.1을 사용합니다.</div>
+    </section>
+    <section class="card section">
+      <h2>실시간 방정식</h2>
+      <div class="equations">
+        <div class="eq" id="vectorEq"></div>
+        <div class="eq" id="paramEq"></div>
+        <div class="eq" id="symEq"></div>
+        <div class="eq" id="pointEq"></div>
+      </div>
+    </section>
+    <section class="card section mission" id="missionSection">
+      <h2>탐구 미션</h2>
+      <div class="mission-box"><div class="mission-title" id="missionTitle"></div><div id="missionText" style="margin-top:7px;line-height:1.55"></div><button class="btn good" id="checkBtn" style="margin-top:10px">확인</button><div class="feedback" id="feedback"></div></div>
+    </section>
+    <section class="card section record">
+      <h2>관찰 기록</h2>
+      <textarea id="record" placeholder="예: t가 음수이면 P는 u⃗의 반대 방향으로 이동했다. 방향벡터를 2배해도 같은 직선이 나타났다."></textarea>
+      <div class="record-actions"><button class="btn" id="copyBtn">기록 복사</button><button class="btn" id="clearRecordBtn">비우기</button></div>
+    </section>
+  </aside>
+</div>
+</div>
+<div class="modal" id="helpModal" role="dialog" aria-modal="true"><div class="modal-card"><h2>도움말</h2><p><b>탐구 순서</b>: ① 점 A를 옮깁니다. ② 파란 화살표 끝을 옮겨 방향벡터 u⃗를 바꿉니다. ③ t를 움직여 P의 이동 방향을 관찰합니다. ④ k를 바꾸어 u⃗와 k u⃗가 같은 직선을 만드는지 비교합니다.</p><p><b>수학적 의미</b>: 직선 위 임의의 점 P의 위치벡터는 <b>p⃗=a⃗+t u⃗</b>로 나타납니다. 좌표에서는 <b>x=x₁+at, y=y₁+bt</b>, 공간에서는 <b>z=z₁+ct</b>가 추가됩니다. t&gt;0이면 u⃗ 방향, t&lt;0이면 반대 방향입니다.</p><p><b>조작</b>: 평면에서는 A와 u⃗의 끝점을 직접 드래그합니다. 공간에서는 점/화살표 끝을 드래그하면 화면에 보이는 평면에서 이동하며 z좌표는 숫자 입력으로 세밀하게 조절할 수 있습니다. 빈 공간을 드래그하면 회전합니다. <span class="kbd">←↑↓→</span>는 시점, <span class="kbd">+</span>/<span class="kbd">-</span>는 확대·축소입니다.</p><p><b>특수한 경우</b>: 방향벡터의 어떤 성분이 0이면 분수꼴 대칭방정식 대신 x=x₁, y=y₁, z=z₁ 같은 조건을 함께 표시합니다.</p><button class="btn primary" id="closeHelp">닫기</button></div></div>
+<div class="selftest" id="selftest">SELFTEST PASS</div>
+<script>
+'use strict';
+const $=s=>document.querySelector(s);const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));const near=(a,b,e=1e-6)=>Math.abs(a-b)<e;
+const fmt=n=>{n=Math.abs(n)<1e-9?0:n;return Number.isInteger(n)?String(n):(+n.toFixed(2)).toString()};
+const vadd=(a,b)=>a.map((x,i)=>x+b[i]), vsub=(a,b)=>a.map((x,i)=>x-b[i]), vmul=(a,k)=>a.map(x=>x*k), vlen=a=>Math.hypot(...a);
+let state={dim:2,A:[-1,1,0],u:[2,1,1],t:0,k:2,planeOpacity:.22,yaw:-.65,pitch:.48,zoom:1,activity:'free'};
+const defaults=JSON.parse(JSON.stringify(state));let mission=null;
+const svg=$('#svg2'),canvas=$('#canvas3'),ctx=canvas.getContext('2d'),stage=$('#stage');
+function safeU(){if(vlen(state.u)<.25) state.u[0]=state.u[0]>=0?.25:-.25}
+function setMode(dim){state.dim=dim;$('#mode2Btn').classList.toggle('active',dim===2);$('#mode3Btn').classList.toggle('active',dim===3);svg.hidden=dim!==2;canvas.hidden=dim!==3;$('#opacityRow').hidden=dim!==3;buildFields();render();}
+function buildFields(){const names=state.dim===2?['x','y']:['x','y','z'];const box=$('#coordFields');box.innerHTML='';[['A',state.A],['u',state.u]].forEach(([prefix,arr])=>names.forEach((name,i)=>{const d=document.createElement('div');d.className='field';d.innerHTML=`<label>${prefix}${name}</label><input type="number" step="0.25" data-prefix="${prefix}" data-i="${i}" value="${fmt(arr[i])}">`;box.appendChild(d)}));box.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{const arr=inp.dataset.prefix==='A'?state.A:state.u;arr[+inp.dataset.i]=Number(inp.value)||0;safeU();render()}));}
+function syncFields(){document.querySelectorAll('#coordFields input').forEach(inp=>{const arr=inp.dataset.prefix==='A'?state.A:state.u; if(document.activeElement!==inp) inp.value=fmt(arr[+inp.dataset.i]);});}
+function world2svg(p){return [380+p[0]*48,270-p[1]*48]}
+function svg2world(x,y){const r=svg.getBoundingClientRect();return [(x-r.left)*760/r.width,(y-r.top)*540/r.height]}
+function sLine(p1,p2,attrs=''){return `<line x1="${p1[0]}" y1="${p1[1]}" x2="${p2[0]}" y2="${p2[1]}" ${attrs}/>`}
+function markerDefs(){return `<defs><marker id="arrBlue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#2563eb"/></marker><marker id="arrGray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#475569"/></marker></defs>`}
+function render2(){const A=state.A,u=state.u,P=vadd(A,vmul(u,state.t)),ku=vmul(u,Math.abs(state.k)<.05?(state.k<0?-.1:.1):state.k);let h=markerDefs();
+for(let x=-7;x<=7;x++){const a=world2svg([x,-5.5]),b=world2svg([x,5.5]);h+=sLine(a,b,`stroke="${x===0?'#64748b':'#dbe4ef'}" stroke-width="${x===0?1.8:1}"`)}
+for(let y=-5;y<=5;y++){const a=world2svg([-8,y]),b=world2svg([8,y]);h+=sLine(a,b,`stroke="${y===0?'#64748b':'#dbe4ef'}" stroke-width="${y===0?1.8:1}"`)}
+h+=`<text x="742" y="260" fill="#334155" font-weight="700">x</text><text x="388" y="18" fill="#334155" font-weight="700">y</text>`;
+const L=10/vlen(u),p1=world2svg(vadd(A,vmul(u,-L))),p2=world2svg(vadd(A,vmul(u,L)));h+=sLine(p1,p2,'stroke="#dc2626" stroke-width="4"');
+const kL=10/vlen(ku),k1=world2svg(vadd(A,vmul(ku,-kL))),k2=world2svg(vadd(A,vmul(ku,kL)));h+=sLine(k1,k2,'stroke="#7c3aed" stroke-width="2.5" stroke-dasharray="10 8" opacity=".75"');
+const As=world2svg(A),Us=world2svg(vadd(A,u)),Ps=world2svg(P);h+=sLine(As,Us,'stroke="#2563eb" stroke-width="4" marker-end="url(#arrBlue)"');h+=sLine(As,Ps,'stroke="#475569" stroke-width="2.5" stroke-dasharray="6 5" marker-end="url(#arrGray)"');
+h+=`<circle data-drag="A" cx="${As[0]}" cy="${As[1]}" r="9" fill="#f59e0b" stroke="#7c2d12" stroke-width="3"/><circle data-drag="U" cx="${Us[0]}" cy="${Us[1]}" r="9" fill="#2563eb" stroke="#fff" stroke-width="3"/><circle cx="${Ps[0]}" cy="${Ps[1]}" r="8" fill="#16a34a" stroke="#fff" stroke-width="3"/>`;
+h+=`<text x="${As[0]+10}" y="${As[1]-12}" font-weight="900" fill="#92400e">A</text><text x="${Us[0]+10}" y="${Us[1]-10}" font-weight="900" fill="#1d4ed8">u⃗ 끝</text><text x="${Ps[0]+10}" y="${Ps[1]-10}" font-weight="900" fill="#166534">P(t)</text>`;svg.innerHTML=h;}
+function rotate(p){let [x,y,z]=p;const cy=Math.cos(state.yaw),sy=Math.sin(state.yaw);[x,z]=[x*cy+z*sy,-x*sy+z*cy];const cp=Math.cos(state.pitch),sp=Math.sin(state.pitch);[y,z]=[y*cp-z*sp,y*sp+z*cp];return [x,y,z]}
+function project(p){const q=rotate(p),scale=55*state.zoom;return [canvas.width/2+q[0]*scale,canvas.height/2-q[1]*scale,q[2]]}
+function cLine(a,b,style={}){const A=project(a),B=project(b);ctx.save();ctx.strokeStyle=style.color||'#64748b';ctx.lineWidth=style.width||1;ctx.setLineDash(style.dash||[]);ctx.globalAlpha=style.alpha??1;ctx.beginPath();ctx.moveTo(A[0],A[1]);ctx.lineTo(B[0],B[1]);ctx.stroke();ctx.restore()}
+function cPoint(p,color,label,r=7){const s=project(p);ctx.beginPath();ctx.fillStyle=color;ctx.arc(s[0],s[1],r,0,Math.PI*2);ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='#fff';ctx.stroke();ctx.fillStyle='#172033';ctx.font='bold 14px sans-serif';ctx.fillText(label,s[0]+9,s[1]-9);return s}
+function arrow(a,b,color){cLine(a,b,{color,width:4});const A=project(a),B=project(b),ang=Math.atan2(B[1]-A[1],B[0]-A[0]);ctx.save();ctx.translate(B[0],B[1]);ctx.rotate(ang);ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(-13,-6);ctx.lineTo(-13,6);ctx.closePath();ctx.fill();ctx.restore()}
+function drawPlane(){const z=0,s=6,pts=[[-s,-s,z],[s,-s,z],[s,s,z],[-s,s,z]].map(project);ctx.save();ctx.globalAlpha=state.planeOpacity;ctx.fillStyle='#60a5fa';ctx.beginPath();ctx.moveTo(...pts[0]);pts.slice(1).forEach(p=>ctx.lineTo(...p));ctx.closePath();ctx.fill();ctx.strokeStyle='#3b82f6';ctx.setLineDash([6,6]);ctx.stroke();ctx.restore();}
+function resizeCanvas(){const dpr=Math.min(devicePixelRatio||1,2),r=canvas.getBoundingClientRect();const w=Math.max(1,Math.floor(r.width*dpr)),h=Math.max(1,Math.floor(r.height*dpr));if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;ctx.setTransform(dpr,0,0,dpr,0,0);canvas._dpr=dpr;} }
+function render3(){resizeCanvas();const dpr=canvas._dpr||1;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,canvas.width/dpr,canvas.height/dpr);const oldW=canvas.width,oldH=canvas.height;canvas.widthCss=oldW/dpr;canvas.heightCss=oldH/dpr;const px=project; // project uses physical; compensate with context reset by using css dimensions manually below
+ctx.setTransform(1,0,0,1,0,0); // draw physical pixels
+ctx.fillStyle='#f8fbff';ctx.fillRect(0,0,canvas.width,canvas.height);drawPlane();
+for(let i=-5;i<=5;i++){cLine([i,-5,0],[i,5,0],{color:'#dbe4ef'});cLine([-5,i,0],[5,i,0],{color:'#dbe4ef'})}
+cLine([-6,0,0],[6,0,0],{color:'#ef4444',width:2});cLine([0,-6,0],[0,6,0],{color:'#22c55e',width:2});cLine([0,0,-6],[0,0,6],{color:'#3b82f6',width:2});
+const A=state.A,u=state.u,P=vadd(A,vmul(u,state.t)),ku=vmul(u,Math.abs(state.k)<.05?(state.k<0?-.1:.1):state.k),L=11/vlen(u),kL=11/vlen(ku);cLine(vadd(A,vmul(ku,-kL)),vadd(A,vmul(ku,kL)),{color:'#7c3aed',width:3,dash:[12,8],alpha:.75});cLine(vadd(A,vmul(u,-L)),vadd(A,vmul(u,L)),{color:'#dc2626',width:5});arrow(A,vadd(A,u),'#2563eb');cLine(A,P,{color:'#475569',width:3,dash:[7,6]});state._handles={A:cPoint(A,'#f59e0b','A',9),U:cPoint(vadd(A,u),'#2563eb','u 끝',9),P:cPoint(P,'#16a34a','P',8)};}
+function renderEquations(){const dim=state.dim,A=state.A,u=state.u,t=state.t,P=vadd(A,vmul(u,t)),letters=dim===2?['x','y']:['x','y','z'];$('#vectorEq').innerHTML=`<strong>벡터방정식</strong><br>p⃗ = a⃗ + t u⃗ = (${A.slice(0,dim).map(fmt).join(', ')}) + t(${u.slice(0,dim).map(fmt).join(', ')})`;
+$('#paramEq').innerHTML=`<strong>매개변수방정식</strong><br>${letters.map((s,i)=>`${s}=${fmt(A[i])}${u[i]>=0?'+':''}${fmt(u[i])}t`).join(', &nbsp; ')}`;
+const nonzero=u.slice(0,dim).every(x=>Math.abs(x)>1e-9);let sy='';if(nonzero) sy=letters.map((s,i)=>`(${s}−${fmt(A[i])})/${fmt(u[i])}`).join(' = ');else{const parts=[];u.slice(0,dim).forEach((x,i)=>{if(Math.abs(x)<1e-9)parts.push(`${letters[i]}=${fmt(A[i])}`)});sy=`0인 성분이 있으므로 분수꼴 대신 <b>${parts.join(', ')}</b> 조건과 매개변수방정식을 사용합니다.`}$('#symEq').innerHTML=`<strong>대칭형 확인</strong><br>${sy}`;
+$('#pointEq').innerHTML=`<strong>현재 점</strong><br>P = A + (${fmt(t)})u⃗ = (${P.slice(0,dim).map(fmt).join(', ')})`;
+$('#signBadge').textContent=t>0?'t>0: P는 A에서 u⃗ 방향으로 이동합니다.':t<0?'t<0: P는 A에서 u⃗의 반대 방향으로 이동합니다.':'t=0: P는 A와 같습니다.';}
+function render(){safeU();syncFields();$('#tRange').value=state.t;$('#kRange').value=state.k;$('#tOut').textContent=fmt(state.t);$('#kOut').textContent=fmt(state.k);$('#opacityRange').value=state.planeOpacity;$('#opacityOut').textContent=fmt(state.planeOpacity);if(state.dim===2)render2();else render3();renderEquations();}
+let drag=null;svg.addEventListener('pointerdown',e=>{const type=e.target.dataset.drag;if(!type)return;svg.setPointerCapture(e.pointerId);drag={type};});svg.addEventListener('pointermove',e=>{if(!drag)return;const p=svg2world(e.clientX,e.clientY),w=[(p[0]-380)/48,(270-p[1])/48];if(drag.type==='A'){state.A[0]=clamp(w[0],-7,7);state.A[1]=clamp(w[1],-5,5)}else{state.u[0]=clamp(w[0]-state.A[0],-6,6);state.u[1]=clamp(w[1]-state.A[1],-6,6);safeU()}render()});svg.addEventListener('pointerup',()=>drag=null);svg.addEventListener('pointercancel',()=>drag=null);
+let cdrag=null,last=null;canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*(canvas.width/r.width),y=(e.clientY-r.top)*(canvas.height/r.height);let best=null,bd=28*(devicePixelRatio||1);for(const k of ['A','U']){const p=state._handles?.[k];if(p){const d=Math.hypot(x-p[0],y-p[1]);if(d<bd){bd=d;best=k}}}cdrag=best||'view';last=[e.clientX,e.clientY]});canvas.addEventListener('pointermove',e=>{if(!cdrag)return;const dx=e.clientX-last[0],dy=e.clientY-last[1];last=[e.clientX,e.clientY];if(cdrag==='view'){state.yaw+=dx*.008;state.pitch=clamp(state.pitch+dy*.008,-1.35,1.35)}else{const s=.018/state.zoom;const right=rotate([1,0,0]),up=rotate([0,1,0]);const delta=[dx*s*right[0]-dy*s*up[0],dx*s*right[1]-dy*s*up[1],0];if(cdrag==='A'){state.A[0]+=delta[0];state.A[1]+=delta[1]}else{state.u[0]+=delta[0];state.u[1]+=delta[1];safeU()}}render()});canvas.addEventListener('pointerup',()=>cdrag=null);canvas.addEventListener('pointercancel',()=>cdrag=null);canvas.addEventListener('wheel',e=>{e.preventDefault();state.zoom=clamp(state.zoom*Math.exp(-e.deltaY*.001),.55,2.3);render()},{passive:false});
+function setActivity(a){state.activity=a;$('#freeTab').classList.toggle('active',a==='free');$('#missionTab').classList.toggle('active',a==='mission');$('#missionSection').classList.toggle('active',a==='mission');if(a==='mission'&&!mission)newMission();}
+const missions=[
+()=>({type:'line',dim:2,A:[2,-1],u:[-1,2],title:'주어진 점과 방향으로 직선 만들기',text:'점 A=(2, −1)을 지나고 방향벡터가 (−1, 2)에 평행한 직선을 만드세요.'}),
+()=>({type:'through',dim:2,A:[-2,1],target:[4,4],title:'주어진 점을 지나는지 확인하기',text:'A=(−2, 1)을 고정하고, 직선이 점 B=(4, 4)를 지나도록 u⃗를 조절하세요.'}),
+()=>({type:'tpoint',dim:2,A:[1,-2],u:[2,1],target:[-3,-4],targetT:-2,title:'매개변수로 점 이동하기',text:'A=(1, −2), u⃗=(2, 1)일 때 P가 (−3, −4)가 되도록 t를 조절하세요.'}),
+()=>({type:'scale',dim:2,A:[0,1],u:[1,2],targetK:-2,title:'방향벡터의 실수배 비교',text:'k=−2로 맞추고, k u⃗가 같은 직선을 만들지만 화살표 방향은 반대임을 확인하세요.'}),
+()=>({type:'horizontal',dim:2,A:[-1,2],title:'수평선 만들기',text:'점 A=(−1, 2)를 지나고 x축에 평행한 직선을 만드세요. 방향벡터는 영벡터가 아니어야 합니다.'}),
+()=>({type:'line',dim:3,A:[1,-1,2],u:[2,1,-1],title:'공간 직선 만들기',text:'점 A=(1, −1, 2)를 지나고 방향벡터가 (2, 1, −1)에 평행한 공간 직선을 만드세요.'})];
+function newMission(){mission=missions[Math.floor(Math.random()*missions.length)]();setMode(mission.dim);state.A=[...(mission.A||[0,0,0]),0,0].slice(0,3);if(mission.type==='tpoint')state.u=[...mission.u,0].slice(0,3);else if(mission.type==='scale')state.u=[...mission.u,0].slice(0,3);else state.u=mission.dim===2?[1,1,0]:[1,1,1];state.t=0;state.k=1;buildFields();$('#missionTitle').textContent=mission.title;$('#missionText').textContent=mission.text;$('#feedback').className='feedback';render();}
+function parallel(a,b,dim){const A=a.slice(0,dim),B=b.slice(0,dim);if(dim===2)return Math.abs(A[0]*B[1]-A[1]*B[0])<.12*Math.max(1,vlen(A)*vlen(B));const c=[A[1]*B[2]-A[2]*B[1],A[2]*B[0]-A[0]*B[2],A[0]*B[1]-A[1]*B[0]];return vlen(c)<.12*Math.max(1,vlen(A)*vlen(B))}
+function checkMission(){if(!mission)return;let ok=false,why='';const d=mission.dim;if(mission.type==='line'){ok=vlen(vsub(state.A,mission.A))<.2&&parallel(state.u,mission.u,d);why=ok?'점과 방향 조건을 모두 만족합니다. 방향벡터는 주어진 벡터의 0이 아닌 실수배여도 같은 직선을 만듭니다.':'점 A의 좌표와 방향벡터의 평행 조건을 함께 확인하세요.'}else if(mission.type==='through'){const w=vsub(mission.target,state.A);ok=vlen(vsub(state.A,mission.A))<.2&&parallel(state.u,w,2);why=ok?'B−A가 u⃗와 평행하므로 B는 직선 위에 있습니다.':'점 B가 직선 위에 있으려면 B−A가 u⃗의 실수배여야 합니다.'}else if(mission.type==='tpoint'){const P=vadd(state.A,vmul(state.u,state.t));ok=vlen(vsub(P,mission.target))<.16;why=ok?'P=A+t u⃗에 t=−2를 대입하면 목표점에 도달합니다.':'현재 P의 좌표와 목표 좌표를 비교하고 t의 부호와 크기를 조절하세요.'}else if(mission.type==='scale'){ok=Math.abs(state.k-mission.targetK)<.06;why=ok?'u⃗와 −2u⃗는 방향이 반대지만 서로 평행하므로 같은 직선을 정합니다.':'k를 −2로 맞춘 뒤 두 직선 표시가 완전히 겹치는지 살펴보세요.'}else if(mission.type==='horizontal'){ok=vlen(vsub(state.A,mission.A))<.2&&Math.abs(state.u[1])<.08&&Math.abs(state.u[0])>.2;why=ok?'y성분이 0인 방향벡터는 x축에 평행한 직선을 만듭니다.':'수평선이 되려면 u⃗=(a,0), a≠0이어야 합니다.'}const f=$('#feedback');f.className='feedback show '+(ok?'ok':'no');f.innerHTML=(ok?'성공! ':'다시 관찰해 봅시다. ')+why;}
+function reset(all=false){const act=state.activity;state=JSON.parse(JSON.stringify(defaults));state.activity=act;if(all){state.activity='free';mission=null;setActivity('free')}setMode(state.dim);buildFields();render();}
+$('#mode2Btn').onclick=()=>setMode(2);$('#mode3Btn').onclick=()=>setMode(3);$('#freeTab').onclick=()=>setActivity('free');$('#missionTab').onclick=()=>setActivity('mission');$('#tRange').oninput=e=>{state.t=+e.target.value;render()};$('#kRange').oninput=e=>{state.k=+e.target.value;render()};$('#opacityRange').oninput=e=>{state.planeOpacity=+e.target.value;render()};$('#resetBtn').onclick=()=>reset(false);$('#homeBtn').onclick=()=>reset(true);$('#newBtn').onclick=()=>state.activity==='mission'?newMission():(()=>{state.A=[Math.round(Math.random()*6-3),Math.round(Math.random()*6-3),Math.round(Math.random()*4-2)];state.u=[Math.round(Math.random()*5-2)||1,Math.round(Math.random()*5-2)||1,Math.round(Math.random()*5-2)||1];state.t=0;state.k=2;buildFields();render()})();$('#checkBtn').onclick=checkMission;
+$('#frontBtn').onclick=()=>{state.yaw=0;state.pitch=0;render()};$('#topBtn').onclick=()=>{state.yaw=0;state.pitch=Math.PI/2-.01;render()};$('#viewResetBtn').onclick=()=>{state.yaw=-.65;state.pitch=.48;state.zoom=1;render()};
+$('#helpBtn').onclick=()=>$('#helpModal').classList.add('show');$('#closeHelp').onclick=()=>$('#helpModal').classList.remove('show');$('#helpModal').addEventListener('click',e=>{if(e.target.id==='helpModal')e.currentTarget.classList.remove('show')});document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#helpModal').classList.remove('show');if(state.dim===3){if(e.key==='ArrowLeft')state.yaw-=.08;if(e.key==='ArrowRight')state.yaw+=.08;if(e.key==='ArrowUp')state.pitch-=.08;if(e.key==='ArrowDown')state.pitch+=.08;if(e.key==='+'||e.key==='=')state.zoom=clamp(state.zoom*1.08,.55,2.3);if(e.key==='-')state.zoom=clamp(state.zoom/1.08,.55,2.3);render()}});
+$('#copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText($('#record').value);$('#copyBtn').textContent='복사됨';setTimeout(()=>$('#copyBtn').textContent='기록 복사',900)}catch{ $('#record').select();document.execCommand('copy')}};$('#clearRecordBtn').onclick=()=>$('#record').value='';
+window.addEventListener('resize',render);
+buildFields();render();
+if(new URLSearchParams(location.search).has('selftest')){let ok=true;try{ok=ok&&parallel([1,2],[2,4],2)&&!parallel([1,2],[2,3],2);const A=[1,2,3],u=[2,-1,4],P=vadd(A,vmul(u,-2));ok=ok&&P.join(',')==='-3,4,-5';setMode(3);state.t=1.5;render();setMode(2);$('#helpBtn').click();$('#closeHelp').click();}catch(e){ok=false;console.error(e)}const s=$('#selftest');s.style.display='block';s.textContent=ok?'SELFTEST PASS':'SELFTEST FAIL';s.classList.toggle('fail',!ok);document.documentElement.dataset.selftest=ok?'pass':'fail';}
+</script>
+</body>
+</html>

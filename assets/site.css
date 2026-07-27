@@ -1091,6 +1091,189 @@ h2 {
   background: var(--c2-accent);
 }
 
+.card-geometry .tool-visual {
+  color: #fff;
+  background: var(--geometry-bg);
+}
+
+.geometry-conic {
+  --geometry-bg: #143d47;
+  --geometry-accent: #71e0d5;
+}
+
+.geometry-space {
+  --geometry-bg: #29431f;
+  --geometry-accent: #b7e778;
+}
+
+.geometry-vector {
+  --geometry-bg: #352d66;
+  --geometry-accent: #c4b9ff;
+}
+
+.geometry-preview {
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-height: 190px;
+  place-items: center;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    radial-gradient(circle at 74% 32%, color-mix(in srgb, var(--geometry-accent) 22%, transparent), transparent 36%);
+  background-size: 28px 28px, 28px 28px, auto;
+}
+
+.geometry-preview strong {
+  position: relative;
+  z-index: 2;
+  color: var(--geometry-accent);
+  font: 900 clamp(36px, 5vw, 55px) / 1 Georgia, "Times New Roman", serif;
+  letter-spacing: -0.05em;
+  text-shadow: 0 10px 34px rgba(0, 0, 0, 0.28);
+}
+
+.geometry-preview > span {
+  position: absolute;
+  z-index: 3;
+  right: 20px;
+  bottom: 17px;
+  padding: 8px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(8, 16, 30, 0.62);
+  font: 750 10px/1.1 "Pretendard", sans-serif;
+}
+
+.geometry-tabs {
+  position: absolute;
+  z-index: 3;
+  top: 17px;
+  left: 18px;
+  display: flex;
+  gap: 6px;
+}
+
+.geometry-tabs i {
+  padding: 6px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.78);
+  background: rgba(7, 16, 28, 0.34);
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.geometry-tabs i:first-child {
+  color: #132139;
+  border-color: var(--geometry-accent);
+  background: var(--geometry-accent);
+}
+
+.conic-mark,
+.space-mark,
+.vector-mark {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.conic-mark b {
+  position: absolute;
+  border: 2px solid color-mix(in srgb, var(--geometry-accent) 55%, transparent);
+}
+
+.conic-mark b:nth-child(1) {
+  right: 44px;
+  bottom: 40px;
+  width: 105px;
+  height: 56px;
+  border-radius: 50%;
+}
+
+.conic-mark b:nth-child(2) {
+  right: -12px;
+  bottom: -61px;
+  width: 128px;
+  height: 170px;
+  border-radius: 50%;
+  transform: rotate(-16deg);
+}
+
+.conic-mark b:nth-child(3) {
+  right: 128px;
+  bottom: -68px;
+  width: 94px;
+  height: 150px;
+  border-width: 2px 0 0 2px;
+  border-radius: 50% 0 0;
+  transform: rotate(10deg);
+}
+
+.space-mark b {
+  position: absolute;
+  right: 38px;
+  bottom: 28px;
+  width: 90px;
+  height: 90px;
+  border: 2px solid color-mix(in srgb, var(--geometry-accent) 55%, transparent);
+  transform: skewY(-20deg) rotate(18deg);
+}
+
+.space-mark b:nth-child(2) {
+  right: 75px;
+  bottom: 40px;
+  border-color: color-mix(in srgb, #fff 32%, transparent);
+  transform: skewY(20deg) rotate(-18deg);
+}
+
+.space-mark b:nth-child(3) {
+  right: 84px;
+  bottom: 73px;
+  width: 8px;
+  height: 8px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--geometry-accent);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--geometry-accent) 18%, transparent);
+  transform: none;
+}
+
+.vector-mark b {
+  position: absolute;
+  right: 33px;
+  bottom: 52px;
+  width: 126px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--geometry-accent);
+  transform: rotate(-28deg);
+  transform-origin: left center;
+}
+
+.vector-mark b::after {
+  position: absolute;
+  top: -6px;
+  right: -2px;
+  width: 14px;
+  height: 14px;
+  border-top: 3px solid var(--geometry-accent);
+  border-right: 3px solid var(--geometry-accent);
+  content: "";
+  transform: rotate(45deg);
+}
+
+.vector-mark b:nth-child(2) {
+  right: 72px;
+  bottom: 42px;
+  width: 94px;
+  background: color-mix(in srgb, #fff 55%, var(--geometry-accent));
+  transform: rotate(36deg);
+}
+
 .tool-content {
   display: flex;
   flex: 1;

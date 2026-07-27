@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>정사영 길이 코사인 실험기</title><style>
+:root{
+  --ink:#17324d;--muted:#597287;--paper:#f5fbff;--card:#ffffff;
+  --primary:#0b7895;--primary2:#16a6a1;--accent:#e76f51;--gold:#f4b942;
+  --good:#16865b;--bad:#bd3d3d;--plane:#d7a86e;--shadow:#5b6472;
+  --line:#bcd1dc;--focus:#6a5acd;--radius:18px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:"Noto Sans KR","Malgun Gothic",Arial,sans-serif;background:linear-gradient(135deg,#eaf7fb,#f9fcff 48%,#eef7ef);color:var(--ink)}
+button,select,input,textarea{font:inherit}
+button{cursor:pointer}
+.app{max-width:1480px;margin:0 auto;padding:14px}
+.topbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:rgba(255,255,255,.92);border:1px solid #dbeaf1;border-radius:22px;padding:12px 14px;box-shadow:0 8px 24px rgba(29,74,97,.10);position:sticky;top:0;z-index:20;backdrop-filter:blur(8px)}
+.brand{flex:1;min-width:230px}
+.brand h1{font-size:clamp(1.15rem,2vw,1.72rem);margin:0;color:#0b5f78;letter-spacing:-.04em}
+.brand p{margin:4px 0 0;color:var(--muted);font-size:.9rem}
+.toolbar{display:flex;gap:7px;flex-wrap:wrap}
+.btn{border:1px solid #b9d6e3;background:#fff;color:#174b60;border-radius:12px;padding:9px 12px;font-weight:800;box-shadow:0 2px 0 rgba(8,80,110,.08)}
+.btn:hover{background:#edf9fd}.btn:focus-visible{outline:3px solid #ffd666;outline-offset:2px}
+.btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary2));border:none;color:white}
+.btn.warn{background:#fff8ec;border-color:#f0c47c;color:#8a4b06}
+.modebar{display:flex;gap:6px;background:#e7f2f6;padding:5px;border-radius:14px}
+.mode{border:0;background:transparent;padding:8px 12px;border-radius:10px;font-weight:900;color:#436477}
+.mode.active{background:white;color:#08728e;box-shadow:0 2px 8px rgba(20,80,100,.13)}
+.layout{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(300px,.85fr);gap:14px;margin-top:14px;align-items:start}
+.card{background:rgba(255,255,255,.94);border:1px solid #d8e8ef;border-radius:var(--radius);box-shadow:0 10px 28px rgba(30,74,97,.10);overflow:hidden}
+.stage-card{height:clamp(620px,calc(100vh - 115px),800px);min-height:620px;display:flex;flex-direction:column}
+.stage-head{display:flex;gap:10px;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid #e1edf2;background:linear-gradient(90deg,#f5fbfd,#fff)}
+.stage-title{font-weight:900;color:#0f5d74}.stage-hint{font-size:.86rem;color:var(--muted);text-align:right}
+.canvas-wrap{position:relative;flex:1;min-height:520px;background:radial-gradient(circle at 45% 35%,#ffffff,#eef7fa 70%);touch-action:none;overflow:hidden}
+#scene{width:100%;height:100%;display:block;touch-action:none;outline:none}
+.badge-row{position:absolute;left:12px;top:12px;display:flex;gap:7px;flex-wrap:wrap;pointer-events:none}
+.badge{background:rgba(255,255,255,.9);border:1px solid #c4dce6;border-radius:999px;padding:6px 9px;font-size:.78rem;font-weight:900;box-shadow:0 3px 10px rgba(30,80,100,.12)}
+.badge.good{border-color:#76caa7;color:#0a704a}.badge.warn{border-color:#f5c36e;color:#8c4c00}
+.side{display:flex;flex-direction:column;gap:14px}
+.panel{padding:14px}.panel h2{font-size:1.02rem;margin:0 0 11px;color:#0b6480}.panel h3{font-size:.95rem;margin:12px 0 8px}
+.control-grid{display:grid;grid-template-columns:1fr;gap:10px}
+.control{padding:9px 10px;border:1px solid #d7e7ed;background:#fbfdfe;border-radius:13px}
+.control label{display:flex;justify-content:space-between;gap:8px;font-weight:800;font-size:.88rem;margin-bottom:7px}
+.control output{color:#0b7895;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:#0b8aa5}
+select,input[type=number],input[type=text]{width:100%;padding:9px;border:1px solid #bcd2dd;border-radius:10px;background:white;color:var(--ink)}
+.switchline{display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:700}
+.switchline input{width:18px;height:18px;accent-color:#0b8aa5}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.stat{border:1px solid #d7e8ef;border-radius:13px;padding:10px;background:linear-gradient(145deg,#fff,#f4fafc)}
+.stat small{display:block;color:var(--muted);margin-bottom:4px}.stat strong{font-size:1.02rem;color:#0a6079;word-break:break-word}
+.formula{background:#eff8f3;border-left:5px solid #39a275;border-radius:12px;padding:11px;line-height:1.65;font-weight:800;margin-top:10px}
+.formula.warn{background:#fff5ed;border-color:#e9834f}.formula code{font-family:inherit;color:#7b2932}
+.mission{display:none}.mission.active{display:block}
+.mission-select{width:100%;margin-bottom:9px}
+.mission-box{border:2px dashed #7fb8c8;border-radius:14px;padding:11px;background:#f7fcfe}
+.mission-title{font-weight:900;color:#0b6d87;margin-bottom:5px}.mission-prompt{line-height:1.55;color:#324d5c;font-size:.92rem}
+.answer-wrap{margin-top:9px}.feedback{margin-top:9px;border-radius:11px;padding:9px 10px;display:none;line-height:1.5;font-size:.9rem}.feedback.show{display:block}.feedback.good{background:#e8f7ef;color:#0a704a;border:1px solid #8bd2ae}.feedback.bad{background:#fff0f0;color:#9c2e2e;border:1px solid #ef9e9e}
+.record textarea{width:100%;min-height:115px;resize:vertical;border:1px solid #bcd2dd;border-radius:12px;padding:10px;line-height:1.5}
+.record-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.extra-viz{margin-top:14px}.extra-viz canvas{width:100%;height:240px;display:block;background:#fff;border:1px solid #d8e8ef;border-radius:15px}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.8rem;color:#496878;padding:8px 14px 12px;border-top:1px solid #e1edf2;background:#fbfdfe}
+.legend span:before{content:"";display:inline-block;width:18px;height:8px;border-radius:4px;margin-right:5px;vertical-align:middle;background:var(--c)}
+.help-modal{position:fixed;inset:0;background:rgba(9,31,44,.58);display:none;align-items:center;justify-content:center;padding:18px;z-index:100}.help-modal.show{display:flex}
+.help-dialog{max-width:760px;max-height:88vh;overflow:auto;background:white;border-radius:22px;padding:20px;box-shadow:0 24px 70px rgba(0,0,0,.3)}
+.help-dialog h2{margin-top:0;color:#0b6680}.help-dialog li{margin:7px 0;line-height:1.55}.help-close{float:right}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(30px);opacity:0;background:#143849;color:white;padding:10px 16px;border-radius:999px;transition:.25s;z-index:120;pointer-events:none}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.note{font-size:.82rem;line-height:1.5;color:#5d7482;background:#f4f7f8;border-radius:11px;padding:9px;margin-top:10px}
+@media(max-width:980px){.layout{grid-template-columns:1fr}.stage-card{height:650px;min-height:590px}.canvas-wrap{min-height:470px}.side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.side .card:last-child{grid-column:1/-1}}
+@media(max-width:650px){.app{padding:8px}.topbar{border-radius:16px;padding:10px}.toolbar{width:100%}.toolbar .btn{flex:1;padding:9px 6px;font-size:.82rem}.modebar{width:100%}.mode{flex:1}.side{display:flex}.stage-card{height:560px;min-height:540px}.canvas-wrap{min-height:420px}.stats{grid-template-columns:1fr 1fr}.stage-hint{display:none}.brand p{font-size:.8rem}}
+</style></head>
+<body><div class="app">
+<header class="topbar"><div class="brand"><h1>정사영 길이 코사인 실험기</h1><p>Ⅱ. 공간도형과 공간좌표 · 3. 정사영 — 교과서 74~79쪽 연계</p></div>
+<div class="modebar" role="group" aria-label="학습 모드"><button class="mode active" data-mode="free">자유 탐색</button><button class="mode" data-mode="mission">미션 활동</button></div>
+<div class="toolbar"><button id="homeBtn" class="btn">⌂ 처음으로</button><button id="resetBtn" class="btn">↺ 초기화</button><button id="newBtn" class="btn primary">✦ 새 활동</button><button id="helpBtn" class="btn warn">? 도움말</button></div></header>
+<main class="layout"><section class="card stage-card"><div class="stage-head"><div class="stage-title">선분 AB와 정사영 A′B′의 길이 비교</div><div class="stage-hint">드래그: 시점 회전 · 휠/±: 확대·축소 · 방향키: 시점 조절 · R: 시점 초기화</div></div>
+<div class="canvas-wrap"><canvas id="scene" tabindex="0" aria-label="3차원 정사영 탐구 장면"></canvas><div class="badge-row"><span class="badge" id="badge1">실시간 측정</span><span class="badge" id="badge2">수직 투영</span></div></div>
+<div class="legend"><span style="--c:#e76f51">선분 AB</span><span style="--c:#1686b0">정사영 A′B′</span><span style="--c:#7a8790">수선 BB′</span></div></section>
+<aside class="side"><section class="card panel"><h2>조작 패널</h2><div class="control-grid"><div class="control"><label for="length"><span>선분 AB의 길이</span><output data-out="length"></output></label><input id="length" type="range" min="2" max="12" step="0.1"></div><div class="control"><label for="theta"><span>선분과 평면 사이의 각 θ</span><output data-out="theta"></output></label><input id="theta" type="range" min="0" max="90" step="1"></div><div class="control"><label for="azimuth"><span>선분의 방향</span><output data-out="azimuth"></output></label><input id="azimuth" type="range" min="0" max="360" step="1"></div><div class="control"><label for="planeOpacity"><span>평면 투명도</span><output data-out="planeOpacity"></output></label><input id="planeOpacity" type="range" min="0.12" max="0.75" step="0.01"></div></div><button id="recordMeasure" class="btn primary" style="width:100%;margin-top:10px">측정값 그래프에 기록</button><button id="clearMeasure" class="btn" style="width:100%;margin-top:7px">그래프 지우기</button></section>
+<section class="card panel"><h2>실시간 관찰</h2><div class="stats"><div class="stat"><small>AB</small><strong id="stAB">—</strong></div><div class="stat"><small>A′B′</small><strong id="stProj">—</strong></div><div class="stat"><small>θ</small><strong id="stTheta">—</strong></div><div class="stat"><small>A′B′/AB</small><strong id="stRatio">—</strong></div><div class="stat"><small>cosθ</small><strong id="stCos">—</strong></div><div class="stat"><small>두 값의 차</small><strong id="stDiff">—</strong></div></div><div id="formulaBox" class="formula">값을 조절하며 관계를 관찰하세요.</div></section>
+<section class="card panel mission" id="missionPanel"><h2>미션 활동</h2><select id="missionSelect" class="mission-select" aria-label="미션 선택"></select><div class="mission-box"><div id="missionTitle" class="mission-title"></div><div id="missionPrompt" class="mission-prompt"></div><div id="missionAnswerWrap" class="answer-wrap"><input id="missionAnswer" type="text" inputmode="decimal"></div><button id="checkMission" class="btn primary" style="margin-top:10px;width:100%">확인</button><div id="feedback" class="feedback"></div></div></section>
+<section class="card panel record"><h2>관찰 기록</h2><textarea id="observation" placeholder="예: θ가 커질수록 정사영의 길이는 줄어들었고, 길이의 비는 cosθ와 같았다."></textarea><div class="record-actions"><button id="clearRecord" class="btn">지우기</button><button id="copyRecord" class="btn primary">복사</button></div></section>
+<section class="card panel extra-viz"><h2>측정값 누적 그래프</h2><canvas id="graphCanvas" aria-label="각도와 길이비 그래프"></canvas><div class="note">가로축 θ, 세로축 A′B′/AB입니다. 실선은 y=cosθ, 점은 직접 기록한 측정값입니다.</div></section></aside></main></div>
+<div id="helpModal" class="help-modal"><div class="help-dialog"><button id="helpClose" class="btn help-close">닫기</button><h2>도움말</h2><div id="helpContent"></div></div></div><div id="toast" class="toast"></div>
+<script>
+const tool={state:{},defaults:{length:8,theta:34,azimuth:25,planeOpacity:.34,measurements:[]},reset(){const old=this.state.measurements||[];this.state={...this.defaults,measurements:old}},formatControl(id,v){if(id==='length')return fmt(v,1);if(id==='planeOpacity')return fmt(v,2);return `${fmt(v,0)}°`},bind(){['length','theta','azimuth','planeOpacity'].forEach(id=>bindRange(id,id));$('#recordMeasure').addEventListener('click',()=>{this.state.measurements.push([this.state.theta,Math.cos(rad(this.state.theta))]);this.drawGraph();showToast('측정값을 기록했어요.')});$('#clearMeasure').addEventListener('click',()=>{this.state.measurements=[];this.drawGraph()})},
+ points(){const L=this.state.length,t=rad(this.state.theta),a=rad(this.state.azimuth),A=[-1.3,-.6,0],B=[A[0]+L*Math.cos(t)*Math.cos(a),A[1]+L*Math.cos(t)*Math.sin(a),L*Math.sin(t)];return{A,B,Ap:[A[0],A[1],0],Bp:[B[0],B[1],0]}},
+ render(){drawPlane(6,0,this.state.planeOpacity);drawAxes(5.4);const{A,B,Ap,Bp}=this.points();drawLine3(A,B,'#e65d45',5);drawLine3(Ap,Bp,'#087fa6',5);drawLine3(B,Bp,'rgba(66,87,98,.75)',2,[5,4]);drawPoint3(A,'#e65d45',6);drawPoint3(B,'#e65d45',6);drawPoint3(Ap,'#087fa6',5);drawPoint3(Bp,'#087fa6',5);drawLabel3(A,'A');drawLabel3(B,'B');drawLabel3(Ap,'A′','#087fa6');drawLabel3(Bp,'B′','#087fa6');
+  const L=dist(A,B),P=dist(Ap,Bp),ratio=P/L,c=Math.cos(rad(this.state.theta));setStat('stAB',fmt(L,2));setStat('stProj',fmt(P,2));setStat('stTheta',`${fmt(this.state.theta,0)}°`);setStat('stRatio',fmt(ratio,4));setStat('stCos',fmt(c,4));setStat('stDiff',fmt(Math.abs(ratio-c),6));$('#formulaBox').innerHTML=`A′B′ = AB cosθ = ${fmt(L,2)} × cos ${fmt(this.state.theta,0)}° = <b>${fmt(P,3)}</b>`;$('#badge1').textContent=`길이비 ${fmt(ratio,3)}`;$('#badge2').textContent=this.state.theta===90?'정사영은 점':this.state.theta===0?'길이가 같음':'cosθ와 일치';$('#badge2').className='badge good';this.drawGraph()},
+ drawGraph(){const g=$('#graphCanvas');if(!g)return;const r=g.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);g.width=Math.max(320,r.width)*d;g.height=240*d;const c=g.getContext('2d');c.setTransform(d,0,0,d,0,0);const W=r.width,H=240,p=38;c.clearRect(0,0,W,H);c.fillStyle='#fff';c.fillRect(0,0,W,H);c.strokeStyle='#b8ccd5';c.lineWidth=1;c.beginPath();c.moveTo(p,12);c.lineTo(p,H-p);c.lineTo(W-12,H-p);c.stroke();c.fillStyle='#516b78';c.font='12px sans-serif';c.fillText('1',18,20);c.fillText('0',22,H-p+4);c.fillText('θ',W-20,H-p+20);c.fillText('90°',W-42,H-p+20);c.strokeStyle='#0b7895';c.lineWidth=2.2;c.beginPath();for(let i=0;i<=90;i++){const x=p+(W-p-16)*i/90,y=12+(H-p-16)*(1-Math.cos(rad(i)));if(i===0)c.moveTo(x,y);else c.lineTo(x,y)}c.stroke();for(const [t,v] of this.state.measurements){const x=p+(W-p-16)*t/90,y=12+(H-p-16)*(1-v);c.beginPath();c.arc(x,y,5,0,Math.PI*2);c.fillStyle='#e76f51';c.fill();c.strokeStyle='#8f3328';c.stroke()}},
+ randomize(){this.state.length=Math.round((3+Math.random()*8)*10)/10;this.state.theta=Math.round(Math.random()*90);this.state.azimuth=Math.round(Math.random()*360)},
+ keydown(e){const k=e.key.toLowerCase();if(k==='a')this.state.theta=clamp(this.state.theta-1,0,90);else if(k==='d')this.state.theta=clamp(this.state.theta+1,0,90);else return false;syncControls();return true},afterInit(){this.drawGraph()},
+ missions:[
+ {title:'길이가 그대로인 정사영',prompt:'θ를 조절하여 A′B′=AB가 되게 하세요.',prepare(){tool.state.theta=38},check(){const ok=tool.state.theta<1;return{ok,message:ok?'맞습니다. 선분이 평면과 평행하면 θ=0°이고 A′B′=AB입니다.':'정사영의 길이가 원래 길이와 같으려면 θ=0°여야 합니다.'}}},
+ {title:'정사영을 한 점으로',prompt:'θ를 조절하여 정사영 A′B′의 길이가 0이 되게 하세요.',prepare(){tool.state.theta=52},check(){const ok=tool.state.theta>89;return{ok,message:ok?'성공! 선분이 평면에 수직이면 θ=90°이고 정사영은 한 점입니다.':'θ를 90°로 맞추면 cos90°=0이 됩니다.'}}},
+ {title:'길이비를 1/2로',prompt:'A′B′/AB=0.5가 되도록 θ를 조절하세요.',prepare(){tool.state.theta=25},check(){const r=Math.cos(rad(tool.state.theta)),ok=Math.abs(r-.5)<.02;return{ok,message:ok?'좋아요. cos60°=1/2이므로 θ≈60°입니다.':'길이비는 cosθ입니다. cosθ=1/2가 되는 각을 찾아보세요.'}}},
+ {title:'정사영 길이 예측',prompt(){tool.targetL=4+Math.floor(Math.random()*5);tool.targetT=[30,45,60][Math.floor(Math.random()*3)];return `AB=${tool.targetL}, θ=${tool.targetT}°일 때 A′B′의 길이를 계산해 입력하세요.`},answer:true,placeholder:'예: 3.46',prepare(){tool.state.length=tool.targetL;tool.state.theta=tool.targetT},check(ans){const ex=tool.targetL*Math.cos(rad(tool.targetT)),v=Number(ans);const ok=Number.isFinite(v)&&Math.abs(v-ex)<.06;return{ok,message:ok?`정확해요. ${tool.targetL}cos${tool.targetT}°=${fmt(ex,2)}입니다.`:`AB cosθ를 계산하세요. 현재 정사영 길이는 ${fmt(ex,2)}입니다.`}}},
+ {title:'각도 예측',prompt:'A′B′/AB=√2/2일 때 θ를 입력하세요.',answer:true,placeholder:'각도(°)',prepare(){tool.state.theta=45},check(ans){const v=Number(ans),ok=Math.abs(v-45)<.6;return{ok,message:ok?'맞습니다. cos45°=√2/2입니다.':'길이비가 cosθ이므로 cosθ=√2/2인 각을 생각하세요.'}}},
+ {title:'측정값으로 코사인 확인',prompt:'서로 다른 θ에서 측정값을 3개 이상 그래프에 기록한 뒤 확인하세요.',prepare(){},check(){const ok=tool.state.measurements.length>=3;return{ok,message:ok?'좋아요. 모든 점이 y=cosθ 곡선 위에 놓이는 것을 확인할 수 있습니다.':'측정값 그래프에 기록 버튼을 눌러 서로 다른 각도의 점을 3개 이상 모으세요.'}}}
+ ],help:`<ol><li>선분 AB와 기준 평면 α가 이루는 각을 θ라 합니다. θ는 0° 이상 90° 이하입니다.</li><li>점 B에서 평면에 내린 수선의 발이 B′이고, 선분 A′B′가 AB의 정사영입니다.</li><li>교과서의 관계 <b>A′B′=AB cosθ</b>를 실시간 수치와 그래프로 확인하세요.</li><li>θ=0°이면 두 길이가 같고, θ=90°이면 정사영이 점이 됩니다.</li><li>측정값 기록 버튼으로 길이비를 누적한 뒤 y=cosθ 곡선과 비교하세요. A/D 키로 θ를 1°씩 조절할 수 있습니다.</li></ol>`};
+</script><script>
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const canvas = $('#scene');
+const ctx = canvas.getContext('2d');
+const camera = {yaw:-0.62,pitch:0.52,zoom:1};
+let logicalW=900, logicalH=600, dragging=false, dragX=0, dragY=0, lastPointer=null;
+let appMode='free';
+const DEG=Math.PI/180;
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function rad(d){return d*DEG}
+function fmt(v,n=2){ if(!Number.isFinite(v)) return '—'; const x=Math.abs(v)<1e-9?0:v; return x.toFixed(n).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1') }
+function vadd(a,b){return [a[0]+b[0],a[1]+b[1],a[2]+b[2]]}
+function vsub(a,b){return [a[0]-b[0],a[1]-b[1],a[2]-b[2]]}
+function vmul(a,k){return [a[0]*k,a[1]*k,a[2]*k]}
+function dot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]}
+function cross(a,b){return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}
+function norm(a){return Math.hypot(a[0],a[1],a[2])}
+function unit(a){const n=norm(a)||1;return vmul(a,1/n)}
+function rotateXYZ(p,rx,ry,rz){
+  let [x,y,z]=p; let c=Math.cos(rx),s=Math.sin(rx); [y,z]=[y*c-z*s,y*s+z*c];
+  c=Math.cos(ry);s=Math.sin(ry); [x,z]=[x*c+z*s,-x*s+z*c];
+  c=Math.cos(rz);s=Math.sin(rz); [x,y]=[x*c-y*s,x*s+y*c]; return [x,y,z];
+}
+function cameraPoint(p){
+  let [x,y,z]=p; const cy=Math.cos(camera.yaw),sy=Math.sin(camera.yaw);
+  const x1=cy*x-sy*y, y1=sy*x+cy*y;
+  const cp=Math.cos(camera.pitch),sp=Math.sin(camera.pitch);
+  const depth=cp*y1-sp*z, vz=sp*y1+cp*z;
+  const scale=Math.min(logicalW,logicalH)*0.083*camera.zoom;
+  return {x:logicalW*.48+x1*scale,y:logicalH*.58-vz*scale,d:depth,scale};
+}
+function clearScene(){
+  const g=ctx.createLinearGradient(0,0,0,logicalH);g.addColorStop(0,'#ffffff');g.addColorStop(1,'#eaf5f8');ctx.fillStyle=g;ctx.fillRect(0,0,logicalW,logicalH);
+}
+function path2(points,close=true){if(!points.length)return;const q=points.map(cameraPoint);ctx.beginPath();ctx.moveTo(q[0].x,q[0].y);for(let i=1;i<q.length;i++)ctx.lineTo(q[i].x,q[i].y);if(close)ctx.closePath();return q}
+function drawPoly3(points,fill,stroke='#35596b',width=1.5,dash=[]){ctx.save();ctx.setLineDash(dash);path2(points,true);if(fill){ctx.fillStyle=fill;ctx.fill()}ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke();ctx.restore()}
+function drawLine3(a,b,stroke='#35596b',width=1.7,dash=[]){ctx.save();ctx.setLineDash(dash);const A=cameraPoint(a),B=cameraPoint(b);ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.lineTo(B.x,B.y);ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke();ctx.restore()}
+function drawPoint3(p,fill='#e76f51',r=5,stroke='#fff'){const q=cameraPoint(p);ctx.beginPath();ctx.arc(q.x,q.y,r,0,Math.PI*2);ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke();return q}
+function drawLabel3(p,text,color='#18394b',dx=7,dy=-8){const q=cameraPoint(p);ctx.font='700 13px Malgun Gothic, sans-serif';ctx.fillStyle='rgba(255,255,255,.88)';const m=ctx.measureText(text);ctx.fillRect(q.x+dx-3,q.y+dy-13,m.width+6,18);ctx.fillStyle=color;ctx.fillText(text,q.x+dx,q.y+dy)}
+function drawPolyline3(points,stroke='#35596b',width=1.7,dash=[],close=false,fill=null){ctx.save();ctx.setLineDash(dash);path2(points,close);if(fill){ctx.fillStyle=fill;ctx.fill()}ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke();ctx.restore()}
+function drawPlane(size=5,z=0,opacity=.35,label='기준 평면 α'){
+  const p=[[-size,-size,z],[size,-size,z],[size,size,z],[-size,size,z]];drawPoly3(p,`rgba(221,171,112,${opacity})`,'#9f7449',1.5);
+  for(let i=-Math.floor(size);i<=size;i++){drawLine3([i,-size,z],[i,size,z],'rgba(116,94,70,.22)',1);drawLine3([-size,i,z],[size,i,z],'rgba(116,94,70,.22)',1)}
+  drawLabel3([-size,size,z],label,'#76542e',6,-6);
+}
+function drawAxes(len=4,z=0){drawLine3([-len,0,z],[len,0,z],'#537f91',1.2,[5,4]);drawLine3([0,-len,z],[0,len,z],'#537f91',1.2,[5,4])}
+function polyArea2(points){let s=0;for(let i=0;i<points.length;i++){const a=points[i],b=points[(i+1)%points.length];s+=a[0]*b[1]-b[0]*a[1]}return Math.abs(s)/2}
+function dist(a,b){return norm(vsub(a,b))}
+function resizeCanvas(){
+  const rect=canvas.getBoundingClientRect(); logicalW=Math.max(320,rect.width); logicalH=Math.max(360,rect.height);
+  const dpr=Math.min(2,window.devicePixelRatio||1);canvas.width=Math.round(logicalW*dpr);canvas.height=Math.round(logicalH*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);render();
+}
+function setStat(id,val){const el=document.getElementById(id);if(el)el.textContent=val}
+function bindRange(id,key,after){const el=document.getElementById(id),out=document.querySelector(`[data-out="${id}"]`);if(!el)return;const update=()=>{tool.state[key]=Number(el.value);if(out)out.textContent=(tool.formatControl?tool.formatControl(id,tool.state[key]):fmt(tool.state[key],1));if(after)after();render()};el.addEventListener('input',update);update()}
+function bindSelect(id,key,after){const el=document.getElementById(id);if(!el)return;el.addEventListener('change',()=>{tool.state[key]=el.value;if(after)after();render()});tool.state[key]=el.value}
+function syncControls(){
+  Object.entries(tool.state).forEach(([k,v])=>{const el=document.getElementById(k);if(!el)return;if(el.type==='checkbox')el.checked=!!v;else el.value=v;const out=document.querySelector(`[data-out="${k}"]`);if(out)out.textContent=tool.formatControl?tool.formatControl(k,Number(v)):fmt(Number(v),1)});
+}
+function resetCamera(){camera.yaw=-.62;camera.pitch=.52;camera.zoom=1}
+function render(){if(!ctx||!tool)return;clearScene();tool.render(ctx);}
+function showToast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>t.classList.remove('show'),1600)}
+function setMode(mode){appMode=mode;$$('.mode').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));$('#missionPanel').classList.toggle('active',mode==='mission');if(mode==='mission') loadMission(Number($('#missionSelect').value)||0);render()}
+function populateMissions(){const s=$('#missionSelect');s.innerHTML='';tool.missions.forEach((m,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${i+1}. ${m.title}`;s.appendChild(o)});s.addEventListener('change',()=>loadMission(Number(s.value)));loadMission(0)}
+function loadMission(i){const m=tool.missions[i];if(!m)return;$('#missionTitle').textContent=m.title;$('#missionPrompt').textContent=typeof m.prompt==='function'?m.prompt():m.prompt;$('#missionAnswerWrap').style.display=m.answer?'block':'none';$('#missionAnswer').value='';$('#missionAnswer').placeholder=m.placeholder||'값을 입력하세요';$('#feedback').className='feedback';$('#feedback').textContent='';if(m.prepare)m.prepare();syncControls();render()}
+function checkMission(){const i=Number($('#missionSelect').value),m=tool.missions[i];const result=m.check($('#missionAnswer').value);const f=$('#feedback');f.className=`feedback show ${result.ok?'good':'bad'}`;f.textContent=result.message;}
+function newActivity(){if(appMode==='mission'){let i=Math.floor(Math.random()*tool.missions.length);$('#missionSelect').value=i;loadMission(i);showToast('새 미션을 불러왔어요.')}else{tool.randomize();syncControls();render();showToast('새 탐구 조건을 만들었어요.')}}
+canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);dragging=true;dragX=e.clientX;dragY=e.clientY;lastPointer=e;if(tool.pointerDown&&tool.pointerDown(e))return;});
+canvas.addEventListener('pointermove',e=>{if(!dragging)return;if(tool.pointerMove&&tool.pointerMove(e,lastPointer)){lastPointer=e;render();return;}const dx=e.clientX-dragX,dy=e.clientY-dragY;camera.yaw+=dx*.008;camera.pitch=clamp(camera.pitch+dy*.008,-1.25,1.25);dragX=e.clientX;dragY=e.clientY;lastPointer=e;render()});
+canvas.addEventListener('pointerup',e=>{dragging=false;if(tool.pointerUp)tool.pointerUp(e)});canvas.addEventListener('pointercancel',()=>dragging=false);
+canvas.addEventListener('wheel',e=>{e.preventDefault();camera.zoom=clamp(camera.zoom*Math.exp(-e.deltaY*.001),.55,2.2);render()},{passive:false});
+window.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName))return;let used=true;if(e.key==='ArrowLeft')camera.yaw-=.09;else if(e.key==='ArrowRight')camera.yaw+=.09;else if(e.key==='ArrowUp')camera.pitch-=.07;else if(e.key==='ArrowDown')camera.pitch+=.07;else if(e.key==='+'||e.key==='=')camera.zoom=clamp(camera.zoom*1.1,.55,2.2);else if(e.key==='-')camera.zoom=clamp(camera.zoom/1.1,.55,2.2);else if(e.key.toLowerCase()==='r')resetCamera();else if(e.key==='1')setMode('free');else if(e.key==='2')setMode('mission');else if(tool.keydown)used=tool.keydown(e);else used=false;if(used){e.preventDefault();render()}});
+$('#homeBtn').addEventListener('click',()=>{setMode('free');tool.reset();resetCamera();syncControls();render();showToast('처음 상태로 돌아왔어요.')});
+$('#resetBtn').addEventListener('click',()=>{tool.reset();resetCamera();syncControls();render();showToast('현재 활동을 초기화했어요.')});
+$('#newBtn').addEventListener('click',newActivity);
+$('#helpBtn').addEventListener('click',()=>$('#helpModal').classList.add('show'));
+$('#helpClose').addEventListener('click',()=>$('#helpModal').classList.remove('show'));
+$('#helpModal').addEventListener('click',e=>{if(e.target.id==='helpModal')e.currentTarget.classList.remove('show')});
+$$('.mode').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
+$('#checkMission').addEventListener('click',checkMission);
+$('#copyRecord').addEventListener('click',async()=>{const text=$('#observation').value;try{await navigator.clipboard.writeText(text);showToast('관찰 기록을 복사했어요.')}catch{ $('#observation').select();document.execCommand('copy');showToast('관찰 기록을 복사했어요.')}});
+$('#clearRecord').addEventListener('click',()=>{$('#observation').value=''});
+function init(){tool.reset();syncControls();tool.bind();populateMissions();$('#helpContent').innerHTML=tool.help;syncControls();setMode('free');new ResizeObserver(resizeCanvas).observe(canvas.parentElement);resizeCanvas();if(tool.afterInit)tool.afterInit();}
+window.addEventListener('load',init);
+</script></body></html>

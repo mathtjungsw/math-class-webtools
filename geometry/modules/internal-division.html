@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>3차원 내분점 균형 조절기</title>
+<style>
+:root{--ink:#17324d;--blue:#2478b8;--red:#d94a4a;--green:#2c9367;--gold:#d59b20;--bg:#f5f8fb;--card:#fff;--line:#d9e3ec;--shadow:0 10px 28px rgba(24,50,77,.10)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:"Noto Sans KR","Malgun Gothic",system-ui,sans-serif;color:var(--ink);background:linear-gradient(180deg,#eef6fb,#f9fbfd)}
+button,input,select,textarea{font:inherit}button{cursor:pointer}.app{max-width:1480px;margin:auto;padding:14px}.topbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#17324d;color:white;padding:12px 14px;border-radius:18px;box-shadow:var(--shadow);position:sticky;top:8px;z-index:10}.title{font-size:clamp(18px,2.5vw,28px);font-weight:900;margin-right:auto}.topbar button,.modebtn{border:0;border-radius:12px;padding:10px 14px;background:white;color:#17324d;font-weight:800}.topbar button:hover{transform:translateY(-1px)}.modebar{display:flex;gap:8px;margin:12px 0}.modebtn{border:2px solid #b9cfdf}.modebtn.active{background:#2478b8;color:white;border-color:#2478b8}.layout{display:grid;align-items:start;grid-template-columns:minmax(0,1.6fr) minmax(320px,.9fr);gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:14px}.view-card{padding:10px}.canvas-wrap{position:relative;min-height:540px;border-radius:14px;overflow:hidden;background:radial-gradient(circle at 50% 35%,#fff,#e9f2f8)}canvas{width:100%;height:100%;display:block;touch-action:none}.hint{position:absolute;left:12px;bottom:12px;background:rgba(255,255,255,.92);padding:8px 10px;border-radius:10px;font-size:13px;max-width:75%;box-shadow:0 5px 16px rgba(0,0,0,.08)}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.panel-title{font-weight:900;font-size:17px;margin-bottom:8px}.coord-table{width:100%;border-collapse:collapse}.coord-table th,.coord-table td{padding:6px;border-bottom:1px solid #e6edf3;text-align:center}.coord-table input{width:68px;padding:6px;border:1px solid #a9c1d2;border-radius:8px;text-align:center}.ratio-row{display:grid;grid-template-columns:auto 1fr 70px auto 1fr 70px;gap:7px;align-items:center}.ratio-row input[type=range]{width:100%}.ratio-row input[type=number]{width:70px;padding:6px;border:1px solid #aac0d1;border-radius:8px}.readout{background:#f2f8fc;border:1px solid #cfe1ee;border-radius:13px;padding:10px;line-height:1.6}.formula{font-family:"Cambria Math","Times New Roman",serif;font-size:16px;background:#fff8df;border-left:5px solid var(--gold);padding:8px 10px;border-radius:8px;margin:7px 0}.bar{height:18px;display:flex;border-radius:9px;overflow:hidden;border:1px solid #b8c8d4}.bar .ap{background:repeating-linear-gradient(45deg,#f3a4a4,#f3a4a4 6px,#e87979 6px,#e87979 12px)}.bar .pb{background:repeating-linear-gradient(-45deg,#8dc4ed,#8dc4ed 6px,#5ea8df 6px,#5ea8df 12px)}.mission{border:2px solid #7fb9df;background:#f3faff;border-radius:14px;padding:12px}.mission h3{margin:0 0 7px}.mission input{width:70px;padding:6px;border:1px solid #8eb4cc;border-radius:8px}.feedback{min-height:54px;border-radius:10px;padding:9px;margin-top:8px;background:#f5f7f9}.feedback.ok{background:#e9f8ef;border:1px solid #8fd1a8}.feedback.bad{background:#fff0f0;border:1px solid #e8aaaa}.controls label{display:flex;align-items:center;gap:8px;margin:8px 0}.controls input[type=range]{flex:1}.record textarea{width:100%;min-height:110px;border:1px solid #b8cbd8;border-radius:10px;padding:10px;resize:vertical}.record-actions{display:flex;gap:8px;margin-top:8px}.record-actions button,.primary{border:0;border-radius:10px;padding:9px 12px;background:#2478b8;color:white;font-weight:800}.secondary{background:#eaf2f7!important;color:#17324d!important}.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:13px}.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:-1px}.modal{position:fixed;inset:0;background:rgba(10,28,45,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:99}.modal.show{display:flex}.modal-box{max-width:720px;background:white;border-radius:18px;padding:20px;max-height:90vh;overflow:auto}.modal-box h2{margin-top:0}.close{float:right;border:0;background:#eaf1f6;border-radius:8px;padding:7px 10px}.projection{font-size:13px;overflow:auto}.projection table{width:100%;border-collapse:collapse}.projection td,.projection th{padding:5px;border-bottom:1px solid #e0e9ef;text-align:center}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.canvas-wrap{min-height:430px}.grid2{grid-template-columns:1fr}.ratio-row{grid-template-columns:auto 1fr 64px}.ratio-row .n-label{grid-column:1}.title{width:100%}.topbar{position:static}}
+@media(max-width:520px){.app{padding:7px}.topbar button{padding:8px 9px}.canvas-wrap{min-height:380px}.coord-table input{width:58px}.card{padding:10px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="title">3차원 내분점 균형 조절기</div>
+    <button id="homeBtn">처음으로</button><button id="resetBtn">초기화</button><button id="newBtn">새 활동</button><button id="helpBtn">도움말</button>
+  </header>
+  <div class="modebar"><button class="modebtn active" data-mode="free">자유 탐색</button><button class="modebtn" data-mode="mission">미션 활동</button></div>
+  <main class="layout">
+    <section class="card view-card">
+      <div class="canvas-wrap" id="canvasWrap"><canvas id="scene" tabindex="0" aria-label="좌표공간에서 선분의 내분점 3차원 장면"></canvas><div class="hint">점 A·B를 드래그하세요. 빈 곳 드래그: 회전 · 휠/두 손가락: 확대 · 선택 후 화살표/PageUp/PageDown: 좌표 이동</div></div>
+      <div class="legend" style="padding:8px 4px 0"><span><i class="dot" style="background:#d94a4a"></i>A</span><span><i class="dot" style="background:#2478b8"></i>B</span><span><i class="dot" style="background:#2c9367"></i>P</span><span>점선: 정사영</span><span>반투명 면: 좌표평면</span></div>
+    </section>
+    <aside style="display:flex;flex-direction:column;gap:14px">
+      <section class="card">
+        <div class="panel-title">점의 좌표와 내분비</div>
+        <table class="coord-table"><thead><tr><th>점</th><th>x</th><th>y</th><th>z</th></tr></thead><tbody>
+          <tr><th>A</th><td><input id="ax" type="number" step="0.5"></td><td><input id="ay" type="number" step="0.5"></td><td><input id="az" type="number" step="0.5"></td></tr>
+          <tr><th>B</th><td><input id="bx" type="number" step="0.5"></td><td><input id="by" type="number" step="0.5"></td><td><input id="bz" type="number" step="0.5"></td></tr>
+        </tbody></table>
+        <div class="ratio-row" style="margin-top:10px"><b>m</b><input id="mRange" type="range" min="1" max="10" step="1"><input id="mNum" type="number" min="1" max="30"><b class="n-label">n</b><input id="nRange" type="range" min="1" max="10" step="1"><input id="nNum" type="number" min="1" max="30"></div>
+      </section>
+      <section class="card readout">
+        <div class="panel-title">실시간 판정</div>
+        <div id="pointReadout"></div>
+        <div class="formula" id="formulaReadout"></div>
+        <div><b>길이 비교</b> AP = <span id="apLen"></span>, PB = <span id="pbLen"></span></div>
+        <div class="bar" title="AP와 PB의 상대적 길이"><div class="ap" id="apBar"></div><div class="pb" id="pbBar"></div></div>
+        <div id="ratioVerdict" style="margin-top:7px"></div>
+      </section>
+      <section class="card projection">
+        <div class="panel-title">좌표평면 위 정사영 비교</div>
+        <table><thead><tr><th>평면</th><th>A의 정사영</th><th>P의 정사영</th><th>B의 정사영</th><th>비</th></tr></thead><tbody id="projectionBody"></tbody></table>
+      </section>
+      <section class="card controls">
+        <div class="panel-title">3차원 보기</div>
+        <label>확대·축소 <input id="zoom" type="range" min="55" max="150" value="95"></label>
+        <label>평면 투명도 <input id="opacity" type="range" min="0" max="45" value="16"></label>
+        <label><input id="showProj" type="checkbox" checked> xy·yz·zx 정사영 표시</label>
+        <button class="primary secondary" id="viewReset">시점 초기화</button>
+      </section>
+      <section class="card mission" id="missionBox" hidden>
+        <h3 id="missionTitle">미션</h3><div id="missionText"></div><div id="missionInput" style="margin-top:8px"></div><button class="primary" id="checkBtn" style="margin-top:8px">확인</button><div class="feedback" id="feedback">조작한 뒤 확인을 눌러 보세요.</div>
+      </section>
+      <section class="card record"><div class="panel-title">관찰 기록</div><textarea id="notes" placeholder="예: 내분비가 2:1일 때 P는 B 쪽에 더 가깝고, x·y·z 좌표도 각각 같은 비로 나뉜다."></textarea><div class="record-actions"><button id="copyBtn">기록 복사</button><button class="secondary" id="clearNotes">지우기</button></div></section>
+    </aside>
+  </main>
+</div>
+<div class="modal" id="helpModal"><div class="modal-box"><button class="close" id="closeHelp">닫기</button><h2>도움말</h2><h3>조작 방법</h3><p>색 점 A와 B를 끌어 좌표공간에서 이동합니다. 점을 선택한 뒤 방향키로 화면의 가로·세로 방향, PageUp/PageDown으로 깊이 방향을 조금씩 움직일 수 있습니다. 빈 공간을 드래그하면 시점이 회전하고, 마우스 휠 또는 확대 슬라이더로 확대·축소합니다.</p><h3>수학적 의미</h3><p>점 P가 선분 AB를 <b>m:n</b>으로 내분한다는 것은 AP:PB=m:n이라는 뜻입니다. 교과서의 대각선 방향 계산에 따라 P의 각 좌표는 <b>((mx₂+nx₁)/(m+n), (my₂+ny₁)/(m+n), (mz₂+nz₁)/(m+n))</b>입니다. m=n이면 각 좌표가 두 끝점 좌표의 평균이 되어 중점이 됩니다.</p><h3>탐구 순서</h3><p>① A와 B를 옮깁니다. ② m:n을 바꿔 P의 이동을 봅니다. ③ 세 좌표 성분의 계산을 확인합니다. ④ 정사영 표에서 xy·yz·zx평면에서도 같은 내분비가 유지되는지 확인합니다. ⑤ 미션 활동에서 목표를 만족시킵니다.</p></div></div>
+<script>
+(()=>{
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const canvas=$('#scene'), ctx=canvas.getContext('2d'), wrap=$('#canvasWrap');
+const initial={A:{x:-3,y:-2,z:2},B:{x:3,y:3,z:-1},m:2,n:3,yaw:-0.72,pitch:0.48,zoom:95,opacity:16,showProj:true};
+let state=JSON.parse(JSON.stringify(initial)), mode='free', selected=null, dragging=null, last={x:0,y:0}, missionIndex=0;
+const missions=[
+ {title:'미션 1 · 목표 좌표 맞추기', setup(){state.A={x:0,y:0,z:0};state.B={x:6,y:3,z:3};state.m=1;state.n=2;this.target={x:4,y:2,z:2}}, text(){return `A(0,0,0), B(6,3,3)에서 P가 (${this.target.x}, ${this.target.y}, ${this.target.z})가 되도록 내분비 m:n을 조절하세요.`}, check(){return nearPoint(P(),this.target,.06)?ok('P의 세 좌표가 모두 목표와 일치합니다. AP:PB=2:1입니다.'):bad(`현재 P=${fmtP(P())}입니다. 목표와 다른 좌표 성분을 보고 m:n을 조절하세요.`)}},
+ {title:'미션 2 · 중점 만들기', setup(){state.A={x:-5,y:3,z:4};state.B={x:7,y:-1,z:-2};state.m=1;state.n=3}, text(){return 'm과 n을 같게 하여 P가 선분 AB의 중점이 되게 하세요.'}, check(){return state.m===state.n?ok(`m=n=${state.m}이므로 P는 중점 ${fmtP(P())}입니다. 각 좌표가 A와 B의 평균입니다.`):bad('중점이 되려면 AP:PB=1:1과 같은 비, 즉 m=n이어야 합니다.')}},
+ {title:'미션 3 · 좌표 성분 예측', setup(){state.A={x:-3,y:5,z:1};state.B={x:5,y:-3,z:9};state.m=3;state.n=1}, text(){return '현재 내분점 P의 좌표를 먼저 계산해 입력하세요.'}, input:true, check(){const q=P(),v=readPred();return nearPoint(v,q,.06)?ok(`정확합니다. P=${fmtP(q)}이고 x·y·z를 각각 같은 방식으로 내분했습니다.`):bad(`계산을 다시 확인하세요. x=(m·x₂+n·x₁)/(m+n)이며 y,z도 같습니다.`)}},
+ {title:'미션 4 · 정사영 속 비 확인', setup(){state.A={x:-4,y:-1,z:5};state.B={x:6,y:7,z:-3};state.m=4;state.n=2;state.showProj=true}, text(){return 'xy, yz, zx 세 정사영에서 AP:PB와 같은 비가 유지되는지 확인하고, 단순화한 비를 입력하세요.'}, ratioInput:true, check(){const g=gcd(state.m,state.n),a=+$('#predM').value,b=+$('#predN').value;return a===state.m/g&&b===state.n/g?ok('맞습니다. 평행한 정사영에서는 대응하는 선분의 비가 그대로 유지되어 모든 평면에서 2:1입니다.'):bad('m:n을 최대공약수로 나누어 간단히 하세요. 정사영의 각 좌표도 같은 가중평균으로 계산됩니다.')}},
+ {title:'미션 5 · B 쪽에 가까운 점', setup(){state.A={x:-6,y:0,z:2};state.B={x:6,y:0,z:2};state.m=1;state.n=1}, text(){return 'P가 B에서 A까지 거리의 1/4만큼 떨어진 위치(즉 AP:PB=3:1)에 오도록 조절하세요.'}, check(){return state.m/state.n===3?ok('AP:PB=3:1이므로 P는 B에 더 가깝고, A에서 전체 선분의 3/4 지점에 있습니다.'):bad(`현재 비는 ${state.m}:${state.n}입니다. B에 가까워지려면 m이 n보다 커야 합니다.`)}},
+ {title:'미션 6 · 끝점 이동으로 목표 만들기', setup(){state.A={x:-2,y:1,z:0};state.B={x:4,y:5,z:2};state.m=1;state.n=1;this.target={x:1,y:3,z:4}}, text(){return 'm=n=1을 유지한 채 A 또는 B의 좌표를 바꾸어 중점 P를 (1, 3, 4)로 만드세요.'}, check(){return nearPoint(P(),this.target,.08)&&state.m===state.n?ok('성공했습니다. 중점 좌표는 두 끝점 좌표의 평균이므로 A+B=(2,6,8)이 되었습니다.'):bad(`현재 P=${fmtP(P())}입니다. 중점의 각 좌표가 목표가 되려면 A와 B의 해당 좌표 합이 목표의 두 배여야 합니다.`)}}
+];
+function gcd(a,b){while(b){[a,b]=[b,a%b]}return a}
+function P(){const {A,B,m,n}=state,d=m+n;return{x:(m*B.x+n*A.x)/d,y:(m*B.y+n*A.y)/d,z:(m*B.z+n*A.z)/d}}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z)}
+function nearPoint(a,b,t){return a&&['x','y','z'].every(k=>Math.abs(a[k]-b[k])<t)}
+function rnd(v){return Math.abs(v)<1e-9?0:Math.round(v*100)/100}
+function fmt(v){return Number.isInteger(rnd(v))?String(rnd(v)):rnd(v).toFixed(2).replace(/0+$/,'').replace(/\.$/,'')}
+function fmtP(p){return `(${fmt(p.x)}, ${fmt(p.y)}, ${fmt(p.z)})`}
+function ok(s){return{ok:true,text:s}} function bad(s){return{ok:false,text:s}}
+function resize(){const r=wrap.getBoundingClientRect(),d=devicePixelRatio||1;canvas.width=Math.max(1,Math.floor(r.width*d));canvas.height=Math.max(1,Math.floor(r.height*d));ctx.setTransform(d,0,0,d,0,0);draw()}
+function rot(p){const cy=Math.cos(state.yaw),sy=Math.sin(state.yaw),cp=Math.cos(state.pitch),sp=Math.sin(state.pitch);let x=cy*p.x-sy*p.z,z=sy*p.x+cy*p.z;let y=cp*p.y-sp*z;z=sp*p.y+cp*z;return{x,y,z}}
+function project(p){const q=rot(p),r=wrap.getBoundingClientRect(),s=state.zoom*.58*Math.min(r.width/700,r.height/520);return{x:r.width/2+q.x*s,y:r.height/2-q.y*s,z:q.z,s}}
+function line3(a,b,opt={}){const A=project(a),B=project(b);ctx.save();ctx.strokeStyle=opt.color||'#748b9b';ctx.lineWidth=opt.width||1.5;if(opt.dash)ctx.setLineDash(opt.dash);ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.lineTo(B.x,B.y);ctx.stroke();ctx.restore()}
+function point3(p,label,color,shape='circle',radius=7){const q=project(p);ctx.save();ctx.fillStyle=color;ctx.strokeStyle='#16324b';ctx.lineWidth=2;ctx.beginPath();if(shape==='square')ctx.rect(q.x-radius,q.y-radius,radius*2,radius*2);else if(shape==='diamond'){ctx.moveTo(q.x,q.y-radius);ctx.lineTo(q.x+radius,q.y);ctx.lineTo(q.x,q.y+radius);ctx.lineTo(q.x-radius,q.y);ctx.closePath()}else ctx.arc(q.x,q.y,radius,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle='#17324d';ctx.font='bold 15px sans-serif';ctx.fillText(label,q.x+10,q.y-9);if(selected===label){ctx.strokeStyle='#f0a91d';ctx.lineWidth=3;ctx.beginPath();ctx.arc(q.x,q.y,radius+5,0,Math.PI*2);ctx.stroke()}ctx.restore();return q}
+function poly3(points,color,alpha){const qs=points.map(project);ctx.save();ctx.globalAlpha=alpha;ctx.fillStyle=color;ctx.strokeStyle=color;ctx.beginPath();ctx.moveTo(qs[0].x,qs[0].y);qs.slice(1).forEach(q=>ctx.lineTo(q.x,q.y));ctx.closePath();ctx.fill();ctx.globalAlpha=Math.min(1,alpha*2.8);ctx.stroke();ctx.restore()}
+function drawGrid(){const lim=6,op=state.opacity/100; if(op>0){poly3([{x:-lim,y:-lim,z:0},{x:lim,y:-lim,z:0},{x:lim,y:lim,z:0},{x:-lim,y:lim,z:0}],'#7dc6ee',op);poly3([{x:0,y:-lim,z:-lim},{x:0,y:lim,z:-lim},{x:0,y:lim,z:lim},{x:0,y:-lim,z:lim}],'#f1aa77',op);poly3([{x:-lim,y:0,z:-lim},{x:lim,y:0,z:-lim},{x:lim,y:0,z:lim},{x:-lim,y:0,z:lim}],'#a8d990',op)}
+ for(let i=-lim;i<=lim;i++){line3({x:i,y:-lim,z:0},{x:i,y:lim,z:0},{color:'#bdd3e2',width:.7});line3({x:-lim,y:i,z:0},{x:lim,y:i,z:0},{color:'#bdd3e2',width:.7})}
+ line3({x:-7,y:0,z:0},{x:7,y:0,z:0},{color:'#d94a4a',width:2.2});line3({x:0,y:-7,z:0},{x:0,y:7,z:0},{color:'#2478b8',width:2.2});line3({x:0,y:0,z:-7},{x:0,y:0,z:7},{color:'#2c9367',width:2.2});
+ const x=project({x:7,y:0,z:0}),y=project({x:0,y:7,z:0}),z=project({x:0,y:0,z:7});ctx.fillStyle='#17324d';ctx.font='bold 16px sans-serif';ctx.fillText('x',x.x,x.y);ctx.fillText('y',y.x,y.y);ctx.fillText('z',z.x,z.y)}
+function drawProjections(){if(!state.showProj)return;const p=P();[['xy','z'],['yz','x'],['zx','y']].forEach(([name,drop])=>{const pa={...state.A,[drop]:0},pp={...p,[drop]:0},pb={...state.B,[drop]:0};line3(state.A,pa,{color:'#d94a4a',dash:[4,4],width:1});line3(p,pp,{color:'#2c9367',dash:[4,4],width:1});line3(state.B,pb,{color:'#2478b8',dash:[4,4],width:1});line3(pa,pb,{color:name==='xy'?'#5ea8df':name==='yz'?'#de8c62':'#78b965',dash:[6,4],width:2});point3(pp,`P′${name}`,'#fff','diamond',4)})}
+function draw(){const r=wrap.getBoundingClientRect();ctx.clearRect(0,0,r.width,r.height);drawGrid();drawProjections();const p=P();line3(state.A,state.B,{color:'#263b4b',width:4});line3(state.A,p,{color:'#d94a4a',width:7});line3(p,state.B,{color:'#2478b8',width:7});point3(state.A,'A','#d94a4a','circle',8);point3(state.B,'B','#2478b8','square',8);point3(p,'P','#2c9367','diamond',9)}
+function syncInputs(){for(const [id,k] of [['ax','x'],['ay','y'],['az','z']])$('#'+id).value=state.A[k];for(const [id,k] of [['bx','x'],['by','y'],['bz','z']])$('#'+id).value=state.B[k];$('#mRange').value=Math.min(10,state.m);$('#nRange').value=Math.min(10,state.n);$('#mNum').value=state.m;$('#nNum').value=state.n;$('#zoom').value=state.zoom;$('#opacity').value=state.opacity;$('#showProj').checked=state.showProj;updateReadout();draw()}
+function updateReadout(){const p=P(),ap=dist(state.A,p),pb=dist(p,state.B),total=ap+pb;$('#pointReadout').innerHTML=`A ${fmtP(state.A)}<br>B ${fmtP(state.B)}<br><b>P ${fmtP(p)}</b>`;$('#formulaReadout').innerHTML=`x = (${state.m}×${fmt(state.B.x)} + ${state.n}×${fmt(state.A.x)})/(${state.m}+${state.n}) = <b>${fmt(p.x)}</b><br>y = (${state.m}×${fmt(state.B.y)} + ${state.n}×${fmt(state.A.y)})/(${state.m}+${state.n}) = <b>${fmt(p.y)}</b><br>z = (${state.m}×${fmt(state.B.z)} + ${state.n}×${fmt(state.A.z)})/(${state.m}+${state.n}) = <b>${fmt(p.z)}</b>`;$('#apLen').textContent=fmt(ap);$('#pbLen').textContent=fmt(pb);$('#apBar').style.width=(total?ap/total*100:50)+'%';$('#pbBar').style.width=(total?pb/total*100:50)+'%';const mid=state.m===state.n;$('#ratioVerdict').innerHTML=`AP:PB ≈ ${fmt(ap)}:${fmt(pb)} = <b>${state.m}:${state.n}</b>${mid?' · <b style="color:#2c9367">m=n이므로 중점</b>':''}`;const projections=[['xy','z'],['yz','x'],['zx','y']];$('#projectionBody').innerHTML=projections.map(([name,drop])=>{const a={...state.A,[drop]:0},q={...p,[drop]:0},b={...state.B,[drop]:0};const da=dist(a,q),db=dist(q,b),deg=dist(a,b)<1e-8;return `<tr><th>${name}</th><td>${fmtP(a)}</td><td>${fmtP(q)}</td><td>${fmtP(b)}</td><td>${deg?'한 점으로 겹침':`${fmt(da)}:${fmt(db)} ≈ ${state.m}:${state.n}`}</td></tr>`}).join('')}
+function setCoord(prefix,obj){['x','y','z'].forEach(k=>$('#'+prefix+k).addEventListener('input',e=>{const v=+e.target.value;if(Number.isFinite(v)){obj[k]=Math.max(-10,Math.min(10,v));updateReadout();draw()}}))}
+setCoord('a',state.A);setCoord('b',state.B);
+function rebindCoord(){['x','y','z'].forEach(k=>{$('#a'+k).oninput=e=>{let v=+e.target.value;if(Number.isFinite(v)){state.A[k]=clamp(v);updateReadout();draw()}};$('#b'+k).oninput=e=>{let v=+e.target.value;if(Number.isFinite(v)){state.B[k]=clamp(v);updateReadout();draw()}}})}
+function clamp(v){return Math.max(-10,Math.min(10,v))}
+rebindCoord();
+[['mRange','m'],['mNum','m'],['nRange','n'],['nNum','n']].forEach(([id,k])=>$('#'+id).addEventListener('input',e=>{state[k]=Math.max(1,Math.min(30,Math.round(+e.target.value||1)));syncInputs()}));
+$('#zoom').oninput=e=>{state.zoom=+e.target.value;draw()};$('#opacity').oninput=e=>{state.opacity=+e.target.value;draw()};$('#showProj').onchange=e=>{state.showProj=e.target.checked;draw()};$('#viewReset').onclick=()=>{state.yaw=initial.yaw;state.pitch=initial.pitch;state.zoom=95;syncInputs()};
+function hitPoint(x,y){const p=P(),pts=[['A',state.A],['B',state.B],['P',p]];let best=null,d=18;for(const [name,v] of pts){const q=project(v),h=Math.hypot(x-q.x,y-q.y);if(h<d){best=name;d=h}}return best}
+function pos(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
+canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);const p=pos(e),hit=hitPoint(p.x,p.y);selected=hit==='P'?null:hit;dragging=hit&&hit!=='P'?'point':'view';last=p;draw()});
+canvas.addEventListener('pointermove',e=>{if(!dragging)return;const p=pos(e),dx=p.x-last.x,dy=p.y-last.y;last=p;if(dragging==='view'){state.yaw+=dx*.008;state.pitch=Math.max(-1.35,Math.min(1.35,state.pitch+dy*.008))}else if(selected){const s=state.zoom*.58*Math.min(wrap.clientWidth/700,wrap.clientHeight/520);const cy=Math.cos(state.yaw),sy=Math.sin(state.yaw),cp=Math.cos(state.pitch),sp=Math.sin(state.pitch);const ex={x:cy,y:0,z:-sy},ey={x:-sy*sp,y:cp,z:-cy*sp};const o=state[selected];o.x=clamp(o.x+dx/s*ex.x-dy/s*ey.x);o.y=clamp(o.y+dx/s*ex.y-dy/s*ey.y);o.z=clamp(o.z+dx/s*ex.z-dy/s*ey.z);syncInputs()}draw()});
+canvas.addEventListener('pointerup',()=>dragging=null);canvas.addEventListener('pointercancel',()=>dragging=null);canvas.addEventListener('wheel',e=>{e.preventDefault();state.zoom=Math.max(55,Math.min(150,state.zoom-e.deltaY*.08));$('#zoom').value=state.zoom;draw()},{passive:false});
+canvas.addEventListener('keydown',e=>{if(!selected)return;const o=state[selected],step=e.shiftKey?1:.25;if(e.key==='ArrowLeft')o.x-=step;else if(e.key==='ArrowRight')o.x+=step;else if(e.key==='ArrowUp')o.y+=step;else if(e.key==='ArrowDown')o.y-=step;else if(e.key==='PageUp')o.z+=step;else if(e.key==='PageDown')o.z-=step;else return;e.preventDefault();o.x=clamp(o.x);o.y=clamp(o.y);o.z=clamp(o.z);syncInputs()});
+function switchMode(m){mode=m;$$('.modebtn').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));$('#missionBox').hidden=m!=='mission';if(m==='mission')loadMission(missionIndex);else{state=JSON.parse(JSON.stringify(initial));syncInputs()}}
+$$('.modebtn').forEach(b=>b.onclick=()=>switchMode(b.dataset.mode));
+function missionHtml(){const M=missions[missionIndex];$('#missionTitle').textContent=M.title;$('#missionText').textContent=M.text();$('#missionInput').innerHTML=M.input?'예측 좌표: (<input id="predX" type="number" step="0.1">, <input id="predY" type="number" step="0.1">, <input id="predZ" type="number" step="0.1">)':M.ratioInput?'간단한 비: <input id="predM" type="number" min="1"> : <input id="predN" type="number" min="1">':'';$('#feedback').className='feedback';$('#feedback').textContent='조작하거나 계산한 뒤 확인을 눌러 보세요.'}
+function loadMission(i){missionIndex=(i+missions.length)%missions.length;missions[missionIndex].setup();missionHtml();syncInputs()}
+function readPred(){return{x:+$('#predX').value,y:+$('#predY').value,z:+$('#predZ').value}}
+$('#checkBtn').onclick=()=>{const r=missions[missionIndex].check();$('#feedback').className='feedback '+(r.ok?'ok':'bad');$('#feedback').textContent=r.text};
+$('#newBtn').onclick=()=>{if(mode==='mission')loadMission(missionIndex+1);else{state.A={x:Math.round(Math.random()*10-5),y:Math.round(Math.random()*10-5),z:Math.round(Math.random()*10-5)};do{state.B={x:Math.round(Math.random()*10-5),y:Math.round(Math.random()*10-5),z:Math.round(Math.random()*10-5)}}while(dist(state.A,state.B)<4);state.m=1+Math.floor(Math.random()*5);state.n=1+Math.floor(Math.random()*5);syncInputs()}};
+$('#resetBtn').onclick=()=>mode==='mission'?loadMission(missionIndex):(state=JSON.parse(JSON.stringify(initial)),syncInputs());$('#homeBtn').onclick=()=>switchMode('free');
+$('#helpBtn').onclick=()=>$('#helpModal').classList.add('show');$('#closeHelp').onclick=()=>$('#helpModal').classList.remove('show');$('#helpModal').onclick=e=>{if(e.target.id==='helpModal')e.currentTarget.classList.remove('show')};
+$('#copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText($('#notes').value);$('#copyBtn').textContent='복사됨';setTimeout(()=>$('#copyBtn').textContent='기록 복사',1000)}catch{ $('#notes').select();document.execCommand('copy')}};$('#clearNotes').onclick=()=>$('#notes').value='';
+window.addEventListener('resize',resize);syncInputs();resize();
+})();
+</script>
+</body></html>

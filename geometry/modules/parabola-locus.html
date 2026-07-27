@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>초점·준선 자취 생성기</title>
+<style>
+:root{--ink:#17324d;--muted:#5f7286;--paper:#f7fbff;--card:#fff;--line:#c8d8e8;--accent:#0f8b8d;--accent2:#e76f51;--gold:#f4b942;--ok:#168a5b;--bad:#c23b3b;--shadow:0 10px 26px rgba(28,57,88,.12)}
+*{box-sizing:border-box} body{margin:0;font-family:"Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif;color:var(--ink);background:linear-gradient(135deg,#eef8ff,#fdfcff 55%,#fff7ef)}
+button,input,select{font:inherit} button{cursor:pointer;border:0;border-radius:12px;padding:.68rem .9rem;font-weight:750;color:var(--ink);background:#edf4fb} button:hover{filter:brightness(.97)} button.primary{background:var(--accent);color:#fff} button.warn{background:#fff0e9;color:#9a3c22}.app{max-width:1500px;margin:auto;padding:16px}
+header{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:rgba(255,255,255,.9);padding:14px 16px;border:1px solid #dce8f2;border-radius:18px;box-shadow:var(--shadow)}
+.title h1{font-size:clamp(1.3rem,2.4vw,2rem);margin:0}.title p{margin:.25rem 0 0;color:var(--muted)}.toolbar{display:flex;gap:8px;flex-wrap:wrap}
+.layout{display:grid;grid-template-columns:300px minmax(520px,1fr) 320px;gap:14px;margin-top:14px}.card{background:rgba(255,255,255,.94);border:1px solid #dce8f2;border-radius:18px;box-shadow:var(--shadow);padding:14px}.card h2{font-size:1.05rem;margin:.1rem 0 .8rem}.control{margin:11px 0}.control label{display:flex;justify-content:space-between;font-weight:750;margin-bottom:5px}.control input[type=range]{width:100%}.seg{display:grid;grid-template-columns:1fr 1fr;gap:7px}.seg button.active{background:var(--accent);color:white}.checkrow{display:flex;gap:8px;align-items:center;margin:.6rem 0}.hint{font-size:.92rem;color:var(--muted);line-height:1.55;background:#f4f8fb;border-left:4px solid var(--accent);padding:10px;border-radius:10px}.stage{padding:0;overflow:hidden;min-height:660px;position:relative}.stagebar{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #dce8f2;background:#f8fbfe;gap:8px;flex-wrap:wrap}.pill{display:inline-flex;align-items:center;gap:6px;padding:.4rem .65rem;border-radius:999px;background:#edf7f7;color:#09686a;font-weight:800}.stage svg{display:block;width:100%;height:610px;touch-action:none;background:white}.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.86rem}.legend span:before{content:"";display:inline-block;width:18px;height:4px;margin-right:5px;vertical-align:middle;border-radius:2px}.lgf:before{background:var(--accent2)}.lgd:before{background:#2f80ed}.lgp:before{background:#7d3ac1}.lgt:before{background:var(--gold)}
+.metric{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric div{padding:10px;border:1px solid #dce8f2;border-radius:12px;background:#fbfdff}.metric b{display:block;font-size:1.15rem;margin-top:2px}.equation{font-family:Cambria,"Times New Roman",serif;font-size:1.25rem;text-align:center;padding:12px;background:#fff8e8;border:1px dashed #d7ad46;border-radius:12px;margin:10px 0}.feedback{min-height:68px;padding:11px;border-radius:12px;background:#f4f8fb;line-height:1.5}.feedback.ok{background:#e9f7f0;color:#0f7049}.feedback.bad{background:#fff0f0;color:#9c2f2f}.mission{border:2px solid #d9e7f3;border-radius:14px;padding:12px;background:#fbfdff}.mission .num{font-size:.82rem;color:var(--muted);font-weight:800}.mission strong{display:block;margin:.25rem 0 .6rem;line-height:1.45}.mission-actions{display:flex;gap:7px}.trace-list{max-height:150px;overflow:auto;font-family:ui-monospace,monospace;font-size:.82rem;background:#f6f9fc;border-radius:10px;padding:8px}
+.modal{position:fixed;inset:0;background:rgba(18,37,56,.48);display:none;align-items:center;justify-content:center;padding:18px;z-index:10}.modal.open{display:flex}.modalbox{max-width:650px;background:#fff;border-radius:20px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.25)}.modalbox h2{margin-top:0}.modalbox li{margin:.5rem 0;line-height:1.5}.close{float:right}.kbd{font-family:ui-monospace,monospace;background:#edf2f7;border:1px solid #cdd9e4;border-radius:6px;padding:1px 6px}
+@media(max-width:1120px){.layout{grid-template-columns:280px 1fr}.right{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.right>*{margin:0}}@media(max-width:760px){.layout{grid-template-columns:1fr}.right{display:block}.stage{min-height:560px}.stage svg{height:520px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="title"><h1>초점·준선 자취 생성기</h1><p>PF와 점 P에서 준선까지의 거리를 비교하며 포물선을 만든다.</p></div>
+  <div class="toolbar">
+    <button id="homeBtn">처음으로</button><button id="resetBtn">초기화</button><button id="newMissionBtn">새 활동</button><button id="helpBtn">도움말</button>
+  </div>
+</header>
+<div class="layout">
+  <aside class="card">
+    <h2>1. 탐색 설정</h2>
+    <div class="seg"><button id="exploreMode" class="active">자유 탐색</button><button id="missionMode">활동/미션</button></div>
+    <div class="control"><label>준선 방향 <span id="orientationText">세로</span></label><div class="seg"><button id="verticalBtn" class="active">x=d</button><button id="horizontalBtn">y=d</button></div></div>
+    <div class="control"><label>초점 x <span id="fxVal"></span></label><input id="fx" type="range" min="-6" max="6" step="0.1"></div>
+    <div class="control"><label>초점 y <span id="fyVal"></span></label><input id="fy" type="range" min="-5" max="5" step="0.1"></div>
+    <div class="control"><label>준선 위치 d <span id="dVal"></span></label><input id="directrix" type="range" min="-6" max="6" step="0.1"></div>
+    <div class="control"><label>자취 매개값 <span id="tVal"></span></label><input id="param" type="range" min="-5.5" max="5.5" step="0.1"></div>
+    <div class="checkrow"><input id="snap" type="checkbox" checked><label for="snap">P를 거리 조건에 붙이기</label></div>
+    <div class="checkrow"><input id="showFull" type="checkbox"><label for="showFull">한 번에 전체 자취 그리기</label></div>
+    <div class="seg"><button id="makePointBtn" class="primary">한 점 생성</button><button id="leavePointBtn">현재 점 남기기</button></div>
+    <div class="seg" style="margin-top:7px"><button id="clearTraceBtn" class="warn">자취 지우기</button><button id="randomBtn">배치 바꾸기</button></div>
+    <p class="hint">그래프에서 <b>F</b>, 준선의 손잡이, <b>P</b>를 직접 끌 수 있다. <span class="kbd">Shift</span>를 누른 채 P를 끌면 거리 조건에 자동으로 붙는다.</p>
+  </aside>
+
+  <main class="card stage">
+    <div class="stagebar"><span class="pill" id="statusPill">● PF와 PH 비교</span><div class="legend"><span class="lgf">초점</span><span class="lgd">준선</span><span class="lgp">점 P</span><span class="lgt">자취</span></div></div>
+    <svg id="svg" viewBox="0 0 900 610" role="img" aria-label="초점과 준선으로 포물선의 자취를 생성하는 좌표평면"></svg>
+  </main>
+
+  <aside class="right">
+    <section class="card">
+      <h2>2. 실시간 거리</h2>
+      <div class="metric"><div>PF<b id="pfText">0</b></div><div>P에서 준선까지<b id="pdText">0</b></div></div>
+      <div class="feedback" id="distanceFeedback"></div>
+      <div class="equation" id="equation"></div>
+      <div id="features" class="hint"></div>
+    </section>
+    <section class="card" id="missionCard">
+      <h2>3. 발견 활동</h2>
+      <div class="mission"><span class="num" id="missionNum"></span><strong id="missionPrompt"></strong><div class="mission-actions"><button id="checkBtn" class="primary">확인</button><button id="nextMissionBtn">다음</button></div></div>
+      <div class="feedback" id="missionFeedback">‘새 활동’을 누르면 미션이 바뀐다.</div>
+    </section>
+    <section class="card"><h2>남긴 자취 점</h2><div class="trace-list" id="traceList">아직 남긴 점이 없습니다.</div></section>
+    <section class="card"><h2>왜 포물선인가?</h2><p class="hint">평면 위의 한 점 <b>F</b>와 그 점을 지나지 않는 한 직선 <b>l</b>이 있을 때, <b>점 F와 직선 l에 이르는 거리가 같은 점들의 집합</b>을 포물선이라 한다. 초점을 지나고 준선에 수직인 직선은 <b>축</b>, 포물선과 축이 만나는 점은 <b>꼭짓점</b>이다.</p></section>
+  </aside>
+</div>
+</div>
+<div class="modal" id="modal"><div class="modalbox"><button class="close" id="closeHelp">닫기</button><h2>사용 방법</h2><ol><li>초점 F 또는 준선 손잡이를 끌어 배치를 바꾼다.</li><li>점 P를 움직여 PF와 준선까지의 거리를 비교한다.</li><li>두 거리가 같을 때 ‘현재 점 남기기’를 눌러 자취를 만든다.</li><li>‘한 번에 전체 자취’를 켜면 정의를 만족하는 모든 점의 곡선을 확인할 수 있다.</li><li>활동/미션 모드에서는 조건을 만든 뒤 ‘확인’을 누른다.</li></ol><p>교과서의 정의 순서에 따라 초점·준선 → 거리 비교 → 축·꼭짓점 → 방정식으로 연결되도록 구성했다.</p></div></div>
+<script>
+(()=>{
+const svg=document.getElementById('svg'), NS='http://www.w3.org/2000/svg';
+const W=900,H=610, world={xmin:-8,xmax:8,ymin:-6,ymax:6};
+const sx=x=>(x-world.xmin)/(world.xmax-world.xmin)*W, sy=y=>H-(y-world.ymin)/(world.ymax-world.ymin)*H;
+const wx=X=>world.xmin+X/W*(world.xmax-world.xmin), wy=Y=>world.ymin+(H-Y)/H*(world.ymax-world.ymin);
+const fmt=v=>{const r=Math.round(v*100)/100; return Object.is(r,-0)?'0':String(r)};
+const state={orientation:'vertical',fx:2,fy:0,d:-2,t:2.5,P:{x:0.78,y:2.5},trace:[],showFull:false,snap:true,mode:'explore',mission:0,drag:null};
+const $=id=>document.getElementById(id);
+const els={fx:$('fx'),fy:$('fy'),directrix:$('directrix'),param:$('param'),snap:$('snap'),showFull:$('showFull')};
+function el(tag,attrs={},parent=svg){const n=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));parent.appendChild(n);return n}
+function text(x,y,s,attrs={}){const n=el('text',{x,y,'font-size':attrs.size||15,'font-weight':attrs.weight||700,fill:attrs.fill||'#17324d','text-anchor':attrs.anchor||'start','paint-order':'stroke','stroke':'white','stroke-width':attrs.stroke||3,'stroke-linejoin':'round'});n.textContent=s;return n}
+function validGap(){if(state.orientation==='vertical'){if(Math.abs(state.fx-state.d)<.8) state.d=state.fx-(state.fx>=state.d?1:-1)}else{if(Math.abs(state.fy-state.d)<.8) state.d=state.fy-(state.fy>=state.d?1:-1)}}
+function features(){validGap(); if(state.orientation==='vertical'){const p=(state.fx-state.d)/2,m=(state.fx+state.d)/2,n=state.fy;return{p,m,n,V:{x:m,y:n},F:{x:state.fx,y:state.fy},eq:`(y-${fmt(n)})² = ${fmt(4*p)}(x-${fmt(m)})`,axis:`y=${fmt(n)}`,directrix:`x=${fmt(state.d)}`}}const p=(state.fy-state.d)/2,n=(state.fy+state.d)/2,m=state.fx;return{p,m,n,V:{x:m,y:n},F:{x:state.fx,y:state.fy},eq:`(x-${fmt(m)})² = ${fmt(4*p)}(y-${fmt(n)})`,axis:`x=${fmt(m)}`,directrix:`y=${fmt(state.d)}`}}
+function onParabola(t=state.t){const f=features(); if(state.orientation==='vertical')return{x:f.m+(t-f.n)**2/(4*f.p),y:t};return{x:t,y:f.n+(t-f.m)**2/(4*f.p)}}
+function distances(P=state.P){const pf=Math.hypot(P.x-state.fx,P.y-state.fy);const pd=state.orientation==='vertical'?Math.abs(P.x-state.d):Math.abs(P.y-state.d);return{pf,pd,diff:Math.abs(pf-pd)}}
+function syncControls(){els.fx.value=state.fx;els.fy.value=state.fy;els.directrix.value=state.d;els.param.value=state.t;els.snap.checked=state.snap;els.showFull.checked=state.showFull;$('fxVal').textContent=fmt(state.fx);$('fyVal').textContent=fmt(state.fy);$('dVal').textContent=fmt(state.d);$('tVal').textContent=fmt(state.t);$('orientationText').textContent=state.orientation==='vertical'?'세로':'가로';$('verticalBtn').classList.toggle('active',state.orientation==='vertical');$('horizontalBtn').classList.toggle('active',state.orientation==='horizontal');$('exploreMode').classList.toggle('active',state.mode==='explore');$('missionMode').classList.toggle('active',state.mode==='mission')}
+function drawGrid(){svg.innerHTML='';const defs=el('defs');const pat=el('pattern',{id:'grid',width:sx(-7)-sx(-8),height:sy(-5)-sy(-4),patternUnits:'userSpaceOnUse'},defs);el('path',{d:`M ${sx(-8)} ${sy(-6)} H ${sx(-7)} M ${sx(-8)} ${sy(-6)} V ${sy(-5)}`,stroke:'#e3edf5','stroke-width':1},pat);el('rect',{x:0,y:0,width:W,height:H,fill:'url(#grid)'});el('line',{x1:sx(world.xmin),y1:sy(0),x2:sx(world.xmax),y2:sy(0),stroke:'#71869a','stroke-width':1.5});el('line',{x1:sx(0),y1:sy(world.ymin),x2:sx(0),y2:sy(world.ymax),stroke:'#71869a','stroke-width':1.5});for(let i=-7;i<=7;i++){if(i!==0){el('line',{x1:sx(i),y1:sy(0)-4,x2:sx(i),y2:sy(0)+4,stroke:'#71869a'});text(sx(i),sy(0)+19,String(i),{size:11,anchor:'middle',weight:500,fill:'#637789',stroke:2})}}for(let i=-5;i<=5;i++){if(i!==0){el('line',{x1:sx(0)-4,y1:sy(i),x2:sx(0)+4,y2:sy(i),stroke:'#71869a'});text(sx(0)-9,sy(i)+4,String(i),{size:11,anchor:'end',weight:500,fill:'#637789',stroke:2})}}}
+function draw(){syncControls();drawGrid();const f=features(),P=state.P; // full parabola
+if(state.showFull){let d='',started=false;for(let i=0;i<=260;i++){const t=(state.orientation==='vertical'?world.ymin:world.xmin)+i/260*((state.orientation==='vertical'?world.ymax:world.xmax)-(state.orientation==='vertical'?world.ymin:world.xmin));const q=onParabola(t);if(q.x<world.xmin||q.x>world.xmax||q.y<world.ymin||q.y>world.ymax){started=false;continue}d+=(started?'L':'M')+sx(q.x)+' '+sy(q.y)+' ';started=true}el('path',{d,fill:'none',stroke:'#f4b942','stroke-width':5,'stroke-linecap':'round'})}
+// saved trace
+state.trace.forEach((q,i)=>{el('circle',{cx:sx(q.x),cy:sy(q.y),r:4.6,fill:'#f4b942',stroke:'#7c5b0a','stroke-width':1.5});if(i%5===0)el('circle',{cx:sx(q.x),cy:sy(q.y),r:8,fill:'none',stroke:'#f4b942','stroke-dasharray':'2 3'})});
+// axis and directrix
+if(state.orientation==='vertical'){el('line',{x1:sx(world.xmin),y1:sy(f.n),x2:sx(world.xmax),y2:sy(f.n),stroke:'#0f8b8d','stroke-width':2,'stroke-dasharray':'10 7'});el('line',{x1:sx(state.d),y1:sy(world.ymin),x2:sx(state.d),y2:sy(world.ymax),stroke:'#2f80ed','stroke-width':4,'stroke-dasharray':'12 7'});const g=el('circle',{cx:sx(state.d),cy:sy(5.2),r:11,fill:'#2f80ed',stroke:'white','stroke-width':3,'data-drag':'directrix'});g.style.cursor='ew-resize'}else{el('line',{x1:sx(f.m),y1:sy(world.ymin),x2:sx(f.m),y2:sy(world.ymax),stroke:'#0f8b8d','stroke-width':2,'stroke-dasharray':'10 7'});el('line',{x1:sx(world.xmin),y1:sy(state.d),x2:sx(world.xmax),y2:sy(state.d),stroke:'#2f80ed','stroke-width':4,'stroke-dasharray':'12 7'});const g=el('circle',{cx:sx(6.8),cy:sy(state.d),r:11,fill:'#2f80ed',stroke:'white','stroke-width':3,'data-drag':'directrix'});g.style.cursor='ns-resize'}
+// foot H and distances
+const Hpt=state.orientation==='vertical'?{x:state.d,y:P.y}:{x:P.x,y:state.d};el('line',{x1:sx(P.x),y1:sy(P.y),x2:sx(state.fx),y2:sy(state.fy),stroke:'#e76f51','stroke-width':3});el('line',{x1:sx(P.x),y1:sy(P.y),x2:sx(Hpt.x),y2:sy(Hpt.y),stroke:'#2f80ed','stroke-width':3,'stroke-dasharray':'8 5'}); // right angle
+const a=8;if(state.orientation==='vertical')el('path',{d:`M ${sx(Hpt.x)+a} ${sy(Hpt.y)} v ${P.y>=state.d?0:0} M ${sx(Hpt.x)+a} ${sy(Hpt.y)} v ${P.y>=state.d?-a:a} h ${-a}`,fill:'none',stroke:'#2f80ed','stroke-width':1.5});
+// vertex, focus, P, H
+el('circle',{cx:sx(f.V.x),cy:sy(f.V.y),r:7,fill:'#0f8b8d',stroke:'white','stroke-width':3});text(sx(f.V.x)+10,sy(f.V.y)-10,'꼭짓점 V',{size:13,fill:'#0b6b6d'});
+const Fc=el('circle',{cx:sx(state.fx),cy:sy(state.fy),r:11,fill:'#e76f51',stroke:'white','stroke-width':3,'data-drag':'focus'});Fc.style.cursor='grab';text(sx(state.fx)+13,sy(state.fy)-12,'초점 F',{fill:'#a73d24'});
+el('circle',{cx:sx(Hpt.x),cy:sy(Hpt.y),r:5,fill:'#2f80ed',stroke:'white','stroke-width':2});text(sx(Hpt.x)+8,sy(Hpt.y)+18,'H',{size:13,fill:'#245ea9'});
+const Pc=el('circle',{cx:sx(P.x),cy:sy(P.y),r:11,fill:'#7d3ac1',stroke:'white','stroke-width':3,'data-drag':'point'});Pc.style.cursor='grab';text(sx(P.x)+14,sy(P.y)-12,`P(${fmt(P.x)}, ${fmt(P.y)})`,{fill:'#612697'});
+const ds=distances();const ok=ds.diff<.06;$('pfText').textContent=ds.pf.toFixed(3);$('pdText').textContent=ds.pd.toFixed(3);$('distanceFeedback').className='feedback '+(ok?'ok':'bad');$('distanceFeedback').innerHTML=ok?`두 거리가 거의 같습니다. <b>PF≈PH</b>이므로 P는 포물선 위의 점입니다.`:`두 거리의 차는 <b>${ds.diff.toFixed(3)}</b>입니다. P를 ${ds.pf>ds.pd?'초점에서 더 가깝게 또는 준선에서 더 멀게':'초점에서 더 멀게 또는 준선에서 더 가깝게'} 움직여 보세요.`;$('statusPill').textContent=ok?'✓ 거리 조건 성립':'● PF와 PH 비교 중';$('equation').textContent=f.eq.replace(/--/g,'+');$('features').innerHTML=`축: <b>${f.axis}</b><br>꼭짓점: <b>(${fmt(f.V.x)}, ${fmt(f.V.y)})</b><br>초점: <b>(${fmt(state.fx)}, ${fmt(state.fy)})</b><br>준선: <b>${f.directrix}</b><br><small>p=${fmt(f.p)}이므로 ${f.p>0?(state.orientation==='vertical'?'오른쪽':'위쪽'):(state.orientation==='vertical'?'왼쪽':'아래쪽')}으로 열린다.</small>`;updateTraceList()}
+function updateTraceList(){const box=$('traceList');if(!state.trace.length){box.textContent='아직 남긴 점이 없습니다.';return}box.innerHTML=state.trace.map((p,i)=>`${i+1}. (${fmt(p.x)}, ${fmt(p.y)})`).join('<br>')}
+function pointerWorld(e){const r=svg.getBoundingClientRect();return{x:wx((e.clientX-r.left)/r.width*W),y:wy((e.clientY-r.top)/r.height*H)}}
+svg.addEventListener('pointerdown',e=>{const t=e.target.getAttribute('data-drag');if(!t)return;state.drag=t;e.target.setPointerCapture(e.pointerId)});svg.addEventListener('pointermove',e=>{if(!state.drag)return;const q=pointerWorld(e);if(state.drag==='focus'){state.fx=Math.max(-6,Math.min(6,q.x));state.fy=Math.max(-5,Math.min(5,q.y));validGap()}else if(state.drag==='directrix'){state.d=state.orientation==='vertical'?Math.max(-6,Math.min(6,q.x)):Math.max(-5,Math.min(5,q.y));validGap()}else{state.P={x:Math.max(-8,Math.min(8,q.x)),y:Math.max(-6,Math.min(6,q.y))};if(state.snap||e.shiftKey){state.t=state.orientation==='vertical'?state.P.y:state.P.x;state.P=onParabola(state.t)}}draw()});svg.addEventListener('pointerup',()=>state.drag=null);svg.addEventListener('pointercancel',()=>state.drag=null);
+function setOrientation(o){state.orientation=o;if(o==='vertical'){state.fx=2;state.fy=0;state.d=-2;state.t=2.5}else{state.fx=0;state.fy=2;state.d=-2;state.t=2.5}state.P=onParabola();state.trace=[];draw()}
+['fx','fy','directrix','param'].forEach(id=>els[id].addEventListener('input',e=>{state[id==='directrix'?'d':id==='param'?'t':id]=+e.target.value;validGap();if(id==='param'||state.snap)state.P=onParabola(state.t);draw()}));els.snap.addEventListener('change',e=>{state.snap=e.target.checked;if(state.snap)state.P=onParabola(state.t);draw()});els.showFull.addEventListener('change',e=>{state.showFull=e.target.checked;draw()});
+$('verticalBtn').onclick=()=>setOrientation('vertical');$('horizontalBtn').onclick=()=>setOrientation('horizontal');$('makePointBtn').onclick=()=>{state.P=onParabola(state.t);state.trace.push({...state.P});draw()};$('leavePointBtn').onclick=()=>{const d=distances();if(d.diff<.08){state.trace.push({...state.P});$('distanceFeedback').className='feedback ok';$('distanceFeedback').innerHTML='자취 점을 남겼습니다. 매개값을 바꾸어 다음 점을 만들어 보세요.'}else{$('distanceFeedback').className='feedback bad';$('distanceFeedback').innerHTML=`아직 거리 조건이 성립하지 않습니다. PF와 준선까지 거리의 차가 ${d.diff.toFixed(3)}입니다.`}draw()};$('clearTraceBtn').onclick=()=>{state.trace=[];draw()};$('randomBtn').onclick=()=>{if(state.orientation==='vertical'){state.fx=+(1.5+Math.random()*3).toFixed(1)*(Math.random()<.5?-1:1);state.d=state.fx+(state.fx>0?-1:1)*(1.5+Math.random()*3);state.d=Math.max(-6,Math.min(6,state.d));state.fy=+(Math.random()*4-2).toFixed(1)}else{state.fy=+(1.5+Math.random()*3).toFixed(1)*(Math.random()<.5?-1:1);state.d=state.fy+(state.fy>0?-1:1)*(1.5+Math.random()*3);state.d=Math.max(-5,Math.min(5,state.d));state.fx=+(Math.random()*4-2).toFixed(1)}validGap();state.P=onParabola(state.t);state.trace=[];draw()};
+const missions=[
+{p:'P를 움직여 PF와 준선까지의 거리 차를 0.05 이하로 만드세요.',check:()=>distances().diff<=.05,good:'거리 조건을 만족했습니다. 이 점은 포물선 위의 점입니다.',bad:'아직 두 거리가 다릅니다. 거리 카드의 차이를 보고 P를 조절하세요.'},
+{p:'P를 꼭짓점 V에 놓으세요.',check:()=>{const v=features().V;return Math.hypot(state.P.x-v.x,state.P.y-v.y)<.15},good:'꼭짓점에서도 초점과 준선까지의 거리가 같습니다.',bad:'꼭짓점은 초점과 준선 사이의 중점이며 축 위에 있습니다.'},
+{p:'세로 준선을 선택하고 포물선이 왼쪽으로 열리게 만드세요.',check:()=>state.orientation==='vertical'&&features().p<0,good:'초점이 준선의 왼쪽에 있어 포물선이 왼쪽으로 열립니다.',bad:'세로 준선에서 초점을 준선보다 왼쪽에 두어 보세요.'},
+{p:'|p|를 3 이상으로 만들어 초점과 꼭짓점의 거리를 크게 하세요.',check:()=>Math.abs(features().p)>=3,good:'|p|가 커져 초점이 꼭짓점에서 멀어지고 포물선의 벌어짐도 달라졌습니다.',bad:'초점과 준선 사이의 거리를 더 크게 벌려 보세요.'},
+{p:'세로 준선에서 초점을 (2,0), 준선을 x=-2로 맞추세요.',check:()=>state.orientation==='vertical'&&Math.abs(state.fx-2)<.11&&Math.abs(state.fy)<.11&&Math.abs(state.d+2)<.11,good:'이때 꼭짓점은 원점이고 방정식은 y²=8x입니다.',bad:'초점 x=2, y=0, 준선 위치 d=-2로 맞추세요.'},
+{p:'한 번에 전체 자취를 켜고 자취 점을 3개 이상 남기세요.',check:()=>state.showFull&&state.trace.length>=3,good:'한 점씩 만든 자취와 전체 포물선이 같은 거리 조건을 나타냅니다.',bad:'전체 자취를 켠 뒤 서로 다른 매개값에서 점을 세 번 생성하세요.'}
+];
+function setMission(i){state.mission=(i+missions.length)%missions.length;$('missionNum').textContent=`미션 ${state.mission+1} / ${missions.length}`;$('missionPrompt').textContent=missions[state.mission].p;$('missionFeedback').className='feedback';$('missionFeedback').textContent='조건을 만든 뒤 확인을 누르세요.'}
+$('checkBtn').onclick=()=>{const m=missions[state.mission],ok=m.check();$('missionFeedback').className='feedback '+(ok?'ok':'bad');$('missionFeedback').textContent=ok?m.good:m.bad};$('nextMissionBtn').onclick=()=>setMission(state.mission+1);$('newMissionBtn').onclick=()=>{state.mode='mission';setMission(Math.floor(Math.random()*missions.length));draw()};$('exploreMode').onclick=()=>{state.mode='explore';draw()};$('missionMode').onclick=()=>{state.mode='mission';draw()};
+function reset(){Object.assign(state,{orientation:'vertical',fx:2,fy:0,d:-2,t:2.5,P:{x:0.78125,y:2.5},trace:[],showFull:false,snap:true,mode:'explore'});setMission(0);draw()}
+$('resetBtn').onclick=reset;$('homeBtn').onclick=reset;$('helpBtn').onclick=()=>$('modal').classList.add('open');$('closeHelp').onclick=()=>$('modal').classList.remove('open');$('modal').onclick=e=>{if(e.target.id==='modal')$('modal').classList.remove('open')};setMission(0);reset();
+})();
+</script>
+</body>
+</html>

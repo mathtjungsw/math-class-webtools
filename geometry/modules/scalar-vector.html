@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>벡터 확대·반전 조절기</title>
+<style>
+:root{--ink:#24323f;--muted:#667886;--bg:#f3f7f9;--card:#fff;--line:#d6e2e8;--teal:#087b83;--teal2:#0ea5a4;--red:#b33145;--blue:#2d6eb2;--violet:#7654b5;--gold:#b97a16;--green:#3d8c62;--shadow:0 10px 28px rgba(35,57,72,.09)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:"DejaVu Sans",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;color:var(--ink);background:linear-gradient(180deg,#eef7f7 0,#f7f8fa 340px,#f3f7f9 100%);line-height:1.55}
+button,input,textarea{font:inherit}button{cursor:pointer}.app{min-height:100vh}.topbar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top-inner{max-width:1320px;margin:auto;padding:10px 18px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}.brand{display:flex;gap:12px;align-items:center;min-width:270px}.unit-badge{width:45px;height:45px;border-radius:14px;background:linear-gradient(145deg,#8f1d2f,#c74650);color:#fff;display:grid;place-items:center;font-size:24px;font-weight:900;box-shadow:0 6px 15px rgba(143,29,47,.23)}h1,h2,h3,p{margin-top:0}.brand h1{font-size:21px;margin:0;line-height:1.25}.brand small{color:var(--muted)}.toolbar{display:flex;gap:7px;flex-wrap:wrap}.toolbtn,.modebtn,.primary,.secondary,.mini{border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);padding:9px 13px;font-weight:800}.toolbtn:hover,.secondary:hover,.mini:hover{border-color:#92b3c2;background:#f6fbfd}.primary{border-color:var(--teal);background:var(--teal);color:#fff}.primary:hover{background:#056b72}.modebtn.active{background:#253f50;color:#fff;border-color:#253f50}.container{max-width:1320px;margin:auto;padding:18px}.mode-row{display:flex;gap:8px;margin-bottom:14px}.layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(320px,.85fr);gap:16px;align-items:start}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}.card-head{padding:13px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.card-head h2,.card-head h3{margin:0;font-size:17px}.card-body{padding:15px}.visual-card{min-height:680px}.svg-wrap{position:relative;min-height:530px;background:radial-gradient(circle at 50% 46%,#fff 0,#f7fbfd 70%);touch-action:none}.svg-wrap svg{width:100%;height:auto;display:block;min-height:530px}.drag-hint{position:absolute;left:12px;top:12px;background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:11px;padding:7px 10px;font-size:12px;font-weight:800;color:#536572;pointer-events:none}.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:13px}.legend span{display:flex;align-items:center;gap:6px}.swatch{width:25px;height:0;border-top:4px solid currentColor;display:inline-block}.swatch.dash{border-top-style:dashed}.side{display:grid;gap:16px}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.control{display:grid;gap:6px;margin-bottom:13px}.control label{font-weight:800}.control input[type=range]{width:100%;accent-color:var(--teal)}.value-line{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:13px}.pill{display:inline-flex;align-items:center;border-radius:999px;padding:5px 10px;background:#e8f5f5;color:#086269;font-weight:900;font-size:12px}.pill.warn{background:#fff0e5;color:#9a4a00}.pill.zero{background:#f0edf8;color:#63469c}.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stat{padding:10px;border:1px solid var(--line);border-radius:12px;background:#f9fbfc}.stat b{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}.stat span{font-weight:900}.formula{background:#eef8f6;border-left:5px solid var(--teal);border-radius:12px;padding:12px;font-weight:800}.explain{display:grid;gap:8px;margin-top:10px}.explain>div{padding:9px 11px;border:1px solid var(--line);border-radius:11px;background:#fbfcfd}.bar-area{display:grid;gap:10px}.bar-row{display:grid;grid-template-columns:60px 1fr 58px;gap:8px;align-items:center}.bar-track{height:18px;border-radius:999px;background:#edf2f5;overflow:hidden;border:1px solid #d7e2e8}.bar-fill{height:100%;min-width:0;border-radius:999px;transition:width .15s}.bar-a{background:repeating-linear-gradient(45deg,#2d6eb2 0 7px,#4c87c8 7px 14px)}.bar-ka{background:repeating-linear-gradient(135deg,#b33145 0 7px,#d15c6d 7px 14px)}.notice{padding:10px 12px;border-radius:11px;background:#f3f7fa;border:1px solid var(--line);font-size:13px;color:#50616e}.notice.good{background:#edf8f1;border-color:#b9dec8;color:#266644}.notice.warn{background:#fff4e9;border-color:#f0c999;color:#8b4c0d}.mission{border:2px solid #d9e7e8;border-radius:15px;padding:14px;background:linear-gradient(180deg,#fbffff,#f8fbfc)}.mission h3{font-size:17px;margin-bottom:8px}.feedback{margin-top:10px;padding:10px 12px;border-radius:11px;background:#f3f6f8;border:1px solid var(--line);min-height:48px}.feedback.ok{background:#edf8f1;border-color:#add5bd;color:#1e6840}.feedback.no{background:#fff0f0;border-color:#e8b9bf;color:#8e2635}.hidden{display:none!important}.notes textarea{width:100%;min-height:105px;resize:vertical;border:1px solid var(--line);border-radius:12px;padding:11px}.modal{position:fixed;inset:0;z-index:80;background:rgba(27,42,52,.55);display:none;align-items:center;justify-content:center;padding:18px}.modal.show{display:flex}.modal-box{position:relative;max-width:720px;max-height:90vh;overflow:auto;background:#fff;border-radius:18px;padding:22px;box-shadow:0 25px 70px rgba(0,0,0,.3)}.close-x{position:absolute;right:12px;top:10px;border:0;background:transparent;font-size:28px}.toast{position:fixed;left:50%;bottom:25px;transform:translate(-50%,15px);opacity:0;z-index:90;background:#223844;color:#fff;padding:10px 15px;border-radius:999px;transition:.22s;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}.toggle{display:inline-flex;align-items:center;gap:7px;font-weight:800}.toggle input{width:19px;height:19px;accent-color:var(--teal)}
+@media(max-width:940px){.layout{grid-template-columns:1fr}.visual-card{min-height:auto}.side{grid-template-columns:repeat(2,minmax(0,1fr))}.side>.card:last-child{grid-column:1/-1}.topbar{position:relative}}
+@media(max-width:650px){.container{padding:10px}.top-inner{padding:9px 10px}.brand{min-width:100%}.toolbar{width:100%;display:grid;grid-template-columns:repeat(4,1fr)}.toolbtn{padding:8px 2px;font-size:13px}.side{grid-template-columns:1fr}.svg-wrap,.svg-wrap svg{min-height:390px}.stats{grid-template-columns:1fr 1fr}.card-body{padding:12px}.bar-row{grid-template-columns:52px 1fr 48px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar"><div class="top-inner">
+  <div class="brand"><div class="unit-badge">Ⅲ</div><div><h1>벡터 확대·반전 조절기</h1><small>Ⅲ. 벡터 · 2. 벡터의 실수배</small></div></div>
+  <div class="toolbar"><button id="homeBtn" class="toolbtn">처음으로</button><button id="resetBtn" class="toolbtn">초기화</button><button id="newBtn" class="toolbtn">새 활동</button><button id="helpBtn" class="toolbtn">도움말</button></div>
+</div></header>
+<main class="container">
+  <div class="mode-row"><button class="modebtn active" data-mode="free">자유 탐색</button><button class="modebtn" data-mode="mission">미션 활동</button></div>
+  <div class="layout">
+    <section class="card visual-card">
+      <div class="card-head"><h2>벡터 a⃗와 실수배 ka⃗를 한 화면에서 비교</h2><div class="legend"><span style="color:var(--blue)"><i class="swatch"></i>a⃗</span><span style="color:var(--red)"><i class="swatch"></i>ka⃗</span><span style="color:var(--violet)"><i class="swatch dash"></i>b⃗</span><span style="color:var(--gold)"><i class="swatch dash"></i>목표</span></div></div>
+      <div class="svg-wrap">
+        <div class="drag-hint">● a⃗ 끝점 드래그 · ◆ b⃗ 끝점 드래그 · [ ]로 k 조절</div>
+        <svg id="plane" viewBox="0 0 800 590" role="img" aria-label="벡터 a와 실수배 ka, 비교 벡터 b를 조작하는 좌표 격자">
+          <defs>
+            <pattern id="smallGrid" width="36" height="36" patternUnits="userSpaceOnUse"><path d="M 36 0 L 0 0 0 36" fill="none" stroke="#dfe9ee" stroke-width="1"/></pattern>
+            <pattern id="grid" width="180" height="180" patternUnits="userSpaceOnUse"><rect width="180" height="180" fill="url(#smallGrid)"/><path d="M 180 0 L 0 0 0 180" fill="none" stroke="#bdced8" stroke-width="1.4"/></pattern>
+            <marker id="arrA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2d6eb2"/></marker>
+            <marker id="arrK" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b33145"/></marker>
+            <marker id="arrB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7654b5"/></marker>
+            <marker id="arrT" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b97a16"/></marker>
+          </defs>
+          <rect x="42" y="28" width="716" height="514" rx="16" fill="url(#grid)" stroke="#bfd0d9"/>
+          <line x1="400" y1="45" x2="400" y2="525" stroke="#657b88" stroke-width="2"/><line x1="58" y1="285" x2="742" y2="285" stroke="#657b88" stroke-width="2"/>
+          <text x="730" y="274" fill="#536976" font-weight="800">x</text><text x="410" y="58" fill="#536976" font-weight="800">y</text><text x="407" y="302" fill="#536976" font-size="13">O</text>
+          <g id="tickLabels" fill="#6b7e8b" font-size="11"></g>
+          <line id="targetLine" x1="400" y1="285" x2="400" y2="285" stroke="#b97a16" stroke-width="8" stroke-dasharray="13 9" marker-end="url(#arrT)" opacity="0"/>
+          <line id="bLine" x1="400" y1="285" x2="500" y2="385" stroke="#7654b5" stroke-width="7" stroke-dasharray="11 7" marker-end="url(#arrB)" opacity=".85"/>
+          <line id="aLine" x1="400" y1="285" x2="540" y2="190" stroke="#2d6eb2" stroke-width="8" marker-end="url(#arrA)"/>
+          <line id="kaLine" x1="400" y1="285" x2="680" y2="95" stroke="#b33145" stroke-width="9" marker-end="url(#arrK)" opacity=".92"/>
+          <circle id="originDot" cx="400" cy="285" r="7" fill="#253f50"/>
+          <circle id="aHandle" cx="540" cy="190" r="13" fill="#fff" stroke="#2d6eb2" stroke-width="5" tabindex="0" aria-label="벡터 a 끝점"/>
+          <rect id="bHandle" x="490" y="375" width="20" height="20" rx="4" transform="rotate(45 500 385)" fill="#fff" stroke="#7654b5" stroke-width="4" tabindex="0" aria-label="벡터 b 끝점"/>
+          <circle id="zeroRing" cx="400" cy="285" r="19" fill="none" stroke="#b33145" stroke-width="5" stroke-dasharray="5 5" opacity="0"/>
+          <g id="labels" font-size="17" font-weight="900"><text id="aLabel" fill="#2d6eb2">a⃗</text><text id="kaLabel" fill="#b33145">ka⃗</text><text id="bLabel" fill="#7654b5">b⃗</text><text id="targetLabel" fill="#9c650f" opacity="0">목표</text></g>
+        </svg>
+      </div>
+    </section>
+    <aside class="side">
+      <section class="card"><div class="card-head"><h3>실수 k 조절</h3><span id="statePill" class="pill">같은 방향</span></div><div class="card-body">
+        <div class="control"><label for="kSlider">k = <strong id="kValue">2.00</strong></label><input id="kSlider" type="range" min="-3" max="3" step="0.05" value="2"><div class="value-line"><span>-3</span><span>0</span><span>3</span></div></div>
+        <div class="row"><button class="mini kPreset" data-k="-2">k=-2</button><button class="mini kPreset" data-k="-1">k=-1</button><button class="mini kPreset" data-k="0">k=0</button><button class="mini kPreset" data-k="0.5">k=0.5</button><button class="mini kPreset" data-k="1">k=1</button><button class="mini kPreset" data-k="2">k=2</button></div>
+        <div class="formula" id="formulaBox">|ka⃗| = |k||a⃗|</div>
+        <div class="stats" style="margin-top:11px"><div class="stat"><b>벡터 a⃗ 격자 이동량</b><span id="aCoord">(3.9, 2.6)</span></div><div class="stat"><b>벡터 ka⃗ 격자 이동량</b><span id="kaCoord">(7.8, 5.2)</span></div><div class="stat"><b>|a⃗|</b><span id="aMag">4.69</span></div><div class="stat"><b>|ka⃗|</b><span id="kaMag">9.38</span></div></div>
+        <div class="explain"><div><b>방향</b><br><span id="directionText"></span></div><div><b>크기</b><br><span id="sizeText"></span></div></div>
+      </div></section>
+      <section class="card"><div class="card-head"><h3>길이 막대 비교</h3></div><div class="card-body bar-area">
+        <div class="bar-row"><b>|a⃗|</b><div class="bar-track"><div id="barA" class="bar-fill bar-a"></div></div><span id="barAText"></span></div>
+        <div class="bar-row"><b>|ka⃗|</b><div class="bar-track"><div id="barK" class="bar-fill bar-ka"></div></div><span id="barKText"></span></div>
+        <div id="scaleNotice" class="notice"></div>
+      </div></section>
+      <section class="card"><div class="card-head"><h3>평행 판정 실험</h3><label class="toggle"><input id="showB" type="checkbox" checked> b⃗ 표시</label></div><div class="card-body">
+        <p class="notice">보라색 ◆ 끝점을 옮겨 b⃗를 만드세요. 두 영벡터가 아닌 벡터의 방향이 같거나 반대이면 평행입니다.</p>
+        <div class="stats"><div class="stat"><b>b⃗ 격자 이동량</b><span id="bCoord"></span></div><div class="stat"><b>판정</b><span id="parallelText"></span></div></div>
+        <div id="parallelWhy" class="notice" style="margin-top:9px"></div>
+      </div></section>
+      <section id="missionCard" class="card hidden"><div class="card-head"><h3>미션 활동</h3><span id="missionCount" class="pill"></span></div><div class="card-body"><div class="mission"><h3 id="missionTitle"></h3><div id="missionText"></div><div class="row" style="margin-top:11px"><button id="checkMission" class="primary">확인</button><button id="nextMission" class="secondary">다음 미션</button></div><div id="feedback" class="feedback">조건을 만든 뒤 확인을 누르세요.</div></div></div></section>
+      <section class="card notes"><div class="card-head"><h3>관찰 기록</h3></div><div class="card-body"><textarea id="notes" placeholder="예: k가 음수이면 방향은 반대가 되고, 크기는 |k|배가 된다. k=0이면 영벡터가 된다."></textarea><div class="row"><button id="copyNotes" class="secondary">기록 복사</button></div></div></section>
+    </aside>
+  </div>
+</main>
+</div>
+<div id="helpModal" class="modal" role="dialog" aria-modal="true"><div class="modal-box"><button id="closeHelp" class="close-x" aria-label="닫기">×</button><h2>벡터 확대·반전 조절기 도움말</h2><ol><li>파란 원형 손잡이를 드래그해 영벡터가 아닌 벡터 a⃗의 방향과 크기를 바꿉니다.</li><li>k 슬라이더를 움직이면 같은 시점에서 ka⃗가 그려집니다. k&gt;0이면 같은 방향, k&lt;0이면 반대 방향, k=0이면 영벡터입니다.</li><li>길이 막대는 <b>|ka⃗|=|k||a⃗|</b>을 비교합니다. |k|&gt;1이면 확대, 0&lt;|k|&lt;1이면 축소입니다.</li><li>보라색 ◆ 손잡이를 드래그하면 b⃗가 a⃗의 0이 아닌 실수배인지, 즉 두 벡터가 평행한지 판정합니다.</li><li>키보드: 화살표는 a⃗, Shift+화살표는 b⃗, [ 와 ]는 k를 0.05씩 조절합니다.</li><li>미션 활동에서는 목표를 만든 뒤 <b>확인</b>을 누르세요. 틀리면 부호·방향·크기 중 어떤 조건이 어긋났는지 알려 줍니다.</li></ol><p class="notice">교과서 115~119쪽의 벡터의 실수배 정의, 부호에 따른 방향, 크기 |k||a⃗|, 벡터의 평행 조건 a⃗∥b⃗ ⇔ b⃗=ka⃗(k≠0)을 조작으로 확인하도록 구성했습니다.</p></div></div>
+<div id="toast" class="toast"></div>
+<script>
+(()=>{
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const svg=$('#plane'), ORG={x:400,y:285}, SCALE=36, LIMIT_A={x:2.8,y:2.0}, LIMIT_B={x:8.2,y:6.2};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), mag=v=>Math.hypot(v.x,v.y), fmt=n=>Math.abs(n)<.005?'0':(+n.toFixed(2)).toString();
+let state={a:{x:2.6,y:1.8},b:{x:2.8,y:-2.75},k:2,mode:'free',drag:null,mission:0,targetK:null};
+const initial=JSON.parse(JSON.stringify(state));
+const missions=[
+ {title:'같은 방향으로 2배 확대',text:'k=2로 맞추어 ka⃗가 a⃗와 같은 방향이고 크기가 2배가 되게 하세요.',check:()=>near(state.k,2),why:'k가 2여야 방향은 같고 크기는 정확히 2배입니다.'},
+ {title:'같은 방향으로 절반 축소',text:'k=0.5로 맞추어 ka⃗의 크기가 |a⃗|의 절반이 되게 하세요.',check:()=>near(state.k,.5),why:'0<k<1이면 같은 방향으로 축소되며, k=0.5일 때 크기가 절반입니다.'},
+ {title:'반대 방향으로 3배',text:'k=-3으로 맞추어 ka⃗가 a⃗와 반대 방향이고 크기가 3배가 되게 하세요.',check:()=>near(state.k,-3),why:'음의 실수배는 방향을 반대로 바꾸고, |k|=3이 크기를 3배로 만듭니다.'},
+ {title:'영벡터 만들기',text:'k=0으로 맞추어 ka⃗의 시점과 종점이 일치하게 하세요.',check:()=>near(state.k,0),why:'0a⃗=0⃗이므로 k가 정확히 0이어야 합니다.'},
+ {title:'b⃗를 a⃗와 평행하게',text:'보라색 ◆ 손잡이를 옮겨 b⃗가 a⃗의 0이 아닌 실수배가 되게 하세요. 같은 방향과 반대 방향 모두 가능합니다.',check:()=>parallelInfo().parallel,why:'b⃗가 a⃗와 같은 직선 방향에 놓여야 하며 b⃗는 영벡터이면 안 됩니다.'},
+ {title:'점선 목표 벡터 만들기',text:'새 활동에서 제시된 점선 목표와 ka⃗가 겹치도록 k를 찾으세요.',setup:()=>makeTarget(),check:()=>state.targetK!==null&&near(state.k,state.targetK,.055),why:'목표는 a⃗의 실수배입니다. 방향으로 k의 부호를, 길이 비로 |k|를 판단하세요.'}
+];
+function near(a,b,t=.026){return Math.abs(a-b)<=t}
+function toScreen(v){return {x:ORG.x+v.x*SCALE,y:ORG.y-v.y*SCALE}}
+function fromScreen(p,target){const L=target==='a'?LIMIT_A:LIMIT_B;return {x:clamp((p.x-ORG.x)/SCALE,-L.x,L.x),y:clamp((ORG.y-p.y)/SCALE,-L.y,L.y)}}
+function setLine(el,v){const p=toScreen(v);el.setAttribute('x1',ORG.x);el.setAttribute('y1',ORG.y);el.setAttribute('x2',p.x);el.setAttribute('y2',p.y)}
+function posLabel(el,v,dx=10,dy=-10){const p=toScreen(v);el.setAttribute('x',clamp(p.x+dx,50,730));el.setAttribute('y',clamp(p.y+dy,42,535))}
+function parallelInfo(){const A=state.a,B=state.b,ma=mag(A),mb=mag(B);if(ma<.08||mb<.08)return {parallel:false,t:null,reason:'영벡터가 포함되어 방향을 비교할 수 없습니다.'};const cross=A.x*B.y-A.y*B.x;const tol=.055*ma*mb;const t=(A.x*B.x+A.y*B.y)/(ma*ma);if(Math.abs(cross)<=tol)return {parallel:true,t,reason:t>0?'같은 방향의 실수배입니다.':'반대 방향의 실수배입니다.'};return {parallel:false,t,reason:'두 벡터의 방향이 같거나 반대가 아니므로 실수배 관계가 아닙니다.'}}
+function renderTicks(){const g=$('#tickLabels');if(g.childElementCount)return;for(let i=-8;i<=8;i+=2){if(i===0)continue;let t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',ORG.x+i*SCALE-5);t.setAttribute('y',ORG.y+18);t.textContent=i;g.append(t)}for(let i=-6;i<=6;i+=2){if(i===0)continue;let t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',ORG.x+7);t.setAttribute('y',ORG.y-i*SCALE+4);t.textContent=i;g.append(t)}}
+function render(){renderTicks();const A=state.a,K={x:A.x*state.k,y:A.y*state.k},B=state.b,pA=toScreen(A),pB=toScreen(B);
+ setLine($('#aLine'),A);setLine($('#kaLine'),K);setLine($('#bLine'),B);$('#aHandle').setAttribute('cx',pA.x);$('#aHandle').setAttribute('cy',pA.y);$('#bHandle').setAttribute('x',pB.x-10);$('#bHandle').setAttribute('y',pB.y-10);$('#bHandle').setAttribute('transform',`rotate(45 ${pB.x} ${pB.y})`);posLabel($('#aLabel'),A,11,-12);posLabel($('#kaLabel'),K,11,22);posLabel($('#bLabel'),B,11,-12);
+ const isZero=Math.abs(state.k)<.001||mag(A)<.001;$('#kaLine').setAttribute('opacity',isZero?'0':'.92');$('#zeroRing').setAttribute('opacity',isZero?'1':'0');$('#kaLabel').textContent=isZero?'0⃗':`${fmt(state.k)}a⃗`;
+ $('#bLine').setAttribute('opacity',$('#showB').checked?'.85':'0');$('#bHandle').setAttribute('opacity',$('#showB').checked?'1':'0');$('#bLabel').setAttribute('opacity',$('#showB').checked?'1':'0');
+ $('#kSlider').value=state.k;$('#kValue').textContent=state.k.toFixed(2);$('#aCoord').textContent=`(${fmt(A.x)}, ${fmt(A.y)})`;$('#kaCoord').textContent=`(${fmt(K.x)}, ${fmt(K.y)})`;$('#bCoord').textContent=`(${fmt(B.x)}, ${fmt(B.y)})`;
+ const ma=mag(A),mk=Math.abs(state.k)*ma;$('#aMag').textContent=ma.toFixed(2);$('#kaMag').textContent=mk.toFixed(2);$('#formulaBox').textContent=`|${fmt(state.k)}a⃗| = |${fmt(state.k)}|×|a⃗| = ${mk.toFixed(2)}`;
+ let pill=$('#statePill'),dir,size,scale;if(Math.abs(state.k)<.001){pill.textContent='영벡터';pill.className='pill zero';dir='k=0이므로 방향을 생각하지 않는 영벡터가 됩니다.';size='크기는 0입니다.';scale='k=0: 시점과 종점이 일치하는 영벡터입니다.'}
+ else if(state.k>0){pill.textContent='같은 방향';pill.className='pill';dir='k>0이므로 a⃗와 같은 방향입니다.';if(Math.abs(state.k-1)<.001)size='크기가 변하지 않습니다.';else if(state.k>1)size=`|k|=${fmt(Math.abs(state.k))}이므로 ${fmt(Math.abs(state.k))}배 확대됩니다.`;else size=`0<|k|<1이므로 ${fmt(Math.abs(state.k))}배로 축소됩니다.`;scale=size}
+ else{pill.textContent='반대 방향';pill.className='pill warn';dir='k<0이므로 a⃗와 반대 방향입니다.';if(Math.abs(state.k)===1)size='크기는 같고 방향만 반대입니다.';else if(Math.abs(state.k)>1)size=`|k|=${fmt(Math.abs(state.k))}이므로 ${fmt(Math.abs(state.k))}배 확대됩니다.`;else size=`0<|k|<1이므로 ${fmt(Math.abs(state.k))}배로 축소됩니다.`;scale=`방향은 반대, 크기는 ${size.replace('됩니다.','됩니다')}`}
+ $('#directionText').textContent=dir;$('#sizeText').textContent=size;$('#scaleNotice').textContent=scale;
+ const max=Math.max(ma,mk,1),wa=100*ma/max,wk=100*mk/max;$('#barA').style.width=wa+'%';$('#barK').style.width=wk+'%';$('#barAText').textContent=ma.toFixed(2);$('#barKText').textContent=mk.toFixed(2);
+ const pi=parallelInfo();$('#parallelText').textContent=pi.parallel?'평행':'평행 아님';$('#parallelText').style.color=pi.parallel?'#267047':'#9a2b3a';$('#parallelWhy').className='notice '+(pi.parallel?'good':'');$('#parallelWhy').textContent=pi.parallel?`b⃗≈${fmt(pi.t)}a⃗. ${pi.reason}`:pi.reason;
+ if(state.targetK!==null){const T={x:A.x*state.targetK,y:A.y*state.targetK};setLine($('#targetLine'),T);posLabel($('#targetLabel'),T,10,-12);$('#targetLine').setAttribute('opacity','.9');$('#targetLabel').setAttribute('opacity','1')}else{$('#targetLine').setAttribute('opacity','0');$('#targetLabel').setAttribute('opacity','0')}
+ }
+ function pointerPos(e){const r=svg.getBoundingClientRect();return{x:(e.clientX-r.left)*800/r.width,y:(e.clientY-r.top)*590/r.height}}
+ function dist(p,q){return Math.hypot(p.x-q.x,p.y-q.y)}
+ svg.addEventListener('pointerdown',e=>{const p=pointerPos(e),pa=toScreen(state.a),pb=toScreen(state.b);if(dist(p,pa)<28)state.drag='a';else if($('#showB').checked&&dist(p,pb)<30)state.drag='b';else return;svg.setPointerCapture(e.pointerId);e.preventDefault()});
+ svg.addEventListener('pointermove',e=>{if(!state.drag)return;const v=fromScreen(pointerPos(e),state.drag);state[state.drag]=v;render();e.preventDefault()});
+ svg.addEventListener('pointerup',e=>{state.drag=null;try{svg.releasePointerCapture(e.pointerId)}catch(_){}});
+ function keyMove(target,dx,dy){const L=target==='a'?LIMIT_A:LIMIT_B;state[target].x=clamp(state[target].x+dx,-L.x,L.x);state[target].y=clamp(state[target].y+dy,-L.y,L.y);render()}
+ window.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;const step=e.altKey?.1:.25;if(e.key==='ArrowLeft'){keyMove(e.shiftKey?'b':'a',-step,0);e.preventDefault()}if(e.key==='ArrowRight'){keyMove(e.shiftKey?'b':'a',step,0);e.preventDefault()}if(e.key==='ArrowUp'){keyMove(e.shiftKey?'b':'a',0,step);e.preventDefault()}if(e.key==='ArrowDown'){keyMove(e.shiftKey?'b':'a',0,-step);e.preventDefault()}if(e.key==='['){state.k=clamp(state.k-.05,-3,3);render()}if(e.key===']'){state.k=clamp(state.k+.05,-3,3);render()}});
+ $('#kSlider').addEventListener('input',e=>{state.k=+e.target.value;render()});$$('.kPreset').forEach(b=>b.addEventListener('click',()=>{state.k=+b.dataset.k;render()}));$('#showB').addEventListener('change',render);
+ function setMode(m){state.mode=m;$$('.modebtn').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));$('#missionCard').classList.toggle('hidden',m!=='mission');if(m==='mission'){loadMission(state.mission)}else{state.targetK=null;render()}}
+ $$('.modebtn').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
+ function makeTarget(){const choices=[-2.5,-2,-1.5,-.75,.5,1.5,2.5];state.targetK=choices[Math.floor(Math.random()*choices.length)];if(near(state.targetK,state.k,.1))state.k=0;render()}
+ function loadMission(i){state.mission=(i+missions.length)%missions.length;state.targetK=null;const m=missions[state.mission];if(m.setup)m.setup();$('#missionTitle').textContent=m.title;$('#missionText').textContent=m.text;$('#missionCount').textContent=`${state.mission+1} / ${missions.length}`;$('#feedback').className='feedback';$('#feedback').textContent='조건을 만든 뒤 확인을 누르세요.';render()}
+ $('#checkMission').addEventListener('click',()=>{const m=missions[state.mission],ok=m.check();const f=$('#feedback');f.className='feedback '+(ok?'ok':'no');if(ok)f.textContent='좋아요! 방향과 크기의 조건을 모두 만족했습니다.';else{let extra='';if(state.mission===5&&state.targetK!==null){extra=` 현재 k=${fmt(state.k)}입니다. 목표의 방향과 길이 비를 다시 비교해 보세요.`}f.textContent=`아직 조건을 만족하지 못했습니다. ${m.why}${extra}`}});
+ $('#nextMission').addEventListener('click',()=>loadMission(state.mission+1));
+ function randomize(){state.a={x:(Math.random()*5.4-2.7),y:(Math.random()*3.8-1.9)};if(mag(state.a)<.9)state.a={x:2.3,y:1.4};state.b={x:(Math.random()*7-3.5),y:(Math.random()*5.5-2.75)};state.k=Math.round((Math.random()*6-3)*20)/20;state.targetK=null;if(state.mode==='mission')loadMission((state.mission+1)%missions.length);else render();toast('새 벡터와 k를 만들었습니다.')}
+ $('#newBtn').addEventListener('click',randomize);$('#resetBtn').addEventListener('click',()=>{state=JSON.parse(JSON.stringify(initial));setMode('free');render();toast('처음 상태로 되돌렸습니다.')});$('#homeBtn').addEventListener('click',()=>{setMode('free');window.scrollTo({top:0,behavior:'smooth'});toast('자유 탐색 화면입니다.')});
+ $('#helpBtn').addEventListener('click',()=>$('#helpModal').classList.add('show'));$('#closeHelp').addEventListener('click',()=>$('#helpModal').classList.remove('show'));$('#helpModal').addEventListener('click',e=>{if(e.target.id==='helpModal')e.currentTarget.classList.remove('show')});
+ $('#copyNotes').addEventListener('click',async()=>{const t=$('#notes').value;try{await navigator.clipboard.writeText(t);toast('관찰 기록을 복사했습니다.')}catch(_){$('#notes').select();document.execCommand('copy');toast('관찰 기록을 복사했습니다.')}});
+ let tt;function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),1700)}
+ render();
+})();
+</script>
+</body></html>

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="2022 개정 기하 교과서의 이차곡선, 공간도형과 공간좌표, 벡터를 단원별 탭으로 통합한 수업용 웹툴"
+    />
+    <title>기하 통합 웹툴 | 수학 수업 웹툴 모음</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23111c35'/%3E%3Cellipse cx='32' cy='32' rx='20' ry='11' fill='none' stroke='%235dd2b2' stroke-width='5'/%3E%3Ccircle cx='24' cy='32' r='3' fill='%23ff6b3d'/%3E%3Ccircle cx='40' cy='32' r='3' fill='%23ff6b3d'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="./app.css?v=20260727-1" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="../index.html?tag=geometry" aria-label="기하 웹툴 목록으로">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 40 40">
+            <ellipse cx="20" cy="20" rx="13" ry="8" />
+            <circle cx="14" cy="20" r="2.2" />
+            <circle cx="26" cy="20" r="2.2" />
+          </svg>
+        </span>
+        <span>
+          <strong>수학 수업 웹툴 모음</strong>
+          <small>기하 통합 도구</small>
+        </span>
+      </a>
+      <div class="top-actions">
+        <button class="soft-button" type="button" data-manual-open>
+          <span aria-hidden="true">?</span> 설명서 보기
+        </button>
+        <button class="soft-button view-button" type="button" data-focus-toggle aria-pressed="true">
+          <span aria-hidden="true">↕</span> <b data-focus-label>소개 보기</b>
+        </button>
+        <a class="home-button" href="../index.html?tag=geometry">전체 목록</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="suite-hero">
+        <div>
+          <p class="eyebrow"><i></i><span data-unit-label>2022 개정 기하</span></p>
+          <h1 data-suite-title>기하 통합 웹툴</h1>
+          <p class="suite-description" data-suite-description>
+            교과서의 개념·활동·프로젝트를 주제별로 정리해 한 화면에서 탐구합니다.
+          </p>
+        </div>
+        <dl class="suite-stats" aria-label="현재 통합 도구 정보">
+          <div><dt data-topic-count>6</dt><dd>개 학습 주제</dd></div>
+          <div><dt data-tab-count>22</dt><dd>개 탐구 탭</dd></div>
+        </dl>
+      </section>
+
+      <nav class="chapter-nav" aria-label="기하 대단원" data-chapters></nav>
+
+      <section class="suite-shell" aria-labelledby="topic-heading">
+        <div class="topic-heading">
+          <div>
+            <span id="topic-heading">학습 주제</span>
+            <p>대단원 안에서 개념이 겹치는 웹툴을 하나의 주제로 묶었습니다.</p>
+          </div>
+          <span class="keyboard-hint">주제 선택 후 탭으로 세부 활동 전환</span>
+        </div>
+        <div class="topic-scroll">
+          <div class="topic-list" data-topics role="tablist" aria-label="학습 주제 선택"></div>
+        </div>
+
+        <div class="tab-heading">
+          <div>
+            <span>탐구 탭</span>
+            <p>같은 개념의 정의·그래프·응용을 이어서 비교하세요.</p>
+          </div>
+          <span class="keyboard-hint">← → 키로 이동</span>
+        </div>
+        <div class="tab-scroll">
+          <div class="tab-list" data-tabs role="tablist" aria-label="통합 학습 탭"></div>
+        </div>
+
+        <div class="workspace">
+          <header class="workspace-head">
+            <div>
+              <p class="workspace-step" data-tab-step>탭 1</p>
+              <h2 data-tab-title>학습 도구</h2>
+              <p data-tab-description></p>
+            </div>
+            <div class="workspace-actions">
+              <button type="button" data-module-help>현재 탭 설명서</button>
+              <button type="button" data-module-chrome-toggle aria-pressed="true">
+                <span data-module-chrome-label>도구 소개 보기</span>
+              </button>
+              <button type="button" data-refresh>다시 불러오기</button>
+              <button type="button" data-fullscreen>전체 화면</button>
+              <a data-open-module href="#" target="_blank" rel="noreferrer">새 창</a>
+            </div>
+          </header>
+          <div class="frame-wrap">
+            <div class="frame-loading" data-frame-loading>
+              <span></span>
+              <p>탐구 화면을 준비하고 있습니다.</p>
+            </div>
+            <iframe
+              data-frame
+              title="기하 학습 도구"
+              loading="eager"
+              referrerpolicy="no-referrer"
+            ></iframe>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>교과서 핵심 개념에 맞추어 중복 도구를 통합하고 수업 효과가 낮은 확장 활동은 제외했습니다.</p>
+      <button type="button" data-manual-open>이 주제의 수업 설명서 보기</button>
+    </footer>
+
+    <div class="manual" data-manual hidden>
+      <div class="manual-backdrop" data-manual-close></div>
+      <section
+        class="manual-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="manual-title"
+        tabindex="-1"
+      >
+        <header>
+          <div>
+            <p>TEACHER &amp; STUDENT GUIDE</p>
+            <h2 id="manual-title" data-manual-title>통합 웹툴 설명서</h2>
+          </div>
+          <button type="button" data-manual-close aria-label="설명서 닫기">×</button>
+        </header>
+        <div class="manual-body">
+          <div class="manual-summary">
+            <strong>포함된 탐구 탭</strong>
+            <div data-manual-tabs></div>
+          </div>
+          <div class="manual-sections" data-manual-sections></div>
+        </div>
+      </section>
+    </div>
+
+    <script src="./app.js?v=20260727-1"></script>
+  </body>
+</html>
