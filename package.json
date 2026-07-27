@@ -1,8 +1,0 @@
-{
-  "name": "math-class-webtools",
-  "private": true,
-  "scripts": {
-    "build": "node scripts/build-static-site.mjs",
-    "test": "node scripts/run-tests.mjs"
-  }
-}
