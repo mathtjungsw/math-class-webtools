@@ -9,7 +9,7 @@
     />
     <title>수학 수업 웹툴 모음 by 정T</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23111c35'/%3E%3Cpath d='M16 44V20l16 12 16-12v24' fill='none' stroke='%235dd2b2' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="./assets/site.css?v=20260716-1" />
+    <link rel="stylesheet" href="./assets/site.css?v=20260728-1" />
   </head>
   <body>
     <header class="topbar">
@@ -99,10 +99,29 @@
         <div class="filter-panel" aria-label="웹툴 태그 필터">
           <div class="filter-panel__intro">
             <div>
-              <strong>태그로 골라보기</strong>
-              <p>같은 줄에서는 하나만 맞아도, 다른 줄끼리는 모두 맞는 웹툴을 보여드려요.</p>
+              <strong>검색하고 태그로 골라보기</strong>
+              <p>검색어와 선택한 태그를 모두 만족하는 웹툴을 보여드려요.</p>
             </div>
-            <button class="filter-reset" type="button" data-filter-reset hidden>선택 초기화</button>
+            <button class="filter-reset" type="button" data-filter-reset hidden>검색·태그 초기화</button>
+          </div>
+
+          <div class="tool-search">
+            <label for="tool-search-input">웹툴 검색</label>
+            <div class="tool-search__field">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="6.5"></circle>
+                <path d="m16 16 4 4"></path>
+              </svg>
+              <input
+                id="tool-search-input"
+                type="search"
+                placeholder="웹툴 이름, 수학 개념, 활동을 검색하세요"
+                autocomplete="off"
+                spellcheck="false"
+                data-tool-search
+              />
+              <button type="button" data-search-clear aria-label="검색어 지우기" hidden>지우기</button>
+            </div>
           </div>
 
           <div class="filter-group" data-filter-group="subject">
@@ -1802,7 +1821,7 @@
           </div>
         </div>
 
-        <p class="empty-message" hidden>선택한 태그 조합에 맞는 웹툴이 없습니다. 태그를 하나씩 해제해 보세요.</p>
+        <p class="empty-message" hidden>검색어와 태그 조건에 맞는 웹툴이 없습니다. 검색어를 바꾸거나 필터를 초기화해 보세요.</p>
       </section>
     </main>
 
@@ -1842,6 +1861,6 @@
     </div>
 
     <script src="./assets/click-stats-config.js?v=20260714-1"></script>
-    <script src="./assets/app.js?v=20260724-2"></script>
+    <script src="./assets/app.js?v=20260728-1"></script>
   </body>
 </html>

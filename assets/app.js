@@ -737,7 +737,10 @@ function wireGuideModal() {
 
 const toolCards = [...document.querySelectorAll("[data-tool-tags]")];
 const filterButtons = [...document.querySelectorAll("[data-tag-filter]")];
+const searchInput = document.querySelector("[data-tool-search]");
+const searchClearButton = document.querySelector("[data-search-clear]");
 const selectedTags = new Set();
+let searchQuery = "";
 const originalToolOrder = new Map(toolCards.map((card, index) => [card.dataset.toolId, index]));
 
 function sanitizeClickCounts(rawCounts) {
@@ -903,6 +906,35 @@ function matchesSelectedTags(card) {
   return [...activeGroups.values()].every((groupTags) => groupTags.some((tag) => cardTags.includes(tag)));
 }
 
+function normalizeSearchText(value) {
+  return String(value || "")
+    .normalize("NFKC")
+    .toLocaleLowerCase("ko-KR")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getCardSearchText(card) {
+  if (card.dataset.searchText) return card.dataset.searchText;
+
+  const tagLabels = getCardTags(card).map((tag) => TAG_META[tag]?.label || tag);
+  const content = [
+    card.querySelector("h3")?.textContent,
+    card.querySelector(".tool-content > p")?.textContent,
+    card.querySelector(".tool-footer > span")?.textContent,
+    ...tagLabels
+  ];
+  card.dataset.searchText = normalizeSearchText(content.join(" "));
+  return card.dataset.searchText;
+}
+
+function matchesSearchQuery(card) {
+  const terms = normalizeSearchText(searchQuery).split(" ").filter(Boolean);
+  if (!terms.length) return true;
+  const searchText = getCardSearchText(card);
+  return terms.every((term) => searchText.includes(term));
+}
+
 function renderSelectedTags() {
   const container = document.querySelector("[data-selected-tags]");
   if (!container) return;
@@ -935,7 +967,7 @@ function updateTagFilters(updateHash = false) {
 
   let visibleCount = 0;
   toolCards.forEach((card) => {
-    const isVisible = matchesSelectedTags(card);
+    const isVisible = matchesSelectedTags(card) && matchesSearchQuery(card);
     card.classList.toggle("is-hidden", !isVisible);
     card.setAttribute("aria-hidden", String(!isVisible));
     if (isVisible) visibleCount += 1;
@@ -950,7 +982,9 @@ function updateTagFilters(updateHash = false) {
   const countElement = document.querySelector("[data-visible-count]");
   if (countElement) countElement.textContent = visibleCount;
   document.querySelector(".empty-message").hidden = visibleCount !== 0;
-  document.querySelector("[data-filter-reset]").hidden = selectedTags.size === 0;
+  const hasSearchQuery = Boolean(normalizeSearchText(searchQuery));
+  document.querySelector("[data-filter-reset]").hidden = selectedTags.size === 0 && !hasSearchQuery;
+  if (searchClearButton) searchClearButton.hidden = !hasSearchQuery;
   renderSelectedTags();
 
   const hasTopicTag = [...selectedTags].some((tag) => TAG_META[tag]?.group === "topic");
@@ -980,8 +1014,32 @@ document.querySelector("[data-selected-tags]")?.addEventListener("click", (event
 
 document.querySelector("[data-filter-reset]")?.addEventListener("click", () => {
   selectedTags.clear();
+  searchQuery = "";
+  if (searchInput) searchInput.value = "";
   document.querySelector(".filter-more")?.removeAttribute("open");
   updateTagFilters(true);
+  searchInput?.focus();
+});
+
+searchInput?.addEventListener("input", () => {
+  searchQuery = searchInput.value;
+  updateTagFilters();
+});
+
+searchInput?.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape" || !searchInput.value) return;
+  searchInput.value = "";
+  searchQuery = "";
+  updateTagFilters();
+});
+
+searchClearButton?.addEventListener("click", () => {
+  searchQuery = "";
+  if (searchInput) {
+    searchInput.value = "";
+    searchInput.focus();
+  }
+  updateTagFilters();
 });
 
 const initialHash = window.location.hash.slice(1);
