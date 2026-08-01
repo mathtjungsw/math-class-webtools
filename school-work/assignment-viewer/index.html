@@ -3,8 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="학생 과제 파일을 한 화면에서 순서대로 확인하고 채점 메모를 관리하는 교사용 로컬 뷰어" />
   <title>학생 과제 통합 뷰어 · 웹툴</title>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="./xlsx.full.min.js"></script>
   <style>
     :root {
       --bg: #f6f7fb;
@@ -619,8 +620,8 @@
   <script type="module">
     let pdfjsLib = null;
     try {
-      pdfjsLib = await import("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs");
-      pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
+      pdfjsLib = await import("./vendor/pdf.min.mjs");
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "./vendor/pdf.worker.min.mjs";
     } catch (err) {
       console.warn("PDF.js를 불러오지 못해 브라우저 기본 PDF 뷰어로 대체합니다.", err);
     }

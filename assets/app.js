@@ -7,6 +7,8 @@ const TAG_META = {
   "middle-school-3": { label: "중학교 수학3", group: "subject" },
   "common-math1": { label: "공통수학1", group: "subject" },
   "common-math2": { label: "공통수학2", group: "subject" },
+  algebra: { label: "대수", group: "subject" },
+  calculus: { label: "미적분", group: "subject" },
   geometry: { label: "기하", group: "subject" },
   "probability-statistics": { label: "확률과 통계", group: "subject" },
   "ai-math": { label: "인공지능 수학", group: "subject" },
@@ -28,6 +30,9 @@ const TAG_META = {
   "history-culture": { label: "수학사·문화", group: "topic" },
   "assessment-grades": { label: "평가·성적", group: "topic" },
   "file-data-management": { label: "파일·자료 관리", group: "topic" },
+  matrix: { label: "행렬", group: "topic" },
+  counting: { label: "경우의 수", group: "topic" },
+  inference: { label: "통계적 추론", group: "topic" },
   "class-use": { label: "수업용", group: "purpose" },
   "school-work": { label: "학교 업무용", group: "purpose" }
 };
@@ -36,6 +41,28 @@ const CLICK_STATS_CONFIG = window.CLICK_STATS_CONFIG || {};
 const CLICK_STATS_ENDPOINT = String(CLICK_STATS_CONFIG.endpoint || "").trim();
 const CLICK_STATS_TIMEOUT_MS = Number(CLICK_STATS_CONFIG.requestTimeoutMs) || 5000;
 const CLICK_STATS_DUPLICATE_WINDOW_MS = Number(CLICK_STATS_CONFIG.duplicateWindowMs) || 3000;
+const FAVORITES_KEY = "math-class-tool-favorites-v1";
+const RECENT_KEY = "math-class-tool-recent-v1";
+const LOCAL_USAGE_KEY = "math-class-tool-usage-v1";
+const STATS_CONSENT_KEY = "math-class-anonymous-stats-v1";
+
+const RUNTIME_META = {
+  browser: "브라우저 단독",
+  offline: "오프라인 가능",
+  internet: "인터넷 필요",
+  "local-server": "로컬 서버 필요",
+  windows: "Windows 전용",
+  camera: "카메라 사용"
+};
+
+const SPECIAL_RUNTIME = {
+  "betting-game": ["browser", "internet"],
+  "monopoly-pricing-game": ["browser", "internet"],
+  "motion-shot": ["browser", "offline", "camera"],
+  "image-supervised-learning": ["browser", "internet", "camera"],
+  "assignment-viewer": ["browser", "offline", "local-server"],
+  "video-compressor": ["windows", "offline"]
+};
 
 const TOOL_GUIDES = {
   "기하Ⅰ · 이차곡선": {
@@ -600,6 +627,61 @@ const TOOL_GUIDES = {
     teacherTips: "같은 실험 번호를 사용하면 모든 모둠이 동일한 결과를 재현할 수 있고, 서로 다른 번호를 사용하면 모둠별 표본 변동을 비교할 수 있습니다. 동전 확률 슬라이더를 바꿔도 실험값이 새 이론확률로 수렴하는지 확인해 보세요.",
     questions: "10회 결과가 이론확률과 크게 달라도 이상하지 않은 이유는 무엇인가요? 시행 횟수의 차이는 커지는데 상대도수의 차이는 작아질 수 있을까요? 1,000회를 하면 반드시 이론확률과 정확히 같아지나요? 실험 번호가 달라져도 공통으로 나타나는 경향은 무엇인가요?",
     cautions: "대수의 법칙은 유한한 시행에서 정확히 같아짐을 보장하는 법칙이 아닙니다. 개별 실험 결과를 예측하는 규칙이나 도박에서 다음 결과를 맞히는 방법으로 오해하지 않도록 상대도수의 장기적 경향이라는 점을 강조하세요."
+  },
+  "단어 벡터 놀이터": {
+    purpose: "단어를 수로 표현하는 방법을 좌표·동시출현 행렬·거리·내적·코사인 유사도로 연결하고, 벡터 연산과 군집의 의미를 탐구합니다.",
+    preparation: "처음에는 제공 말뭉치와 2차원 단어 점으로 시작하세요. 학생이 코사인 유사도와 유클리드 거리의 차이를 말로 예상하게 합니다.",
+    studentSteps: "단어 점 이동 → 거리와 코사인 비교 → 말뭉치에서 동시출현 행렬 생성 → A−B+C 연산 → 군집 결과 설명 → 활동 JSON 저장",
+    questions: "두 벡터의 길이가 달라도 방향이 같으면 코사인 유사도는 어떻게 되나요? 말뭉치를 바꾸면 단어의 위치와 가까운 단어가 달라지는 이유는 무엇인가요?",
+    cautions: "작은 말뭉치의 벡터는 실제 언어 전체의 의미를 대표하지 않습니다. 군집과 유사도를 단어의 절대적 뜻으로 단정하지 마세요."
+  },
+  "이상 징후 탐지 연구소": {
+    purpose: "거리·z점수·IQR·이동평균 탐지 기준을 비교하고 임계값 변화가 혼동행렬, 정밀도·재현율, 오류 비용에 미치는 영향을 탐구합니다.",
+    preparation: "정상과 이상을 먼저 눈으로 분류한 뒤 알고리즘 결과와 비교하도록 합니다. 거짓 양성과 거짓 음성의 실제 비용 사례를 정합니다.",
+    studentSteps: "자료 관찰 → 이상점 예상 → 탐지 방법과 임계값 선택 → 혼동행렬 확인 → 오류 비용 변경 → 방법 비교 → 활동 JSON 저장",
+    questions: "임계값을 낮추면 재현율과 거짓 양성은 어떻게 변하나요? 모든 상황에서 가장 좋은 하나의 임계값이 존재하지 않는 이유는 무엇인가요?",
+    cautions: "합성 자료의 성능을 실제 사람이나 안전 관련 판단에 그대로 적용하지 마세요. 이상점은 반드시 오류나 부정행위를 뜻하지 않습니다."
+  },
+  "메시지 업무 정리함": {
+    usage: "쿨메신저 공지 원문을 붙여넣고 분석한 뒤 할 일·일정·참고 분류, 마감, 담당 부서, 제출처를 확인하고 필요한 항목을 수정합니다. 완료 여부와 필터를 사용하고 일정 파일 또는 백업 JSON으로 저장합니다.",
+    tips: "여러 공지는 한 번에 넣기보다 주제별로 나누어 확인하면 마감일 오인식을 줄일 수 있습니다. 새 분석 결과는 기존 목록에 합쳐지므로 중복 항목을 확인하세요.",
+    cautions: "이름·전화번호·계정·학생 정보가 포함된 공지는 붙여넣기 전에 가리고, 자동 추출한 마감과 제출처는 반드시 원문과 대조하세요. 자료는 현재 브라우저에 저장됩니다."
+  },
+  "공통수학1 통합 실험실": {
+    purpose: "공통수학1의 다항식, 방정식과 부등식, 경우의 수, 행렬을 조작 가능한 식과 모형으로 연결합니다.",
+    studentSteps: "계수 입력 → 전개 넓이 모형 확인 → 부등식 수직선 확인 → nPr·nCr 비교 → 행렬의 합·곱·행렬식 설명 → 설정 저장",
+    questions: "부등식에서 음수로 나눌 때 부등호가 바뀌는 이유는 무엇인가요? 행렬의 곱셈은 왜 원소별 곱셈이 아닌가요?",
+    cautions: "화면의 권장 활동 시간과 모형은 개념 도입용입니다. 계산 과정과 정의를 학생의 말로 다시 설명하게 하세요."
+  },
+  "대수 함수·수열 실험실": {
+    purpose: "지수함수와 로그함수의 역관계, 등차·등비수열의 일반항과 합을 그래프와 항 목록으로 탐구합니다.",
+    studentSteps: "밑과 x 조절 → 지수·로그 값 왕복 확인 → 그래프의 y=x 대칭 확인 → 수열 종류·첫째항·공차 또는 공비 변경 → 일반항 설명",
+    questions: "밑이 1보다 작을 때 지수함수의 증감은 어떻게 달라지나요? 등차와 등비수열을 이웃한 항의 관계로 어떻게 구분하나요?",
+    cautions: "로그의 밑은 양수이며 1이 아니어야 하고 진수는 양수여야 합니다. 화면 값은 표시 자릿수만 반올림합니다."
+  },
+  "미분·적분 연결 실험실": {
+    purpose: "할선의 기울기가 접선의 기울기로 가까워지는 과정과 리만 합이 정적분 넓이로 가까워지는 과정을 한 그래프에서 연결합니다.",
+    studentSteps: "이차함수 계수와 접점 설정 → Δx 축소 → 평균변화율과 미분계수 비교 → 직사각형 수 증가 → 리만 합 변화 관찰 → 발견 기록",
+    questions: "Δx가 0은 아니지만 0에 가까워질 때 무엇이 안정되나요? 함수값이 음수인 구간의 리만 합은 기하적 넓이와 어떻게 다른가요?",
+    cautions: "리만 합은 부호 있는 넓이입니다. 화면의 근삿값을 정확한 정적분값과 구분하고 극한 과정을 단순히 ‘0을 대입’하는 것으로 설명하지 마세요."
+  },
+  "통계적 추론 실험실": {
+    purpose: "표본 크기와 표본비율에 따른 95% 신뢰구간, 일표본 비율 z검정의 p값, 숨은 변수로 생긴 상관을 탐구합니다.",
+    studentSteps: "n과 p̂ 조절 → 신뢰구간 폭 비교 → p₀ 변경 → p값과 결론 비교 → 숨은 변수 영향 조절 → 산점도와 상관계수 설명",
+    questions: "신뢰구간이 좁아지는 조건은 무엇인가요? p값이 크다는 것이 귀무가설이 참일 확률을 뜻하지 않는 이유는 무엇인가요?",
+    cautions: "정규근사 조건을 확인해야 하며 p값만으로 중요성이나 인과를 결정할 수 없습니다. 합성 산점도는 숨은 변수의 가능성을 보이는 모형입니다."
+  },
+  "방정식 저울·연립방정식": {
+    purpose: "등식의 양변에 같은 연산을 적용하는 원리를 저울로, 연립일차방정식의 해를 두 직선의 교점으로 연결합니다.",
+    studentSteps: "계수 입력 → 저울의 양변 읽기 → 상수항 제거 → 계수로 나누기 → 해 확인 → 두 직선 계수 입력 → 교점과 해의 개수 비교",
+    questions: "양변에 서로 다른 수를 더하면 왜 균형이 깨지나요? 두 직선이 평행하거나 일치할 때 연립방정식의 해는 몇 개인가요?",
+    cautions: "저울 그림은 등식의 성질을 위한 비유입니다. 음수 질량을 실제 물체처럼 해석하지 말고 연산 카드나 부채 모형으로 설명하세요."
+  },
+  "경우의 수 선택 나무": {
+    purpose: "중복 없이 순서 있게 선택하는 모든 경로를 나무로 펼쳐 순열, 조합, r!의 관계를 발견합니다.",
+    studentSteps: "n과 r 조절 → 가지 수 예상 → 끝 경로 수 확인 → 같은 원소 묶음 찾기 → 순서를 지운 묶음 수 확인 → nPr=nCr×r! 설명",
+    questions: "한 원소를 고른 뒤 다음 단계의 선택지가 하나 줄어드는 이유는 무엇인가요? 같은 조합 하나는 몇 개의 순열로 나타나나요?",
+    cautions: "큰 n과 r에서는 앞의 120개 가지만 그리지만 계산값은 전체 경우를 사용합니다. 시각화 일부를 전체 목록으로 오해하지 마세요."
   }
 };
 
@@ -737,11 +819,99 @@ function wireGuideModal() {
 
 const toolCards = [...document.querySelectorAll("[data-tool-tags]")];
 const filterButtons = [...document.querySelectorAll("[data-tag-filter]")];
+const runtimeButtons = [...document.querySelectorAll("[data-runtime-filter]")];
 const searchInput = document.querySelector("[data-tool-search]");
 const searchClearButton = document.querySelector("[data-search-clear]");
+const sortSelect = document.querySelector("[data-tool-sort]");
+const statsToggle = document.querySelector("[data-stats-toggle]");
 const selectedTags = new Set();
+const selectedRuntimes = new Set();
 let searchQuery = "";
+let popularityCounts = {};
+let currentSort = "curriculum";
 const originalToolOrder = new Map(toolCards.map((card, index) => [card.dataset.toolId, index]));
+
+function readStoredJson(key, fallback) {
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(key));
+    return parsed ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function runtimeForCard(card) {
+  return SPECIAL_RUNTIME[card.dataset.toolId] || ["browser", "offline"];
+}
+
+function statsAllowed() {
+  try {
+    return navigator.doNotTrack !== "1" && window.localStorage.getItem(STATS_CONSENT_KEY) === "yes";
+  } catch {
+    return false;
+  }
+}
+
+function updateCatalogStats() {
+  const uniqueTags = new Set(toolCards.flatMap((card) => getCardTags(card)));
+  const totalTools = document.querySelector("[data-total-tools]");
+  const totalTags = document.querySelector("[data-total-tags]");
+  if (totalTools) totalTools.textContent = String(toolCards.length);
+  if (totalTags) totalTags.textContent = String(uniqueTags.size);
+}
+
+function renderRuntimeBadges() {
+  toolCards.forEach((card) => {
+    card.dataset.runtime = runtimeForCard(card).join(" ");
+    const tagArea = card.querySelector(".tool-tags");
+    if (!tagArea || card.querySelector(".runtime-badges")) return;
+    const badges = document.createElement("div");
+    badges.className = "runtime-badges";
+    runtimeForCard(card).forEach((runtime) => {
+      const badge = document.createElement("span");
+      badge.textContent = RUNTIME_META[runtime];
+      badge.dataset.runtimeBadge = runtime;
+      badges.append(badge);
+    });
+    tagArea.insertAdjacentElement("afterend", badges);
+  });
+}
+
+function renderFavoriteButtons() {
+  const favorites = new Set(readStoredJson(FAVORITES_KEY, []));
+  toolCards.forEach((card) => {
+    const title = card.querySelector("h3");
+    if (!title || card.querySelector(".favorite-button")) return;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "favorite-button";
+    button.dataset.favoriteTool = card.dataset.toolId;
+    button.setAttribute("aria-label", `${title.textContent.trim()} 즐겨찾기`);
+    button.setAttribute("aria-pressed", String(favorites.has(card.dataset.toolId)));
+    button.textContent = favorites.has(card.dataset.toolId) ? "★" : "☆";
+    title.insertAdjacentElement("afterend", button);
+  });
+}
+
+function toggleFavorite(toolId, button) {
+  const favorites = new Set(readStoredJson(FAVORITES_KEY, []));
+  if (favorites.has(toolId)) favorites.delete(toolId);
+  else favorites.add(toolId);
+  window.localStorage.setItem(FAVORITES_KEY, JSON.stringify([...favorites]));
+  const selected = favorites.has(toolId);
+  button.setAttribute("aria-pressed", String(selected));
+  button.textContent = selected ? "★" : "☆";
+}
+
+function recordLocalUse(toolId) {
+  const now = Date.now();
+  const recent = readStoredJson(RECENT_KEY, []).filter((item) => item?.id !== toolId);
+  recent.unshift({ id: toolId, usedAt: now });
+  window.localStorage.setItem(RECENT_KEY, JSON.stringify(recent.slice(0, 30)));
+  const usage = readStoredJson(LOCAL_USAGE_KEY, {});
+  usage[toolId] = (Number(usage[toolId]) || 0) + 1;
+  window.localStorage.setItem(LOCAL_USAGE_KEY, JSON.stringify(usage));
+}
 
 function sanitizeClickCounts(rawCounts) {
   if (!rawCounts || typeof rawCounts !== "object") return {};
@@ -753,74 +923,63 @@ function sanitizeClickCounts(rawCounts) {
   }));
 }
 
-function sortCardsByPopularity(rawCounts) {
-  const counts = sanitizeClickCounts(rawCounts);
+function sortCards(mode = currentSort) {
+  currentSort = mode;
+  const remoteCounts = sanitizeClickCounts(popularityCounts);
+  const localCounts = readStoredJson(LOCAL_USAGE_KEY, {});
+  const recentItems = readStoredJson(RECENT_KEY, []);
+  const recentTimes = Object.fromEntries(recentItems.map((item) => [item.id, Number(item.usedAt) || 0]));
   document.querySelectorAll(".tool-grid").forEach((grid) => {
     const cards = [...grid.querySelectorAll(":scope > [data-tool-id]")];
     cards.sort((left, right) => {
-      const clickDifference = (counts[right.dataset.toolId] || 0) - (counts[left.dataset.toolId] || 0);
-      return clickDifference || originalToolOrder.get(left.dataset.toolId) - originalToolOrder.get(right.dataset.toolId);
+      const leftId = left.dataset.toolId;
+      const rightId = right.dataset.toolId;
+      const original = originalToolOrder.get(leftId) - originalToolOrder.get(rightId);
+      if (mode === "popular") {
+        const leftCount = (remoteCounts[leftId] || 0) + (Number(localCounts[leftId]) || 0);
+        const rightCount = (remoteCounts[rightId] || 0) + (Number(localCounts[rightId]) || 0);
+        return rightCount - leftCount || original;
+      }
+      if (mode === "recent") return (recentTimes[rightId] || 0) - (recentTimes[leftId] || 0) || original;
+      if (mode === "title") return left.querySelector("h3").textContent.localeCompare(right.querySelector("h3").textContent, "ko");
+      return original;
     });
     cards.forEach((card) => {
-      card.dataset.clickCount = String(counts[card.dataset.toolId] || 0);
+      card.dataset.clickCount = String((remoteCounts[card.dataset.toolId] || 0) + (Number(localCounts[card.dataset.toolId]) || 0));
       grid.append(card);
     });
   });
 }
 
-function requestClickCounts() {
-  if (!CLICK_STATS_ENDPOINT) return Promise.resolve(null);
-
-  return new Promise((resolve, reject) => {
-    const callbackName = `__mathToolCounts_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-    const script = document.createElement("script");
-    let settled = false;
-    const timeoutId = window.setTimeout(() => finish(new Error("click_stats_timeout")), CLICK_STATS_TIMEOUT_MS);
-
-    function cleanup() {
-      window.clearTimeout(timeoutId);
-      script.remove();
-      delete window[callbackName];
-    }
-
-    function finish(error, payload) {
-      if (settled) return;
-      settled = true;
-      cleanup();
-      if (error) reject(error);
-      else resolve(payload);
-    }
-
-    window[callbackName] = (payload) => {
-      if (!payload?.ok || typeof payload.counts !== "object") {
-        finish(new Error("click_stats_invalid_response"));
-        return;
-      }
-      finish(null, payload.counts);
-    };
-
-    script.async = true;
-    script.onerror = () => finish(new Error("click_stats_load_failed"));
-    let endpoint;
-    try {
-      endpoint = new URL(CLICK_STATS_ENDPOINT);
-    } catch {
-      finish(new Error("click_stats_invalid_endpoint"));
-      return;
-    }
-    endpoint.searchParams.set("action", "counts");
-    endpoint.searchParams.set("callback", callbackName);
-    endpoint.searchParams.set("_", String(Date.now()));
-    script.src = endpoint.toString();
-    document.head.append(script);
-  });
+async function requestClickCounts() {
+  if (!CLICK_STATS_ENDPOINT) return null;
+  const endpoint = new URL(CLICK_STATS_ENDPOINT);
+  endpoint.searchParams.set("action", "counts");
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), CLICK_STATS_TIMEOUT_MS);
+  try {
+    const response = await fetch(endpoint, {
+      credentials: "omit",
+      referrerPolicy: "no-referrer",
+      signal: controller.signal
+    });
+    if (!response.ok) throw new Error("click_stats_load_failed");
+    const payload = await response.json();
+    if (!payload?.ok || typeof payload.counts !== "object") throw new Error("click_stats_invalid_response");
+    return payload.counts;
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
 }
 
-async function loadAndSortByPopularity() {
-  if (!CLICK_STATS_ENDPOINT) return;
+async function loadPopularityCounts() {
+  if (!CLICK_STATS_ENDPOINT || !statsAllowed()) return;
   try {
     const counts = await requestClickCounts();
-    if (counts) sortCardsByPopularity(counts);
+    if (counts) {
+      popularityCounts = counts;
+      if (currentSort === "popular") sortCards("popular");
+    }
   } catch {
     document.documentElement.dataset.popularityStatus = "fallback";
   }
@@ -840,7 +999,7 @@ function wasRecentlyCounted(toolId) {
 }
 
 function recordToolClick(toolId) {
-  if (!CLICK_STATS_ENDPOINT || !originalToolOrder.has(toolId) || wasRecentlyCounted(toolId)) return;
+  if (!CLICK_STATS_ENDPOINT || !statsAllowed() || !originalToolOrder.has(toolId) || wasRecentlyCounted(toolId)) return;
 
   const body = new URLSearchParams({ tool_id: toolId });
   if (navigator.sendBeacon?.(CLICK_STATS_ENDPOINT, body)) return;
@@ -857,7 +1016,10 @@ function wirePopularityTracking() {
     const primaryLink = card.querySelector(".tool-footer a:not(.guide-link)");
     if (!primaryLink || !card.dataset.toolId) return;
     primaryLink.dataset.clickTrack = card.dataset.toolId;
-    primaryLink.addEventListener("click", () => recordToolClick(card.dataset.toolId));
+    primaryLink.addEventListener("click", () => {
+      recordLocalUse(card.dataset.toolId);
+      recordToolClick(card.dataset.toolId);
+    });
   });
 }
 
@@ -935,11 +1097,17 @@ function matchesSearchQuery(card) {
   return terms.every((term) => searchText.includes(term));
 }
 
+function matchesSelectedRuntimes(card) {
+  if (!selectedRuntimes.size) return true;
+  const runtimes = runtimeForCard(card);
+  return [...selectedRuntimes].every((runtime) => runtimes.includes(runtime));
+}
+
 function renderSelectedTags() {
   const container = document.querySelector("[data-selected-tags]");
   if (!container) return;
 
-  if (!selectedTags.size) {
+  if (!selectedTags.size && !selectedRuntimes.size) {
     const hint = document.createElement("span");
     hint.className = "selected-tags__hint";
     hint.textContent = "원하는 태그를 여러 개 선택할 수 있어요.";
@@ -947,7 +1115,7 @@ function renderSelectedTags() {
     return;
   }
 
-  container.replaceChildren(...[...selectedTags].map((tag) => {
+  const tagButtons = [...selectedTags].map((tag) => {
     const button = document.createElement("button");
     button.className = "selected-tag";
     button.type = "button";
@@ -955,7 +1123,17 @@ function renderSelectedTags() {
     button.setAttribute("aria-label", `${TAG_META[tag].label} 태그 해제`);
     button.innerHTML = `${TAG_META[tag].label} <span aria-hidden="true">×</span>`;
     return button;
-  }));
+  });
+  const runtimeButtonsForDisplay = [...selectedRuntimes].map((runtime) => {
+    const button = document.createElement("button");
+    button.className = "selected-tag";
+    button.type = "button";
+    button.dataset.removeRuntime = runtime;
+    button.setAttribute("aria-label", `${RUNTIME_META[runtime]} 조건 해제`);
+    button.innerHTML = `${RUNTIME_META[runtime]} <span aria-hidden="true">×</span>`;
+    return button;
+  });
+  container.replaceChildren(...tagButtons, ...runtimeButtonsForDisplay);
 }
 
 function updateTagFilters(updateHash = false) {
@@ -964,10 +1142,15 @@ function updateTagFilters(updateHash = false) {
     button.classList.toggle("is-active", isSelected);
     button.setAttribute("aria-pressed", String(isSelected));
   });
+  runtimeButtons.forEach((button) => {
+    const isSelected = selectedRuntimes.has(button.dataset.runtimeFilter);
+    button.classList.toggle("is-active", isSelected);
+    button.setAttribute("aria-pressed", String(isSelected));
+  });
 
   let visibleCount = 0;
   toolCards.forEach((card) => {
-    const isVisible = matchesSelectedTags(card) && matchesSearchQuery(card);
+    const isVisible = matchesSelectedTags(card) && matchesSelectedRuntimes(card) && matchesSearchQuery(card);
     card.classList.toggle("is-hidden", !isVisible);
     card.setAttribute("aria-hidden", String(!isVisible));
     if (isVisible) visibleCount += 1;
@@ -983,7 +1166,7 @@ function updateTagFilters(updateHash = false) {
   if (countElement) countElement.textContent = visibleCount;
   document.querySelector(".empty-message").hidden = visibleCount !== 0;
   const hasSearchQuery = Boolean(normalizeSearchText(searchQuery));
-  document.querySelector("[data-filter-reset]").hidden = selectedTags.size === 0 && !hasSearchQuery;
+  document.querySelector("[data-filter-reset]").hidden = selectedTags.size === 0 && selectedRuntimes.size === 0 && !hasSearchQuery;
   if (searchClearButton) searchClearButton.hidden = !hasSearchQuery;
   renderSelectedTags();
 
@@ -1005,15 +1188,31 @@ filterButtons.forEach((button) => {
   });
 });
 
+runtimeButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const runtime = button.dataset.runtimeFilter;
+    if (selectedRuntimes.has(runtime)) selectedRuntimes.delete(runtime);
+    else selectedRuntimes.add(runtime);
+    updateTagFilters();
+  });
+});
+
 document.querySelector("[data-selected-tags]")?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-remove-tag]");
-  if (!button) return;
-  selectedTags.delete(button.dataset.removeTag);
-  updateTagFilters(true);
+  if (button) {
+    selectedTags.delete(button.dataset.removeTag);
+    updateTagFilters(true);
+    return;
+  }
+  const runtimeButton = event.target.closest("[data-remove-runtime]");
+  if (!runtimeButton) return;
+  selectedRuntimes.delete(runtimeButton.dataset.removeRuntime);
+  updateTagFilters();
 });
 
 document.querySelector("[data-filter-reset]")?.addEventListener("click", () => {
   selectedTags.clear();
+  selectedRuntimes.clear();
   searchQuery = "";
   if (searchInput) searchInput.value = "";
   document.querySelector(".filter-more")?.removeAttribute("open");
@@ -1042,13 +1241,34 @@ searchClearButton?.addEventListener("click", () => {
   updateTagFilters();
 });
 
+document.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-favorite-tool]");
+  if (!button) return;
+  toggleFavorite(button.dataset.favoriteTool, button);
+});
+
+sortSelect?.addEventListener("change", () => sortCards(sortSelect.value));
+
+if (statsToggle) {
+  statsToggle.checked = statsAllowed();
+  statsToggle.disabled = navigator.doNotTrack === "1";
+  statsToggle.addEventListener("change", () => {
+    window.localStorage.setItem(STATS_CONSENT_KEY, statsToggle.checked ? "yes" : "no");
+    if (statsToggle.checked) loadPopularityCounts();
+  });
+}
+
 const initialHash = window.location.hash.slice(1);
 const initialTagValue = initialHash.startsWith("tags=") ? initialHash.slice(5) : initialHash;
 initialTagValue.split(",").filter((tag) => TAG_META[tag]).forEach((tag) => selectedTags.add(tag));
 renderCardTags();
+renderRuntimeBadges();
+renderFavoriteButtons();
+updateCatalogStats();
 updateFilterCounts();
 updateTagFilters();
 wireGithubLinks();
 wireGuideModal();
 wirePopularityTracking();
-loadAndSortByPopularity();
+sortCards("curriculum");
+loadPopularityCounts();

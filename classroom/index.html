@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'" />
+  <meta name="description" content="수학 웹툴을 교육과정과 수업 조건으로 찾고, 즐겨찾기·수업 순서·타이머·공유 프리셋을 관리하는 교사용 수업 보관함" />
+  <title>수업 보관함 · 수학 수업 웹툴</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <a class="skip" href="#catalog">도구 목록으로 건너뛰기</a>
+  <header class="topbar">
+    <a href="../">← 웹툴 모음</a>
+    <div><strong>수업 보관함</strong><span>찾기 · 담기 · 진행 · 공유</span></div>
+    <a href="../classroom-response/">익명 응답 집계</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div><p>CLASSROOM PLANNER</p><h1>오늘 수업의 흐름을<br />한곳에서 설계하세요.</h1></div>
+      <p>교육과정·수업 시간·난이도·모둠 형태·실행 조건으로 도구를 찾고, 순서대로 담아 타이머와 함께 진행합니다. 모든 보관함 자료는 현재 브라우저에 저장됩니다.</p>
+    </section>
+
+    <section class="planner-grid">
+      <aside class="filters" aria-label="수업 조건">
+        <h2>수업 조건</h2>
+        <label>검색<input type="search" data-search placeholder="도구·개념 검색" /></label>
+        <label>학년·과정<select data-filter="grade"><option value="">전체</option><option value="중1">중학교 1학년</option><option value="중2">중학교 2학년</option><option value="중3">중학교 3학년</option><option value="고등 공통">고등 공통</option><option value="고등 선택">고등 선택</option><option value="공통">학년 공통</option></select></label>
+        <label>학기<select data-filter="term"><option value="">전체</option><option value="1학기">1학기</option><option value="2학기">2학기</option></select></label>
+        <label>과목<select data-filter="subject"><option value="">전체 과목</option></select></label>
+        <label>수업 시간<select data-filter="minutes"><option value="">전체</option><option value="10">10분 이내</option><option value="20">20분 이내</option><option value="40">40분 이내</option><option value="50">한 차시</option></select></label>
+        <label>난이도<select data-filter="difficulty"><option value="">전체</option><option value="기초">기초</option><option value="보통">보통</option><option value="심화">심화</option></select></label>
+        <label>활동 형태<select data-filter="group"><option value="">전체</option><option value="개인">개인</option><option value="짝·모둠">짝·모둠</option><option value="전체 학급">전체 학급</option></select></label>
+        <label>기기<select data-filter="device"><option value="">전체</option><option value="모든 기기">모든 기기</option><option value="PC 권장">PC 권장</option><option value="카메라">카메라</option><option value="Windows">Windows</option></select></label>
+        <label>실행 조건<select data-filter="runtime"><option value="">전체</option><option value="offline">오프라인 가능</option><option value="internet">인터넷 필요</option><option value="local-server">로컬 서버 필요</option><option value="windows">Windows 전용</option><option value="camera">카메라 사용</option></select></label>
+        <button type="button" class="secondary" data-reset-filters>조건 초기화</button>
+        <p class="small">시간·난이도·모둠 형태는 첫 수업 설계를 돕는 권장값이며, 저장할 때 활동별로 바꿀 수 있습니다.</p>
+      </aside>
+
+      <section id="catalog" class="catalog" aria-labelledby="catalog-title">
+        <div class="section-title"><div><span>웹툴 찾기</span><h2 id="catalog-title">교육과정 탐색</h2></div><strong data-result-count role="status" aria-live="polite">불러오는 중…</strong></div>
+        <div class="quick-tabs" role="group" aria-label="빠른 목록"><button class="active" data-view="all">전체</button><button data-view="favorites">★ 즐겨찾기</button><button data-view="recent">최근 사용</button></div>
+        <div class="catalog-list" data-catalog-list></div>
+        <p class="empty" data-catalog-empty hidden>조건에 맞는 도구가 없습니다.</p>
+      </section>
+
+      <aside class="tray" aria-labelledby="tray-title">
+        <div class="section-title"><div><span>LESSON TRAY</span><h2 id="tray-title">이번 수업</h2></div><b data-tray-count>0</b></div>
+        <ol data-tray-list></ol>
+        <p class="empty" data-tray-empty>도구 카드의 ‘수업에 담기’를 누르세요.</p>
+        <label>수업 이름<input data-playlist-name placeholder="예: 2학년 확률 탐구" /></label>
+        <div class="button-row"><button type="button" data-save-playlist>보관함에 저장</button><button type="button" class="secondary" data-clear-tray>비우기</button></div>
+      </aside>
+    </section>
+
+    <section class="saved" aria-labelledby="saved-title">
+      <div class="section-title"><div><span>MY CLASSES</span><h2 id="saved-title">저장한 수업</h2></div><div class="button-row"><label class="file-button">프리셋 가져오기<input type="file" accept="application/json,.json" data-preset-file /></label></div></div>
+      <div class="saved-list" data-saved-list></div>
+      <p class="empty" data-saved-empty>아직 저장한 수업이 없습니다.</p>
+    </section>
+  </main>
+
+  <section class="lesson" data-lesson hidden aria-label="수업 진행 화면">
+    <header><div><small data-lesson-progress></small><strong data-lesson-title></strong></div><div class="timer"><span data-timer>00:00</span><button data-timer-toggle>시작</button><button data-timer-reset>초기화</button></div><div class="button-row"><button data-lesson-prev>이전</button><button data-lesson-next>다음</button><button data-lesson-reload>새로고침</button><a data-lesson-new target="_blank" rel="noreferrer">새 창</a><button data-lesson-fullscreen>전체 화면</button><button class="danger" data-lesson-close>수업 끝내기</button></div></header>
+    <iframe data-lesson-frame title="수업 웹툴" allow="camera; microphone; fullscreen; clipboard-write"></iframe>
+  </section>
+
+  <dialog data-share-dialog>
+    <form method="dialog"><button class="dialog-close" aria-label="닫기">×</button></form>
+    <h2>수업 프리셋 공유</h2><p>아래 링크에는 도구 순서·시간·교사 메모만 들어갑니다. 학생 개인정보는 넣지 마세요.</p>
+    <textarea readonly data-share-url></textarea><div id="share-qr" aria-label="공유 링크 QR 코드"></div>
+    <div class="button-row"><button type="button" data-copy-share>링크 복사</button><button type="button" class="secondary" data-download-preset>JSON 내려받기</button></div>
+  </dialog>
+
+  <script src="./vendor/qrcode.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

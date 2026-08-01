@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'" />
+  <meta name="description" content="공통수학1, 대수, 미적분, 통계적 추론, 방정식 저울, 경우의 수를 조작하며 탐구하는 교육과정 통합 수학 실험실" />
+  <title>교육과정 수학 실험실</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <a class="skip" href="#lab-content">활동으로 건너뛰기</a>
+  <header><a href="../">← 웹툴 모음</a><div><strong>교육과정 수학 실험실</strong><span>COMMON 1 · ALGEBRA · CALCULUS · INFERENCE</span></div><button type="button" data-print>활동지 인쇄</button></header>
+  <nav class="lab-nav" aria-label="실험실 선택">
+    <a href="?lab=common1" data-lab-link="common1">공통수학1</a><a href="?lab=algebra" data-lab-link="algebra">대수</a><a href="?lab=calculus" data-lab-link="calculus">미적분</a><a href="?lab=inference" data-lab-link="inference">통계적 추론</a><a href="?lab=balance" data-lab-link="balance">방정식 저울</a><a href="?lab=counting" data-lab-link="counting">경우의 수 나무</a>
+  </nav>
+  <main id="lab-content">
+    <section class="intro"><p data-eyebrow>CURRICULUM LAB</p><h1 data-title></h1><p data-description></p><div class="lesson-meta"><span>브라우저 단독</span><span>오프라인 가능</span><span>프리셋 저장</span><span>인쇄·PDF</span></div></section>
+
+    <section class="lab-page" data-lab="common1">
+      <div class="concept-grid four">
+        <article class="card"><h2>다항식 곱셈</h2><p>(ax+b)(cx+d)의 전개를 넓이 모형과 계수로 확인합니다.</p><div class="input-row"><label>a<input type="number" value="2" data-poly="a" /></label><label>b<input type="number" value="3" data-poly="b" /></label><label>c<input type="number" value="1" data-poly="c" /></label><label>d<input type="number" value="-4" data-poly="d" /></label></div><div class="formula" data-poly-result></div><div class="area-model" data-area-model></div></article>
+        <article class="card"><h2>일차부등식</h2><p>ax+b &lt; c의 해를 수직선에서 확인합니다.</p><div class="input-row"><label>a<input type="number" value="-2" data-ineq="a" /></label><label>b<input type="number" value="3" data-ineq="b" /></label><label>c<input type="number" value="9" data-ineq="c" /></label></div><div class="formula" data-ineq-result></div><div class="number-line" data-number-line></div></article>
+        <article class="card"><h2>경우의 수</h2><p>순열 nPr과 조합 nCr에서 순서의 역할을 비교합니다.</p><div class="input-row"><label>n<input type="number" min="1" max="12" value="6" data-common-count="n" /></label><label>r<input type="number" min="0" max="12" value="2" data-common-count="r" /></label></div><div class="metric-row"><div><span>순서를 구분</span><strong data-permutation></strong></div><div><span>순서를 무시</span><strong data-combination></strong></div></div></article>
+        <article class="card"><h2>2×2 행렬</h2><p>두 행렬의 합·곱·행렬식을 한 번에 비교합니다.</p><div class="matrix-inputs" data-matrix-inputs></div><div class="formula small-formula" data-matrix-result></div></article>
+      </div>
+    </section>
+
+    <section class="lab-page" data-lab="algebra">
+      <div class="two-column"><article class="card"><h2>지수·로그 함수</h2><p>y=aˣ와 x=logₐy가 서로 역함수임을 표와 그래프로 확인합니다.</p><div class="input-row"><label>밑 a<input type="range" min="0.2" max="5" step="0.1" value="2" data-exp="a" /><output data-exp-a></output></label><label>x<input type="range" min="-4" max="4" step="0.1" value="2" data-exp="x" /><output data-exp-x></output></label></div><div class="metric-row"><div><span>aˣ</span><strong data-exp-y></strong></div><div><span>logₐ(aˣ)</span><strong data-log-back></strong></div></div><canvas data-exp-canvas width="640" height="360" aria-label="지수함수와 로그함수 그래프"></canvas></article><article class="card"><h2>수열 생성기</h2><p>등차·등비수열의 항, 합, 점화식을 비교합니다.</p><div class="input-row"><label>종류<select data-seq="type"><option value="arithmetic">등차</option><option value="geometric">등비</option></select></label><label>첫째항<input type="number" value="2" data-seq="first" /></label><label>공차·공비<input type="number" value="3" data-seq="step" /></label><label>항 수<input type="number" min="2" max="20" value="8" data-seq="count" /></label></div><div class="sequence" data-sequence></div><div class="formula" data-seq-summary></div></article></div>
+    </section>
+
+    <section class="lab-page" data-lab="calculus">
+      <article class="card"><h2>평균변화율 → 미분계수 → 넓이</h2><p>이차함수 f(x)=ax²+bx+c에서 Δx를 줄이며 할선이 접선이 되는 과정과 리만 합을 함께 봅니다.</p><div class="input-row"><label>a<input type="number" value="1" step=".2" data-calc="a" /></label><label>b<input type="number" value="-2" step=".2" data-calc="b" /></label><label>c<input type="number" value="0" step=".2" data-calc="c" /></label><label>접점 x<input type="range" min="-3" max="3" step=".1" value="1" data-calc="x" /><output data-calc-x></output></label><label>Δx<input type="range" min=".05" max="2" step=".05" value="1" data-calc="h" /><output data-calc-h></output></label><label>직사각형 수<input type="range" min="2" max="60" step="1" value="10" data-calc="n" /><output data-calc-n></output></label></div><div class="metric-row three"><div><span>평균변화율</span><strong data-average-rate></strong></div><div><span>미분계수 f′(x)</span><strong data-derivative></strong></div><div><span>0~x 리만 합</span><strong data-riemann></strong></div></div><canvas data-calc-canvas width="1000" height="480" aria-label="함수, 할선, 접선과 리만 합 그래프"></canvas><p class="prompt">관찰: Δx가 0에 가까워질 때 평균변화율은 어떤 값에 가까워지나요? 직사각형 수가 늘면 넓이 근사는 어떻게 변하나요?</p></article>
+    </section>
+
+    <section class="lab-page" data-lab="inference">
+      <div class="two-column"><article class="card"><h2>표본오차와 신뢰구간</h2><p>표본비율과 표본 크기를 바꾸어 95% 신뢰구간의 폭을 관찰합니다.</p><div class="input-row"><label>표본 크기 n<input type="range" min="20" max="1000" step="10" value="100" data-inf="n" /><output data-inf-n></output></label><label>표본비율 p̂<input type="range" min=".01" max=".99" step=".01" value=".55" data-inf="phat" /><output data-inf-phat></output></label><label>귀무가설 p₀<input type="range" min=".01" max=".99" step=".01" value=".5" data-inf="p0" /><output data-inf-p0></output></label></div><div class="interval" data-ci-visual><i></i><b></b></div><div class="metric-row"><div><span>95% 신뢰구간</span><strong data-ci></strong></div><div><span>양측 p값</span><strong data-pvalue></strong></div></div><p class="prompt" data-test-conclusion></p></article><article class="card"><h2>상관관계 ≠ 인과관계</h2><p>숨은 변수 z가 x와 y를 함께 움직일 때 생기는 상관을 실험합니다.</p><div class="input-row"><label>숨은 변수 영향<input type="range" min="0" max="1" step=".05" value=".8" data-confounder /><output data-confounder-value></output></label><button type="button" data-resample>새 표본</button></div><div class="metric-row"><div><span>상관계수 r</span><strong data-correlation></strong></div><div><span>인과 결론</span><strong>추가 근거 필요</strong></div></div><canvas data-scatter width="640" height="400" aria-label="숨은 변수로 생성된 산점도"></canvas></article></div>
+    </section>
+
+    <section class="lab-page" data-lab="balance">
+      <div class="two-column"><article class="card"><h2>일차방정식 저울</h2><p>ax+b=c에서 양변에 같은 연산을 적용하는 과정을 저울로 나타냅니다.</p><div class="input-row"><label>a<input type="number" min="1" max="8" value="3" data-balance="a" /></label><label>b<input type="number" min="-12" max="12" value="6" data-balance="b" /></label><label>c<input type="number" min="-20" max="30" value="18" data-balance="c" /></label></div><div class="balance" data-balance-visual><div class="pan left"></div><div class="beam"></div><div class="pan right"></div><div class="stand"></div></div><ol class="steps" data-balance-steps></ol></article><article class="card"><h2>연립일차방정식 교점</h2><p>a₁x+b₁y=c₁, a₂x+b₂y=c₂의 해를 두 직선의 교점으로 봅니다.</p><div class="system-inputs" data-system-inputs></div><div class="formula" data-system-result></div><canvas data-system-canvas width="640" height="480" aria-label="연립방정식 두 직선 그래프"></canvas></article></div>
+    </section>
+
+    <section class="lab-page" data-lab="counting">
+      <article class="card"><h2>선택 나무와 순열·조합</h2><p>n개 중 r개를 순서 있게 뽑는 가지를 펼치고, 순서를 지우면 몇 묶음이 합쳐지는지 확인합니다.</p><div class="input-row"><label>대상 수 n<input type="range" min="2" max="7" step="1" value="4" data-tree="n" /><output data-tree-n></output></label><label>선택 수 r<input type="range" min="1" max="4" step="1" value="2" data-tree="r" /><output data-tree-r></output></label></div><div class="metric-row three"><div><span>나뭇가지 끝</span><strong data-tree-perm></strong></div><div><span>순서 없는 묶음</span><strong data-tree-comb></strong></div><div><span>묶음당 순서</span><strong data-tree-factorial></strong></div></div><div class="tree-wrap"><svg data-tree-svg viewBox="0 0 1000 520" role="img" aria-label="경우의 수 나무"></svg></div><p class="prompt">같은 원소를 고른 가지를 색으로 묶어 보세요. 왜 nPr = nCr × r! 인가요?</p></article>
+    </section>
+
+    <section class="reflection"><h2>수업 정리</h2><label>관찰한 규칙<textarea data-reflection placeholder="조작하면서 발견한 규칙을 식과 문장으로 적어 보세요."></textarea></label><div class="button-row"><button data-save-preset>현재 설정 JSON</button><label class="file-button">설정 불러오기<input type="file" accept="application/json,.json" data-preset-file /></label><button class="secondary" data-reset>현재 실험 초기화</button></div></section>
+  </main>
+  <script src="./model.js"></script><script src="./app.js"></script>
+</body>
+</html>

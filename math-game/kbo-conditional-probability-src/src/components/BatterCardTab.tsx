@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { Batter, RunnerSituation, SortOption } from "../types";
-import { SITUATIONS, formatAvg, formatDifference, getChangeLabel, getDifference, getInterpretation, getSituationAvg, getSituationFormula, getSituationLabel } from "../utils/batterUtils";
+import { SITUATIONS, formatAvg, formatDifference, formatSampleSize, getChangeLabel, getDifference, getInterpretation, getSituationAvg, getSituationFormula, getSituationLabel, getSituationPA } from "../utils/batterUtils";
 import { PlayerAvatar, SituationSelect } from "./Controls";
 import { RunnerDiamond } from "./RunnerDiamond";
 
@@ -25,9 +25,16 @@ const sortLabels: Record<SortOption, string> = {
 export function BatterCardTab(props: Props) {
   const { batters, selectedTeam, situation, sortOption, searchKeyword } = props;
   const [detail, setDetail] = useState<Batter | null>(null);
+  const [minimumPA, setMinimumPA] = useState(0);
   const teams = [...new Set(batters.map((batter) => batter.team))].sort();
+  const hasSampleSizes = batters.some((batter) => getSituationPA(batter, situation) !== undefined);
   const filtered = useMemo(() => {
-    const list = batters.filter((batter) => (selectedTeam === "전체" || batter.team === selectedTeam) && batter.name.includes(searchKeyword.trim()));
+    const list = batters.filter((batter) => {
+      const pa = getSituationPA(batter, situation);
+      return (selectedTeam === "전체" || batter.team === selectedTeam)
+        && batter.name.includes(searchKeyword.trim())
+        && (minimumPA === 0 || (pa !== undefined && pa >= minimumPA));
+    });
     return list.sort((a, b) => {
       if (sortOption === "overall") return b.overallAvg - a.overallAvg;
       if (sortOption === "situation") return getSituationAvg(b, situation) - getSituationAvg(a, situation);
@@ -35,27 +42,31 @@ export function BatterCardTab(props: Props) {
       if (sortOption === "fall") return getDifference(a, situation) - getDifference(b, situation);
       return String(a[sortOption]).localeCompare(String(b[sortOption]), "ko");
     });
-  }, [batters, selectedTeam, searchKeyword, sortOption, situation]);
+  }, [batters, selectedTeam, searchKeyword, sortOption, situation, minimumPA]);
+
+  const rankingPool = batters.filter((batter) => minimumPA === 0 || (getSituationPA(batter, situation) ?? 0) >= minimumPA);
 
   const rankings = [
-    { label: "상황 타율 TOP 5", items: [...batters].sort((a, b) => getSituationAvg(b, situation) - getSituationAvg(a, situation)).slice(0, 5), value: (b: Batter) => getSituationAvg(b, situation) },
-    { label: "상승폭 TOP 5", items: [...batters].sort((a, b) => getDifference(b, situation) - getDifference(a, situation)).slice(0, 5), value: (b: Batter) => getDifference(b, situation) },
-    { label: "하락폭 TOP 5", items: [...batters].sort((a, b) => getDifference(a, situation) - getDifference(b, situation)).slice(0, 5), value: (b: Batter) => getDifference(b, situation) },
+    { label: "상황 기록값 상위 5", items: [...rankingPool].sort((a, b) => getSituationAvg(b, situation) - getSituationAvg(a, situation)).slice(0, 5), value: (b: Batter) => formatAvg(getSituationAvg(b, situation)) },
+    { label: "전체 기록 대비 상승값 5", items: [...rankingPool].sort((a, b) => getDifference(b, situation) - getDifference(a, situation)).slice(0, 5), value: (b: Batter) => formatDifference(getDifference(b, situation)) },
+    { label: "전체 기록 대비 하락값 5", items: [...rankingPool].sort((a, b) => getDifference(a, situation) - getDifference(b, situation)).slice(0, 5), value: (b: Batter) => formatDifference(getDifference(b, situation)) },
   ];
 
   return (
     <section className="tab-page">
       <div className="section-heading compact"><div><p className="overline dark">STEP 02 · PLAYER DECK</p><h2>조건을 바꾸며 타자 카드를 탐색하세요</h2></div><RunnerDiamond situation={situation} compact /></div>
       <div className="explainer"><span>개념 체크</span><p>타율 0.300은 비슷한 조건의 타석 100번 중 약 30번 안타를 친다는 뜻으로 볼 수 있습니다. <b>주자 상황</b>이 조건이고, <b>안타</b>가 사건입니다.</p></div>
+      <div className="notice"><strong>해석 주의:</strong> {hasSampleSizes ? "CSV에 포함된 상황별 타석 수와 기록값을 함께 확인하세요." : "기본 자료에는 상황별 타석 수가 없습니다. 아래 순위는 실력 순위가 아니라 기록값을 단순 정렬한 결과입니다."}</div>
       <div className="filter-bar card-panel">
         <label className="field"><span>구단</span><select value={selectedTeam} onChange={(event) => props.onTeamChange(event.target.value)}><option>전체</option>{teams.map((team) => <option key={team}>{team}</option>)}</select></label>
         <label className="field search-field"><span>선수 검색</span><input value={searchKeyword} onChange={(event) => props.onSearchChange(event.target.value)} placeholder="이름을 입력하세요" /></label>
         <SituationSelect value={situation} onChange={props.onSituationChange} />
         <label className="field"><span>정렬</span><select value={sortOption} onChange={(event) => props.onSortChange(event.target.value as SortOption)}>{Object.entries(sortLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>
+        {hasSampleSizes && <label className="field"><span>최소 표본</span><input type="number" min="0" step="5" value={minimumPA} onChange={(event) => setMinimumPA(Math.max(0, Number(event.target.value) || 0))} /></label>}
       </div>
 
       <div className="ranking-grid">
-        {rankings.map((ranking) => <details key={ranking.label}><summary>{ranking.label}</summary><ol>{ranking.items.map((batter) => <li key={batter.id}><span>{batter.name} <small>{batter.team}</small></span><b>{formatDifference(ranking.value(batter))}</b></li>)}</ol></details>)}
+        {rankings.map((ranking) => <details key={ranking.label}><summary>{ranking.label}</summary><ol>{ranking.items.map((batter) => <li key={batter.id}><span>{batter.name} <small>{batter.team} · {formatSampleSize(getSituationPA(batter, situation))}</small></span><b>{ranking.value(batter)}</b></li>)}</ol></details>)}
       </div>
 
       <div className="result-count"><strong>{filtered.length}명</strong>의 타자를 찾았습니다</div>
@@ -68,6 +79,7 @@ export function BatterCardTab(props: Props) {
               <div className="card-rank">#{index + 1}</div><div className="player-line"><PlayerAvatar batter={batter} /><div><span className="team-tag">{batter.team}</span><h3>{batter.name}</h3></div></div>
               <div className="probability-score"><div><span>전체 타율</span><small>P(안타)</small><strong>{formatAvg(batter.overallAvg)}</strong></div><i>→</i><div className="highlight"><span>{getSituationLabel(situation)} 타율</span><small>{getSituationFormula(situation)}</small><strong>{formatAvg(situationAvg)}</strong></div></div>
               <div className={`change-chip ${difference > 0.005 ? "up" : difference < -0.005 ? "down" : "same"}`}><b>{formatDifference(difference)}</b>{getChangeLabel(difference)}</div>
+              <small className="sample-size">{formatSampleSize(getSituationPA(batter, situation))}</small>
               <p className="interpretation">{getInterpretation(batter, situation)}</p><span className="detail-link">8가지 상황 자세히 보기 →</span>
             </button>
           );
@@ -81,7 +93,7 @@ export function BatterCardTab(props: Props) {
 
 function BatterDetail({ batter, onClose }: { batter: Batter; onClose: () => void }) {
   const values = SITUATIONS.map((situation) => ({ situation, avg: getSituationAvg(batter, situation), difference: getDifference(batter, situation) }));
-  const strongest = [...values].sort((a, b) => b.avg - a.avg)[0];
-  const weakest = [...values].sort((a, b) => a.avg - b.avg)[0];
-  return <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}><article className="detail-modal" role="dialog" aria-modal="true" aria-labelledby="detail-title"><button className="close-button" onClick={onClose} aria-label="닫기">×</button><div className="detail-header"><PlayerAvatar batter={batter} size="large" /><div><span className="team-tag">{batter.team}</span><h2 id="detail-title">{batter.name}</h2><p>전체 타율 <b>P(안타) = {formatAvg(batter.overallAvg)}</b></p></div></div><div className="heatmap"><h3>8가지 주자 상황별 타율</h3><div>{values.map((item) => { const intensity = Math.max(0, Math.min(1, (item.avg - 0.18) / 0.25)); return <div key={item.situation} style={{ background: `rgba(34, 133, 91, ${0.1 + intensity * 0.75})`, color: intensity > 0.48 ? "white" : "inherit" }}><span>{getSituationLabel(item.situation)}</span><strong>{formatAvg(item.avg)}</strong><small>{item.difference >= 0 ? "▲" : "▼"} {formatDifference(item.difference)}</small></div>; })}</div></div><div className="detail-summary"><div><span>가장 강한 상황</span><strong>{getSituationLabel(strongest.situation)} · {formatAvg(strongest.avg)}</strong></div><div><span>가장 약한 상황</span><strong>{getSituationLabel(weakest.situation)} · {formatAvg(weakest.avg)}</strong></div></div><p className="math-note">▲는 P(안타 | 주자 상황) ≥ P(안타), ▼는 P(안타 | 주자 상황) &lt; P(안타)를 뜻합니다.</p></article></div>;
+  const highest = [...values].sort((a, b) => b.avg - a.avg)[0];
+  const lowest = [...values].sort((a, b) => a.avg - b.avg)[0];
+  return <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}><article className="detail-modal" role="dialog" aria-modal="true" aria-labelledby="detail-title"><button className="close-button" onClick={onClose} aria-label="닫기">×</button><div className="detail-header"><PlayerAvatar batter={batter} size="large" /><div><span className="team-tag">{batter.team}</span><h2 id="detail-title">{batter.name}</h2><p>전체 타율 <b>P(안타) = {formatAvg(batter.overallAvg)}</b> · {formatSampleSize(batter.overallPA)}</p></div></div><div className="heatmap"><h3>8가지 주자 상황별 타율</h3><div>{values.map((item) => { const intensity = Math.max(0, Math.min(1, (item.avg - 0.18) / 0.25)); return <div key={item.situation} style={{ background: `rgba(34, 133, 91, ${0.1 + intensity * 0.75})`, color: intensity > 0.48 ? "white" : "inherit" }}><span>{getSituationLabel(item.situation)}</span><strong>{formatAvg(item.avg)}</strong><small>{item.difference >= 0 ? "▲" : "▼"} {formatDifference(item.difference)} · {formatSampleSize(getSituationPA(batter, item.situation))}</small></div>; })}</div></div><div className="detail-summary"><div><span>가장 높은 관찰값</span><strong>{getSituationLabel(highest.situation)} · {formatAvg(highest.avg)}</strong></div><div><span>가장 낮은 관찰값</span><strong>{getSituationLabel(lowest.situation)} · {formatAvg(lowest.avg)}</strong></div></div><p className="math-note">▲는 P(안타 | 주자 상황) ≥ P(안타), ▼는 P(안타 | 주자 상황) &lt; P(안타)를 뜻합니다. 표본 수가 없거나 작을 때 차이를 실력 차이로 단정하지 마세요.</p></article></div>;
 }

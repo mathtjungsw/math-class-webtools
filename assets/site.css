@@ -496,6 +496,90 @@ h2 {
   line-height: 1.55;
 }
 
+/* Shared catalog controls (2026-08) */
+.skip-link {
+  position: fixed;
+  z-index: 10000;
+  top: 0.75rem;
+  left: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  color: #fff;
+  background: #111c35;
+  transform: translateY(-160%);
+}
+
+.skip-link:focus { transform: translateY(0); }
+
+.classroom-link {
+  color: inherit;
+  font-size: 0.85rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.catalog-controls {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: rgba(17, 28, 53, 0.05);
+}
+
+.catalog-controls label { display: grid; gap: 0.35rem; font-size: 0.8rem; font-weight: 800; }
+.catalog-controls select { min-width: 14rem; padding: 0.7rem 2rem 0.7rem 0.75rem; border: 1px solid rgba(17, 28, 53, 0.18); border-radius: 0.7rem; background: #fff; color: #111c35; }
+.catalog-controls a { color: #111c35; font-weight: 800; }
+.catalog-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.45rem 1rem; }
+
+.runtime-badges { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.15rem 0 0.55rem; }
+.runtime-badges span { padding: 0.22rem 0.5rem; border: 1px solid rgba(17, 28, 53, 0.13); border-radius: 999px; color: #4d5871; background: #f7f9fc; font-size: 0.68rem; font-weight: 750; }
+.runtime-badges [data-runtime-badge="internet"], .runtime-badges [data-runtime-badge="windows"] { color: #8b3a2d; background: #fff5ef; }
+
+.favorite-button {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 0;
+  border-radius: 999px;
+  color: #916500;
+  background: #fff5c7;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.tool-content { position: relative; }
+.privacy-note { display: block; max-width: 55rem; margin-top: 0.55rem; font-size: 0.75rem; line-height: 1.55; }
+.privacy-note label { white-space: nowrap; }
+
+.curriculum-preview {
+  display: grid;
+  place-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 1.25rem;
+  color: #e9fff8;
+  background: radial-gradient(circle at 80% 15%, rgba(93, 210, 178, 0.35), transparent 30%), linear-gradient(145deg, #111c35, #25425b);
+  text-align: center;
+}
+.curriculum-preview b { font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.5rem, 3vw, 2.35rem); }
+.curriculum-preview span { margin-top: 0.45rem; color: #b9d9d1; font-size: 0.75rem; }
+.curriculum-preview i { justify-self: center; margin-top: 0.8rem; padding: 0.22rem 0.55rem; border-radius: 999px; color: #111c35; background: #5dd2b2; font-size: 0.62rem; font-style: normal; font-weight: 900; letter-spacing: 0.12em; }
+
+@media (max-width: 760px) {
+  .classroom-link { display: none; }
+  .catalog-controls { align-items: stretch; flex-direction: column; }
+  .catalog-controls select { width: 100%; min-width: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+
 .tool-search {
   padding: 0 0 18px;
 }

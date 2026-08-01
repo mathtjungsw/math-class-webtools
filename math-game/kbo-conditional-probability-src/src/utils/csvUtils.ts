@@ -1,13 +1,29 @@
 import type { Batter, PositionGroup } from "../types";
 
-const headers: Record<keyof Omit<Batter, "id">, string[]> = {
+type CsvKey = keyof Omit<Batter, "id">;
+
+const headers: Record<CsvKey, string[]> = {
   name: ["name", "선수명"], team: ["team", "구단"], imageUrl: ["imageUrl", "사진"],
   positionGroup: ["positionGroup", "position", "포지션"],
   overallAvg: ["overallAvg", "전체타율"], basesEmptyAvg: ["basesEmptyAvg", "주자없음"],
   runner1Avg: ["runner1Avg", "1루"], runner2Avg: ["runner2Avg", "2루"], runner3Avg: ["runner3Avg", "3루"],
   runner12Avg: ["runner12Avg", "1_2루"], runner13Avg: ["runner13Avg", "1_3루"],
   runner23Avg: ["runner23Avg", "2_3루"], basesLoadedAvg: ["basesLoadedAvg", "만루"],
+  overallPA: ["overallPA", "전체타석"], basesEmptyPA: ["basesEmptyPA", "주자없음타석"],
+  runner1PA: ["runner1PA", "1루타석"], runner2PA: ["runner2PA", "2루타석"], runner3PA: ["runner3PA", "3루타석"],
+  runner12PA: ["runner12PA", "1_2루타석"], runner13PA: ["runner13PA", "1_3루타석"],
+  runner23PA: ["runner23PA", "2_3루타석"], basesLoadedPA: ["basesLoadedPA", "만루타석"],
 };
+
+const optionalKeys: CsvKey[] = [
+  "imageUrl", "positionGroup", "overallPA", "basesEmptyPA", "runner1PA", "runner2PA", "runner3PA",
+  "runner12PA", "runner13PA", "runner23PA", "basesLoadedPA",
+];
+
+const sampleKeys: CsvKey[] = [
+  "overallPA", "basesEmptyPA", "runner1PA", "runner2PA", "runner3PA",
+  "runner12PA", "runner13PA", "runner23PA", "basesLoadedPA",
+];
 
 const POSITION_PATTERN: PositionGroup[] = ["C", "IF", "IF", "IF", "IF", "OF", "OF", "OF", "DH"];
 
@@ -41,16 +57,17 @@ export function parseCsvToBatters(csvText: string, idPrefix = "csv"): Batter[] {
   const csvHeaders = splitCsvLine(lines[0]);
   const indexByKey = Object.fromEntries(
     Object.entries(headers).map(([key, candidates]) => [key, csvHeaders.findIndex((header) => candidates.includes(header))]),
-  ) as Record<keyof Omit<Batter, "id">, number>;
-  const required = Object.keys(headers).filter((key) => !["imageUrl", "positionGroup"].includes(key)) as Array<keyof Omit<Batter, "id">>;
+  ) as Record<CsvKey, number>;
+  const required = (Object.keys(headers) as CsvKey[]).filter((key) => !optionalKeys.includes(key));
   const missing = required.filter((key) => indexByKey[key] < 0);
   if (missing.length) throw new Error(`필수 컬럼이 없습니다: ${missing.join(", ")}`);
 
   const teamCounts = new Map<string, number>();
   return lines.slice(1).map((line, rowIndex) => {
     const values = splitCsvLine(line);
-    const value = (key: keyof Omit<Batter, "id">) => indexByKey[key] >= 0 ? values[indexByKey[key]] ?? "" : "";
-    const number = (key: keyof Omit<Batter, "id">) => Number(value(key));
+    const value = (key: CsvKey) => indexByKey[key] >= 0 ? values[indexByKey[key]] ?? "" : "";
+    const number = (key: CsvKey) => Number(value(key));
+    const optionalNumber = (key: CsvKey) => value(key).trim() === "" ? undefined : Number(value(key));
     const team = value("team");
     const teamIndex = teamCounts.get(team) ?? 0;
     teamCounts.set(team, teamIndex + 1);
@@ -60,6 +77,9 @@ export function parseCsvToBatters(csvText: string, idPrefix = "csv"): Batter[] {
       overallAvg: number("overallAvg"), basesEmptyAvg: number("basesEmptyAvg"), runner1Avg: number("runner1Avg"),
       runner2Avg: number("runner2Avg"), runner3Avg: number("runner3Avg"), runner12Avg: number("runner12Avg"),
       runner13Avg: number("runner13Avg"), runner23Avg: number("runner23Avg"), basesLoadedAvg: number("basesLoadedAvg"),
+      overallPA: optionalNumber("overallPA"), basesEmptyPA: optionalNumber("basesEmptyPA"), runner1PA: optionalNumber("runner1PA"),
+      runner2PA: optionalNumber("runner2PA"), runner3PA: optionalNumber("runner3PA"), runner12PA: optionalNumber("runner12PA"),
+      runner13PA: optionalNumber("runner13PA"), runner23PA: optionalNumber("runner23PA"), basesLoadedPA: optionalNumber("basesLoadedPA"),
     };
   });
 }
@@ -74,6 +94,10 @@ export function validateBatters(batters: Batter[]): string[] {
       const value = batter[key] as number;
       if (!Number.isFinite(value)) errors.push(`${index + 2}행 ${String(key)}: 숫자가 아닙니다.`);
       else if (value < 0 || value > 1) errors.push(`${index + 2}행 ${String(key)}: 0 이상 1 이하여야 합니다.`);
+    });
+    sampleKeys.forEach((key) => {
+      const value = batter[key];
+      if (value !== undefined && (typeof value !== "number" || !Number.isInteger(value) || value < 1)) errors.push(`${index + 2}행 ${String(key)}: 1 이상의 정수여야 합니다.`);
     });
   });
   return errors;

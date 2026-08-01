@@ -1,0 +1,14 @@
+{
+  "name": "수학 수업 웹툴 모음",
+  "short_name": "수학 웹툴",
+  "description": "교실에서 바로 쓰는 로컬 우선 수학 수업 웹툴",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f5f9",
+  "theme_color": "#111c35",
+  "icons": [
+    { "src": "./assets/app-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
