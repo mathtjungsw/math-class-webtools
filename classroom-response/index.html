@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'" />
+  <meta name="description" content="서버와 로그인 없이 익명 수업 응답 패킷을 만들고 교사 기기에서 선택·수치·서술 응답을 집계하는 로컬 웹툴" />
+  <title>익명 학급 응답 수집기</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <header><a href="../">← 웹툴 모음</a><div><strong>익명 학급 응답 수집기</strong><span>서버 전송 없음 · 패킷으로 모아 집계</span></div><a href="../classroom/">수업 보관함</a></header>
+  <main>
+    <section class="hero"><p>PRIVATE RESPONSE LAB</p><h1>학생 답은 가볍게,<br />수업 데이터는 교사 기기에만.</h1><p>교사가 활동 코드를 만들고 학생은 익명 응답 패킷을 생성합니다. 패킷을 교사 기기에 모으면 자동 집계됩니다. 이 도구는 실시간 서버나 계정을 사용하지 않습니다.</p></section>
+    <nav class="tabs" aria-label="사용자 모드"><button class="active" data-tab="setup">1. 활동 만들기</button><button data-tab="student">2. 학생 응답</button><button data-tab="teacher">3. 교사 집계</button></nav>
+
+    <section class="panel active" data-panel="setup">
+      <div class="heading"><div><span>TEACHER SETUP</span><h2>활동 코드 만들기</h2></div><b>개인정보를 질문에 넣지 마세요</b></div>
+      <div class="form-grid"><label>활동 제목<input data-activity-title placeholder="예: 조건부확률 형성평가" /></label><label>응답 유형<select data-activity-type><option value="choice">선택형</option><option value="number">수치형</option><option value="text">짧은 서술형</option></select></label><label class="full">질문<textarea data-activity-question placeholder="학생에게 제시할 질문"></textarea></label><label class="full" data-options-field>선택지(한 줄에 하나)<textarea data-activity-options>① A
+② B
+③ C
+④ D</textarea></label></div>
+      <button data-create-activity>활동 코드 생성</button>
+      <div class="result" data-activity-result hidden><label>학생에게 전달할 활동 코드<textarea readonly data-activity-code></textarea></label><div class="button-row"><button data-copy-activity>코드 복사</button><button class="secondary" data-download-activity>활동 JSON</button><button class="secondary" data-use-activity>학생 화면에서 시험</button></div></div>
+    </section>
+
+    <section class="panel" data-panel="student" hidden>
+      <div class="heading"><div><span>STUDENT</span><h2>익명 응답 패킷 만들기</h2></div><b>패킷은 자동 전송되지 않아요</b></div>
+      <label>교사가 준 활동 코드<textarea data-student-code placeholder="MRA1.로 시작하는 코드"></textarea></label><button data-load-activity>활동 불러오기</button>
+      <article class="question" data-student-form hidden><span data-student-title></span><h3 data-student-question></h3><label>익명 별칭(선택)<input data-student-alias maxlength="20" placeholder="예: 파란삼각형" /></label><div data-answer-field></div><button data-make-packet>응답 패킷 생성</button></article>
+      <div class="result" data-packet-result hidden><label>교사에게 제출할 응답 패킷<textarea readonly data-response-packet></textarea></label><div class="button-row"><button data-copy-packet>패킷 복사</button><button class="secondary" data-download-packet>JSON 내려받기</button></div><p>복사한 패킷만 교사에게 제출하세요. 별칭을 비워 두면 임의 별칭이 붙습니다.</p></div>
+    </section>
+
+    <section class="panel" data-panel="teacher" hidden>
+      <div class="heading"><div><span>TEACHER AGGREGATE</span><h2>응답 모으기·집계</h2></div><b data-response-count>0개 응답</b></div>
+      <label>응답 패킷(한 줄에 하나)<textarea data-packet-list rows="8" placeholder="MRR1.로 시작하는 패킷을 줄마다 붙여 넣으세요"></textarea></label>
+      <div class="button-row"><button data-aggregate>집계하기</button><label class="file-button">JSON 가져오기<input type="file" accept="application/json,.json" multiple data-packet-files /></label><button class="secondary" data-clear-packets>비우기</button></div>
+      <p class="notice" data-aggregate-message role="status"></p>
+      <div class="aggregate" data-aggregate-result hidden><div class="summary" data-summary></div><div class="chart" data-chart></div><div class="text-responses" data-text-responses></div><div class="button-row"><button data-export-csv>CSV 내보내기</button><button class="secondary" data-export-json>JSON 내보내기</button><button class="secondary" data-print>인쇄·PDF</button></div></div>
+    </section>
+  </main>
+  <footer>응답은 이 브라우저 안에서만 해석됩니다. 실시간 공동 수집이 필요하면 학교가 승인한 별도 플랫폼을 사용하세요.</footer>
+  <script src="./model.js"></script><script src="./app.js"></script>
+</body>
+</html>

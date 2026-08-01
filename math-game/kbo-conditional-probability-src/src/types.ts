@@ -30,6 +30,16 @@ export type Batter = {
   runner13Avg: number;
   runner23Avg: number;
   basesLoadedAvg: number;
+  /** Optional denominators. Bundled averages do not include official plate-appearance counts. */
+  overallPA?: number;
+  basesEmptyPA?: number;
+  runner1PA?: number;
+  runner2PA?: number;
+  runner3PA?: number;
+  runner12PA?: number;
+  runner13PA?: number;
+  runner23PA?: number;
+  basesLoadedPA?: number;
 };
 
 export type LineupEntry = {

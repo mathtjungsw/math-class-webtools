@@ -34,7 +34,6 @@ export default function App() {
   const [comparisonAnswer, setComparisonAnswer] = useState("");
   const [dataSource, setDataSource] = useState<DataSource>("sample");
   const [batters, setBatters] = useState<Batter[]>(SAMPLE_BATTERS);
-  const [season, setSeason] = useState("2025");
   const [classMode, setClassMode] = useState(false);
   const [savedLineups, setSavedLineups] = useState<SavedLineups>(loadSavedLineups);
   const [reportData, setReportData] = useState<ReportData>({
@@ -57,7 +56,7 @@ export default function App() {
     <Header situation={selectedRunnerSituation} classMode={classMode} onClassModeChange={setClassMode} />
     <main className="workspace"><TabNavigation active={activeTab} onChange={setActiveTab} />
       <div className="content-shell">
-        {activeTab === "data" && <DataTab batters={batters} dataSource={dataSource} season={season} onSeasonChange={setSeason} onImport={(value) => safeUpdateData(value, "csv")} onReset={() => safeUpdateData(SAMPLE_BATTERS, "sample")} />}
+        {activeTab === "data" && <DataTab batters={batters} dataSource={dataSource} onImport={(value) => safeUpdateData(value, "csv")} onReset={() => safeUpdateData(SAMPLE_BATTERS, "sample")} />}
         {activeTab === "cards" && <BatterCardTab batters={batters} selectedTeam={selectedTeam} situation={selectedRunnerSituation} sortOption={sortOption} searchKeyword={searchKeyword} onTeamChange={setSelectedTeam} onSituationChange={setSelectedRunnerSituation} onSortChange={setSortOption} onSearchChange={setSearchKeyword} onSelectBatter={(batter) => setSelectedBatterId(batter.id)} />}
         {activeTab === "compare" && <CompareTab batters={batters} batterAId={selectedBatterA} batterBId={selectedBatterB} situation={selectedRunnerSituation} answer={comparisonAnswer} onBatterAChange={setSelectedBatterA} onBatterBChange={setSelectedBatterB} onSituationChange={setSelectedRunnerSituation} onAnswerChange={setComparisonAnswer} />}
         {activeTab === "experiment" && <ExperimentTab batters={batters} batterId={selectedBatter?.id ?? ""} situation={selectedRunnerSituation} results={experimentResults} onBatterChange={setSelectedBatterId} onSituationChange={setSelectedRunnerSituation} onResultsChange={setExperimentResults} />}

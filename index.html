@@ -8,10 +8,13 @@
       content="수학 수업에서 바로 활용할 수 있는 기하, 공통수학2, 확률·통계, 인공지능 수학, 수학 게임 웹툴 모음"
     />
     <title>수학 수업 웹툴 모음 by 정T</title>
+    <meta name="theme-color" content="#111c35" />
+    <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23111c35'/%3E%3Cpath d='M16 44V20l16 12 16-12v24' fill='none' stroke='%235dd2b2' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E" />
     <link rel="stylesheet" href="./assets/site.css?v=20260728-1" />
   </head>
   <body>
+    <a class="skip-link" href="#tools">웹툴 목록으로 건너뛰기</a>
     <header class="topbar">
       <a class="brand" href="./" aria-label="수학 수업 웹툴 모음 홈">
         <span class="brand-mark" aria-hidden="true">
@@ -29,6 +32,8 @@
       </a>
 
       <nav class="top-actions" aria-label="바로가기">
+        <a class="classroom-link" href="./classroom/">수업 보관함</a>
+        <a class="classroom-link" href="./classroom-response/">응답 집계</a>
         <a class="contact-link" href="mailto:mathtjungsw@gmail.com">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M3 6.5h18v11H3z" />
@@ -60,9 +65,9 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 12 10 0m-4-4 4 4-4 4" /></svg>
           </a>
           <dl class="hero-stats" aria-label="웹툴 현황">
-            <div><dt>73</dt><dd>개의 웹툴</dd></div>
-            <div><dt>28</dt><dd>개의 태그</dd></div>
-            <div><dt>100%</dt><dd>브라우저 실행</dd></div>
+            <div><dt data-total-tools>—</dt><dd>개의 웹툴</dd></div>
+            <div><dt data-total-tags>—</dt><dd>개의 태그</dd></div>
+            <div><dt>LOCAL</dt><dd>로컬 우선 설계</dd></div>
           </dl>
         </div>
 
@@ -93,7 +98,7 @@
             <p class="eyebrow"><span></span> TOOL COLLECTION</p>
             <h2 id="tools-title">오늘 수업에 필요한<br />도구를 골라보세요</h2>
           </div>
-          <p>설치 없이 링크를 열면 바로 시작할 수 있어요.</p>
+          <p>카드의 실행 조건 배지를 확인하고 수업 환경에 맞는 도구를 고르세요.</p>
         </div>
 
         <div class="filter-panel" aria-label="웹툴 태그 필터">
@@ -133,6 +138,8 @@
               <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="middle-school-3">중학교 수학3 <span></span></button>
               <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="common-math1">공통수학1 <span></span></button>
               <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="common-math2">공통수학2 <span></span></button>
+              <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="algebra">대수 <span></span></button>
+              <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="calculus">미적분 <span></span></button>
               <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="geometry">기하 <span></span></button>
               <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="probability-statistics">확률과 통계 <span></span></button>
               <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="ai-math">인공지능 수학 <span></span></button>
@@ -168,6 +175,9 @@
                 <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="history-culture">수학사·문화 <span></span></button>
                 <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="assessment-grades">평가·성적 <span></span></button>
                 <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="file-data-management">파일·자료 관리 <span></span></button>
+                <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="matrix">행렬 <span></span></button>
+                <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="counting">경우의 수 <span></span></button>
+                <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="inference">통계적 추론 <span></span></button>
               </div>
             </div>
           </details>
@@ -180,15 +190,39 @@
             </div>
           </div>
 
+          <div class="filter-group" data-runtime-group>
+            <span class="filter-group__label">실행 조건</span>
+            <div class="filter-bar">
+              <button class="filter-button" type="button" aria-pressed="false" data-runtime-filter="browser">브라우저 단독</button>
+              <button class="filter-button" type="button" aria-pressed="false" data-runtime-filter="offline">오프라인 가능</button>
+              <button class="filter-button" type="button" aria-pressed="false" data-runtime-filter="internet">인터넷 필요</button>
+              <button class="filter-button" type="button" aria-pressed="false" data-runtime-filter="local-server">로컬 서버 필요</button>
+              <button class="filter-button" type="button" aria-pressed="false" data-runtime-filter="windows">Windows 전용</button>
+              <button class="filter-button" type="button" aria-pressed="false" data-runtime-filter="camera">카메라 사용</button>
+            </div>
+          </div>
+
+          <div class="catalog-controls">
+            <label>정렬
+              <select data-tool-sort>
+                <option value="curriculum">교육과정·기본 순서</option>
+                <option value="popular">많이 사용한 순</option>
+                <option value="recent">최근 사용한 순</option>
+                <option value="title">이름순</option>
+              </select>
+            </label>
+            <div class="catalog-links"><a href="./classroom/">★ 즐겨찾기·수업 보관함</a><a href="./classroom-response/">익명 응답 수집·집계 →</a></div>
+          </div>
+
           <div class="filter-status" aria-live="polite">
             <div class="selected-tags" data-selected-tags>
               <span class="selected-tags__hint">원하는 태그를 여러 개 선택할 수 있어요.</span>
             </div>
-            <p><strong data-visible-count>73</strong>개의 웹툴</p>
+            <p role="status" aria-live="polite"><strong data-visible-count>—</strong>개의 웹툴</p>
           </div>
         </div>
 
-        <div class="tool-grid" aria-live="polite">
+        <div class="tool-grid">
           <article class="tool-card card-geometry geometry-conic" data-tool-id="geometry-conic" data-tool-tags="geometry simulation visualization coordinate-geometry class-use">
             <div class="tool-visual" aria-hidden="true">
               <div class="geometry-preview">
@@ -1608,6 +1642,36 @@
               </div>
             </div>
           </article>
+
+          <article class="tool-card card-curriculum-lab" data-tool-id="curriculum-common1" data-tool-tags="common-math1 visualization matrix counting class-use">
+            <div class="tool-visual" aria-hidden="true"><div class="curriculum-preview"><b>(ax+b)(cx+d)</b><span>행렬 · 부등식 · 경우의 수</span><i>COMMON 1</i></div></div>
+            <div class="tool-content"><div class="tool-tags" aria-label="태그"></div><h3>공통수학1 통합 실험실</h3><p>다항식, 방정식과 부등식, 순열·조합, 2×2 행렬을 식과 시각 모형으로 함께 탐구합니다.</p><div class="tool-footer"><span>4개 핵심 주제 · 프리셋</span><a href="./curriculum-labs/index.html?lab=common1" aria-label="공통수학1 통합 실험실 시작하기">시작하기 <b aria-hidden="true">→</b></a></div></div>
+          </article>
+
+          <article class="tool-card card-curriculum-lab" data-tool-id="curriculum-algebra" data-tool-tags="algebra visualization class-use">
+            <div class="tool-visual" aria-hidden="true"><div class="curriculum-preview"><b>y = aˣ ↔ logₐx</b><span>지수·로그 · 등차·등비수열</span><i>ALGEBRA</i></div></div>
+            <div class="tool-content"><div class="tool-tags" aria-label="태그"></div><h3>대수 함수·수열 실험실</h3><p>지수와 로그의 역함수 관계를 그래프로 확인하고 등차·등비수열의 일반항과 합을 비교합니다.</p><div class="tool-footer"><span>그래프 · 수열 생성</span><a href="./curriculum-labs/index.html?lab=algebra" aria-label="대수 함수 수열 실험실 시작하기">시작하기 <b aria-hidden="true">→</b></a></div></div>
+          </article>
+
+          <article class="tool-card card-curriculum-lab" data-tool-id="curriculum-calculus" data-tool-tags="calculus simulation visualization class-use">
+            <div class="tool-visual" aria-hidden="true"><div class="curriculum-preview"><b>Δx → 0</b><span>할선 → 접선 · 리만 합 → 넓이</span><i>CALCULUS</i></div></div>
+            <div class="tool-content"><div class="tool-tags" aria-label="태그"></div><h3>미분·적분 연결 실험실</h3><p>평균변화율이 미분계수로, 직사각형 합이 넓이로 가까워지는 두 극한 과정을 한 그래프에서 관찰합니다.</p><div class="tool-footer"><span>미분계수 · 리만 합</span><a href="./curriculum-labs/index.html?lab=calculus" aria-label="미분 적분 연결 실험실 시작하기">시작하기 <b aria-hidden="true">→</b></a></div></div>
+          </article>
+
+          <article class="tool-card card-curriculum-lab" data-tool-id="curriculum-inference" data-tool-tags="probability-statistics visualization statistics inference class-use">
+            <div class="tool-visual" aria-hidden="true"><div class="curriculum-preview"><b>p̂ ± 1.96SE</b><span>신뢰구간 · 가설검정 · 숨은 변수</span><i>INFERENCE</i></div></div>
+            <div class="tool-content"><div class="tool-tags" aria-label="태그"></div><h3>통계적 추론 실험실</h3><p>표본오차·95% 신뢰구간·p값을 조작하고 상관관계가 인과관계를 보장하지 않는 이유를 실험합니다.</p><div class="tool-footer"><span>추정 · 검정 · 상관</span><a href="./curriculum-labs/index.html?lab=inference" aria-label="통계적 추론 실험실 시작하기">시작하기 <b aria-hidden="true">→</b></a></div></div>
+          </article>
+
+          <article class="tool-card card-curriculum-lab" data-tool-id="curriculum-balance" data-tool-tags="middle-school-1 common-math1 visualization number-operations class-use">
+            <div class="tool-visual" aria-hidden="true"><div class="curriculum-preview"><b>ax+b = c</b><span>양변의 같은 연산 · 두 직선의 교점</span><i>BALANCE</i></div></div>
+            <div class="tool-content"><div class="tool-tags" aria-label="태그"></div><h3>방정식 저울·연립방정식</h3><p>일차방정식의 등식 성질을 저울로 표현하고 연립일차방정식의 해를 두 직선의 교점으로 확인합니다.</p><div class="tool-footer"><span>중1 방정식 · 연립방정식</span><a href="./curriculum-labs/index.html?lab=balance" aria-label="방정식 저울 연립방정식 시작하기">시작하기 <b aria-hidden="true">→</b></a></div></div>
+          </article>
+
+          <article class="tool-card card-curriculum-lab" data-tool-id="curriculum-counting" data-tool-tags="common-math1 probability-statistics visualization counting class-use">
+            <div class="tool-visual" aria-hidden="true"><div class="curriculum-preview"><b>nPᵣ = nCᵣ × r!</b><span>선택 나무 · 순서 있는 선택</span><i>COUNTING</i></div></div>
+            <div class="tool-content"><div class="tool-tags" aria-label="태그"></div><h3>경우의 수 선택 나무</h3><p>선택 과정을 나뭇가지로 펼쳐 순열과 조합의 차이, nPr=nCr×r!의 구조를 발견합니다.</p><div class="tool-footer"><span>2~7개 대상 · 선택 트리</span><a href="./curriculum-labs/index.html?lab=counting" aria-label="경우의 수 선택 나무 시작하기">시작하기 <b aria-hidden="true">→</b></a></div></div>
+          </article>
         </div>
 
         <div class="tool-subsection" data-tool-section="school-work">
@@ -1617,7 +1681,7 @@
             <p>수업 준비와 학교 업무를 조금 더 가볍게 만드는 도구입니다.</p>
           </div>
 
-          <div class="tool-grid school-tool-grid" aria-live="polite">
+          <div class="tool-grid school-tool-grid">
             <article class="tool-card card-file-renamer" data-tool-id="school-file-renamer" data-tool-tags="school-work work-automation file-data-management">
               <div class="tool-visual" aria-hidden="true">
                 <svg viewBox="0 0 420 210">
@@ -1829,6 +1893,7 @@
       <div>
         <p>수학 수업 웹툴 모음 <strong>by 정T</strong></p>
         <span>수업의 아이디어를 실제 경험으로 연결합니다.</span>
+        <span class="privacy-note">인기 통계는 동의한 경우 도구 ID만 익명 전송합니다. 이름·수업 내용·파일은 전송하지 않습니다. <label><input type="checkbox" data-stats-toggle /> 익명 인기 통계 허용</label></span>
       </div>
       <a href="mailto:mathtjungsw@gmail.com">
         <small>문의</small>
@@ -1861,6 +1926,7 @@
     </div>
 
     <script src="./assets/click-stats-config.js?v=20260714-1"></script>
-    <script src="./assets/app.js?v=20260728-1"></script>
+    <script src="./assets/app.js?v=20260801-1"></script>
+    <script>if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("./sw.js").catch(() => {});</script>
   </body>
 </html>

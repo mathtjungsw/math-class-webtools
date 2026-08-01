@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="학생이 직접 모은 이미지로 전이학습 분류기를 만들고 학습·예측 결과를 비교하는 인공지능 수학 실습 도구" />
     <title>이미지 지도학습 인공지능 만들기</title>
     <link rel="stylesheet" href="./image-supervised.css" />
   </head>
@@ -251,9 +252,9 @@
 
     <canvas id="captureCanvas" width="224" height="224" hidden></canvas>
 
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="./vendor/tf.min.js"></script>
+    <script src="./vendor/mobilenet.min.js"></script>
+    <script src="./vendor/jspdf.umd.min.js"></script>
     <script src="./image-supervised.js"></script>
   </body>
 </html>
