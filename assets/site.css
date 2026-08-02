@@ -3831,3 +3831,16 @@ body.is-modal-open {
   font: 800 7px/1 sans-serif;
   letter-spacing: 0.08em;
 }
+
+.card-proposition-detective .tool-visual { background: #eee8da; }
+.detective-preview { position: relative; width: 100%; height: 100%; overflow: hidden; color: #17221d; background: repeating-linear-gradient(0deg, transparent 0 25px, rgba(23,34,29,.045) 25px 26px); }
+.detective-stamp { position: absolute; left: 24px; top: 22px; padding: 5px 8px; border: 2px solid #cf4937; color: #cf4937; font: 900 10px/1 sans-serif; letter-spacing: .08em; transform: rotate(-5deg); }
+.detective-preview > b { position: absolute; left: 25px; bottom: 24px; font: 900 24px/1.12 sans-serif; letter-spacing: -.05em; }
+.detective-bubble { position: absolute; right: 27px; top: 25px; min-width: 92px; padding: 13px; border: 3px solid #17221d; border-radius: 50%; background: white; color: #cf4937; text-align: center; font: 900 16px/1 sans-serif; transform: rotate(4deg); }
+.detective-bubble::after { content: ""; position: absolute; left: 14px; bottom: -12px; width: 17px; height: 17px; border: solid #17221d; border-width: 0 0 3px 3px; background: white; transform: skew(-25deg) rotate(-22deg); }
+.detective-people { position: absolute; right: 18px; bottom: 23px; display: flex; align-items: end; gap: 4px; }
+.detective-people i { position: relative; display: block; width: 42px; height: 83px; border: 3px solid #17221d; border-radius: 18px 18px 6px 6px; background: #3d7460; }
+.detective-people i::before { content: ""; position: absolute; left: 7px; top: -25px; width: 23px; height: 27px; border: 3px solid #17221d; border-radius: 50%; background: #e1ad83; }
+.detective-people i:nth-child(2) { height: 95px; background: #c44739; }
+.detective-people i:nth-child(3) { height: 77px; background: #d6aa39; }
+.detective-people i:nth-child(4) { height: 89px; background: #3b6f8b; }

@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4efe4" />
+    <meta name="description" content="가상 용의자에게 명제로 질문하고 범인과 거짓말쟁이를 추리하는 모둠 수학 게임" />
+    <title>명제 탐정단: 범인을 찾아라!</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="back-link" href="../../index.html#math-game" aria-label="수학 게임 목록으로 돌아가기">← <span>수학 게임</span></a>
+      <div class="wordmark" aria-label="명제 탐정단">
+        <span class="wordmark-mark" aria-hidden="true">?</span>
+        <span><strong>명제 탐정단</strong><small>LOGIC DETECTIVE LAB</small></span>
+      </div>
+      <div class="top-actions">
+        <button class="button ghost compact" id="fullscreenButton" type="button">전체 화면</button>
+        <button class="button dark compact" id="guideButton" type="button">수업 안내</button>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">CASE 041 · 명제와 조건</p>
+          <h1>말 속의 <em>참과 거짓</em>을 추적하라.</h1>
+          <p>모든 조가 탐정입니다. 가상 용의자에게 명제로 질문하고, 서로 다른 답변 규칙을 뚫고 범인을 찾아보세요.</p>
+        </div>
+        <div class="case-file" aria-label="사건 규칙 요약">
+          <span>이번 사건</span>
+          <strong id="caseNumber">CASE 041</strong>
+          <p id="roleSummary"><b>진실 2</b> · <b>반대 1</b> · <b>자유 1</b></p>
+        </div>
+      </section>
+
+      <nav class="mode-tabs" aria-label="게임 모드">
+        <button class="mode-tab is-active" data-mode="detective" type="button" aria-selected="true"><span>01</span><b>범인을 찾아라</b><small>명제로 질문하고 추리</small></button>
+        <button class="mode-tab" data-mode="truth" type="button" aria-selected="false"><span>02</span><b>참·거짓 속보</b><small>진리값 팀 대결</small></button>
+        <button class="mode-tab" data-mode="counter" type="button" aria-selected="false"><span>03</span><b>반례 수사대</b><small>거짓을 깨는 한 사람</small></button>
+        <button class="mode-tab" data-mode="condition" type="button" aria-selected="false"><span>04</span><b>조건 포착</b><small>조건을 만족하는 집합</small></button>
+      </nav>
+
+      <section class="control-strip" aria-label="게임 설정">
+        <div class="control-copy">
+          <p class="eyebrow" id="modeKicker">MAIN INVESTIGATION</p>
+          <h2 id="modeTitle">범인을 찾아라</h2>
+          <p id="modeDescription">대답할 사람을 먼저 정하고, 정확한 명제로 질문하세요.</p>
+        </div>
+        <label class="select-field"><span>현재 탐정 모둠</span><select id="teamSelect" aria-label="현재 탐정 모둠"></select></label>
+        <label class="select-field count-field"><span>가상 모둠 인원</span><select id="suspectCountSelect" aria-label="가상 범인 모둠 인원"><option value="4" selected>4명 (기본)</option><option value="5">5명</option><option value="6">6명</option><option value="7">7명</option><option value="8">8명</option><option value="9">9명</option><option value="10">10명</option></select></label>
+        <button class="button paper" id="editTeamsButton" type="button">모둠 이름</button>
+        <button class="button accent" id="newGameButton" type="button">새 사건 시작</button>
+      </section>
+
+      <section class="board-section" aria-labelledby="suspectTitle">
+        <div class="section-heading">
+          <div><p class="eyebrow">VIRTUAL SUSPECTS</p><h2 id="suspectTitle">가상 용의자 4명</h2></div>
+          <div class="board-status">
+            <div class="role-public" id="rolePublic"><span>공개된 역할 수</span><strong><b>진실 2명</b> · <b>반대 1명</b> · <b>자유 1명</b></strong></div>
+            <div class="cycle-badge" id="cycleBadge"><span>질문 차례</span><strong>1회차 · 0/4명</strong></div>
+          </div>
+        </div>
+        <div class="suspect-grid" id="suspectGrid" aria-live="polite"></div>
+        <p class="board-note" id="boardNote"><span aria-hidden="true">●</span> 외형 조건은 모두 공개됩니다. 범인 여부와 답변 역할은 사건이 끝날 때까지 비밀입니다.</p>
+      </section>
+
+      <section class="game-panel" id="detectivePanel" data-panel="detective">
+        <div class="question-studio">
+          <div class="panel-heading"><div><p class="eyebrow">QUESTION STUDIO</p><h2>명제 질문 만들기</h2></div><span class="step-label">① 대답할 사람 → ② 명제</span></div>
+          <fieldset class="respondent-fieldset">
+            <legend>누구에게 물어볼까요?</legend>
+            <div class="respondent-options" id="respondentOptions"></div>
+          </fieldset>
+          <div class="builder-grid">
+            <label><span>명제의 꼴</span><select id="templateSelect"></select></label>
+            <label id="propertyAField"><span id="propertyALabel">조건</span><select id="propertyASelect"></select></label>
+            <label id="propertyBField"><span id="propertyBLabel">두 번째 조건</span><select id="propertyBSelect"></select></label>
+            <label id="numberField" hidden><span>인원</span><select id="numberSelect"></select></label>
+          </div>
+          <div class="statement-preview">
+            <span>질문할 명제</span>
+            <strong id="statementPreview">범인은 모두 안경을 쓰고 있다.</strong>
+          </div>
+          <div class="ask-row">
+            <p><b>Tip.</b> ‘모든’, ‘어떤’, ‘이면’이 바뀌면 완전히 다른 명제가 됩니다.</p>
+            <button class="button dark large" id="askButton" type="button">이 명제로 질문하기 <span>→</span></button>
+          </div>
+          <div class="answer-card" id="answerCard" hidden aria-live="polite">
+            <div class="answer-avatar" id="answerAvatar">?</div>
+            <div><span id="answerMeta">답변</span><strong id="answerValue">예, 참입니다.</strong><p id="answerStatement"></p></div>
+          </div>
+        </div>
+
+        <aside class="notebook">
+          <div class="panel-heading"><div><p class="eyebrow">DETECTIVE NOTES</p><h2>수사 기록</h2></div><button class="text-button" id="clearLogButton" type="button">기록 지우기</button></div>
+          <div class="team-scoreboard" id="teamScoreboard"></div>
+          <div class="log-list" id="logList"><div class="empty-state"><span>⌕</span><strong>아직 기록이 없습니다.</strong><p>첫 명제를 질문하면 이곳에 단서가 쌓입니다.</p></div></div>
+          <button class="button accent full" id="guessButton" type="button">언제든 범인 지목하기</button>
+        </aside>
+      </section>
+
+      <section class="practice-panel" id="practicePanel" hidden aria-live="polite">
+        <div class="practice-card">
+          <div class="practice-topline"><span id="practiceRound">문제 1</span><span id="practiceScore">1조 · 0점</span></div>
+          <p class="eyebrow" id="practiceType">TRUTH OR FALSE</p>
+          <h2 id="practicePrompt">명제를 읽고 판단하세요.</h2>
+          <div class="practice-statement" id="practiceStatement"></div>
+          <p class="practice-help" id="practiceHelp"></p>
+          <div class="practice-choices" id="practiceChoices"></div>
+          <div class="practice-feedback" id="practiceFeedback" hidden></div>
+          <button class="button dark large" id="nextPracticeButton" type="button" hidden>다음 문제 <span>→</span></button>
+        </div>
+        <aside class="concept-note">
+          <p class="eyebrow">LOGIC FILE</p>
+          <h2 id="conceptTitle">명제의 진리값</h2>
+          <div id="conceptBody"></div>
+        </aside>
+      </section>
+    </main>
+
+    <dialog class="modal" id="guideDialog">
+      <div class="modal-head"><div><p class="eyebrow">CLASSROOM GUIDE</p><h2>명제 탐정단 진행 안내</h2></div><button class="icon-button" data-close="guideDialog" type="button" aria-label="닫기">×</button></div>
+      <div class="guide-intro"><strong>권장 수업 시간 20~30분</strong><span>도입 3분 · 모둠 수사 12분 · 정답과 근거 발표 8분 · 개념 정리 5분</span></div>
+      <ol class="guide-steps">
+        <li><b>1</b><div><strong>모든 조가 탐정이 됩니다.</strong><p>현재 탐정 모둠을 고르고, 질문하기 전에 반드시 대답할 용의자 한 명을 정합니다.</p></div></li>
+        <li><b>2</b><div><strong>명제의 꼴을 정확히 고릅니다.</strong><p>‘범인은 모두 P’, ‘P인 사람은 범인’, ‘P인 범인이 있다’는 서로 다른 명제입니다.</p></div></li>
+        <li><b>3</b><div><strong>공개된 역할 수로 개인 역할을 추리합니다.</strong><p>역할별 인원수는 항상 화면에 공개됩니다. 4명이면 진실 2명, 반대 1명, 자유 1명이며 인원을 늘리면 이 비율에 가깝게 역할도 늘어납니다. 단, 누가 어떤 역할인지는 비밀입니다.</p></div></li>
+        <li><b>4</b><div><strong>언제든 범인을 지목합니다.</strong><p>가상 모둠은 4~10명, 범인은 0명부터 전체 인원까지입니다. 틀려도 수사는 계속되며, 지목 시도는 모둠별 기록에 남습니다.</p></div></li>
+      </ol>
+      <div class="guide-modes">
+        <article><span>02</span><strong>참·거짓 속보</strong><p>보이는 외형만으로 명제의 진리값을 빠르게 판단합니다.</p></article>
+        <article><span>03</span><strong>반례 수사대</strong><p>전체명제를 거짓으로 만드는 반례를 직접 선택합니다.</p></article>
+        <article><span>04</span><strong>조건 포착</strong><p>‘그리고’, ‘또는’, ‘아니다’가 만든 집합의 원소를 모두 찾습니다.</p></article>
+      </div>
+      <p class="modal-copy"><b>수학적 약속:</b> 범인이 0명일 때 “모든 범인은 P이다”는 이를 거짓으로 만드는 반례가 없으므로 참으로 판정합니다.</p>
+      <button class="button dark full" data-close="guideDialog" type="button">수사 시작하기</button>
+    </dialog>
+
+    <dialog class="modal narrow" id="teamsDialog">
+      <div class="modal-head"><div><p class="eyebrow">DETECTIVE TEAMS</p><h2>탐정 모둠 이름</h2></div><button class="icon-button" data-close="teamsDialog" type="button" aria-label="닫기">×</button></div>
+      <p class="modal-copy">2~10개 모둠을 사용할 수 있습니다. 이름과 점수는 이 기기에 자동 저장됩니다.</p>
+      <div class="team-editor" id="teamEditor"></div>
+      <div class="dialog-actions"><button class="button paper" id="addTeamButton" type="button">+ 모둠 추가</button><button class="button dark" id="saveTeamsButton" type="button">저장</button></div>
+    </dialog>
+
+    <dialog class="modal guess-modal" id="guessDialog">
+      <div class="modal-head"><div><p class="eyebrow">FINAL GUESS</p><h2>범인을 지목하세요</h2></div><button class="icon-button" data-close="guessDialog" type="button" aria-label="닫기">×</button></div>
+      <p class="modal-copy"><b id="guessTeamName">1조</b>의 추리입니다. 범인이 없다고 생각하면 아무도 선택하지 마세요.</p>
+      <div class="guess-grid" id="guessGrid"></div>
+      <div class="guess-count"><span>지목한 범인</span><strong id="guessCount">0명</strong></div>
+      <button class="button accent full" id="submitGuessButton" type="button">이대로 지목하기</button>
+    </dialog>
+
+    <dialog class="modal result-modal" id="resultDialog">
+      <div class="result-stamp" id="resultStamp">!</div>
+      <p class="eyebrow">CASE REPORT</p>
+      <h2 id="resultTitle">추리가 맞았습니다!</h2>
+      <p id="resultCopy"></p>
+      <div class="reveal-grid" id="revealGrid"></div>
+      <div class="dialog-actions"><button class="button paper" id="continueButton" type="button">수사 기록 보기</button><button class="button dark" id="resultNewGameButton" type="button">새 사건 시작</button></div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./game-logic.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
