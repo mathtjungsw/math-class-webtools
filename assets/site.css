@@ -2031,6 +2031,19 @@ body.is-modal-open {
 .word-node.node-two { left: 52%; top: 44px; border-color: #24658d; background: #4287b8; }
 .word-node.node-three { left: 52px; bottom: 28px; }
 .word-vector-preview code { position: absolute; right: 16px; bottom: 14px; border-radius: 9px; padding: 6px 9px; color: white; background: var(--navy); font: 900 12px ui-monospace, monospace; }
+.card-word-cloud .tool-visual { background: linear-gradient(145deg, #eef8f4, #edf3f8); }
+.word-cloud-preview { position: relative; width: 100%; height: 100%; overflow: hidden; }
+.word-cloud-preview::before { position: absolute; top: 18px; right: 60px; bottom: 18px; left: 60px; border: 3px dashed rgba(30, 105, 99, .23); border-radius: 50%; content: ""; }
+.word-cloud-preview .cloud-word { position: absolute; z-index: 1; color: #1d615d; font-weight: 950; line-height: 1; letter-spacing: -.05em; }
+.word-cloud-preview .word-data { top: 73px; left: 110px; color: var(--navy); font-size: 34px; }
+.word-cloud-preview .word-ai { top: 37px; left: 145px; color: #247d75; font-size: 25px; }
+.word-cloud-preview .word-math { top: 115px; left: 183px; color: #d36b36; font-size: 29px; }
+.word-cloud-preview .word-pattern { top: 62px; right: 52px; color: #367bad; font-size: 18px; transform: rotate(90deg); }
+.word-cloud-preview .word-probability { bottom: 30px; left: 100px; color: #7a6b9f; font-size: 17px; }
+.word-cloud-preview .word-vector { top: 45px; left: 75px; color: #66816c; font-size: 16px; transform: rotate(-14deg); }
+.word-cloud-preview .word-question { right: 96px; bottom: 42px; color: #507175; font-size: 15px; }
+.word-cloud-preview i { position: absolute; right: 17px; bottom: 15px; width: 28px; height: 28px; border: 3px solid #247d75; border-radius: 8px; }
+.word-cloud-preview i::before { position: absolute; top: 5px; left: 7px; width: 8px; height: 10px; border-right: 3px solid #247d75; border-bottom: 3px solid #247d75; content: ""; transform: rotate(45deg); }
 .card-huffman .tool-visual { background: #e8f5ef; }
 .card-pixel-matrix .tool-visual { background: linear-gradient(135deg,#e7f4ef,#e8f0f6); }
 .card-recommendation .tool-visual { background: linear-gradient(135deg,#e7f5f1,#e9eff7); }
