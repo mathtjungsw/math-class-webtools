@@ -1,0 +1,1932 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>페르미 추정을 활용한 생활 속 수량 탐구</title>
+  <style>
+    :root {
+      --ink: #18222f;
+      --muted: #5d6a78;
+      --line: #d9e1e8;
+      --soft: #f4f7f9;
+      --panel: #ffffff;
+      --primary: #2457a7;
+      --primary-2: #163e7b;
+      --accent: #e9f1ff;
+      --good: #197447;
+      --warn: #a25b00;
+      --danger: #b03232;
+      --shadow: 0 10px 28px rgba(20, 44, 75, 0.09);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", system-ui, -apple-system, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(89, 137, 215, 0.11), transparent 30%),
+        linear-gradient(180deg, #f8fafc 0, #eef3f7 100%);
+      line-height: 1.62;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+
+    .hero {
+      background: linear-gradient(135deg, #173f7d 0%, #2b64b8 58%, #4d83cf 100%);
+      color: white;
+      padding: 24px 20px 22px;
+    }
+    .hero-inner, main, .sticky-inner { max-width: 1180px; margin: 0 auto; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 11px;
+      border: 1px solid rgba(255,255,255,.32);
+      border-radius: 999px;
+      font-size: 13px;
+      background: rgba(255,255,255,.1);
+    }
+    h1 { margin: 10px 0 6px; font-size: clamp(28px, 3.6vw, 40px); line-height: 1.16; letter-spacing: -0.04em; }
+    .hero p { max-width: 860px; margin: 0; color: rgba(255,255,255,.9); font-size: 16px; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .hero-meta span { padding: 7px 11px; border-radius: 10px; background: rgba(255,255,255,.12); font-size: 14px; }
+
+    .sticky-nav {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(255,255,255,.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+    .sticky-inner { display: flex; align-items: center; gap: 8px; overflow-x: auto; padding: 10px 18px; }
+    .step-link {
+      flex: 0 0 auto;
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 13px;
+      background: var(--soft);
+      color: #334253;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .step-link:hover { background: var(--accent); color: var(--primary); }
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 3px solid #f6b73c;
+      outline-offset: 2px;
+    }
+    .save-state { margin-left: auto; flex: 0 0 auto; color: var(--good); font-size: 12px; font-weight: 700; }
+
+    main { padding: 24px 18px 70px; }
+    .notice {
+      border: 1px solid #cbd8e8;
+      background: #f6f9fd;
+      border-radius: 15px;
+      padding: 15px 17px;
+      color: #33485f;
+      margin-bottom: 20px;
+    }
+    .notice strong { color: var(--primary-2); }
+
+    .section {
+      scroll-margin-top: 72px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: clamp(20px, 3vw, 30px);
+      margin: 18px 0;
+      box-shadow: var(--shadow);
+    }
+    .section-head { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; }
+    .step-no {
+      width: 42px; height: 42px; flex: 0 0 42px;
+      display: grid; place-items: center;
+      border-radius: 14px;
+      color: white; background: var(--primary);
+      font-weight: 900;
+    }
+    .section h2 { margin: 0; font-size: 24px; letter-spacing: -0.025em; }
+    .section-head p { margin: 3px 0 0; color: var(--muted); }
+
+    .grid { display: grid; gap: 14px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    label.field { display: block; }
+    label.field > span, .field-label { display: block; font-size: 14px; font-weight: 800; margin-bottom: 6px; color: #334253; }
+    input[type="text"], input[type="number"], select, textarea {
+      width: 100%;
+      border: 1px solid #cbd5df;
+      border-radius: 11px;
+      padding: 10px 11px;
+      color: var(--ink);
+      background: white;
+      outline: none;
+      transition: border-color .16s, box-shadow .16s;
+    }
+    input:focus, select:focus, textarea:focus { border-color: #6e9be0; box-shadow: 0 0 0 3px rgba(64, 119, 202, .13); }
+    textarea { min-height: 96px; resize: vertical; }
+    .small-textarea { min-height: 72px; }
+    .help { color: var(--muted); font-size: 12px; margin-top: 5px; }
+    .required-mark { color: var(--danger); margin-left: 3px; }
+    [aria-invalid="true"] { border-color: var(--danger) !important; background: #fff8f8 !important; }
+    .validation-summary {
+      margin-top: 12px; border-radius: 12px; padding: 12px 14px; font-size: 13px;
+      border: 1px solid #e0b5b5; background: #fff8f8; color: #7d2b2b;
+    }
+    .validation-summary.good { border-color: #a8d4bd; background: #f2fbf6; color: var(--good); }
+
+    .category-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 12px; }
+    .category-btn {
+      flex: 0 0 auto; border: 1px solid var(--line); background: white;
+      border-radius: 999px; padding: 8px 13px; font-weight: 800; color: #405064;
+    }
+    .category-btn.active { border-color: var(--primary); color: white; background: var(--primary); }
+    .topic-toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; }
+    .topic-toolbar input { max-width: 360px; }
+    .btn {
+      border: 0; border-radius: 11px; padding: 10px 14px; font-weight: 800;
+      background: var(--primary); color: white;
+      box-shadow: 0 5px 12px rgba(36, 87, 167, .16);
+    }
+    .btn:hover { background: var(--primary-2); }
+    .btn.secondary { background: #edf2f7; color: #334253; box-shadow: none; }
+    .btn.secondary:hover { background: #e1e8ef; }
+    .btn.outline { background: white; color: var(--primary); border: 1px solid #9cb8df; box-shadow: none; }
+    .btn.good { background: var(--good); }
+    .btn.danger { background: white; color: var(--danger); border: 1px solid #deb0b0; box-shadow: none; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; }
+
+    .topic-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .topic-card {
+      position: relative; border: 1px solid var(--line); border-radius: 15px;
+      padding: 15px; background: white; text-align: left; min-height: 145px;
+      transition: transform .15s, border-color .15s, box-shadow .15s;
+    }
+    .topic-card:hover { transform: translateY(-2px); border-color: #8db0df; box-shadow: 0 8px 18px rgba(40, 76, 124, .09); }
+    .topic-card.selected { border: 2px solid var(--primary); background: #f7faff; }
+    .topic-card h3 { margin: 8px 0 5px; font-size: 16px; line-height: 1.38; }
+    .topic-card p { margin: 0; color: var(--muted); font-size: 13px; }
+    .badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 4px 8px; font-size: 11px; font-weight: 900; background: #edf3fb; color: var(--primary); }
+    .difficulty { position: absolute; right: 12px; top: 12px; color: #6b7785; font-size: 11px; }
+
+    .selected-topic {
+      border: 1px solid #b8cbe6; background: linear-gradient(135deg, #f5f9ff, #edf4ff);
+      border-radius: 16px; padding: 18px; margin-top: 18px;
+    }
+    .selected-topic h3 { margin: 0 0 6px; font-size: 21px; color: var(--primary-2); }
+    .selected-topic p { margin: 5px 0; }
+    .formula-box {
+      border: 1px dashed #8ca9d1; background: white; border-radius: 13px;
+      padding: 14px 16px; margin-top: 12px;
+    }
+    .formula-box strong { color: var(--primary-2); }
+    .formula-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+    .formula-current { margin-top:8px; font-size:16px; font-weight:850; color:#173f7d; word-break:keep-all; }
+    .formula-editor {
+      margin-top:12px; border:1px solid #b8cbe6; border-radius:15px; background:#f8fbff; padding:14px;
+    }
+    .formula-editor[hidden] { display:none; }
+    .editor-toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:12px; }
+    .editor-toolbar select { min-width:190px; width:auto; }
+    .expression-preview { border:1px solid #d5dfeb; background:white; border-radius:11px; padding:11px 12px; margin-bottom:10px; font-weight:850; color:#1f4c83; overflow-wrap:anywhere; }
+    .expr-list { display:grid; gap:8px; }
+    .expr-term {
+      display:grid; grid-template-columns:76px 92px minmax(210px,1fr) 92px auto; gap:8px; align-items:end;
+      border:1px solid #d6e0ea; background:white; border-radius:12px; padding:10px;
+    }
+    .expr-term:first-child .expr-op { visibility:hidden; }
+    .expr-mini { display:grid; gap:4px; }
+    .expr-mini > span { font-size:10px; color:var(--muted); font-weight:800; }
+    .expr-mini select, .expr-mini input { padding:8px 9px; min-height:38px; }
+    .expr-actions { display:flex; gap:5px; align-items:center; padding-bottom:1px; }
+    .mini-btn { border:1px solid #c8d5e3; background:#fff; border-radius:8px; padding:7px 9px; color:#315275; font-weight:800; }
+    .mini-btn:hover { background:#eef5fd; }
+    .mini-btn.danger { color:#a63a3a; border-color:#e1b7b7; }
+    .formula-status { margin-top:9px; font-size:12px; }
+    .formula-status.good { color:var(--good); }
+    .formula-status.warn { color:var(--danger); }
+    .custom-factor-name { display:grid; grid-template-columns:minmax(130px,1fr) 90px; gap:5px; }
+    .custom-factor-name input { padding:7px 8px; min-width:0; }
+    @media (max-width: 850px){
+      .expr-term { grid-template-columns:70px 82px 1fr 82px; }
+      .expr-actions { grid-column:1/-1; justify-content:flex-end; }
+    }
+    @media (max-width: 620px){
+      .formula-head { display:block; }
+      .formula-head .btn { margin-top:10px; }
+      .expr-term { grid-template-columns:1fr 1fr; }
+      .expr-main { grid-column:1/-1; }
+      .expr-actions { grid-column:1/-1; }
+    }
+
+    .factor-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border-bottom: 1px solid var(--line); padding: 10px 8px; vertical-align: top; }
+    th { background: #f4f7fa; color: #39495a; font-size: 13px; text-align: left; white-space: nowrap; }
+    td { font-size: 13px; }
+    .factor-name { min-width: 170px; font-weight: 800; }
+    .number-cell { min-width: 122px; }
+    .basis-cell { min-width: 190px; }
+    .note-cell { min-width: 220px; }
+    .number-with-unit { display: flex; align-items: center; gap: 5px; }
+    .number-with-unit input { min-width: 78px; }
+    .unit { color: var(--muted); font-size: 11px; white-space: nowrap; }
+    .factor-hint { color: var(--muted); font-size: 11px; margin-top: 4px; }
+
+    .result-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .result-card {
+      border: 1px solid var(--line); border-radius: 15px; padding: 16px; background: #fbfcfd;
+    }
+    .result-card.main { border-color: #8fb0dc; background: #f1f7ff; }
+    .result-label { font-size: 12px; color: var(--muted); font-weight: 800; }
+    .result-value { margin: 5px 0 2px; font-size: clamp(22px, 3vw, 31px); font-weight: 950; letter-spacing: -0.04em; }
+    .result-sub { color: var(--muted); font-size: 12px; }
+    .calc-panel {
+      margin-top: 14px; border-radius: 15px; padding: 16px; background: #1c2734; color: #f3f6f9;
+      overflow-x: auto;
+    }
+    .calc-panel h4 { margin: 0 0 10px; }
+    .calc-list { display: grid; gap: 5px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; }
+    .warning { color: #ffe0aa; }
+
+    .sensitivity-list { display: grid; gap: 10px; }
+    .sensitivity-item { border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; }
+    .sensitivity-top { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; }
+    .bar { height: 8px; background: #edf1f5; border-radius: 999px; overflow: hidden; margin-top: 7px; }
+    .bar > span { display: block; height: 100%; background: linear-gradient(90deg, #5c8dd1, #2457a7); border-radius: inherit; }
+    .analysis-note { border-left: 4px solid var(--primary); background: #f4f8fd; padding: 13px 14px; border-radius: 0 12px 12px 0; margin-top: 12px; }
+
+    .choice-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .choice {
+      display: flex; align-items: center; gap: 7px; border: 1px solid var(--line);
+      border-radius: 11px; padding: 9px 11px; background: white;
+    }
+
+    .preview {
+      border: 1px solid var(--line); border-radius: 16px; padding: 18px; background: #fcfdfd;
+    }
+    .preview h3 { margin-top: 0; }
+    .preview-summary { white-space: pre-wrap; }
+    .status-chip { display: inline-flex; padding: 5px 9px; border-radius: 999px; font-size: 11px; font-weight: 900; }
+    .status-chip.good { background: #e6f5ed; color: var(--good); }
+    .status-chip.warn { background: #fff0d9; color: var(--warn); }
+    .submission-checklist {
+      border: 1px solid #cbd8e8; background: #f7faff; border-radius: 14px; padding: 15px;
+      margin: 14px 0;
+    }
+    .submission-checklist h3 { margin: 0 0 4px; }
+    .submission-checklist ul { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 6px; }
+    .submission-checklist button {
+      width: 100%; border: 0; background: transparent; padding: 7px 8px; border-radius: 8px;
+      text-align: left; color: #39495a; font-weight: 700;
+    }
+    .submission-checklist button:hover { background: #eaf2fd; }
+    .submission-checklist .ok { color: var(--good); }
+    .submission-checklist .missing { color: var(--danger); }
+    .privacy-note {
+      border-left: 4px solid var(--good); background: #f1faf5; padding: 12px 14px;
+      border-radius: 0 12px 12px 0; margin-top: 12px; color: #28533f; font-size: 14px;
+    }
+
+    details { border: 1px solid var(--line); border-radius: 12px; padding: 11px 13px; background: #fbfcfd; }
+    details summary { cursor: pointer; font-weight: 800; }
+
+    .footer-note { text-align: center; color: var(--muted); font-size: 12px; margin-top: 24px; }
+    .hidden { display: none !important; }
+
+    @media (max-width: 900px) {
+      .topic-grid, .grid-3, .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .result-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .hero { padding-top: 30px; }
+      .grid-2, .grid-3, .grid-4, .topic-grid { grid-template-columns: 1fr; }
+      .section { padding: 18px 15px; border-radius: 15px; }
+      .section-head { gap: 10px; }
+      .topic-toolbar { align-items: stretch; flex-direction: column; }
+      .topic-toolbar input { max-width: none; }
+      .save-state { display: none; }
+    }
+
+    @media print {
+      .hero, .sticky-nav, .topic-grid, .category-tabs, .topic-toolbar, .btn-row, .notice, .factor-hint, .help, #step1 .grid-2, #step5 .choice-row, .footer-note { display: none !important; }
+      body { background: white; }
+      main { max-width: none; padding: 0; }
+      .section { box-shadow: none; border: 0; padding: 10px 0; margin: 0; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <span class="eyebrow">수학과제 탐구 · 1차시 수행평가 웹툴</span>
+      <h1>페르미 추정 수행평가</h1>
+      <p>정확한 자료가 없어도 문제를 작은 요소로 나누고, 합리적인 가정을 세워 수량의 규모를 추정해 봅니다. 중요한 것은 정답보다 가정과 판단의 타당성입니다.</p>
+      <div class="hero-meta">
+        <span>30개 주제</span><span>6개 분야</span><span>자동 계산</span><span>민감도 분석</span><span>제출 전 점검</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="sticky-nav" aria-label="단계 이동">
+    <div class="sticky-inner">
+      <button class="step-link" data-target="student">학생 정보</button>
+      <button class="step-link" data-target="step1">1. 주제 선택</button>
+      <button class="step-link" data-target="step2">2. 가정 설정</button>
+      <button class="step-link" data-target="step3">3. 추정 결과</button>
+      <button class="step-link" data-target="step4">4. 검토·수정</button>
+      <button class="step-link" data-target="step5">5. 결론·제출</button>
+      <span class="save-state" id="saveState">이 탭에 자동 저장됨</span>
+    </div>
+  </nav>
+
+  <main>
+    <div class="notice">
+      <strong>수업용 안내:</strong> 웹툴의 기본값은 현실의 규모를 참고하되 계산하기 편하도록 단순화한 예시 범위입니다. 그대로 사용할 수도 있고, 자신의 관찰과 판단에 따라 수정할 수도 있습니다. 모든 계산은 자동으로 이루어지며 계산 구조와 결과가 함께 표시됩니다.
+      <div class="privacy-note"><strong>개인정보 보호:</strong> 작성 내용은 서버로 전송되지 않고 현재 탭에만 임시 저장됩니다. 탭을 닫으면 기록이 사라질 수 있으므로 수업이 끝나기 전에 제출 파일을 저장하세요. 공용 기기에서는 제출 후 ‘이 탭 기록 지우기’를 눌러 주세요.</div>
+    </div>
+
+    <section class="section" id="student">
+      <div class="section-head">
+        <div class="step-no">0</div>
+        <div><h2>학생 정보</h2><p>제출 파일 이름과 보고서에 사용됩니다.</p></div>
+      </div>
+      <div class="grid grid-4">
+        <label class="field"><span>학년<span class="required-mark" aria-hidden="true">*</span></span><input id="grade" type="text" placeholder="예: 3" autocomplete="off" /></label>
+        <label class="field"><span>반<span class="required-mark" aria-hidden="true">*</span></span><input id="classNo" type="text" placeholder="예: 2" autocomplete="off" /></label>
+        <label class="field"><span>번호<span class="required-mark" aria-hidden="true">*</span></span><input id="studentNo" type="text" placeholder="예: 15" autocomplete="off" /></label>
+        <label class="field"><span>이름<span class="required-mark" aria-hidden="true">*</span></span><input id="studentName" type="text" placeholder="이름 입력" autocomplete="off" /></label>
+      </div>
+    </section>
+
+    <section class="section" id="step1">
+      <div class="section-head">
+        <div class="step-no">1</div>
+        <div><h2>추정 문제 선택하기</h2><p>관심 있는 분야와 주제를 고르고 계산 전 첫 예상값을 적습니다.</p></div>
+      </div>
+
+      <div class="category-tabs" id="categoryTabs"></div>
+      <div class="topic-toolbar">
+        <input id="topicSearch" type="search" aria-label="전체 주제 검색" placeholder="전체 주제 검색: 예) 공기, 축구, 기와" />
+        <button class="btn secondary" id="randomTopic" type="button">무작위 주제 추천</button>
+      </div>
+      <div class="topic-grid" id="topicGrid"></div>
+      <div class="selected-topic" id="selectedTopic"></div>
+
+      <div class="grid grid-2" style="margin-top:16px;">
+        <label class="field"><span>이 주제를 선택한 이유<span class="required-mark" aria-hidden="true">*</span></span><textarea id="topicReason" class="small-textarea" placeholder="관심을 가진 이유를 간단히 적으세요."></textarea></label>
+        <div class="grid grid-2">
+          <label class="field"><span>계산 전 첫 예상값<span class="required-mark" aria-hidden="true">*</span></span><input id="initialGuess" type="number" min="0" step="any" placeholder="예상 수량" /></label>
+          <label class="field"><span>예상 단위</span><input id="initialUnit" type="text" readonly /></label>
+          <div class="help" style="grid-column:1/-1;">처음 떠오른 값을 적어 두면 계산 후 자신의 직관과 모형 결과를 비교할 수 있습니다.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step2">
+      <div class="section-head">
+        <div class="step-no">2</div>
+        <div><h2>문제를 나누고 가정 세우기</h2><p>각 요소의 작은 값·대표값·큰 값을 정하고, 대표값의 근거를 남깁니다.</p></div>
+      </div>
+
+      <div id="formulaSummary" class="formula-box"></div>
+      <div id="formulaEditor" class="formula-editor" hidden></div>
+      <label class="field" style="margin-top:12px;"><span>분해 모형 검토<span class="required-mark" aria-hidden="true">*</span></span><textarea id="modelComment" class="small-textarea" placeholder="이 추정식이 적절하다고 생각한 이유, 빠졌다고 생각하는 요소, 또는 단순화한 부분을 적으세요."></textarea></label>
+      <div class="factor-wrap" style="margin-top:14px;">
+        <table>
+          <thead>
+            <tr>
+              <th>추정 요소</th>
+              <th>작은 값</th>
+              <th>대표값</th>
+              <th>큰 값</th>
+              <th>가정의 근거</th>
+              <th>근거 메모</th>
+            </tr>
+          </thead>
+          <tbody id="factorBody"></tbody>
+        </table>
+      </div>
+      <div id="factorValidationSummary" class="validation-summary good" role="status" aria-live="polite">가정값의 입력 상태를 확인하고 있습니다.</div>
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btn secondary" id="resetTopicValues" type="button">이 주제의 예시값 복원</button>
+        <button class="btn outline" id="copyModel" type="button">추정식 복사</button>
+      </div>
+      <div class="help">각 요소는 ‘작은 값 ≤ 대표값 ≤ 큰 값’ 순서로 입력하세요. 화면의 범위는 입력한 작은 값·큰 값의 끝점 조합을 계산한 결과이며, 수정한 복잡한 수식에서는 모든 중간값의 절대적인 최솟값·최댓값을 보장하지 않습니다.</div>
+    </section>
+
+    <section class="section" id="step3">
+      <div class="section-head">
+        <div class="step-no">3</div>
+        <div><h2>추정 결과 확인하기</h2><p>대표값과 끝점 조합 범위, 수의 크기와 첫 예상값의 차이를 확인합니다.</p></div>
+      </div>
+      <div class="result-grid" id="resultGrid"></div>
+      <div class="calc-panel" id="calculationPanel"></div>
+      <div class="analysis-note" id="guessComparison"></div>
+    </section>
+
+    <section class="section" id="step4">
+      <div class="section-head">
+        <div class="step-no">4</div>
+        <div><h2>가정의 영향 검토하고 수정하기</h2><p>결과에 큰 영향을 주는 요소와 불확실한 가정을 찾은 뒤 하나를 수정합니다.</p></div>
+      </div>
+
+      <div class="grid grid-2">
+        <div>
+          <h3 style="margin-top:0;">결과 민감도</h3>
+          <p class="help">다른 요소는 대표값으로 두고 한 요소만 작은 값과 큰 값으로 바꾸었을 때 결과가 얼마나 달라지는지 나타냅니다.</p>
+          <div id="sensitivityList" class="sensitivity-list"></div>
+        </div>
+        <div class="grid">
+          <label class="field"><span>내가 가장 불확실하다고 판단한 요소</span><select id="uncertainFactor"></select></label>
+          <label class="field"><span>그렇게 판단한 이유<span class="required-mark" aria-hidden="true">*</span></span><textarea id="uncertainReason" class="small-textarea" placeholder="관찰하기 어렵거나 사람마다 차이가 큰 이유 등을 적으세요."></textarea></label>
+          <div class="analysis-note" id="sensitivityHint"></div>
+        </div>
+      </div>
+
+      <hr style="border:0;border-top:1px solid var(--line);margin:24px 0;" />
+      <h3>가정 하나 수정하기</h3>
+      <div class="grid grid-3">
+        <label class="field"><span>수정할 요소</span><select id="revisionFactor"></select></label>
+        <label class="field"><span>수정한 대표값<span class="required-mark" aria-hidden="true">*</span></span><input id="revisionValue" type="number" min="0" step="any" placeholder="기존 대표값과 다른 값" /></label>
+        <label class="field"><span>단위</span><input id="revisionUnit" type="text" readonly /></label>
+      </div>
+      <label class="field" style="margin-top:12px;"><span>수정 이유<span class="required-mark" aria-hidden="true">*</span></span><textarea id="revisionReason" class="small-textarea" placeholder="기존 가정보다 이 값이 적절하다고 생각한 이유를 적으세요."></textarea></label>
+      <div id="revisionResult" class="result-grid" style="margin-top:14px;"></div>
+
+      <div style="margin-top:16px;">
+        <span class="field-label">최종 추정값을 정하는 방식</span>
+        <div class="choice-row" id="finalChoiceRow">
+          <label class="choice"><input type="radio" name="finalChoice" value="original" /> 처음 대표 추정값</label>
+          <label class="choice"><input type="radio" name="finalChoice" value="revised" /> 수정한 추정값</label>
+          <label class="choice"><input type="radio" name="finalChoice" value="average" /> 두 값의 평균</label>
+          <label class="choice"><input type="radio" name="finalChoice" value="custom" /> 직접 정하기</label>
+        </div>
+        <div class="grid grid-2" style="margin-top:10px;">
+          <label class="field"><span>직접 정한 값</span><input id="customFinal" type="number" min="0" step="any" /></label>
+          <label class="field"><span>최종 추정값</span><input id="finalEstimate" type="text" readonly /></label>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step5">
+      <div class="section-head">
+        <div class="step-no">5</div>
+        <div><h2>결론 작성하고 제출하기</h2><p>자동 작성된 초안을 자신의 판단이 드러나도록 수정한 뒤 HTML 보고서를 저장합니다.</p></div>
+      </div>
+
+      <div class="btn-row" style="margin-bottom:12px;">
+        <button class="btn secondary" id="generateConclusion" type="button">결론 작성 틀 불러오기</button>
+        <button class="btn outline" id="copyConclusion" type="button">결론 복사</button>
+      </div>
+      <label class="field"><span>최종 결론<span class="required-mark" aria-hidden="true">*</span></span><textarea id="conclusion" style="min-height:190px;" placeholder="문제 분해, 가정, 추정 결과, 불확실성, 수정 과정을 자신의 문장으로 작성하세요."></textarea></label>
+      <label class="field" style="margin-top:12px;"><span>탐구를 통해 알게 된 점 또는 아쉬운 점<span class="required-mark" aria-hidden="true">*</span></span><textarea id="reflection" class="small-textarea" placeholder="정확도를 높이기 위해 추가로 필요한 자료나 다음 탐구 아이디어를 적어도 좋습니다."></textarea></label>
+
+      <div id="submissionChecklist" class="submission-checklist" aria-live="polite"></div>
+
+      <div class="preview" style="margin-top:18px;">
+        <h3>제출 보고서 미리보기</h3>
+        <div id="reportPreview"></div>
+      </div>
+
+      <div class="btn-row" style="margin-top:16px;">
+        <button class="btn good" id="downloadReport" type="button">제출용 HTML 저장</button>
+        <button class="btn secondary" id="printPage" type="button">현재 화면 인쇄·PDF</button>
+        <button class="btn danger" id="resetAll" type="button">이 탭 기록 지우기</button>
+      </div>
+      <div class="help">제출용 HTML은 인터넷 연결 없이 열 수 있는 독립 파일입니다. 파일을 열어 인쇄하면 PDF로도 저장할 수 있습니다.</div>
+    </section>
+
+    <details>
+      <summary>페르미 추정이란?</summary>
+      <p>정확한 자료가 없거나 직접 세기 어려운 수량을 몇 개의 요소로 나누고, 각 요소에 합리적인 값을 가정하여 전체 규모를 추정하는 방법입니다. 서로 다른 가정에서 서로 다른 결과가 나올 수 있으므로, 답 자체보다 분해 방식·가정의 근거·단위·결과 검토가 중요합니다.</p>
+    </details>
+
+    <p class="footer-note">이 웹툴은 수업용 고정 자료와 학생의 가정을 이용하며, 실제 통계값을 확정적으로 제시하는 도구가 아닙니다.</p>
+  </main>
+
+  <script>
+    "use strict";
+
+    const STORAGE_KEY = "fermi_estimation_webtool_v3_session";
+    const OLD_STORAGE_KEY = "fermi_estimation_webtool_v2_formula_editor";
+    const STORAGE_TTL_MS = 8 * 60 * 60 * 1000;
+    const BASIS_OPTIONS = [
+      "제공된 수업용 범위", "나의 경험", "직접 관찰·측정", "일부 표본에서 확대", "상식적 추론", "기타"
+    ];
+    const CATEGORY_ORDER = ["학교생활", "과학", "사회", "체육", "예술", "역사"];
+    const CATEGORY_ICON = {"학교생활":"🏫", "과학":"🔬", "사회":"🌐", "체육":"🏃", "예술":"🎨", "역사":"🏛️"};
+
+    const f = (key, label, unit, low, mid, high, step = 1, hint = "") => ({key, label, unit, low, mid, high, step, hint});
+
+    const topics = [
+      {
+        id:"school_a4", category:"학교생활", difficulty:"보통",
+        title:"우리 학교의 연간 A4 용지 사용량",
+        question:"우리 학교에서는 1년 동안 A4 용지를 몇 장 사용할까?", unit:"장",
+        concept:"학생과 교직원의 하루 사용량을 연간 규모로 확대합니다.",
+        formula:"(학생 수 × 학생 1인당 하루 사용량 + 교직원 수 × 교직원 1인당 하루 사용량) × 사용일 수",
+        factors:[
+          f("students","학생 수","명",450,600,750,10,"학교 전체 학생 수를 추정합니다."),
+          f("studentPages","학생 1인당 하루 사용량","장/명·일",2,4,7,0.5,"활동지와 과제물을 떠올립니다."),
+          f("teachers","교직원 수","명",40,55,70,1),
+          f("teacherPages","교직원 1인당 하루 사용량","장/명·일",10,20,35,1),
+          f("days","연간 사용일 수","일",180,195,215,1)
+        ],
+        calc:v => (v.students*v.studentPages + v.teachers*v.teacherPages)*v.days
+      },
+      {
+        id:"school_rice", category:"학교생활", difficulty:"도전",
+        title:"전교생이 1년 동안 먹는 쌀알 수",
+        question:"전교생이 1년 동안 급식으로 먹는 쌀알은 모두 몇 개일까?", unit:"개",
+        concept:"급식에서 먹는 쌀의 질량을 쌀알 한 개의 질량으로 나눕니다.",
+        formula:"학생 수 × 1인당 한 끼 쌀 섭취량 × 급식일 수 ÷ 쌀알 한 개의 질량",
+        factors:[
+          f("students","급식 이용 학생 수","명",450,600,750,10),
+          f("riceGram","1인당 한 끼 쌀 섭취량","g/명",65,90,120,5),
+          f("mealDays","연간 급식일 수","일",175,190,205,1),
+          f("grainMass","쌀알 한 개의 질량","g/개",0.020,0.025,0.030,0.001,"수업용 근삿값입니다.")
+        ],
+        calc:v => v.students*v.riceGram*v.mealDays/v.grainMass
+      },
+      {
+        id:"school_walk", category:"학교생활", difficulty:"쉬움",
+        title:"전교생의 하루 총 이동 거리",
+        question:"우리 학교 학생들이 하루 동안 걷는 거리를 모두 합하면 몇 km일까?", unit:"km",
+        concept:"한 사람의 걸음 수와 보폭을 전체 학생에게 확대합니다.",
+        formula:"학생 수 × 1인당 하루 걸음 수 × 평균 보폭 ÷ 1,000",
+        factors:[
+          f("students","학생 수","명",450,600,750,10),
+          f("steps","1인당 학교에서 걷는 걸음 수","걸음/명·일",1800,3200,5200,100),
+          f("stride","평균 보폭","m/걸음",0.55,0.68,0.80,0.01)
+        ],
+        calc:v => v.students*v.steps*v.stride/1000
+      },
+      {
+        id:"school_touch", category:"학교생활", difficulty:"보통",
+        title:"전교생의 하루 스마트폰 터치 횟수",
+        question:"전교생이 하루 동안 스마트폰 화면을 터치하는 횟수는 몇 번일까?", unit:"회",
+        concept:"사용 시간 동안의 분당 터치 횟수를 전체 학생에게 확대합니다.",
+        formula:"학생 수 × 1인당 하루 사용시간 × 60 × 분당 터치 횟수",
+        factors:[
+          f("students","학생 수","명",450,600,750,10),
+          f("hours","1인당 하루 스마트폰 사용시간","시간/명",2,4,7,0.5),
+          f("touches","사용 중 분당 터치 횟수","회/분",12,28,55,1)
+        ],
+        calc:v => v.students*v.hours*60*v.touches
+      },
+      {
+        id:"school_foodwaste", category:"학교생활", difficulty:"쉬움",
+        title:"학교 급식의 연간 음식물 쓰레기",
+        question:"우리 학교 급식에서 1년 동안 발생하는 음식물 쓰레기는 몇 kg일까?", unit:"kg",
+        concept:"한 끼당 남기는 양을 급식 인원과 급식일 수에 곱합니다.",
+        formula:"급식 인원 × 1인당 한 끼 잔반량 × 연간 급식일 수",
+        factors:[
+          f("people","하루 급식 인원","명",500,650,800,10),
+          f("waste","1인당 한 끼 잔반량","kg/명",0.025,0.060,0.120,0.005),
+          f("days","연간 급식일 수","일",175,190,205,1)
+        ],
+        calc:v => v.people*v.waste*v.days
+      },
+
+      {
+        id:"science_air", category:"과학", difficulty:"쉬움",
+        title:"한 사람이 하루 동안 들이마시는 공기",
+        question:"한 사람이 하루 동안 들이마시는 공기는 몇 L일까?", unit:"L",
+        concept:"1분 동안의 호흡량을 하루 전체로 확대합니다.",
+        formula:"1분당 호흡 횟수 × 한 번 호흡량 × 60 × 24",
+        factors:[
+          f("breaths","1분당 호흡 횟수","회/분",10,15,22,1),
+          f("volume","한 번에 들이마시는 공기량","L/회",0.35,0.50,0.70,0.05)
+        ],
+        calc:v => v.breaths*v.volume*60*24
+      },
+      {
+        id:"science_electricity", category:"과학", difficulty:"보통",
+        title:"학교의 연간 전기에너지 사용량",
+        question:"우리 학교가 1년 동안 사용하는 전기에너지는 몇 kWh일까?", unit:"kWh",
+        concept:"기기의 수·소비전력·사용시간·사용일 수를 곱합니다.",
+        formula:"전기기기 수 × 평균 소비전력 × 하루 사용시간 × 연간 사용일 수 ÷ 1,000",
+        factors:[
+          f("devices","동시에 사용하는 전기기기 수","대",220,380,650,10),
+          f("watt","기기 한 대의 평균 소비전력","W",70,130,250,10),
+          f("hours","하루 평균 사용시간","시간/일",4,7,10,0.5),
+          f("days","연간 사용일 수","일",180,220,280,5)
+        ],
+        calc:v => v.devices*v.watt*v.hours*v.days/1000
+      },
+      {
+        id:"science_molecules", category:"과학", difficulty:"도전",
+        title:"학교 건물 속 공기 분자 수",
+        question:"학교 건물 내부의 공기에는 분자가 대략 몇 개 있을까?", unit:"개",
+        concept:"공기의 부피를 몰수로 바꾸고 아보가드로수를 곱합니다.",
+        formula:"건물 내부 부피 × 1,000 ÷ 기체 1몰의 부피 × 아보가드로수",
+        factors:[
+          f("buildingVolume","학교 건물 내부 부피","m³",9000,15000,25000,500),
+          f("molarVolume","실내 조건에서 기체 1몰의 부피","L/mol",23.5,24.5,25.5,0.1),
+          f("avogadro","아보가드로수","개/mol",6.022e23,6.022e23,6.022e23,1e20,"알려진 과학 상수입니다.")
+        ],
+        calc:v => v.buildingVolume*1000/v.molarVolume*v.avogadro
+      },
+      {
+        id:"science_rain", category:"과학", difficulty:"쉬움",
+        title:"운동장에 내린 빗물의 양",
+        question:"학교 운동장에 비가 내리면 빗물은 모두 몇 L일까?", unit:"L",
+        concept:"1m²에 1mm의 비가 내리면 물 1L가 쌓인다는 관계를 이용합니다.",
+        formula:"운동장 넓이 × 강수량(mm)",
+        factors:[
+          f("area","운동장 넓이","m²",4500,7000,10000,100),
+          f("rain","강수량","mm",10,20,50,1)
+        ],
+        calc:v => v.area*v.rain
+      },
+      {
+        id:"science_leaves", category:"과학", difficulty:"보통",
+        title:"학교 나무의 전체 나뭇잎 수",
+        question:"우리 학교의 모든 나무에는 나뭇잎이 몇 장 있을까?", unit:"장",
+        concept:"나무 한 그루를 가지와 잎으로 단계적으로 분해합니다.",
+        formula:"나무 수 × 한 그루의 큰 가지 수 × 큰 가지당 작은 가지 수 × 작은 가지당 나뭇잎 수",
+        factors:[
+          f("trees","학교의 나무 수","그루",35,70,130,5),
+          f("bigBranches","한 그루의 큰 가지 수","개/그루",6,10,16,1),
+          f("smallBranches","큰 가지당 작은 가지 수","개/큰 가지",12,25,45,1),
+          f("leaves","작은 가지당 나뭇잎 수","장/작은 가지",20,45,90,5)
+        ],
+        calc:v => v.trees*v.bigBranches*v.smallBranches*v.leaves
+      },
+
+      {
+        id:"social_delivery", category:"사회", difficulty:"보통",
+        title:"도시의 하루 배달 음식 주문량",
+        question:"인구 100만 명 규모의 도시에서는 하루에 배달 음식이 몇 건 주문될까?", unit:"건",
+        concept:"인구를 가구로 바꾸고 주문하는 가구의 비율과 횟수를 적용합니다.",
+        formula:"인구 ÷ 가구당 인원 × 하루 주문 가구 비율 × 주문 가구당 주문 횟수",
+        factors:[
+          f("population","도시 인구","명",700000,1000000,1300000,10000),
+          f("householdSize","가구당 평균 인원","명/가구",2.0,2.3,2.7,0.1),
+          f("orderPct","하루에 주문하는 가구 비율","%",4,9,16,0.5),
+          f("orders","주문 가구당 주문 횟수","건/가구",1.0,1.15,1.4,0.05)
+        ],
+        calc:v => v.population/v.householdSize*(v.orderPct/100)*v.orders
+      },
+      {
+        id:"social_cups", category:"사회", difficulty:"쉬움",
+        title:"도시의 하루 일회용 컵 사용량",
+        question:"인구 100만 명 규모의 도시에서 하루 동안 일회용 음료 컵은 몇 개 사용될까?", unit:"개",
+        concept:"구매하는 사람의 비율과 1인당 구매량을 인구에 적용합니다.",
+        formula:"도시 인구 × 하루 음료 구매 비율 × 구매자 1인당 컵 수",
+        factors:[
+          f("population","도시 인구","명",700000,1000000,1300000,10000),
+          f("buyerPct","하루 음료 구매 비율","%",18,35,55,1),
+          f("cups","구매자 1인당 컵 수","개/명",1.0,1.3,1.8,0.1)
+        ],
+        calc:v => v.population*(v.buyerPct/100)*v.cups
+      },
+      {
+        id:"social_commute", category:"사회", difficulty:"쉬움",
+        title:"도시 주민의 하루 총 출퇴근 시간",
+        question:"한 도시의 주민들이 하루 동안 출퇴근에 쓰는 시간을 모두 합하면 몇 시간일까?", unit:"시간",
+        concept:"출퇴근 인원과 1인당 왕복 시간을 곱합니다.",
+        formula:"출퇴근 인원 × 1인당 왕복 출퇴근 시간(분) ÷ 60",
+        factors:[
+          f("commuters","하루 출퇴근 인원","명",200000,360000,550000,10000),
+          f("minutes","1인당 왕복 출퇴근 시간","분/명",45,75,120,5)
+        ],
+        calc:v => v.commuters*v.minutes/60
+      },
+      {
+        id:"social_buses", category:"사회", difficulty:"도전",
+        title:"도시에 필요한 시내버스 수",
+        question:"인구 100만 명 규모의 도시에서 하루 수요를 감당하려면 시내버스가 몇 대 필요할까?", unit:"대",
+        concept:"전체 버스 이용 건수를 버스 한 대가 하루에 수송하는 인원으로 나눕니다.",
+        formula:"인구 × 버스 이용 인구 비율 × 1인당 하루 탑승 횟수 ÷ 버스 1대의 하루 수송 인원",
+        factors:[
+          f("population","도시 인구","명",700000,1000000,1300000,10000),
+          f("usePct","하루 버스 이용 인구 비율","%",12,22,35,1),
+          f("rides","이용자 1인당 하루 탑승 횟수","회/명",1.6,2.1,2.8,0.1),
+          f("capacity","버스 1대의 하루 수송 인원","명/대",650,900,1250,50)
+        ],
+        calc:v => v.population*(v.usePct/100)*v.rides/v.capacity
+      },
+      {
+        id:"social_waste", category:"사회", difficulty:"쉬움",
+        title:"도시의 하루 생활 쓰레기",
+        question:"인구 100만 명 규모의 도시에서 하루 동안 생활 쓰레기는 몇 톤 발생할까?", unit:"톤",
+        concept:"1인당 하루 배출량을 전체 인구에 적용한 뒤 kg을 톤으로 바꿉니다.",
+        formula:"도시 인구 × 1인당 하루 쓰레기 배출량 ÷ 1,000",
+        factors:[
+          f("population","도시 인구","명",700000,1000000,1300000,10000),
+          f("kg","1인당 하루 배출량","kg/명",0.55,0.95,1.45,0.05)
+        ],
+        calc:v => v.population*v.kg/1000
+      },
+
+      {
+        id:"sports_soccer", category:"체육", difficulty:"보통",
+        title:"축구선수의 한 시즌 총 이동 거리",
+        question:"축구선수 한 명은 경기와 훈련을 포함해 한 시즌 동안 몇 km를 달릴까?", unit:"km",
+        concept:"경기 이동거리와 훈련 이동거리를 따로 계산해 더합니다.",
+        formula:"경기당 이동거리 × 출전 경기 수 + 훈련 1회 이동거리 × 훈련 횟수",
+        factors:[
+          f("matchKm","경기당 이동거리","km/경기",7,10,13,0.5),
+          f("matches","한 시즌 출전 경기 수","경기",20,35,50,1),
+          f("trainingKm","훈련 1회 이동거리","km/회",3,6,10,0.5),
+          f("trainingDays","한 시즌 훈련 횟수","회",120,190,260,5)
+        ],
+        calc:v => v.matchKm*v.matches + v.trainingKm*v.trainingDays
+      },
+      {
+        id:"sports_pe", category:"체육", difficulty:"쉬움",
+        title:"전교생의 연간 체육수업 이동 거리",
+        question:"우리 학교 학생들이 체육수업에서 1년 동안 걷거나 뛰는 거리는 모두 몇 km일까?", unit:"km",
+        concept:"학생 한 명이 한 수업에서 이동하는 거리를 전체 수업에 확대합니다.",
+        formula:"학생 수 × 1인당 수업 1회 이동거리 × 연간 체육수업 수",
+        factors:[
+          f("students","학생 수","명",450,600,750,10),
+          f("kmClass","1인당 수업 1회 이동거리","km/명·회",0.8,1.8,3.5,0.1),
+          f("classes","연간 체육수업 수","회",45,70,95,1)
+        ],
+        calc:v => v.students*v.kmClass*v.classes
+      },
+      {
+        id:"sports_basketball", category:"체육", difficulty:"쉬움",
+        title:"농구 경기의 전체 드리블 횟수",
+        question:"농구 경기 한 경기에서 공은 대략 몇 번 바닥에 튀겨질까?", unit:"회",
+        concept:"양 팀의 공격 횟수와 공격 한 번당 드리블 횟수를 곱합니다.",
+        formula:"팀당 공격 횟수 × 2팀 × 공격 한 번당 드리블 횟수",
+        factors:[
+          f("possessions","팀당 공격 횟수","회/팀",65,90,115,5),
+          f("dribbles","공격 한 번당 드리블 횟수","회/공격",3,7,14,1)
+        ],
+        calc:v => v.possessions*2*v.dribbles
+      },
+      {
+        id:"sports_steps", category:"체육", difficulty:"쉬움",
+        title:"전교생이 운동장 한 바퀴를 달릴 때의 총걸음",
+        question:"전교생이 운동장 한 바퀴를 달리면 모두 몇 걸음을 내딛을까?", unit:"걸음",
+        concept:"운동장 둘레를 보폭으로 나누어 1인당 걸음 수를 구한 뒤 전체 학생에게 확대합니다.",
+        formula:"운동장 둘레 ÷ 평균 보폭 × 학생 수",
+        factors:[
+          f("track","운동장 한 바퀴 길이","m",250,350,450,10),
+          f("stride","달릴 때 평균 보폭","m/걸음",0.75,1.05,1.35,0.05),
+          f("students","학생 수","명",450,600,750,10)
+        ],
+        calc:v => v.track/v.stride*v.students
+      },
+      {
+        id:"sports_marathon", category:"체육", difficulty:"보통",
+        title:"마라톤 대회의 총 에너지 소비량",
+        question:"마라톤 참가자들이 한 대회에서 소비하는 에너지는 모두 몇 kcal일까?", unit:"kcal",
+        concept:"체중·거리·거리당 에너지 소비량을 참가자 전체에 적용합니다.",
+        formula:"참가자 수 × 평균 체중 × 주행 거리 × 체중 1kg·거리 1km당 에너지 소비량",
+        factors:[
+          f("participants","참가자 수","명",1000,5000,12000,100),
+          f("weight","참가자 평균 체중","kg/명",55,68,82,1),
+          f("distance","주행 거리","km",10,21.1,42.195,0.1),
+          f("coeff","체중 1kg·거리 1km당 소비량","kcal/(kg·km)",0.85,1.0,1.15,0.05)
+        ],
+        calc:v => v.participants*v.weight*v.distance*v.coeff
+      },
+
+      {
+        id:"arts_frames", category:"예술", difficulty:"쉬움",
+        title:"영화 한 편의 정지 화면 수",
+        question:"영화 한 편은 몇 장의 정지 화면으로 이루어져 있을까?", unit:"장",
+        concept:"초당 프레임 수를 전체 상영시간으로 확대합니다.",
+        formula:"초당 프레임 수 × 상영시간(분) × 60",
+        factors:[
+          f("fps","초당 프레임 수","장/초",24,30,60,1),
+          f("minutes","영화 상영시간","분",80,120,180,5)
+        ],
+        calc:v => v.fps*v.minutes*60
+      },
+      {
+        id:"arts_mural", category:"예술", difficulty:"보통",
+        title:"학교 외벽 벽화에 필요한 물감",
+        question:"학교 건물 외벽에 벽화를 그리려면 물감이 몇 L 필요할까?", unit:"L",
+        concept:"칠할 넓이와 덧칠 횟수를 물감 1L의 도포 면적으로 나눕니다.",
+        formula:"벽면 넓이 × 덧칠 횟수 ÷ 물감 1L당 칠할 수 있는 넓이",
+        factors:[
+          f("area","벽화 면적","m²",80,180,350,10),
+          f("coats","덧칠 횟수","회",1,2,3,1),
+          f("coverage","물감 1L당 도포 면적","m²/L",5,8,11,0.5)
+        ],
+        calc:v => v.area*v.coats/v.coverage
+      },
+      {
+        id:"arts_notes", category:"예술", difficulty:"보통",
+        title:"노래 한 곡의 전체 음표 수",
+        question:"여러 악기와 목소리로 연주되는 노래 한 곡에는 음표가 모두 몇 개 있을까?", unit:"개",
+        concept:"박자 수에 박자당 음표 수와 동시에 연주하는 파트 수를 적용합니다.",
+        formula:"분당 박자 수 × 곡 길이 × 박자당 평균 음표 수 × 연주 파트 수",
+        factors:[
+          f("bpm","분당 박자 수","박/분",70,110,160,5),
+          f("minutes","곡 길이","분",2.5,3.5,5,0.5),
+          f("notesBeat","박자당 평균 음표 수","개/박",0.8,1.7,3.0,0.1),
+          f("parts","동시에 연주하는 파트 수","파트",3,7,14,1)
+        ],
+        calc:v => v.bpm*v.minutes*v.notesBeat*v.parts
+      },
+      {
+        id:"arts_exhibit", category:"예술", difficulty:"쉬움",
+        title:"전교생 작품 전시에 필요한 벽 길이",
+        question:"전교생의 미술 작품을 한 줄로 전시하려면 벽이 몇 m 필요할까?", unit:"m",
+        concept:"작품의 가로 길이와 작품 사이 간격을 작품 수만큼 반복합니다.",
+        formula:"작품 수 × (작품 한 점의 가로 길이 + 작품 사이 간격) ÷ 100",
+        factors:[
+          f("artworks","전시 작품 수","점",450,600,750,10),
+          f("width","작품 한 점의 가로 길이","cm/점",21,30,45,1),
+          f("gap","작품 사이 간격","cm/점",3,7,12,1)
+        ],
+        calc:v => v.artworks*(v.width+v.gap)/100
+      },
+      {
+        id:"arts_video", category:"예술", difficulty:"도전",
+        title:"학교 축제 영상의 저장 용량",
+        question:"학교 축제 공연을 여러 카메라로 촬영하면 저장 공간이 몇 GB 필요할까?", unit:"GB",
+        concept:"초당 데이터량을 촬영시간과 카메라 수에 적용하고 비트를 바이트로 바꿉니다.",
+        formula:"영상 비트레이트(Mbps) × 촬영시간(분) × 60 × 카메라 수 ÷ 8 ÷ 1,000",
+        factors:[
+          f("bitrate","카메라 1대의 영상 비트레이트","Mbps",8,20,50,1),
+          f("minutes","촬영시간","분",90,180,300,10),
+          f("cameras","촬영 카메라 수","대",1,3,6,1)
+        ],
+        calc:v => v.bitrate*v.minutes*60*v.cameras/8/1000
+      },
+
+      {
+        id:"history_courier", category:"역사", difficulty:"보통",
+        title:"조선 시대 파발의 한양–부산 전달 시간",
+        question:"조선 시대 파발이 한양에서 부산까지 소식을 전달하는 데 며칠이 걸렸을까?", unit:"일",
+        concept:"전체 거리를 하루 이동거리로 나누고 교대·휴식 지연을 더합니다.",
+        formula:"한양–부산 이동거리 ÷ 하루 이동거리 + 교대·휴식 지연일",
+        factors:[
+          f("distance","한양–부산 이동거리","km",380,450,520,10),
+          f("dailyKm","하루 이동거리","km/일",70,110,160,5),
+          f("delay","교대·휴식으로 더 걸리는 시간","일",0.3,1.0,2.0,0.1)
+        ],
+        calc:v => v.distance/v.dailyKm+v.delay
+      },
+      {
+        id:"history_rice", category:"역사", difficulty:"도전",
+        title:"조선 시대 군사 1만 명의 한 달 쌀",
+        question:"조선 시대 군사 1만 명에게 한 달 동안 필요한 쌀은 몇 섬일까?", unit:"섬",
+        concept:"전체 쌀 질량을 계산한 뒤 수업용 단위인 1섬의 질량으로 나눕니다.",
+        formula:"군사 수 × 1인당 하루 쌀 소비량 × 일수 ÷ 1섬의 쌀 질량",
+        factors:[
+          f("soldiers","군사 수","명",8000,10000,12000,500),
+          f("kgDay","1인당 하루 쌀 소비량","kg/명·일",0.45,0.65,0.90,0.05),
+          f("days","기간","일",25,30,35,1),
+          f("seomKg","1섬으로 보는 쌀 질량","kg/섬",120,144,160,2,"시대와 기준에 따라 달라질 수 있는 수업용 가정값입니다.")
+        ],
+        calc:v => v.soldiers*v.kgDay*v.days/v.seomKg
+      },
+      {
+        id:"history_tiles", category:"역사", difficulty:"보통",
+        title:"궁궐 지붕에 필요한 기와 수",
+        question:"큰 궁궐 건물의 지붕을 덮으려면 기와가 몇 장 필요했을까?", unit:"장",
+        concept:"전체 지붕 면적을 기와 한 장의 유효 면적으로 나누고 겹침을 보정합니다.",
+        formula:"지붕 전체 넓이 ÷ 기와 한 장의 유효 면적 × 겹침·파손 보정계수",
+        factors:[
+          f("roofArea","지붕 전체 넓이","m²",700,1400,2600,50),
+          f("tileArea","기와 한 장의 유효 면적","m²/장",0.025,0.040,0.060,0.005),
+          f("overlap","겹침·파손 보정계수","배",1.10,1.25,1.45,0.05)
+        ],
+        calc:v => v.roofArea/v.tileArea*v.overlap
+      },
+      {
+        id:"history_stones", category:"역사", difficulty:"도전",
+        title:"성곽을 쌓는 데 필요한 돌 수",
+        question:"긴 성곽 구간을 쌓으려면 평균적인 돌이 모두 몇 개 필요했을까?", unit:"개",
+        concept:"성벽의 부피를 돌 한 개의 평균 부피로 나눕니다.",
+        formula:"성벽 길이 × 높이 × 두께 ÷ 돌 한 개의 평균 부피",
+        factors:[
+          f("length","성벽 길이","m",800,1800,3500,100),
+          f("height","성벽 평균 높이","m",3,5,8,0.5),
+          f("thickness","성벽 평균 두께","m",2,3.5,5,0.5),
+          f("stoneVolume","돌 한 개의 평균 부피","m³/개",0.015,0.035,0.080,0.005)
+        ],
+        calc:v => v.length*v.height*v.thickness/v.stoneVolume
+      },
+      {
+        id:"history_copy", category:"역사", difficulty:"보통",
+        title:"역사 기록 한 권의 필사 시간",
+        question:"한 권의 긴 역사 기록을 손으로 베껴 쓰는 데 몇 시간이 걸렸을까?", unit:"시간",
+        concept:"전체 글자 수를 시간당 필사량으로 나눈 뒤 휴식과 교정 시간을 보정합니다.",
+        formula:"전체 글자 수 ÷ 시간당 필사 글자 수 × 휴식·교정 보정계수",
+        factors:[
+          f("characters","기록의 전체 글자 수","자",80000,180000,400000,10000),
+          f("speed","시간당 필사 글자 수","자/시간",250,450,700,25),
+          f("factor","휴식·교정 보정계수","배",1.10,1.30,1.60,0.05)
+        ],
+        calc:v => v.characters/v.speed*v.factor
+      }
+    ];
+
+    const defaultState = () => ({
+      student:{grade:"", classNo:"", studentNo:"", name:""},
+      selectedCategory:"학교생활",
+      search:"",
+      topicId:"school_a4",
+      topicData:{}
+    });
+
+    let state = loadState();
+    let saveTimer = null;
+
+    function loadState(){
+      try {
+        localStorage.removeItem(OLD_STORAGE_KEY);
+        const envelope = JSON.parse(sessionStorage.getItem(STORAGE_KEY));
+        if(!envelope || typeof envelope !== "object" || !envelope.state) return defaultState();
+        if(Date.now() - Number(envelope.savedAt || 0) > STORAGE_TTL_MS){
+          sessionStorage.removeItem(STORAGE_KEY);
+          return defaultState();
+        }
+        return Object.assign(defaultState(), envelope.state);
+      } catch(e){ return defaultState(); }
+    }
+
+    function currentTopic(){ return topics.find(t => t.id === state.topicId) || topics[0]; }
+
+    function createTopicState(topic){
+      const values = {};
+      topic.factors.forEach(x => {
+        values[x.key] = {low:x.low, mid:x.mid, high:x.high, basis:"제공된 수업용 범위", note:""};
+      });
+      return {
+        reason:"", initialGuess:"", modelComment:"", values,
+        customFactors:[], expression:parseDefaultExpression(topic), formulaEditorOpen:false,
+        uncertainFactor:topic.factors[0].key, uncertainReason:"",
+        revisionFactor:topic.factors[0].key, revisionValue:"", revisionReason:"",
+        finalChoice:"original", customFinal:"", conclusion:"", reflection:""
+      };
+    }
+
+    function topicState(topic = currentTopic()){
+      if(!state.topicData[topic.id]) state.topicData[topic.id] = createTopicState(topic);
+      const ts = state.topicData[topic.id];
+      if(!Array.isArray(ts.customFactors)) ts.customFactors = [];
+      if(!Array.isArray(ts.expression) || !ts.expression.length) ts.expression = parseDefaultExpression(topic);
+      if(typeof ts.formulaEditorOpen !== "boolean") ts.formulaEditorOpen = false;
+      normalizeExpression(ts.expression);
+      allFactors(topic, ts).forEach(x => {
+        if(!ts.values[x.key]) ts.values[x.key] = {low:x.low, mid:x.mid, high:x.high, basis:x.custom?"나의 경험":"제공된 수업용 범위", note:""};
+      });
+      ensureAnalysisSelections(topic, ts);
+      return ts;
+    }
+
+    function scheduleSave(){
+      const el = document.getElementById("saveState");
+      if(el) el.textContent = "저장 중…";
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {
+        try {
+          sessionStorage.setItem(STORAGE_KEY, JSON.stringify({savedAt:Date.now(), state}));
+          if(el) el.textContent = "이 탭에 자동 저장됨";
+        } catch(e) {
+          if(el) el.textContent = "브라우저 저장 제한됨";
+        }
+      }, 350);
+    }
+
+    function num(v, fallback = NaN){
+      if(v === null || v === undefined || (typeof v === "string" && v.trim() === "")) return fallback;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : fallback;
+    }
+
+    function fmt(n, maxDigits = 2){
+      if(!Number.isFinite(n)) return "계산 불가";
+      const a = Math.abs(n);
+      if(a !== 0 && (a >= 1e12 || a < 0.001)) return n.toExponential(3).replace("e+", "×10^").replace("e-", "×10^-");
+      return n.toLocaleString("ko-KR", {maximumFractionDigits:maxDigits});
+    }
+
+    function fmtInput(n){
+      if(!Number.isFinite(Number(n))) return "";
+      return String(Number(n));
+    }
+
+    function sci(n){
+      if(!Number.isFinite(n) || n === 0) return "0";
+      const e = Math.floor(Math.log10(Math.abs(n)));
+      const m = n / Math.pow(10, e);
+      return `${m.toFixed(2)} × 10<sup>${e}</sup>`;
+    }
+
+    function orderText(n){
+      if(!Number.isFinite(n) || n <= 0) return "규모를 판단할 수 없음";
+      const e = Math.floor(Math.log10(n));
+      return `약 10<sup>${e}</sup> 규모`;
+    }
+
+    function koreanScale(n){
+      if(!Number.isFinite(n)) return "";
+      const a = Math.abs(n);
+      if(a >= 1e12) return `${(n/1e12).toLocaleString("ko-KR", {maximumFractionDigits:2})}조`;
+      if(a >= 1e8) return `${(n/1e8).toLocaleString("ko-KR", {maximumFractionDigits:2})}억`;
+      if(a >= 1e4) return `${(n/1e4).toLocaleString("ko-KR", {maximumFractionDigits:2})}만`;
+      return fmt(n);
+    }
+
+    function escapeHTML(value){
+      return String(value ?? "").replace(/[&<>'"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[ch]));
+    }
+
+    function cleanFileName(value){
+      return String(value || "학생").replace(/[\\/:*?"<>|\s]+/g, "_").replace(/^_+|_+$/g, "") || "학생";
+    }
+
+     const OP_LABEL = {"+":"+", "-":"−", "*":"×", "/":"÷"};
+    const OP_VALUE = {"+":"+", "−":"-", "-":"-", "×":"*", "*":"*", "÷":"/", "/":"/"};
+
+    function parseDefaultExpression(topic){
+      let src = String(topic.calc || "");
+      const arrow = src.indexOf("=>");
+      if(arrow >= 0) src = src.slice(arrow + 2).trim();
+      if(src.startsWith("{")){
+        const m = src.match(/return\s+([^;}]*)/);
+        src = m ? m[1] : "";
+      }
+      const raw = src.match(/v\.[A-Za-z_][A-Za-z0-9_]*|\d+(?:\.\d+)?(?:e[+-]?\d+)?|[()+\-*\/]/gi) || [];
+      const terms = [];
+      let pendingOp = "", pendingLeft = 0;
+      raw.forEach(tok => {
+        if(tok === "("){ pendingLeft++; return; }
+        if(tok === ")"){
+          if(terms.length) terms[terms.length-1].right = (terms[terms.length-1].right || 0) + 1;
+          return;
+        }
+        if(["+","-","*","/"].includes(tok)){ pendingOp = tok; return; }
+        const base = {op:terms.length ? (pendingOp || "*") : "", left:pendingLeft, right:0};
+        if(tok.startsWith("v.")) terms.push({...base, kind:"factor", key:tok.slice(2)});
+        else {
+          const value = Number(tok);
+          if(Number.isFinite(value)) terms.push({...base, kind:"number", value});
+        }
+        pendingOp = ""; pendingLeft = 0;
+      });
+      normalizeExpression(terms);
+      return terms;
+    }
+
+    function cloneExpression(expr){
+      return (expr || []).map(x => ({...x}));
+    }
+
+    function normalizeExpression(expr){
+      if(!Array.isArray(expr)) return [];
+      expr.forEach((term,i) => {
+        term.left = Math.max(0, Math.min(3, parseInt(term.left || 0,10) || 0));
+        term.right = Math.max(0, Math.min(3, parseInt(term.right || 0,10) || 0));
+        term.op = i === 0 ? "" : (OP_VALUE[term.op] || "*");
+      });
+      return expr;
+    }
+
+    function allFactors(topic = currentTopic(), ts = topicState(topic)){
+      return [...topic.factors, ...((ts.customFactors || []).map(x => ({...x, custom:true})))];
+    }
+
+    function factorByKey(key, topic = currentTopic(), ts = topicState(topic)){
+      return allFactors(topic, ts).find(x => x.key === key);
+    }
+
+    function activeFactors(topic = currentTopic(), ts = topicState(topic)){
+      const keys = new Set((ts.expression || []).filter(x => x.kind === "factor").map(x => x.key));
+      return allFactors(topic, ts).filter(x => keys.has(x.key));
+    }
+
+    function expressionStructure(expr){
+      if(!Array.isArray(expr) || !expr.length) return {valid:false, message:"추정식에 항이 없습니다."};
+      if(!expr.some(x => x.kind === "factor")) return {valid:false, message:"추정식에는 최소 1개의 추정 요소가 필요합니다."};
+      let balance = 0;
+      for(let i=0;i<expr.length;i++){
+        const term = expr[i];
+        if(i>0 && !["+","-","*","/"].includes(OP_VALUE[term.op] || term.op)) return {valid:false, message:`${i+1}번째 항 앞의 연산자를 확인하세요.`};
+        balance += Number(term.left || 0);
+        balance -= Number(term.right || 0);
+        if(balance < 0) return {valid:false, message:"닫는 괄호가 여는 괄호보다 먼저 나왔습니다."};
+      }
+      if(balance !== 0) return {valid:false, message:"여는 괄호와 닫는 괄호의 개수가 맞지 않습니다."};
+      return {valid:true, message:"추정식 구조가 올바릅니다."};
+    }
+
+    function expressionText(topic = currentTopic(), ts = topicState(topic)){
+      return (ts.expression || []).map((term,i) => {
+        const op = i ? ` ${OP_LABEL[OP_VALUE[term.op] || "*"] || "×"} ` : "";
+        const left = "(".repeat(Number(term.left || 0));
+        const right = ")".repeat(Number(term.right || 0));
+        let body = "?";
+        if(term.kind === "factor") body = factorByKey(term.key, topic, ts)?.label || "삭제된 요소";
+        else if(term.kind === "number") body = fmtInput(term.value);
+        return `${op}${left}${body}${right}`;
+      }).join("");
+    }
+
+    function expressionSignature(expr){
+      return JSON.stringify((expr || []).map(x => ({kind:x.kind,key:x.key,value:Number(x.value),op:OP_VALUE[x.op]||x.op||"",left:Number(x.left||0),right:Number(x.right||0)})));
+    }
+
+    function isDefaultExpression(topic = currentTopic(), ts = topicState(topic)){
+      return !(ts.customFactors || []).length && expressionSignature(ts.expression) === expressionSignature(parseDefaultExpression(topic));
+    }
+
+    function evaluateExpression(expr, values){
+      const structure = expressionStructure(expr);
+      if(!structure.valid) return NaN;
+      const tokens = [];
+      (expr || []).forEach((term,i) => {
+        if(i) tokens.push(OP_VALUE[term.op] || "*");
+        for(let k=0;k<(term.left||0);k++) tokens.push("(");
+        if(term.kind === "factor") tokens.push(num(values[term.key], NaN));
+        else tokens.push(num(term.value, NaN));
+        for(let k=0;k<(term.right||0);k++) tokens.push(")");
+      });
+      const output = [], ops = [], prec = {"+":1,"-":1,"*":2,"/":2};
+      for(const tok of tokens){
+        if(typeof tok === "number"){
+          if(!Number.isFinite(tok)) return NaN;
+          output.push(tok);
+        } else if(tok === "(") ops.push(tok);
+        else if(tok === ")"){
+          while(ops.length && ops[ops.length-1] !== "(") output.push(ops.pop());
+          if(!ops.length) return NaN;
+          ops.pop();
+        } else if(tok in prec){
+          while(ops.length && ops[ops.length-1] in prec && prec[ops[ops.length-1]] >= prec[tok]) output.push(ops.pop());
+          ops.push(tok);
+        } else return NaN;
+      }
+      while(ops.length){
+        const op = ops.pop(); if(op === "(") return NaN; output.push(op);
+      }
+      const stack = [];
+      for(const tok of output){
+        if(typeof tok === "number") stack.push(tok);
+        else {
+          if(stack.length < 2) return NaN;
+          const b = stack.pop(), a = stack.pop();
+          let r;
+          if(tok === "+") r = a+b;
+          else if(tok === "-") r = a-b;
+          else if(tok === "*") r = a*b;
+          else if(tok === "/") r = b === 0 ? NaN : a/b;
+          if(!Number.isFinite(r)) return NaN;
+          stack.push(r);
+        }
+      }
+      return stack.length === 1 ? stack[0] : NaN;
+    }
+
+    function ensureAnalysisSelections(topic = currentTopic(), ts = topicState(topic)){
+      const active = activeFactors(topic, ts);
+      if(!active.length) return;
+      if(!active.some(x => x.key === ts.uncertainFactor)) ts.uncertainFactor = active[0].key;
+      if(!active.some(x => x.key === ts.revisionFactor)){
+        ts.revisionFactor = active[0].key;
+        ts.revisionValue = "";
+      }
+    }
+
+    function getValues(scenario = "mid", override = null){
+      const t = currentTopic();
+      const ts = topicState(t);
+      const out = {};
+      allFactors(t, ts).forEach(x => {
+        out[x.key] = num(ts.values[x.key]?.[scenario], NaN);
+      });
+      if(override) Object.assign(out, override);
+      return out;
+    }
+
+    function safeCalc(values){
+      try {
+        const r = evaluateExpression(topicState().expression, values);
+        return Number.isFinite(r) ? r : NaN;
+      } catch(e){ return NaN; }
+    }
+
+    function computeRange(){
+      const t = currentTopic();
+      const ts = topicState(t);
+      const factors = activeFactors(t, ts);
+      const inputsValid = factors.length > 0 && factors.every(x => {
+        const values = ["low","mid","high"].map(s => num(ts.values[x.key]?.[s], NaN));
+        return values.every(v => Number.isFinite(v) && v >= 0) && values[0] <= values[1] && values[1] <= values[2];
+      });
+      if(!inputsValid) return {min:NaN, rep:NaN, max:NaN};
+      const count = factors.length;
+      const results = [];
+      const combinations = Math.pow(2,count);
+      for(let mask=0; mask<combinations; mask++){
+        const v = getValues("mid");
+        factors.forEach((x,i) => {
+          const side = (mask & (1<<i)) ? "high" : "low";
+          v[x.key] = num(ts.values[x.key]?.[side], x[side]);
+        });
+        const r = safeCalc(v);
+        if(Number.isFinite(r)) results.push(r);
+      }
+      const rep = safeCalc(getValues("mid"));
+      return {
+        min: results.length ? Math.min(...results) : NaN,
+        rep,
+        max: results.length ? Math.max(...results) : NaN
+      };
+    }
+
+    function computeSensitivity(){
+      const t = currentTopic();
+      const ts = topicState(t);
+      const factors = activeFactors(t, ts);
+      const inputsValid = factors.length > 0 && factors.every(x => {
+        const values = ["low","mid","high"].map(s => num(ts.values[x.key]?.[s], NaN));
+        return values.every(v => Number.isFinite(v) && v >= 0) && values[0] <= values[1] && values[1] <= values[2];
+      });
+      if(!inputsValid) return [];
+      const baseValues = getValues("mid");
+      const base = safeCalc(baseValues);
+      return factors.map(x => {
+        const low = safeCalc({...baseValues, [x.key]:num(ts.values[x.key].low, x.low)});
+        const high = safeCalc({...baseValues, [x.key]:num(ts.values[x.key].high, x.high)});
+        const diff = (Number.isFinite(low) && Number.isFinite(high)) ? Math.abs(high-low) : NaN;
+        return {
+          key:x.key, label:x.label, unit:x.unit,
+          lowResult:Number.isFinite(low)&&Number.isFinite(high)?Math.min(low,high):NaN,
+          highResult:Number.isFinite(low)&&Number.isFinite(high)?Math.max(low,high):NaN,
+          diff, pct: Number.isFinite(base) && base !== 0 && Number.isFinite(diff) ? diff/Math.abs(base)*100 : 0
+        };
+      }).sort((a,b) => b.pct-a.pct);
+    }
+
+    function revisedResult(){
+      const t = currentTopic();
+      const ts = topicState(t);
+      const factors = activeFactors(t, ts);
+      const factor = factors.find(x => x.key === ts.revisionFactor) || factors[0];
+      if(!factor) return NaN;
+      const revised = num(ts.revisionValue, NaN);
+      if(!Number.isFinite(revised) || revised < 0) return NaN;
+      return safeCalc(getValues("mid", {[factor.key]:revised}));
+    }
+
+    function finalResult(){
+      const range = computeRange();
+      const revised = revisedResult();
+      const ts = topicState();
+      if(ts.finalChoice === "revised") return revised;
+      if(ts.finalChoice === "average") return (range.rep + revised)/2;
+      if(ts.finalChoice === "custom") return num(ts.customFinal, NaN);
+      return range.rep;
+    }
+
+    function renderCategories(){
+      const wrap = document.getElementById("categoryTabs");
+      wrap.innerHTML = CATEGORY_ORDER.map(cat => `
+        <button type="button" class="category-btn ${state.selectedCategory===cat?"active":""}" data-category="${cat}">${CATEGORY_ICON[cat]} ${cat}</button>
+      `).join("");
+    }
+
+   function renderTopics(){
+     const q = (state.search || "").trim().toLowerCase();
+      const list = topics.filter(t => {
+        const matchesCategory = q ? true : t.category === state.selectedCategory;
+        const haystack = [t.title, t.question, t.concept, t.category].join(" ").toLowerCase();
+        return matchesCategory && (!q || haystack.includes(q));
+      });
+      const grid = document.getElementById("topicGrid");
+      grid.innerHTML = list.length ? list.map(t => `
+        <button type="button" class="topic-card ${state.topicId===t.id?"selected":""}" data-topic="${t.id}">
+          <span class="badge">${CATEGORY_ICON[t.category]} ${escapeHTML(t.category)}</span>
+          <span class="difficulty">${escapeHTML(t.difficulty)}</span>
+          <h3>${escapeHTML(t.title)}</h3>
+          <p>${escapeHTML(t.concept)}</p>
+        </button>
+      `).join("") : `<div class="notice" style="grid-column:1/-1;">검색 결과가 없습니다.</div>`;
+    }
+
+    function renderSelectedTopic(){
+      const t = currentTopic();
+      const ts = topicState(t);
+      document.getElementById("selectedTopic").innerHTML = `
+        <span class="badge">${CATEGORY_ICON[t.category]} ${escapeHTML(t.category)} · ${escapeHTML(t.difficulty)}</span>
+        <h3>${escapeHTML(t.question)}</h3>
+        <p><strong>최종 단위:</strong> ${escapeHTML(t.unit)}</p>
+        <p><strong>분해 아이디어:</strong> ${escapeHTML(t.concept)}</p>
+        <div class="formula-box"><strong>기본 추정식</strong><br>${escapeHTML(t.formula)}</div>
+      `;
+      document.getElementById("topicReason").value = ts.reason || "";
+      document.getElementById("initialGuess").value = ts.initialGuess ?? "";
+      document.getElementById("initialUnit").value = t.unit;
+      document.getElementById("modelComment").value = ts.modelComment || "";
+      renderFormulaEditor();
+    }
+
+    function basisOptions(selected){
+      return BASIS_OPTIONS.map(x => `<option ${x===selected?"selected":""}>${escapeHTML(x)}</option>`).join("");
+    }
+
+    function renderFormulaEditor(){
+      const t = currentTopic();
+      const ts = topicState(t);
+      const structure = expressionStructure(ts.expression);
+      const current = expressionText(t, ts);
+      const defaultMode = isDefaultExpression(t, ts);
+      document.getElementById("formulaSummary").innerHTML = `
+        <div class="formula-head">
+          <div><strong>${escapeHTML(t.question)}</strong><div class="formula-current">${escapeHTML(current)}</div></div>
+          <button type="button" class="btn outline" id="toggleFormulaEditor">${ts.formulaEditorOpen?"추정식 편집 닫기":"추정식 수정하기"}</button>
+        </div>
+        <div class="formula-status ${structure.valid?"good":"warn"}">${defaultMode?"기본 추정식을 사용 중입니다.":"수정한 추정식을 사용 중입니다."} ${escapeHTML(structure.message)}</div>
+        <div class="help">기본식은 그대로 사용할 수 있고, 필요할 때만 요소·연산·괄호·순서를 바꿀 수 있습니다.</div>
+      `;
+      const editor = document.getElementById("formulaEditor");
+      editor.hidden = !ts.formulaEditorOpen;
+      if(!ts.formulaEditorOpen){ editor.innerHTML = ""; return; }
+      const factors = allFactors(t, ts);
+      const factorOptions = factors.map(x => `<option value="${escapeHTML(x.key)}">${escapeHTML(x.label)}${x.custom?" · 추가 요소":""}</option>`).join("");
+      const termHTML = (ts.expression || []).map((term,i) => {
+        const opOptions = [["*","×"],["+","+"],["-","−"],["/","÷"]].map(([v,l]) => `<option value="${v}" ${(OP_VALUE[term.op]||"*")===v?"selected":""}>${l}</option>`).join("");
+        const leftOptions = [0,1,2,3].map(v => `<option value="${v}" ${Number(term.left||0)===v?"selected":""}>${v?"(".repeat(v):"없음"}</option>`).join("");
+        const rightOptions = [0,1,2,3].map(v => `<option value="${v}" ${Number(term.right||0)===v?"selected":""}>${v?")".repeat(v):"없음"}</option>`).join("");
+        const body = term.kind === "factor"
+          ? `<select data-expr-factor="${i}">${factorOptions.replace(`value="${escapeHTML(term.key)}"`,`value="${escapeHTML(term.key)}" selected`)}</select>`
+          : `<input type="number" step="any" data-expr-number="${i}" value="${fmtInput(term.value)}" />`;
+        return `<div class="expr-term">
+          <label class="expr-mini expr-op"><span>앞 연산</span><select data-expr-op="${i}">${opOptions}</select></label>
+          <label class="expr-mini"><span>앞 괄호</span><select data-expr-left="${i}">${leftOptions}</select></label>
+          <label class="expr-mini expr-main"><span>${term.kind==="factor"?"추정 요소":"숫자 상수"}</span>${body}</label>
+          <label class="expr-mini"><span>뒤 괄호</span><select data-expr-right="${i}">${rightOptions}</select></label>
+          <div class="expr-actions"><button class="mini-btn" type="button" data-expr-action="moveLeft" data-index="${i}" title="왼쪽으로 이동">←</button><button class="mini-btn" type="button" data-expr-action="moveRight" data-index="${i}" title="오른쪽으로 이동">→</button><button class="mini-btn danger" type="button" data-expr-action="delete" data-index="${i}">삭제</button></div>
+        </div>`;
+      }).join("");
+      editor.innerHTML = `
+        <div class="expression-preview"><strong>현재 식:</strong> ${escapeHTML(current)}</div>
+        <div class="editor-toolbar">
+          <select id="factorAddSelect">${factorOptions}</select>
+          <button class="btn secondary" type="button" id="addFactorTerm">선택 요소 추가</button>
+          <button class="btn secondary" type="button" id="addCustomFactor">새 추정 요소 만들기</button>
+          <button class="btn secondary" type="button" id="addNumberTerm">숫자 상수 추가</button>
+          <button class="btn outline" type="button" id="resetFormula">기본 추정식 복원</button>
+        </div>
+        <div class="expr-list">${termHTML}</div>
+        <div class="help">연산자는 각 항의 앞에서 선택합니다. 괄호는 각 항의 앞·뒤에 최대 3개까지 붙일 수 있습니다. 식을 바꾸면 아래의 범위·민감도·수정 결과·최종 보고서가 자동으로 다시 계산됩니다.</div>
+      `;
+    }
+
+    function renderFactorTable(){
+      const t = currentTopic();
+      const ts = topicState(t);
+      const factors = activeFactors(t, ts);
+      document.getElementById("factorBody").innerHTML = factors.map(x => {
+        const v = ts.values[x.key];
+        const nameCell = x.custom
+          ? `<div class="custom-factor-name"><input type="text" data-custom-label="${x.key}" value="${escapeHTML(x.label)}" aria-label="추가 요소 이름"><input type="text" data-custom-unit="${x.key}" value="${escapeHTML(x.unit)}" aria-label="추가 요소 단위"></div><div class="factor-hint">학생이 추가한 추정 요소 · 오른쪽 칸에서 값을 설정하세요.</div>`
+          : `${escapeHTML(x.label)}<div class="factor-hint">${escapeHTML(x.hint || "단위와 상황을 확인하세요.")}</div>`;
+        return `<tr>
+          <td class="factor-name">${nameCell}</td>
+          ${["low","mid","high"].map(s => `<td class="number-cell"><div class="number-with-unit"><input type="number" step="${x.step}" min="0" data-factor="${x.key}" data-scenario="${s}" value="${fmtInput(v[s])}" /><span class="unit">${escapeHTML(x.unit)}</span></div></td>`).join("")}
+          <td class="basis-cell"><select data-factor-basis="${x.key}">${basisOptions(v.basis)}</select></td>
+          <td class="note-cell"><input type="text" data-factor-note="${x.key}" value="${escapeHTML(v.note || "")}" placeholder="예: 우리 반 관찰값" /></td>
+        </tr>`;
+      }).join("");
+    }
+
+    function validateFactorInputs(){
+      const t = currentTopic();
+      const ts = topicState(t);
+      const issues = [];
+      activeFactors(t, ts).forEach(x => {
+        const values = ["low","mid","high"].map(s => num(ts.values[x.key]?.[s], NaN));
+        const numericValid = values.every(v => Number.isFinite(v) && v >= 0);
+        const ordered = numericValid && values[0] <= values[1] && values[1] <= values[2];
+        if(!numericValid) issues.push(x.label + ": 빈칸 없이 0 이상의 수를 입력하세요.");
+        else if(!ordered) issues.push(x.label + ": 작은 값 ≤ 대표값 ≤ 큰 값 순서를 확인하세요.");
+
+        ["low","mid","high"].forEach((scenario, index) => {
+          const input = document.querySelector('input[data-factor="' + CSS.escape(x.key) + '"][data-scenario="' + scenario + '"]');
+          if(!input) return;
+          const scenarioLabel = ["작은 값","대표값","큰 값"][index];
+          input.setAttribute("aria-label", x.label + " " + scenarioLabel + " (" + x.unit + ")");
+          input.setAttribute("aria-invalid", String(!numericValid || !ordered));
+        });
+        const basis = document.querySelector('select[data-factor-basis="' + CSS.escape(x.key) + '"]');
+        if(basis) basis.setAttribute("aria-label", x.label + " 가정의 근거");
+        const note = document.querySelector('input[data-factor-note="' + CSS.escape(x.key) + '"]');
+        if(note) note.setAttribute("aria-label", x.label + " 근거 메모");
+      });
+
+      const summary = document.getElementById("factorValidationSummary");
+      if(summary){
+        summary.classList.toggle("good", issues.length === 0);
+        summary.textContent = issues.length ? issues.join(" ") : "모든 가정값이 올바른 순서로 입력되었습니다.";
+      }
+      return issues;
+    }
+
+    function renderResults(){
+      const t = currentTopic();
+      const ts = topicState(t);
+      const r = computeRange();
+      const unit = escapeHTML(t.unit);
+      document.getElementById("resultGrid").innerHTML = `
+        <div class="result-card"><div class="result-label">끝점 조합 중 작은 추정값</div><div class="result-value">${fmt(r.min)} <small>${unit}</small></div><div class="result-sub">약 ${koreanScale(r.min)} ${unit}</div></div>
+        <div class="result-card main"><div class="result-label">대표 추정값</div><div class="result-value">${fmt(r.rep)} <small>${unit}</small></div><div class="result-sub">${sci(r.rep)} ${unit} · ${orderText(r.rep)}</div></div>
+        <div class="result-card"><div class="result-label">끝점 조합 중 큰 추정값</div><div class="result-value">${fmt(r.max)} <small>${unit}</small></div><div class="result-sub">약 ${koreanScale(r.max)} ${unit}</div></div>
+      `;
+
+      const valueLines = activeFactors(t, ts).map(x => {
+        const v = ts.values[x.key];
+        return `<div>${escapeHTML(x.label)} = ${fmt(num(v.mid,x.mid),4)} ${escapeHTML(x.unit)}</div>`;
+      }).join("");
+      const invalid = !Number.isFinite(r.rep);
+      document.getElementById("calculationPanel").innerHTML = `
+        <h4>대표값 계산과정</h4>
+        <div class="calc-list">
+          <div>추정식: ${escapeHTML(expressionText(t, ts))}</div>
+          ${valueLines}
+          <div>────────────────────────</div>
+         <div>대표 추정값 = ${fmt(r.rep)} ${escapeHTML(t.unit)}</div>
+         ${invalid?'<div class="warning">추정식의 괄호·연산자 또는 입력값을 확인하세요. 계산할 수 없는 값이 포함되어 있습니다.</div>':(r.rep<0?'<div class="warning">대표 추정값이 음수입니다. 수량을 추정하는 식으로 적절한지 확인하세요.</div>':'')}
+          ${!isDefaultExpression(t,ts)?'<div class="warning">수정한 수식의 범위는 입력한 작은 값·큰 값의 끝점 조합 결과입니다. 모든 중간값에서의 절대적인 최솟값·최댓값은 아닐 수 있습니다.</div>':''}
+       </div>
+      `;
+
+      const guess = num(ts.initialGuess, NaN);
+      let guessText = "계산 전 첫 예상값을 입력하면 대표 추정값과 비교해 줍니다.";
+      if(Number.isFinite(guess) && guess > 0 && Number.isFinite(r.rep)){
+        const ratio = r.rep/guess;
+        if(ratio >= 1) guessText = `대표 추정값은 첫 예상값의 약 <strong>${fmt(ratio,2)}배</strong>입니다. 처음 생각보다 ${ratio>1.2?"큰":"비슷한"} 규모로 나타났습니다.`;
+        else guessText = `대표 추정값은 첫 예상값의 약 <strong>${fmt(ratio,2)}배</strong>이며, 첫 예상값이 대표 추정값보다 약 <strong>${fmt(1/ratio,2)}배</strong> 큽니다.`;
+      }
+      document.getElementById("guessComparison").innerHTML = `<strong>첫 예상과 비교</strong><br>${guessText}`;
+    }
+
+    function renderSensitivity(){
+      const t = currentTopic();
+      const ts = topicState(t);
+      ensureAnalysisSelections(t, ts);
+      const factors = activeFactors(t, ts);
+      const list = computeSensitivity();
+      const maxPct = Math.max(...list.map(x => x.pct), 1);
+      document.getElementById("sensitivityList").innerHTML = list.length ? list.map((x,i) => `
+        <div class="sensitivity-item">
+          <div class="sensitivity-top"><strong>${i+1}. ${escapeHTML(x.label)}</strong><span>${fmt(x.pct,1)}% 변화 폭</span></div>
+          <div class="bar"><span style="width:${Math.min(100,x.pct/maxPct*100)}%"></span></div>
+          <div class="help">이 요소만 바꾸면 약 ${fmt(x.lowResult)}~${fmt(x.highResult)} ${escapeHTML(t.unit)}</div>
+        </div>
+      `).join("") : `<div class="notice">민감도를 계산할 추정 요소가 없습니다.</div>`;
+
+      const options = factors.map(x => `<option value="${x.key}">${escapeHTML(x.label)}</option>`).join("");
+      const uncertain = document.getElementById("uncertainFactor");
+      uncertain.innerHTML = options;
+      uncertain.value = ts.uncertainFactor;
+      document.getElementById("uncertainReason").value = ts.uncertainReason || "";
+
+      const top = list[0];
+      document.getElementById("sensitivityHint").innerHTML = top
+        ? `<strong>자동 분석:</strong> 현재 설정한 범위에서는 <strong>${escapeHTML(top.label)}</strong>이 결과를 가장 크게 바꾸는 요소입니다. 다만 ‘결과에 큰 영향을 주는 요소’와 ‘값을 알기 어려운 요소’는 서로 다를 수 있습니다.`
+        : "민감도를 계산할 수 없습니다.";
+
+      const rev = document.getElementById("revisionFactor");
+      rev.innerHTML = options;
+      rev.value = ts.revisionFactor;
+      const revFactor = factors.find(x => x.key === ts.revisionFactor) || factors[0];
+      if(revFactor){
+        document.getElementById("revisionValue").step = revFactor.step || "any";
+        document.getElementById("revisionValue").value = ts.revisionValue ?? ts.values[revFactor.key].mid;
+        document.getElementById("revisionUnit").value = revFactor.unit;
+      }
+      document.getElementById("revisionReason").value = ts.revisionReason || "";
+    }
+
+    function renderRevision(){
+      const t = currentTopic();
+      const ts = topicState(t);
+      const factors = activeFactors(t, ts);
+      const r = computeRange();
+      const revised = revisedResult();
+      const factor = factors.find(x => x.key === ts.revisionFactor) || factors[0];
+      if(!factor){ document.getElementById("revisionResult").innerHTML = `<div class="notice">수정할 추정 요소가 없습니다.</div>`; return; }
+     const diff = revised-r.rep;
+     const pct = r.rep ? diff/r.rep*100 : 0;
+      if(!Number.isFinite(revised)){
+        document.getElementById("revisionResult").innerHTML = '<div class="notice" style="grid-column:1/-1;">기존 대표값과 다른 0 이상의 수정값을 입력하세요.</div>';
+      } else {
+        document.getElementById("revisionResult").innerHTML = `
+        <div class="result-card"><div class="result-label">수정 전 대표값</div><div class="result-value">${fmt(r.rep)} <small>${escapeHTML(t.unit)}</small></div><div class="result-sub">${escapeHTML(factor.label)} = ${fmt(ts.values[factor.key].mid,4)} ${escapeHTML(factor.unit)}</div></div>
+        <div class="result-card main"><div class="result-label">수정 후 추정값</div><div class="result-value">${fmt(revised)} <small>${escapeHTML(t.unit)}</small></div><div class="result-sub">${escapeHTML(factor.label)} = ${fmt(num(ts.revisionValue),4)} ${escapeHTML(factor.unit)}</div></div>
+        <div class="result-card"><div class="result-label">결과 차이</div><div class="result-value">${diff>=0?"+":""}${fmt(diff)} <small>${escapeHTML(t.unit)}</small></div><div class="result-sub">${diff>=0?"증가":"감소"} · ${diff>=0?"+":""}${fmt(pct,1)}%</div></div>
+        `;
+      }
+     document.querySelectorAll('input[name="finalChoice"]').forEach(el => el.checked = el.value === ts.finalChoice);
+      document.getElementById("customFinal").value = ts.customFinal ?? "";
+      document.getElementById("customFinal").disabled = ts.finalChoice !== "custom";
+      document.getElementById("finalEstimate").value = `${fmt(finalResult())} ${t.unit}`;
+    }
+
+    function submissionAudit(){
+      const t = currentTopic();
+      const ts = topicState(t);
+      const factors = activeFactors(t, ts);
+      const range = computeRange();
+      const revised = revisedResult();
+      const final = finalResult();
+      const revisionFactor = factors.find(x => x.key === ts.revisionFactor);
+      const revisionValue = num(ts.revisionValue, NaN);
+      const originalValue = revisionFactor ? num(ts.values[revisionFactor.key]?.mid, NaN) : NaN;
+      const factorValuesValid = factors.length > 0 && factors.every(x => {
+        const values = ["low","mid","high"].map(s => num(ts.values[x.key]?.[s], NaN));
+        return values.every(v => Number.isFinite(v) && v >= 0) && values[0] <= values[1] && values[1] <= values[2];
+      });
+      const hasOwnEvidence = factors.some(x => {
+        const value = ts.values[x.key] || {};
+        return String(value.note || "").trim().length >= 3 && value.basis !== "제공된 수업용 범위";
+      });
+      const conclusion = String(ts.conclusion || "").trim();
+      const checks = [
+        {label:"학생 정보 4개 항목 작성", ok:[state.student.grade,state.student.classNo,state.student.studentNo,state.student.name].every(v => String(v || "").trim()), target:"student"},
+        {label:"주제 선택 이유 작성", ok:String(ts.reason || "").trim().length >= 10, target:"step1"},
+        {label:"계산 전 첫 예상값 입력", ok:num(ts.initialGuess, NaN) > 0, target:"step1"},
+        {label:"분해 모형 검토 작성", ok:String(ts.modelComment || "").trim().length >= 15, target:"step2"},
+        {label:"가정값과 순서 확인", ok:factorValuesValid && expressionStructure(ts.expression).valid && Number.isFinite(range.min) && range.min >= 0 && Number.isFinite(range.rep) && range.rep >= 0 && Number.isFinite(range.max) && range.max >= 0, target:"step2"},
+        {label:"가정 근거를 자신의 자료로 1개 이상 보완", ok:hasOwnEvidence, target:"step2"},
+        {label:"불확실한 요소를 고른 이유 작성", ok:String(ts.uncertainReason || "").trim().length >= 10, target:"step4"},
+        {label:"대표값을 실제로 수정하고 이유 작성", ok:Number.isFinite(revisionValue) && revisionValue >= 0 && Number.isFinite(originalValue) && Math.abs(revisionValue-originalValue) > Math.max(1,Math.abs(originalValue))*1e-12 && String(ts.revisionReason || "").trim().length >= 10 && Number.isFinite(revised) && revised >= 0, target:"step4"},
+        {label:"유효한 최종 추정값 선택", ok:Number.isFinite(final) && final >= 0, target:"step4"},
+        {label:"작성 틀을 자신의 문장으로 완성", ok:conclusion.length >= 80 && !/\[[^\]]+\]/.test(conclusion), target:"step5"},
+        {label:"탐구 반성 작성", ok:String(ts.reflection || "").trim().length >= 20, target:"step5"}
+      ];
+      return {checks, ready:checks.every(x => x.ok)};
+    }
+
+    function generateConclusionText(){
+      const t = currentTopic();
+      const ts = topicState(t);
+      const r = computeRange();
+      const sensitivity = computeSensitivity();
+      const top = sensitivity[0];
+      const factors = activeFactors(t, ts);
+      const revisionFactor = factors.find(x => x.key === ts.revisionFactor);
+      const revisionValue = num(ts.revisionValue, NaN);
+      const revised = revisedResult();
+      const revisionLine = revisionFactor && Number.isFinite(revisionValue) && Number.isFinite(revised)
+        ? revisionFactor.label + "의 대표값: " + fmt(ts.values[revisionFactor.key].mid,4) + " " + revisionFactor.unit + " → " + fmt(revisionValue,4) + " " + revisionFactor.unit + ", 결과: " + fmt(revised) + " " + t.unit
+        : "[수정한 요소와 값, 달라진 결과를 쓰세요]";
+      return [
+        "탐구 문제: " + t.question,
+        "",
+        "1. 문제 분해",
+        "사용한 요소: " + factors.map(x => x.label).join(", "),
+        "[이 요소들로 문제를 나눈 이유와 단순화한 부분을 자신의 문장으로 쓰세요]",
+        "",
+        "2. 가정과 결과",
+        "대표 추정값: " + fmt(r.rep) + " " + t.unit,
+        "끝점 조합 범위: " + fmt(r.min) + " ~ " + fmt(r.max) + " " + t.unit,
+        "[대표값의 근거와 첫 예상값을 비교해 해석하세요]",
+        "",
+        "3. 불확실성과 수정",
+        "민감도가 가장 큰 요소: " + (top?.label || "확인 불가"),
+        revisionLine,
+        "[불확실하다고 판단한 이유와 수정 결과의 의미를 설명하세요]",
+        "",
+        "4. 최종 판단",
+        "[최종 추정값을 선택한 이유와 이 추정의 한계를 자신의 문장으로 정리하세요]"
+      ].join("\n");
+    }
+
+    function renderSubmissionChecklist(){
+      const audit = submissionAudit();
+      const missing = audit.checks.filter(x => !x.ok).length;
+      const container = document.getElementById("submissionChecklist");
+      if(!container) return audit;
+      const title = audit.ready ? "제출 준비가 완료되었습니다." : missing + "개 항목을 보완하면 제출할 수 있습니다.";
+      const rows = audit.checks.map(item =>
+        '<li><button type="button" data-target="' + item.target + '" class="' + (item.ok ? 'ok' : 'missing') + '">' + (item.ok ? '✓ ' : '○ ') + escapeHTML(item.label) + '</button></li>'
+      ).join("");
+      container.innerHTML = '<h3>' + title + '</h3><div class="help">항목을 누르면 작성 위치로 이동합니다.</div><ul>' + rows + '</ul>';
+      return audit;
+    }
+
+    function renderPreview(){
+      const t = currentTopic();
+      const ts = topicState(t);
+      const r = computeRange();
+      const final = finalResult();
+      const studentName = state.student.name || "이름 미입력";
+      const audit = submissionAudit();
+     document.getElementById("reportPreview").innerHTML = `
+        <p><span class="status-chip ${audit.ready?"good":"warn"}">${audit.ready?"제출 준비 완료":"작성 항목 확인 필요"}</span></p>
+        <p><strong>${escapeHTML(state.student.grade || "-")}학년 ${escapeHTML(state.student.classNo || "-")}반 ${escapeHTML(state.student.studentNo || "-")}번 ${escapeHTML(studentName)}</strong></p>
+        <p><strong>탐구 문제:</strong> ${escapeHTML(t.question)}</p>
+        <p><strong>대표 추정:</strong> ${fmt(r.rep)} ${escapeHTML(t.unit)} / <strong>최종 추정:</strong> ${fmt(final)} ${escapeHTML(t.unit)}</p>
+        <p class="preview-summary"><strong>최종 결론:</strong> ${escapeHTML(ts.conclusion || "결론 작성 틀을 참고해 자신의 문장으로 완성하세요.")}</p>
+     `;
+      renderSubmissionChecklist();
+   }
+
+    function renderComputed(){
+      validateFactorInputs();
+      renderResults();
+      renderSensitivity();
+      renderRevision();
+      renderPreview();
+    }
+
+    function renderAll(){
+      document.getElementById("grade").value = state.student.grade || "";
+      document.getElementById("classNo").value = state.student.classNo || "";
+      document.getElementById("studentNo").value = state.student.studentNo || "";
+      document.getElementById("studentName").value = state.student.name || "";
+      document.getElementById("topicSearch").value = state.search || "";
+      renderCategories();
+      renderTopics();
+      renderSelectedTopic();
+      renderFactorTable();
+      const ts = topicState();
+      document.getElementById("conclusion").value = ts.conclusion || "";
+      document.getElementById("reflection").value = ts.reflection || "";
+      renderComputed();
+    }
+
+    function selectTopic(id){
+      const t = topics.find(x => x.id === id);
+      if(!t) return;
+      state.topicId = id;
+      state.selectedCategory = t.category;
+      topicState(t);
+      renderAll();
+      scheduleSave();
+    }
+
+    function resetCurrentTopicValues(){
+      const t = currentTopic();
+      const ts = topicState(t);
+      allFactors(t, ts).forEach(x => {
+        ts.values[x.key] = {low:x.low, mid:x.mid, high:x.high, basis:x.custom?"나의 경험":"제공된 수업용 범위", note:""};
+      });
+      ensureAnalysisSelections(t, ts);
+      const rev = factorByKey(ts.revisionFactor, t, ts);
+      if(rev) ts.revisionValue = "";
+      renderFactorTable();
+      renderComputed();
+      renderFormulaEditor();
+      scheduleSave();
+    }
+
+    function reportTableRows(){
+      const t = currentTopic();
+      const ts = topicState(t);
+      return activeFactors(t, ts).map(x => {
+        const v = ts.values[x.key];
+        return `<tr><td>${escapeHTML(x.label)}</td><td>${fmt(num(v.low),4)} ${escapeHTML(x.unit)}</td><td>${fmt(num(v.mid),4)} ${escapeHTML(x.unit)}</td><td>${fmt(num(v.high),4)} ${escapeHTML(x.unit)}</td><td>${escapeHTML(v.basis || "-")}</td><td>${escapeHTML(v.note || "-")}</td></tr>`;
+      }).join("");
+    }
+
+    function buildReportHTML(){
+      const t = currentTopic();
+      const ts = topicState(t);
+      const r = computeRange();
+      const sensitivity = computeSensitivity();
+      const revised = revisedResult();
+      const final = finalResult();
+      const reportFactors = activeFactors(t, ts);
+      const uncertain = reportFactors.find(x => x.key === ts.uncertainFactor);
+      const revFactor = reportFactors.find(x => x.key === ts.revisionFactor);
+      const now = new Date();
+      const dateText = now.toLocaleString("ko-KR");
+      const conclusion = ts.conclusion;
+      const initialGuess = num(ts.initialGuess, NaN);
+      const sensitivityRows = sensitivity.map((x,i) => `<tr><td>${i+1}</td><td>${escapeHTML(x.label)}</td><td>${fmt(x.lowResult)}~${fmt(x.highResult)} ${escapeHTML(t.unit)}</td><td>${fmt(x.pct,1)}%</td></tr>`).join("");
+      return `<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>페르미 추정 보고서 - ${escapeHTML(state.student.name || "학생")}</title>
+<style>
+body{font-family:"Noto Sans KR","Apple SD Gothic Neo",sans-serif;color:#17202b;line-height:1.65;margin:0;background:#f1f4f7}main{max-width:900px;margin:24px auto;background:white;padding:34px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.08)}h1{margin:0 0 6px;color:#173f7d}h2{margin-top:30px;border-bottom:2px solid #dbe5f1;padding-bottom:7px;color:#244e85}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #ccd6e0;padding:8px;text-align:left}th{background:#eef3f8}.box{border:1px solid #c9d7e7;background:#f7faff;border-radius:12px;padding:15px;margin:12px 0}.result{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.card{border:1px solid #d2dce5;border-radius:10px;padding:12px}.big{font-size:22px;font-weight:800;color:#173f7d}.muted{color:#627181;font-size:12px}.print{position:fixed;right:18px;top:18px;border:0;border-radius:9px;background:#2457a7;color:white;padding:10px 13px;font-weight:700}@media(max-width:650px){main{margin:0;padding:20px;border-radius:0}.result{grid-template-columns:1fr}.print{position:static;margin-bottom:12px}}@media print{body{background:white}main{box-shadow:none;margin:0;max-width:none}.print{display:none}}
+</style></head><body><main>
+<button class="print" onclick="window.print()">인쇄·PDF 저장</button>
+<h1>페르미 추정을 활용한 생활 속 수량 탐구</h1><div class="muted">제출 시각: ${escapeHTML(dateText)}</div>
+<div class="box"><strong>학생:</strong> ${escapeHTML(state.student.grade || "-")}학년 ${escapeHTML(state.student.classNo || "-")}반 ${escapeHTML(state.student.studentNo || "-")}번 ${escapeHTML(state.student.name || "-")}<br><strong>분야:</strong> ${escapeHTML(t.category)}<br><strong>탐구 문제:</strong> ${escapeHTML(t.question)}</div>
+<h2>1. 주제 선정과 첫 예상</h2><p><strong>선택 이유:</strong> ${escapeHTML(ts.reason || "미작성")}</p><p><strong>계산 전 첫 예상값:</strong> ${Number.isFinite(initialGuess)?fmt(initialGuess)+" "+escapeHTML(t.unit):"미작성"}</p>
+<h2>2. 문제 분해와 가정</h2><div class="box"><strong>현재 추정식:</strong> ${escapeHTML(expressionText(t, ts))}${isDefaultExpression(t,ts)?"":`<br><strong>기본 추정식:</strong> ${escapeHTML(t.formula)}`}<br><strong>분해 아이디어:</strong> ${escapeHTML(t.concept)}<br><strong>분해 모형 검토:</strong> ${escapeHTML(ts.modelComment || "미작성")}</div>
+<table><thead><tr><th>요소</th><th>작은 값</th><th>대표값</th><th>큰 값</th><th>근거</th><th>메모</th></tr></thead><tbody>${reportTableRows()}</tbody></table>
+<h2>3. 추정 결과</h2><div class="result"><div class="card"><div class="muted">끝점 조합 중 작은 추정</div><div class="big">${fmt(r.min)} ${escapeHTML(t.unit)}</div></div><div class="card"><div class="muted">대표 추정</div><div class="big">${fmt(r.rep)} ${escapeHTML(t.unit)}</div><div class="muted">${sci(r.rep)} ${escapeHTML(t.unit)}</div></div><div class="card"><div class="muted">끝점 조합 중 큰 추정</div><div class="big">${fmt(r.max)} ${escapeHTML(t.unit)}</div></div></div>
+<h2>4. 가정의 영향과 수정</h2><table><thead><tr><th>순위</th><th>요소</th><th>결과 범위</th><th>변화 폭</th></tr></thead><tbody>${sensitivityRows}</tbody></table>
+<p><strong>가장 불확실하다고 판단한 요소:</strong> ${escapeHTML(uncertain?.label || "-")}<br><strong>이유:</strong> ${escapeHTML(ts.uncertainReason || "미작성")}</p>
+<div class="box"><strong>수정 요소:</strong> ${escapeHTML(revFactor?.label || "-")}<br><strong>수정값:</strong> ${fmt(num(ts.revisionValue),4)} ${escapeHTML(revFactor?.unit || "")}<br><strong>수정 이유:</strong> ${escapeHTML(ts.revisionReason || "미작성")}<br><strong>수정 후 결과:</strong> ${fmt(revised)} ${escapeHTML(t.unit)}</div>
+<h2>5. 최종 결론</h2><div class="box"><strong>최종 추정값:</strong> ${fmt(final)} ${escapeHTML(t.unit)}</div><p>${escapeHTML(conclusion).replace(/\n/g,"<br>")}</p>
+<h2>6. 탐구 반성</h2><p>${escapeHTML(ts.reflection || "미작성").replace(/\n/g,"<br>")}</p>
+</main></body></html>`;
+    }
+
+    function downloadReport(){
+      const audit = renderSubmissionChecklist();
+      if(!audit.ready){
+        document.getElementById("submissionChecklist")?.scrollIntoView({behavior:"smooth", block:"center"});
+        alert("제출 전 점검에서 표시된 항목을 먼저 보완하세요.");
+        return;
+      }
+      const html = buildReportHTML();
+      const blob = new Blob([html], {type:"text/html;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const t = currentTopic();
+      a.href = url;
+      a.download = `${cleanFileName(state.student.grade)}학년_${cleanFileName(state.student.classNo)}반_${cleanFileName(state.student.studentNo)}번_${cleanFileName(state.student.name)}_${cleanFileName(t.title)}.html`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function copyText(text, success="복사했습니다."){
+      if(navigator.clipboard?.writeText){
+        navigator.clipboard.writeText(text).then(() => alert(success)).catch(() => fallbackCopy(text, success));
+      } else fallbackCopy(text, success);
+    }
+    function fallbackCopy(text, success){
+      const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); alert(success);
+    }
+
+    document.addEventListener("click", e => {
+      const step = e.target.closest("[data-target]");
+      if(step) document.getElementById(step.dataset.target)?.scrollIntoView({behavior:"smooth", block:"start"});
+
+      const cat = e.target.closest("[data-category]");
+      if(cat){
+        const nextCategory = cat.dataset.category;
+        state.selectedCategory = nextCategory;
+        state.search = "";
+        if(currentTopic().category !== nextCategory){
+          const first = topics.find(t => t.category === nextCategory);
+          if(first) state.topicId = first.id;
+        }
+        renderAll();
+        scheduleSave();
+      }
+
+      const topicCard = e.target.closest("[data-topic]");
+      if(topicCard) selectTopic(topicCard.dataset.topic);
+    });
+
+    ["grade","classNo","studentNo","studentName"].forEach(id => {
+      document.getElementById(id).addEventListener("input", e => {
+        const key = id === "studentName" ? "name" : id;
+        state.student[key] = e.target.value;
+        renderPreview(); scheduleSave();
+      });
+    });
+
+    document.getElementById("topicSearch").addEventListener("input", e => { state.search=e.target.value; renderTopics(); scheduleSave(); });
+    document.getElementById("randomTopic").addEventListener("click", () => selectTopic(topics[Math.floor(Math.random()*topics.length)].id));
+    document.getElementById("topicReason").addEventListener("input", e => { topicState().reason=e.target.value; renderPreview(); scheduleSave(); });
+    document.getElementById("initialGuess").addEventListener("input", e => { topicState().initialGuess=e.target.value; renderResults(); renderPreview(); scheduleSave(); });
+    document.getElementById("modelComment").addEventListener("input", e => { topicState().modelComment=e.target.value; renderPreview(); scheduleSave(); });
+
+    function formulaChanged(){
+      const t=currentTopic(), ts=topicState(t);
+      normalizeExpression(ts.expression);
+      ensureAnalysisSelections(t, ts);
+      renderFormulaEditor();
+      renderFactorTable();
+      renderComputed();
+      scheduleSave();
+    }
+
+    document.getElementById("formulaSummary").addEventListener("click", e => {
+      if(e.target.id === "toggleFormulaEditor"){
+        const ts=topicState(); ts.formulaEditorOpen=!ts.formulaEditorOpen; renderFormulaEditor(); scheduleSave();
+      }
+    });
+
+    document.getElementById("formulaEditor").addEventListener("change", e => {
+      const ts=topicState();
+      if(e.target.dataset.exprOp !== undefined){ const i=Number(e.target.dataset.exprOp); if(ts.expression[i]) ts.expression[i].op=e.target.value; formulaChanged(); }
+      else if(e.target.dataset.exprLeft !== undefined){ const i=Number(e.target.dataset.exprLeft); if(ts.expression[i]) ts.expression[i].left=Number(e.target.value); formulaChanged(); }
+      else if(e.target.dataset.exprRight !== undefined){ const i=Number(e.target.dataset.exprRight); if(ts.expression[i]) ts.expression[i].right=Number(e.target.value); formulaChanged(); }
+      else if(e.target.dataset.exprFactor !== undefined){ const i=Number(e.target.dataset.exprFactor); if(ts.expression[i]){ ts.expression[i].kind="factor"; ts.expression[i].key=e.target.value; delete ts.expression[i].value; } formulaChanged(); }
+      else if(e.target.dataset.exprNumber !== undefined){ const i=Number(e.target.dataset.exprNumber); if(ts.expression[i]) ts.expression[i].value=e.target.value; formulaChanged(); }
+    });
+
+    document.getElementById("formulaEditor").addEventListener("input", e => {
+      if(e.target.dataset.exprNumber !== undefined){
+        const ts=topicState(), i=Number(e.target.dataset.exprNumber); if(ts.expression[i]) ts.expression[i].value=e.target.value;
+        renderComputed(); scheduleSave();
+      }
+    });
+
+    document.getElementById("formulaEditor").addEventListener("click", e => {
+      const t=currentTopic(), ts=topicState(t);
+      if(e.target.id === "addFactorTerm"){
+        const key=document.getElementById("factorAddSelect")?.value; if(!key) return;
+        ts.expression.push({kind:"factor",key,op:ts.expression.length?"*":"",left:0,right:0}); formulaChanged(); return;
+      }
+      if(e.target.id === "addCustomFactor"){
+        if(activeFactors(t,ts).length >= 10){ alert("추정 요소는 최대 10개까지 사용할 수 있습니다."); return; }
+        const key=`custom_${Date.now()}_${Math.floor(Math.random()*1000)}`;
+        const no=(ts.customFactors||[]).length+1;
+        const cf={key,label:`추가 추정 요소 ${no}`,unit:"단위",low:1,mid:2,high:3,step:1,hint:"학생이 추가한 추정 요소",custom:true};
+        ts.customFactors.push(cf); ts.values[key]={low:1,mid:2,high:3,basis:"나의 경험",note:""};
+        ts.expression.push({kind:"factor",key,op:ts.expression.length?"*":"",left:0,right:0}); formulaChanged(); return;
+      }
+      if(e.target.id === "addNumberTerm"){
+        ts.expression.push({kind:"number",value:1,op:ts.expression.length?"*":"",left:0,right:0}); formulaChanged(); return;
+      }
+      if(e.target.id === "resetFormula"){
+        if(confirm("수정한 추정식을 버리고 이 주제의 기본 추정식으로 되돌릴까요?")){
+          ts.expression=parseDefaultExpression(t); ts.customFactors=[]; ensureAnalysisSelections(t,ts); formulaChanged();
+        }
+        return;
+      }
+      const btn=e.target.closest("[data-expr-action]"); if(!btn) return;
+      const i=Number(btn.dataset.index), action=btn.dataset.exprAction;
+      if(!Number.isInteger(i) || !ts.expression[i]) return;
+      if(action === "delete"){
+        const term=ts.expression[i];
+        if(term.kind === "factor"){
+          const occurrences=ts.expression.filter(x=>x.kind==="factor"&&x.key===term.key).length;
+          if(occurrences===1 && activeFactors(t,ts).length<=1){ alert("추정식에는 최소 1개의 추정 요소가 필요합니다."); return; }
+        }
+        ts.expression.splice(i,1);
+      } else if(action === "moveLeft" && i>0){ [ts.expression[i-1],ts.expression[i]]=[ts.expression[i],ts.expression[i-1]]; }
+      else if(action === "moveRight" && i<ts.expression.length-1){ [ts.expression[i],ts.expression[i+1]]=[ts.expression[i+1],ts.expression[i]]; }
+      formulaChanged();
+    });
+
+    document.getElementById("factorBody").addEventListener("input", e => {
+      const ts = topicState();
+      if(e.target.dataset.factor){
+        const key=e.target.dataset.factor, scenario=e.target.dataset.scenario;
+        ts.values[key][scenario]=e.target.value;
+        renderComputed(); scheduleSave();
+      }
+      if(e.target.dataset.factorNote){ ts.values[e.target.dataset.factorNote].note=e.target.value; renderPreview(); scheduleSave(); }
+      if(e.target.dataset.customLabel){
+        const cf=ts.customFactors.find(x=>x.key===e.target.dataset.customLabel); if(cf){ cf.label=e.target.value || "새 추정 요소"; renderFormulaEditor(); renderSensitivity(); renderRevision(); renderPreview(); scheduleSave(); }
+      }
+      if(e.target.dataset.customUnit){
+        const cf=ts.customFactors.find(x=>x.key===e.target.dataset.customUnit); if(cf){ cf.unit=e.target.value || "단위"; renderFormulaEditor(); renderSensitivity(); renderRevision(); renderPreview(); scheduleSave(); }
+      }
+    });
+    document.getElementById("factorBody").addEventListener("change", e => {
+      if(e.target.dataset.factorBasis){ topicState().values[e.target.dataset.factorBasis].basis=e.target.value; renderPreview(); scheduleSave(); }
+    });
+
+    document.getElementById("resetTopicValues").addEventListener("click", () => {
+      if(confirm("현재 추정식은 유지하고, 이 주제의 가정값을 예시값으로 되돌릴까요?")) resetCurrentTopicValues();
+    });
+    document.getElementById("copyModel").addEventListener("click", () => copyText(`${currentTopic().question}\n${expressionText()}`, "추정식을 복사했습니다."));
+
+    document.getElementById("uncertainFactor").addEventListener("change", e => { topicState().uncertainFactor=e.target.value; renderPreview(); scheduleSave(); });
+    document.getElementById("uncertainReason").addEventListener("input", e => { topicState().uncertainReason=e.target.value; renderPreview(); scheduleSave(); });
+    document.getElementById("revisionFactor").addEventListener("change", e => {
+      const t=currentTopic(), ts=topicState(); ts.revisionFactor=e.target.value;
+      const factor=factorByKey(e.target.value,t,ts); if(factor) ts.revisionValue="";
+      renderSensitivity(); renderRevision(); renderPreview(); scheduleSave();
+    });
+    document.getElementById("revisionValue").addEventListener("input", e => { topicState().revisionValue=e.target.value; renderRevision(); renderPreview(); scheduleSave(); });
+    document.getElementById("revisionReason").addEventListener("input", e => { topicState().revisionReason=e.target.value; renderPreview(); scheduleSave(); });
+    document.getElementById("finalChoiceRow").addEventListener("change", e => {
+      if(e.target.name==="finalChoice"){ topicState().finalChoice=e.target.value; renderRevision(); renderPreview(); scheduleSave(); }
+    });
+    document.getElementById("customFinal").addEventListener("input", e => { topicState().customFinal=e.target.value; renderRevision(); renderPreview(); scheduleSave(); });
+
+    document.getElementById("generateConclusion").addEventListener("click", () => {
+      const current=document.getElementById("conclusion").value.trim();
+      if(current && !confirm("현재 작성한 결론을 결론 작성 틀로 바꿀까요?")) return;
+      const text=generateConclusionText(); topicState().conclusion=text; document.getElementById("conclusion").value=text; renderPreview(); scheduleSave();
+    });
+    document.getElementById("copyConclusion").addEventListener("click", () => copyText(document.getElementById("conclusion").value, "결론을 복사했습니다."));
+    document.getElementById("conclusion").addEventListener("input", e => { topicState().conclusion=e.target.value; renderPreview(); scheduleSave(); });
+    document.getElementById("reflection").addEventListener("input", e => { topicState().reflection=e.target.value; renderPreview(); scheduleSave(); });
+    document.getElementById("downloadReport").addEventListener("click", downloadReport);
+    document.getElementById("printPage").addEventListener("click", () => {
+      const audit=renderSubmissionChecklist();
+      if(!audit.ready){
+        document.getElementById("submissionChecklist")?.scrollIntoView({behavior:"smooth", block:"center"});
+        alert("인쇄·PDF 저장 전에 제출 전 점검 항목을 먼저 보완하세요.");
+        return;
+      }
+      window.print();
+    });
+    document.getElementById("resetAll").addEventListener("click", () => {
+      if(confirm("현재 탭의 학생 정보와 탐구 내용을 모두 지울까요? 저장한 제출 파일은 삭제되지 않습니다.")){
+        try { sessionStorage.removeItem(STORAGE_KEY); } catch(e) {}
+        state=defaultState(); renderAll(); window.scrollTo({top:0,behavior:"smooth"});
+      }
+    });
+
+    renderAll();
+  </script>
+</body>
+</html>
