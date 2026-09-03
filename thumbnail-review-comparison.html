@@ -114,8 +114,8 @@
       </nav>
       <section class="comparison-list" id="comparison-list"><p class="comparison-loading">비교판을 불러오고 있습니다.</p></section>
     </main>
-    <script src="./assets/thumbnail-candidates.js?v=20260903-5"></script>
-    <script src="./assets/tool-thumbnails.js?v=20260903-5"></script>
+    <script src="./assets/thumbnail-candidates.js?v=20260903-6"></script>
+    <script src="./assets/tool-thumbnails.js?v=20260903-6"></script>
     <script>
       (async () => {
         const response = await fetch("./assets/thumbnails/legacy/catalog.html", { cache: "no-store" });
@@ -135,7 +135,7 @@
         document.querySelector("#comparison-total").textContent = `${reviewOrder.length}개 비교`;
         document.querySelector("#comparison-description").textContent = focusNumbers.size
           ? "선택한 번호의 원본과 최신 시안입니다."
-          : "승인된 34개를 로컬에 적용했습니다. 선택하지 않은 47개는 그대로입니다.";
+          : "승인된 34개를 메인 화면에 적용했습니다. 번호는 원본 보관본 기준이며, 선택하지 않은 썸네일은 그대로입니다.";
         const list = document.querySelector("#comparison-list");
         list.replaceChildren();
 
@@ -159,7 +159,7 @@
           name.append(badge, title, slug);
           const status = document.createElement("span");
           status.className = `comparison-status${approved.has(toolId) ? "" : " pending"}`;
-          status.textContent = approved.has(toolId) ? "승인 · 로컬 적용" : "미승인 · 시안만 보관";
+          status.textContent = approved.has(toolId) ? "승인 · 적용 완료" : "미승인 · 시안만 보관";
           name.append(status);
           const corrections = {
             "common2-circle": "반지름에 수직인 접선으로 보정",

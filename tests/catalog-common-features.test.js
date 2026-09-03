@@ -22,6 +22,19 @@ test("새 교육과정 웹툴 6종과 공통 수업 기능 진입점을 제공�
   assert.match(html, /href="\.\/classroom-response\/"/);
 });
 
+test("경제 수학 해외여행 자금 설계 도구가 카탈로그와 수행평가 기능에 연결된다", () => {
+  const catalog = read("index.html");
+  const tool = read("economic-math/exchange-interest-travel-plan/index.html");
+  assert.match(catalog, /data-tool-id="exchange-interest-travel-plan"/);
+  assert.match(catalog, /data-tool-tags="[^"]*economic-math[^"]*"/);
+  assert.match(catalog, /href="\.\/economic-math\/exchange-interest-travel-plan\/index\.html"/);
+  assert.match(tool, /const EXCHANGE_SCENARIOS/);
+  assert.match(tool, /function validateSubmission\(\)/);
+  assert.match(tool, /id="className"[^>]*required/);
+  assert.match(tool, /id="studentNo"[^>]*required/);
+  assert.match(tool, /id="studentName"[^>]*required/);
+});
+
 test("핵심 외부 라이브러리는 CDN이 아닌 고정 로컬 파일을 사용한다", () => {
   ["ai-math/image-supervised-learning/index.html", "school-work/assignment-viewer/index.html", "school-work/pdf-file-splitter/index.html"].forEach(file => {
     const html = read(file);

@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="수학 수업에서 바로 활용할 수 있는 기하, 공통수학2, 확률·통계, 인공지능 수학, 수학 게임 웹툴 모음"
+      content="수학 수업에서 바로 활용할 수 있는 기하, 공통수학2, 확률·통계, 인공지능 수학, 수학과제 탐구, 수학 게임 웹툴 모음"
     />
     <title>수학 수업 웹툴 모음 by 정T</title>
     <meta name="theme-color" content="#111c35" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23111c35'/%3E%3Cpath d='M16 44V20l16 12 16-12v24' fill='none' stroke='%235dd2b2' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="./assets/site.css?v=20260903-5" />
+    <link rel="stylesheet" href="./assets/site.css?v=20260903-6" />
   </head>
   <body>
     <a class="skip-link" href="#tools">웹툴 목록으로 건너뛰기</a>
@@ -144,6 +144,7 @@
               <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="probability-statistics">확률과 통계 <span></span></button>
               <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="ai-math">인공지능 수학 <span></span></button>
               <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="economic-math">경제 수학 <span></span></button>
+              <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="math-project">수학과제 탐구 <span></span></button>
             </div>
           </div>
 
@@ -1222,6 +1223,30 @@
             </div>
           </article>
 
+          <article class="tool-card card-portfolio" data-tool-id="exchange-interest-travel-plan" data-tool-tags="economic-math simulation visualization finance-economy class-use">
+            <div class="tool-visual" aria-hidden="true">
+              <svg viewBox="0 0 420 210">
+                <g class="portfolio-chart">
+                  <path d="M48 160V48M48 160h324" />
+                  <path d="M64 139C113 130 143 116 181 122S248 91 279 79s56-25 82-43" />
+                  <circle cx="64" cy="139" r="6" /><circle cx="181" cy="122" r="6" />
+                  <circle cx="279" cy="79" r="6" /><circle cx="361" cy="36" r="6" />
+                </g>
+                <text x="82" y="91" font-size="32" font-weight="900">₩ ↔ ¥</text>
+                <text x="82" y="119" font-size="13" letter-spacing="2">환율 · 적금</text>
+              </svg>
+            </div>
+            <div class="tool-content">
+              <div class="tool-tags" aria-label="태그"></div>
+              <h3>10년 후 해외여행 자금 설계하기</h3>
+              <p>물가와 무작위 환율 상황을 반영해 여행비를 예측하고, 적금 상품별 월 납입액과 이자를 비교해 수행평가 보고서를 완성합니다.</p>
+              <div class="tool-footer">
+                <span>수행평가 · 제출 보고서</span>
+                <a href="./economic-math/exchange-interest-travel-plan/index.html" aria-label="10년 후 해외여행 자금 설계하기 시작하기">시작하기 <b aria-hidden="true">→</b></a>
+              </div>
+            </div>
+          </article>
+
           <article class="tool-card card-proposition-detective" data-tool-id="proposition-detective" data-tool-tags="common math-game logic proposition class-use group-activity">
             <div class="tool-visual" aria-hidden="true">
               <div class="detective-preview">
@@ -1716,6 +1741,25 @@
             <div class="tool-visual" aria-hidden="true"><div class="curriculum-preview"><b>nPᵣ = nCᵣ × r!</b><span>선택 나무 · 순서 있는 선택</span><i>COUNTING</i></div></div>
             <div class="tool-content"><div class="tool-tags" aria-label="태그"></div><h3>경우의 수 선택 나무</h3><p>선택 과정을 나뭇가지로 펼쳐 순열과 조합의 차이, nPr=nCr×r!의 구조를 발견합니다.</p><div class="tool-footer"><span>2~7개 대상 · 선택 트리</span><a href="./curriculum-labs/index.html?lab=counting" aria-label="경우의 수 선택 나무 시작하기">시작하기 <b aria-hidden="true">→</b></a></div></div>
           </article>
+
+          <article class="tool-card card-curriculum-lab card-fermi" data-tool-id="fermi-estimation" data-tool-tags="math-project visualization ratio-proportion logic-reasoning assessment-grades class-use">
+            <div class="tool-visual" aria-hidden="true">
+              <div class="curriculum-preview">
+                <b>인구 × 비율 × 횟수</b>
+                <span>가정 · 규모 · 민감도</span>
+                <i>FERMI</i>
+              </div>
+            </div>
+            <div class="tool-content">
+              <div class="tool-tags" aria-label="태그"></div>
+              <h3>페르미 추정 수행평가</h3>
+              <p>생활 속 수량을 요소로 나누고 가정의 근거, 끝점 조합 범위, 민감도와 수정 과정을 기록해 제출 보고서로 완성합니다.</p>
+              <div class="tool-footer">
+                <span>30개 주제 · 제출 전 점검 · HTML/PDF</span>
+                <a href="./math-project/fermi-estimation/index.html" aria-label="페르미 추정 수행평가 시작하기">시작하기 <b aria-hidden="true">→</b></a>
+              </div>
+            </div>
+          </article>
         </div>
 
         <div class="tool-subsection" data-tool-section="school-work">
@@ -1970,9 +2014,9 @@
     </div>
 
     <script src="./assets/click-stats-config.js?v=20260714-1"></script>
-    <script src="./assets/thumbnail-candidates.js?v=20260903-5"></script>
-    <script src="./assets/tool-thumbnails.js?v=20260903-5"></script>
-    <script src="./assets/app.js?v=20260801-1"></script>
+    <script src="./assets/thumbnail-candidates.js?v=20260903-6"></script>
+    <script src="./assets/tool-thumbnails.js?v=20260903-6"></script>
+    <script src="./assets/app.js?v=20260903-6"></script>
     <script>if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("./sw.js").catch(() => {});</script>
   </body>
 </html>

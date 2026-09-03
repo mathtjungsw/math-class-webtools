@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>10년 후 해외여행 자금 설계하기 | 일정 선택형 경제 수학 수행평가</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --surface-soft: #f0f4ff;
+      --text: #172033;
+      --muted: #667085;
+      --line: #dfe5ef;
+      --primary: #3659d9;
+      --primary-dark: #2644b7;
+      --primary-soft: #e9eeff;
+      --accent: #0d8c7f;
+      --accent-soft: #e5f7f4;
+      --warning: #a96608;
+      --warning-soft: #fff4dc;
+      --danger: #b42318;
+      --danger-soft: #ffefee;
+      --shadow: 0 14px 40px rgba(30, 50, 90, 0.08);
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 11px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(54, 89, 217, 0.10), transparent 28rem),
+        radial-gradient(circle at 95% 20%, rgba(13, 140, 127, 0.08), transparent 24rem),
+        var(--bg);
+      line-height: 1.62;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(245, 247, 251, 0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(223, 229, 239, 0.85);
+    }
+
+    .topbar-inner {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-height: 68px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 850;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), #7c4fd8);
+      box-shadow: 0 8px 20px rgba(54, 89, 217, 0.25);
+    }
+
+    .progress-wrap {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 5px;
+    }
+
+    .progress-track {
+      height: 7px;
+      border-radius: 999px;
+      background: #e5e9f2;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 0.25s ease;
+    }
+
+    .top-actions { display: flex; gap: 8px; }
+
+    .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-weight: 750;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 3px solid rgba(54, 89, 217, 0.23);
+      outline-offset: 2px;
+    }
+
+    .btn-primary {
+      color: white;
+      background: var(--primary);
+      box-shadow: 0 8px 18px rgba(54, 89, 217, 0.22);
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-secondary { background: #e9edf5; color: #344054; }
+    .btn-outline { background: white; color: var(--primary); border: 1px solid #cfd8f5; }
+    .btn-danger-soft { background: var(--danger-soft); color: var(--danger); }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 90px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #1f3ca5 0%, #4969df 55%, #148f82 130%);
+      color: white;
+      border-radius: 30px;
+      padding: clamp(28px, 5vw, 58px);
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "✈";
+      position: absolute;
+      right: 5%;
+      top: -12%;
+      font-size: clamp(8rem, 18vw, 15rem);
+      opacity: 0.10;
+      transform: rotate(-10deg);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 6px 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.22);
+      font-size: 0.86rem;
+      font-weight: 750;
+    }
+
+    .hero h1 {
+      margin: 14px 0 12px;
+      font-size: clamp(2rem, 4.8vw, 4rem);
+      line-height: 1.12;
+      letter-spacing: -0.055em;
+    }
+
+    .hero p { margin: 0; max-width: 760px; color: rgba(255,255,255,0.88); font-size: 1.04rem; }
+
+    .notice {
+      margin-top: 22px;
+      padding: 13px 15px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.17);
+      font-size: 0.9rem;
+    }
+
+    .step-nav {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 10px 2px 14px;
+      scrollbar-width: thin;
+      margin-bottom: 6px;
+    }
+
+    .step-link {
+      flex: 0 0 auto;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+    .step-link.active { color: white; background: var(--primary); border-color: var(--primary); }
+
+    .section-card {
+      background: rgba(255,255,255,0.96);
+      border: 1px solid rgba(223,229,239,0.95);
+      border-radius: var(--radius-lg);
+      padding: clamp(20px, 3vw, 34px);
+      box-shadow: var(--shadow);
+      margin: 18px 0;
+      scroll-margin-top: 92px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .step-no {
+      flex: 0 0 auto;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), #7b58de);
+      font-weight: 850;
+      box-shadow: 0 8px 18px rgba(54, 89, 217, 0.2);
+    }
+
+    .section-head h2 { margin: 0; font-size: clamp(1.3rem, 2.4vw, 1.75rem); letter-spacing: -0.035em; }
+    .section-head p { margin: 3px 0 0; color: var(--muted); }
+
+    .grid { display: grid; gap: 16px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .field label, .field .label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 0.9rem;
+      font-weight: 760;
+      color: #344054;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid #cfd6e3;
+      background: white;
+      color: var(--text);
+      border-radius: 12px;
+      padding: 11px 12px;
+    }
+
+    input[type="number"] { text-align: right; }
+    textarea { min-height: 110px; resize: vertical; }
+
+    .hint { color: var(--muted); font-size: 0.82rem; margin-top: 5px; }
+
+    .region-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
+    .region-tab {
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 999px;
+      padding: 8px 13px;
+      font-weight: 720;
+      color: #475467;
+    }
+    .region-tab.active { color: white; background: var(--accent); border-color: var(--accent); }
+
+    .country-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .country-card {
+      appearance: none;
+      text-align: left;
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 16px;
+      padding: 14px;
+      min-height: 104px;
+      transition: 0.16s ease;
+      color: var(--text);
+    }
+
+    .country-card:hover { border-color: #aab8ec; transform: translateY(-2px); box-shadow: 0 8px 18px rgba(30,50,90,0.07); }
+    .country-card.selected { border-color: var(--primary); background: var(--primary-soft); box-shadow: 0 0 0 3px rgba(54,89,217,0.10); }
+    .country-top { display: flex; align-items: center; gap: 9px; }
+    .flag { font-size: 1.55rem; }
+    .country-name { font-weight: 840; letter-spacing: -0.02em; }
+    .country-meta { margin-top: 6px; font-size: 0.82rem; color: var(--muted); }
+
+    .summary-panel {
+      background: linear-gradient(135deg, var(--surface-soft), #f7fbff);
+      border: 1px solid #d8e0f6;
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .summary-panel h3, .soft-card h3 { margin: 0 0 10px; font-size: 1.05rem; }
+    .summary-list { display: grid; gap: 9px; }
+    .summary-row { display: flex; justify-content: space-between; gap: 14px; border-bottom: 1px dashed #ccd5e7; padding-bottom: 7px; }
+    .summary-row:last-child { border-bottom: 0; padding-bottom: 0; }
+    .summary-row span:first-child { color: var(--muted); }
+    .summary-row strong { text-align: right; }
+
+    .soft-card {
+      border: 1px solid var(--line);
+      background: #fbfcfe;
+      border-radius: 17px;
+      padding: 17px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 12px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: white;
+      padding: 15px;
+    }
+    .metric .k { color: var(--muted); font-size: 0.83rem; }
+    .metric .v { margin-top: 5px; font-weight: 870; font-size: 1.18rem; letter-spacing: -0.03em; }
+    .metric.primary { background: var(--primary-soft); border-color: #cbd6ff; }
+    .metric.accent { background: var(--accent-soft); border-color: #bce7df; }
+    .metric.warning { background: var(--warning-soft); border-color: #f0d9a8; }
+
+    .formula-box {
+      border-left: 4px solid var(--primary);
+      background: #f8faff;
+      border-radius: 0 13px 13px 0;
+      padding: 13px 15px;
+      margin-top: 12px;
+      overflow-wrap: anywhere;
+    }
+    .formula-title { color: var(--primary-dark); font-size: 0.82rem; font-weight: 800; margin-bottom: 3px; }
+    .formula { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-size: 0.9rem; white-space: pre-wrap; }
+
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 16px; }
+    table { width: 100%; border-collapse: collapse; min-width: 720px; }
+    th, td { padding: 12px 13px; border-bottom: 1px solid var(--line); text-align: right; }
+    th:first-child, td:first-child { text-align: left; }
+    th { background: #f4f6fa; color: #475467; font-size: 0.86rem; }
+    tr:last-child td { border-bottom: 0; }
+    .total-row td { font-weight: 850; background: #fafbff; }
+
+    .choice-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .choice-pill { position: relative; display: inline-block; }
+    .choice-pill input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: 0;
+      padding: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+    .choice-pill span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 88px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: white;
+      font-weight: 780;
+      transition: 0.15s ease;
+    }
+    .choice-pill input:checked + span { color: white; background: var(--primary); border-color: var(--primary); }
+    .choice-pill input:focus-visible + span { outline: 3px solid rgba(54,89,217,.28); outline-offset: 2px; }
+
+    .product-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .product-card {
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 18px;
+      padding: 18px;
+      position: relative;
+      transition: 0.15s ease;
+    }
+    .product-card.best::before {
+      content: "필요 월 납입액 최소";
+      position: absolute;
+      right: 14px;
+      top: 14px;
+      color: #126b62;
+      background: var(--accent-soft);
+      border: 1px solid #bfe7e1;
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 0.74rem;
+      font-weight: 820;
+    }
+    .product-card.selected { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(54,89,217,0.10); }
+    .product-card h3 { margin: 0 0 3px; padding-right: 145px; font-size: 1.05rem; }
+    .product-sub { color: var(--muted); font-size: 0.84rem; margin-bottom: 12px; }
+    .product-value { font-size: 1.35rem; font-weight: 900; letter-spacing: -0.035em; }
+    .product-status { margin-top: 6px; font-size: 0.88rem; font-weight: 740; }
+    .status-ok { color: var(--accent); }
+    .status-short { color: var(--danger); }
+    .product-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 13px;
+    }
+    .select-product, .apply-required {
+      width: 100%;
+      border: 1px solid #cbd5ef;
+      border-radius: 11px;
+      padding: 9px 10px;
+      font-weight: 800;
+    }
+    .select-product { background: #f7f9ff; color: var(--primary-dark); }
+    .apply-required { background: var(--primary); color: white; border-color: var(--primary); }
+
+    .callout {
+      border-radius: 16px;
+      padding: 15px 17px;
+      background: var(--warning-soft);
+      border: 1px solid #efd8a3;
+      color: #68440b;
+    }
+
+    .report-preview {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: clamp(20px, 3vw, 36px);
+    }
+    .report-header { border-bottom: 3px solid var(--text); padding-bottom: 15px; margin-bottom: 20px; }
+    .report-header h2 { margin: 0 0 5px; font-size: 1.7rem; }
+    .report-meta { color: var(--muted); font-size: 0.9rem; }
+    .report-section { margin: 24px 0; }
+    .report-section h3 { font-size: 1.08rem; margin: 0 0 10px; padding-bottom: 7px; border-bottom: 1px solid var(--line); }
+    .report-answer { background: #f7f9fc; border-radius: 12px; padding: 14px; white-space: pre-wrap; }
+
+    .action-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+
+    .footer-note { text-align: center; color: var(--muted); font-size: 0.82rem; margin-top: 24px; }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 25px;
+      transform: translate(-50%, 20px);
+      background: #172033;
+      color: white;
+      border-radius: 999px;
+      padding: 11px 16px;
+      font-size: 0.9rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.2s ease;
+      z-index: 100;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    dialog {
+      width: min(680px, calc(100% - 28px));
+      border: 0;
+      border-radius: 22px;
+      padding: 0;
+      box-shadow: 0 25px 80px rgba(22,32,51,0.25);
+    }
+    dialog::backdrop { background: rgba(22,32,51,0.45); backdrop-filter: blur(3px); }
+    .dialog-inner { padding: 24px; }
+    .dialog-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    .dialog-head h2 { margin: 0; }
+    .icon-btn { width: 38px; height: 38px; border: 0; border-radius: 11px; background: #eef1f6; font-size: 1.2rem; }
+
+    @media (max-width: 900px) {
+      .country-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-4 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+
+    @media (max-width: 700px) {
+      .topbar-inner { width: min(100% - 20px, 1180px); min-height: 62px; }
+      .brand span:last-child { display: none; }
+      .progress-label { display: none; }
+      .top-actions .btn { padding: 9px 10px; }
+      .page { width: min(100% - 20px, 1180px); padding-top: 18px; }
+      .hero { border-radius: 22px; }
+      .grid-2, .grid-3, .grid-4, .product-grid { grid-template-columns: 1fr; }
+      .country-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .section-card { border-radius: 20px; }
+    }
+
+    @media (max-width: 430px) {
+      .country-grid { grid-template-columns: 1fr; }
+      .metric-grid { grid-template-columns: 1fr; }
+      .top-actions .reset-label { display: none; }
+    }
+
+    @media print {
+      body { background: white; }
+      .topbar, .hero, .step-nav, .section-card:not(#step8), #step8 > .section-head, #step8 > .action-row, .footer-note, .toast { display: none !important; }
+      .page { width: 100%; padding: 0; }
+      #step8 { display: block !important; border: 0; box-shadow: none; padding: 0; margin: 0; }
+      .report-preview { border: 0; padding: 0; }
+      @page { size: A4; margin: 16mm; }
+    }
+  
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .option-grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .option-card {
+      position: relative;
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 15px;
+      background: #fff;
+      color: var(--text);
+      transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+    }
+    .option-card:hover { transform: translateY(-1px); border-color: #b9c6f3; box-shadow: 0 8px 20px rgba(30,50,90,.08); }
+    .option-card.selected { border: 2px solid var(--primary); background: var(--primary-soft); padding: 14px; }
+    .option-card .option-title { font-weight: 850; letter-spacing: -.02em; }
+    .option-card .option-price { margin-top: 8px; font-size: 1.12rem; font-weight: 900; color: var(--primary-dark); }
+    .option-card .option-note { margin-top: 5px; color: var(--muted); font-size: .82rem; line-height: 1.45; }
+    .option-tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: .72rem;
+      font-weight: 800;
+      color: var(--accent);
+      background: var(--accent-soft);
+      margin-bottom: 8px;
+    }
+    .choice-section + .choice-section { margin-top: 22px; padding-top: 22px; border-top: 1px dashed #cad3e3; }
+    .choice-section h3 { margin: 0 0 4px; }
+    .choice-section > p { color: var(--muted); margin: 0 0 12px; font-size: .9rem; }
+
+    .itinerary-toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: var(--surface-soft);
+      margin-bottom: 16px;
+    }
+    .itinerary-toolbar .toolbar-copy { color: var(--muted); font-size: .9rem; }
+    .itinerary-grid { display: grid; gap: 15px; }
+    .day-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 17px;
+      background: linear-gradient(180deg, #fff, #fbfcff);
+    }
+    .day-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .day-title { display: flex; align-items: center; gap: 10px; }
+    .day-badge {
+      width: 38px; height: 38px; border-radius: 13px; display: grid; place-items: center;
+      color: white; background: linear-gradient(135deg, var(--accent), #2b71c9); font-weight: 900;
+    }
+    .day-title h3 { margin: 0; font-size: 1.06rem; }
+    .day-title p { margin: 2px 0 0; color: var(--muted); font-size: .82rem; }
+    .day-cost { text-align: right; }
+    .day-cost span { display: block; color: var(--muted); font-size: .76rem; }
+    .day-cost strong { display: block; color: var(--primary-dark); font-size: 1.08rem; }
+    .day-choice-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
+    .day-choice-grid .field label { font-size: .8rem; }
+    .selection-detail {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 8px;
+      color: var(--muted);
+      font-size: .82rem;
+    }
+    .selection-detail div { padding: 8px 10px; border-radius: 10px; background: #f5f7fb; }
+    .daily-formula { margin-top: 12px; font-family: Consolas, monospace; font-size: .78rem; color: #475467; overflow-wrap: anywhere; }
+    .itinerary-summary-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 12px; margin-top: 16px; }
+    .mini-metric { border: 1px solid var(--line); border-radius: 14px; padding: 13px; background: white; }
+    .mini-metric .k { color: var(--muted); font-size: .78rem; }
+    .mini-metric .v { margin-top: 3px; font-weight: 850; color: var(--text); }
+    .planner-note { margin-top: 12px; color: var(--muted); font-size: .82rem; }
+    .subheading { margin: 22px 0 10px; font-size: 1rem; }
+    .cost-source-note { font-size: .8rem; color: var(--muted); margin-top: 10px; }
+    .report-itinerary td { vertical-align: top; }
+    .inline-badge { display:inline-block; padding:2px 7px; border-radius:999px; background:#eef2ff; color:#3659d9; font-size:.72rem; font-weight:800; }
+
+    @media (max-width: 980px) {
+      .option-grid.four { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .day-choice-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .itinerary-summary-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    @media (max-width: 640px) {
+      .option-grid, .option-grid.four { grid-template-columns: 1fr; }
+      .day-choice-grid, .selection-detail { grid-template-columns: 1fr; }
+      .day-head { align-items: stretch; }
+      .day-cost { text-align: left; }
+      .itinerary-summary-grid { grid-template-columns: 1fr; }
+    }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><div class="brand-mark">₩</div><span>경제 수학 수행평가</span></div>
+      <div class="progress-wrap" aria-label="진행률">
+        <div class="progress-label"><span id="progressText">1단계 진행 중</span><span id="progressPercent">0%</span></div>
+        <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+      </div>
+      <div class="top-actions">
+        <button class="btn btn-outline" id="helpBtn" type="button">도움말</button>
+        <button class="btn btn-danger-soft" id="resetBtn" type="button"><span class="reset-label">처음부터</span> ↺</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="hero">
+      <span class="eyebrow">경제 수학 · 환율·물가·이자와 적금 연계</span>
+      <h1>10년 후 해외여행<br />자금 설계하기</h1>
+      <p>20개 여행지 중 한 곳을 고르고, 항공권·숙소와 5박 6일의 매일 일정·식사·교통을 직접 선택해 여행비를 구성하세요. 같은 나라를 선택해도 일정 조합에 따라 비용과 목표금액이 달라집니다.</p>
+      <div class="notice"><strong>수업용 근삿값</strong> · 관광지 이름은 실제 장소를 중심으로 구성했고, 환율·물가상승률·항공료·숙박비·식비·교통비·입장료는 계산하기 편하도록 반올림하거나 가상화했습니다. 실제 예약·환전·금융 의사결정에는 사용할 수 없습니다. 관광세·숙박세·환전 수수료·환율 스프레드·이자소득세는 반영하지 않습니다.</div>
+    </section>
+
+    <nav class="step-nav" aria-label="단계 바로가기">
+      <a class="step-link active" href="#step1" data-step="1">1. 학생 정보</a>
+      <a class="step-link" href="#step2" data-step="2">2. 여행지·숙소</a>
+      <a class="step-link" href="#step3" data-step="3">3. 5박 6일 일정</a>
+      <a class="step-link" href="#step4" data-step="4">4. 현재 비용</a>
+      <a class="step-link" href="#step5" data-step="5">5. 10년 후 비용</a>
+      <a class="step-link" href="#step6" data-step="6">6. 목표금액</a>
+      <a class="step-link" href="#step7" data-step="7">7. 적금 계획</a>
+      <a class="step-link" href="#step8" data-step="8">8. 제출 보고서</a>
+    </nav>
+
+    <section class="section-card" id="step1" data-step-section="1">
+      <div class="section-head"><div class="step-no">1</div><div><h2>학생 정보와 여행 조건</h2><p>입력 내용은 자동 저장되고 제출 보고서에 반영됩니다.</p></div></div>
+      <div class="grid grid-4">
+        <div class="field"><label for="className">학급 <span aria-hidden="true">*</span></label><input id="className" type="text" placeholder="예: 3학년 2반" autocomplete="off" required aria-required="true" /></div>
+        <div class="field"><label for="studentNo">번호 <span aria-hidden="true">*</span></label><input id="studentNo" type="text" inputmode="numeric" placeholder="예: 15" autocomplete="off" required aria-required="true" /></div>
+        <div class="field"><label for="studentName">이름 <span aria-hidden="true">*</span></label><input id="studentName" type="text" placeholder="이름 입력" autocomplete="off" required aria-required="true" /></div>
+        <div class="field"><label for="baseYear">기준연도</label><input id="baseYear" type="number" min="2020" max="2100" step="1" /></div>
+      </div>
+      <div class="grid grid-3" style="margin-top:16px;">
+        <div class="field"><label for="purpose">여행 목적</label>
+          <select id="purpose">
+            <option value="문화·역사 탐방">문화·역사 탐방</option>
+            <option value="자연·생태 탐방">자연·생태 탐방</option>
+            <option value="휴양과 재충전">휴양과 재충전</option>
+            <option value="음식·생활문화 체험">음식·생활문화 체험</option>
+            <option value="예술·건축 탐방">예술·건축 탐방</option>
+          </select>
+        </div>
+        <div class="field"><span class="label">여행 인원</span><input value="1명" disabled /></div>
+        <div class="field"><span class="label">여행 기간</span><input value="5박 6일" disabled /></div>
+      </div>
+      <div class="callout" style="margin-top:16px;">학급·번호·이름은 필수 입력입니다. 그 밖의 내용은 선택한 조건에 따라 자동 계산·작성됩니다. 출발 시점은 <strong id="departureYearText">기준연도부터 10년 후</strong>로 고정됩니다.</div>
+    </section>
+
+    <section class="section-card" id="step2" data-step-section="2">
+      <div class="section-head"><div class="step-no">2</div><div><h2>여행지·항공권·숙소 선택</h2><p>같은 나라에서도 항공권과 숙소 선택에 따라 비용이 달라집니다.</p></div></div>
+      <div class="region-tabs" id="regionTabs"></div>
+      <div class="country-grid" id="countryGrid"></div>
+      <div class="grid grid-2" style="margin-top:18px;">
+        <div class="summary-panel"><h3>선택한 여행지</h3><div class="summary-list" id="destinationSummary"></div></div>
+        <div class="soft-card"><h3>여행 목적과 현재 조건</h3><div id="tripChoiceSummary"></div></div>
+      </div>
+
+      <div class="choice-section">
+        <h3>① 항공권 선택</h3><p>가격과 편의 조건이 다른 수업용 항공권 중 하나를 선택하세요.</p>
+        <div class="option-grid" id="flightOptions"></div>
+      </div>
+      <div class="choice-section">
+        <h3>② 숙소 선택</h3><p>선택한 숙소에서 5박을 연속으로 머무는 것으로 계산합니다. 숙소 이름은 수업용 가상 명칭입니다.</p>
+        <div class="option-grid four" id="hotelOptions"></div>
+      </div>
+      <div class="choice-section">
+        <h3>③ 여행 준비 패키지</h3><p>통신, 여행자보험, 소형 준비물 등을 단순화한 현지 통화 기준 묶음 비용입니다.</p>
+        <div class="option-grid" id="prepOptions"></div>
+      </div>
+    </section>
+
+    <section class="section-card" id="step3" data-step-section="3">
+      <div class="section-head"><div class="step-no">3</div><div><h2>5박 6일 일정 직접 구성</h2><p>매일 오전·오후 관광지, 식사 방식, 교통 방식을 선택하세요.</p></div></div>
+      <div class="itinerary-toolbar">
+        <div class="toolbar-copy"><strong>선택 즉시 자동 계산</strong><br />이미 고른 유료 관광지를 다른 시간대로 옮기면 기존 칸은 자동으로 자유시간이 됩니다. 무료 산책·휴식은 반복 선택할 수 있습니다.</div>
+        <div class="action-row" style="margin:0;">
+          <button class="btn btn-outline" id="shufflePlanBtn" type="button">추천 일정 섞기</button>
+          <button class="btn btn-secondary" id="defaultPlanBtn" type="button">기본 일정으로</button>
+        </div>
+      </div>
+      <div class="itinerary-grid" id="itineraryDays"></div>
+      <div class="itinerary-summary-grid" id="itinerarySummary"></div>
+      <div class="planner-note">1~5일차의 일일 비용에는 선택한 숙소 1박 비용이 포함되고, 6일차에는 숙박비가 포함되지 않습니다. 항공료와 여행 준비 패키지는 별도로 합산됩니다.</div>
+      <div class="soft-card" style="margin-top:18px;">
+        <h3>자동 완성된 여행 계획</h3>
+        <textarea id="travelPlan" aria-label="여행 계획" readonly aria-readonly="true"></textarea>
+        <div class="hint">위에서 선택한 여행 조건과 일정에 따라 자동 작성됩니다.</div>
+      </div>
+    </section>
+
+    <section class="section-card" id="step4" data-step-section="4">
+      <div class="section-head"><div class="step-no">4</div><div><h2>현재 소요 비용과 원화 환산</h2><p>선택한 일정의 항목별 비용과 환율 환산 과정이 자동 표시됩니다.</p></div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>비용 항목</th><th>선택 내용</th><th>계산식</th><th>현재 금액</th></tr></thead>
+          <tbody id="costTableBody"></tbody>
+        </table>
+      </div>
+      <div class="grid grid-2" style="margin-top:16px;">
+        <div class="soft-card">
+          <h3>현재 환율</h3>
+          <div id="currentExchangeInfo"></div>
+          <div class="formula-box"><div class="formula-title">현지비용 원화 환산</div><div class="formula" id="currentExchangeFormula"></div></div>
+        </div>
+        <div class="metric-grid" style="grid-template-columns: repeat(2,minmax(0,1fr));">
+          <div class="metric"><div class="k">선택한 항공료</div><div class="v" id="currentAirfare"></div></div>
+          <div class="metric"><div class="k">현재 현지비용(원화)</div><div class="v" id="currentLocalKRW"></div></div>
+          <div class="metric primary" style="grid-column:1/-1;"><div class="k">현재 기준 총 여행비</div><div class="v" id="currentTotal"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card" id="step5" data-step-section="5">
+      <div class="section-head"><div class="step-no">5</div><div><h2>물가와 환율을 반영한 10년 후 비용</h2><p>현지비용에는 국가별 예상 물가상승률을, 항공료에는 수업용 연 2.0% 상승률을 적용합니다.</p></div></div>
+      <div class="metric-grid">
+        <div class="metric"><div class="k">전년도 물가상승률</div><div class="v" id="prevInflation"></div></div>
+        <div class="metric"><div class="k">기준연도 물가상승률</div><div class="v" id="currentInflation"></div></div>
+        <div class="metric warning"><div class="k">변화</div><div class="v" id="inflationPP"></div></div>
+        <div class="metric accent"><div class="k">향후 연평균 예상률</div><div class="v" id="expectedInflation"></div></div>
+      </div>
+      <div class="summary-panel" style="margin-top:16px;">
+        <h3>무작위 환율 시나리오</h3>
+        <div class="summary-list">
+          <div class="summary-row"><span>배정된 시나리오</span><strong id="exchangeScenarioLabel"></strong></div>
+          <div class="summary-row"><span>10년 후 적용 환율</span><strong id="scenarioFutureRate"></strong></div>
+        </div>
+        <div class="hint" id="exchangeScenarioDescription"></div>
+      </div>
+      <div class="formula-box"><div class="formula-title">선택한 현지비용에 물가상승 적용</div><div class="formula" id="inflationFormula"></div></div>
+      <div class="formula-box"><div class="formula-title">10년 후 예상 환율 적용</div><div class="formula" id="futureExchangeFormula"></div></div>
+      <div class="formula-box"><div class="formula-title">항공료 상승 적용</div><div class="formula" id="futureAirfareFormula"></div></div>
+      <div class="table-wrap" style="margin-top:18px;">
+        <table>
+          <thead><tr><th>비교 항목</th><th>계산 기준</th><th>예상 금액</th><th>현재 대비 변화</th></tr></thead>
+          <tbody id="futureComparisonBody"></tbody>
+        </table>
+      </div>
+      <div class="metric-grid" style="margin-top:16px;">
+        <div class="metric"><div class="k">10년 후 항공료</div><div class="v" id="futureAirfare"></div></div>
+        <div class="metric"><div class="k">10년 후 현지비용</div><div class="v" id="futureLocalKRW"></div></div>
+        <div class="metric primary" style="grid-column:span 2;"><div class="k">10년 후 예상 총 여행비</div><div class="v" id="futureTotal"></div></div>
+      </div>
+      <div class="soft-card" style="margin-top:16px;"><h3>자동 해석</h3><div id="futureInterpretation"></div></div>
+    </section>
+
+    <section class="section-card" id="step6" data-step-section="6">
+      <div class="section-head"><div class="step-no">6</div><div><h2>여행 목표금액 설정</h2><p>예비비 비율을 고르면 최종 목표금액이 10만 원 단위로 자동 올림됩니다.</p></div></div>
+      <div class="grid grid-2">
+        <div class="soft-card">
+          <h3>예비비 선택</h3>
+          <div class="choice-row" id="reserveChoices">
+            <label class="choice-pill"><input type="radio" name="reserve" value="5"><span>5%</span></label>
+            <label class="choice-pill"><input type="radio" name="reserve" value="10" checked><span>10%</span></label>
+            <label class="choice-pill"><input type="radio" name="reserve" value="15"><span>15%</span></label>
+          </div>
+          <div class="hint">예상하지 못한 지출에 대비하는 금액입니다.</div>
+        </div>
+        <div class="summary-panel">
+          <h3>목표금액 계산</h3>
+          <div class="summary-list">
+            <div class="summary-row"><span>10년 후 예상 여행비</span><strong id="goalFutureCost"></strong></div>
+            <div class="summary-row"><span>예비비</span><strong id="reserveAmount"></strong></div>
+            <div class="summary-row"><span>계산된 목표금액</span><strong id="rawGoal"></strong></div>
+            <div class="summary-row"><span>10만 원 단위 올림</span><strong id="roundedGoal"></strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="formula-box"><div class="formula-title">목표금액 계산과정</div><div class="formula" id="goalFormula"></div></div>
+    </section>
+
+    <section class="section-card" id="step7" data-step-section="7">
+      <div class="section-head"><div class="step-no">7</div><div><h2>가상 적금상품 비교와 월 납입액 찾기</h2><p>매월 납입할 금액을 바꾸어 10년 후 만기금액을 확인하고, 목표금액을 모으는 데 필요한 월 납입액을 상품별로 비교합니다.</p></div></div>
+      <div class="grid grid-2">
+        <div class="field"><label for="monthlyContribution">매월 적금할 수 있는 금액</label><input id="monthlyContribution" type="number" min="0" step="10000" value="100000" /><div class="hint">매월 초 같은 금액을 120회 납입한다고 가정합니다. 모든 상품은 월 납입 한도가 없고 이자소득세는 계산하지 않습니다.</div></div>
+        <div class="summary-panel"><h3>월 납입액과 목표 비교</h3><div class="summary-list"><div class="summary-row"><span>입력한 월 납입액</span><strong id="monthlyContributionSummary"></strong></div><div class="summary-row"><span>120회 총 납입원금</span><strong id="totalContributionSummary"></strong></div><div class="summary-row"><span>최종 목표금액</span><strong id="goalSummary"></strong></div><div class="summary-row"><span>가장 적은 필요 월 납입액</span><strong id="bestMonthlySummary"></strong></div></div></div>
+      </div>
+      <div class="callout" style="margin-top:16px;"><strong>활용 방법:</strong> 아래 상품마다 표시되는 ‘필요 월 납입액 적용’을 누르면 해당 금액이 위 입력란에 자동으로 들어가며, 목표 달성 여부와 만기금액이 즉시 다시 계산됩니다.</div>
+      <div class="grid grid-2" style="margin-top:16px;">
+        <div class="field">
+          <label for="comparisonCriterion">적금상품 선택 기준</label>
+          <select id="comparisonCriterion">
+            <option value="required">목표 달성 필요 월 납입액이 적은 상품</option>
+            <option value="interest">예상 이자가 큰 상품</option>
+            <option value="rate">표시 연이율이 높은 상품</option>
+            <option value="balanced">월 납입 부담과 이자의 균형</option>
+          </select>
+          <div class="hint">선택한 기준이 상품 선택 이유와 제출 보고서에 반영됩니다.</div>
+        </div>
+        <div class="soft-card"><h3>금리와 월 납입액 비교</h3><div id="rateComparison"></div></div>
+      </div>
+      <div class="product-grid" id="productGrid" style="margin-top:18px;"></div>
+      <div class="grid grid-2" style="margin-top:18px;">
+        <div class="soft-card"><h3>선택한 적금상품</h3><div id="selectedProductSummary"></div><div class="formula-box"><div class="formula-title">필요 월 납입액과 만기금액 계산과정</div><div class="formula" id="selectedProductFormula"></div></div></div>
+        <div class="field"><label for="productReason">상품 선택 이유</label><textarea id="productReason" readonly aria-readonly="true"></textarea><div class="hint">선택한 상품과 선택 기준에 따라 자동 작성됩니다.</div></div>
+      </div>
+      <div class="field" style="margin-top:16px;"><label for="finalReflection">물가·환율 변화와 적금 계획에 대한 최종 해석</label><textarea id="finalReflection" readonly aria-readonly="true"></textarea><div class="hint">여행·환율·적금 선택에 따라 자동 작성됩니다.</div></div>
+    </section>
+
+    <section class="section-card" id="step8" data-step-section="8">
+      <div class="section-head"><div class="step-no">8</div><div><h2>최종 제출 보고서</h2><p>선택한 5박 6일 일정과 계산 결과를 확인한 뒤 독립된 HTML 파일로 저장하세요.</p></div></div>
+      <div class="report-preview" id="reportPreview"></div>
+      <div class="action-row">
+        <button class="btn btn-primary" id="downloadBtn" type="button">제출용 HTML 저장</button>
+        <button class="btn btn-outline" id="printBtn" type="button">인쇄·PDF 저장</button>
+        <button class="btn btn-secondary" id="copyBtn" type="button">보고서 문장 복사</button>
+      </div>
+      <div class="hint" style="margin-top:10px;">학급·번호·이름이 모두 입력되어야 저장·인쇄·복사할 수 있습니다.</div>
+    </section>
+
+    <div class="footer-note">입력 내용은 이 브라우저에 자동 임시 저장됩니다. 공용 기기에서는 제출 후 ‘처음부터’를 눌러 내용을 지워 주세요.</div>
+  </main>
+
+  <dialog id="helpDialog">
+    <div class="dialog-inner">
+      <div class="dialog-head"><h2>웹툴 사용 방법</h2><button class="icon-btn" id="closeHelp" type="button" aria-label="닫기">×</button></div>
+      <ol>
+        <li>필수 항목인 학급·번호·이름을 입력하고 기준연도를 확인합니다.</li>
+        <li>20개국 중 여행지를 선택한 뒤 항공권·숙소·준비 패키지를 고릅니다.</li>
+        <li>6일 동안 오전·오후 관광지와 하루 식사·교통 방식을 선택합니다.</li>
+        <li>무작위로 배정된 원화 강세·기준·원화 약세 시나리오와 10년 후 비용의 계산과정을 확인합니다.</li>
+        <li>예비비와 상품 선택 기준을 정한 뒤 월 납입액을 바꾸어 가상 적금상품을 비교합니다.</li>
+        <li>선택 결과로 완성된 문장을 점검한 뒤 제출용 HTML 파일을 저장합니다.</li>
+      </ol>
+      <div class="callout"><strong>자료 성격:</strong> 실제 관광지 명칭과 공개된 여행비 수준을 참고하되, 모든 비용은 수행평가용으로 반올림·가상화했습니다. 결과는 실제 여행 견적이 아닙니다.</div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    "use strict";
+
+    const BASE_AIRFARE_INFLATION = 0.02;
+    const YEARS = 10;
+    const NIGHTS = 5;
+    const DAYS = 6;
+    const MONTHS = YEARS * 12;
+    const STORAGE_KEY = "economicMathTravelPlanV4";
+    const destinations = [{"id":"fr","region":"유럽","flag":"🇫🇷","country":"프랑스","city":"파리","currency":"유로","code":"EUR","unit":1,"currentRate":1600,"futureRate":1800,"prevInflation":1.7,"currentInflation":2.1,"expectedInflation":2.0,"airfare":1500000,"hotel":145,"food":58,"transport":18,"other":85,"foods":["크루아상과 카페","잠봉뵈르 샌드위치","비스트로 스테이크·파스타"],"attractions":[{"name":"루브르 박물관","price":22,"note":"대표 미술관 관람","icon":"🖼️","repeatable":false,"id":"a0"},{"name":"에펠탑 전망대","price":36,"note":"파리 전경 감상","icon":"🗼","repeatable":false,"id":"a1"},{"name":"오르세 미술관","price":16,"note":"인상주의 작품 관람","icon":"🎨","repeatable":false,"id":"a2"},{"name":"세느강 유람선","price":20,"note":"강변 명소 감상","icon":"🚤","repeatable":false,"id":"a3"},{"name":"개선문 전망대","price":16,"note":"샹젤리제 조망","icon":"🏛️","repeatable":false,"id":"a4"},{"name":"생트샤펠","price":14,"note":"스테인드글라스 관람","icon":"⛪","repeatable":false,"id":"a5"},{"name":"베르사유 궁전","price":32,"note":"근교 궁전 탐방","icon":"👑","repeatable":false,"id":"a6"},{"name":"몽파르나스 전망대","price":22,"note":"도시 야경 감상","icon":"🌃","repeatable":false,"id":"a7"},{"name":"몽마르트르·도심 산책","price":0,"note":"무료 거리 탐방","icon":"🚶","repeatable":true,"id":"a8"},{"name":"카페·공원 휴식","price":0,"note":"자유시간","icon":"☕","repeatable":true,"id":"a9"}]},{"id":"it","region":"유럽","flag":"🇮🇹","country":"이탈리아","city":"로마","currency":"유로","code":"EUR","unit":1,"currentRate":1600,"futureRate":1800,"prevInflation":1.5,"currentInflation":1.9,"expectedInflation":1.8,"airfare":1450000,"hotel":130,"food":55,"transport":15,"other":80,"foods":["코르네토와 에스프레소","피자 알 탈리오","파스타·리소토"],"attractions":[{"name":"콜로세움","price":18,"note":"고대 원형경기장 탐방","icon":"🏟️","repeatable":false,"id":"a0"},{"name":"바티칸 박물관","price":25,"note":"미술품과 시스티나 성당","icon":"🖼️","repeatable":false,"id":"a1"},{"name":"보르게세 미술관","price":15,"note":"조각·회화 관람","icon":"🎨","repeatable":false,"id":"a2"},{"name":"판테온","price":5,"note":"고대 건축 탐방","icon":"🏛️","repeatable":false,"id":"a3"},{"name":"산탄젤로 성","price":16,"note":"성채와 전망대","icon":"🏰","repeatable":false,"id":"a4"},{"name":"카피톨리노 박물관","price":16,"note":"로마 역사 전시","icon":"🏺","repeatable":false,"id":"a5"},{"name":"아피아 가도 자전거","price":20,"note":"고대 도로 체험","icon":"🚲","repeatable":false,"id":"a6"},{"name":"폼페이 당일 탐방","price":60,"note":"근교 유적지 이동 포함","icon":"🌋","repeatable":false,"id":"a7"},{"name":"트레비·나보나 광장 산책","price":0,"note":"무료 도심 탐방","icon":"🚶","repeatable":true,"id":"a8"},{"name":"젤라토·광장 휴식","price":0,"note":"자유시간","icon":"🍨","repeatable":true,"id":"a9"}]},{"id":"gb","region":"유럽","flag":"🇬🇧","country":"영국","city":"런던","currency":"파운드","code":"GBP","unit":1,"currentRate":1850,"futureRate":2050,"prevInflation":2.3,"currentInflation":2.7,"expectedInflation":2.4,"airfare":1550000,"hotel":155,"food":60,"transport":20,"other":85,"foods":["잉글리시 브렉퍼스트","피시 앤 칩스","선데이 로스트·애프터눈티"],"attractions":[{"name":"런던탑","price":35,"note":"왕실 역사와 보석 관람","icon":"🏰","repeatable":false,"id":"a0"},{"name":"런던 아이","price":32,"note":"도시 전망","icon":"🎡","repeatable":false,"id":"a1"},{"name":"웨스트민스터 사원","price":30,"note":"왕실·역사 탐방","icon":"⛪","repeatable":false,"id":"a2"},{"name":"세인트폴 대성당","price":25,"note":"대성당과 돔 전망","icon":"⛪","repeatable":false,"id":"a3"},{"name":"템스강 유람선","price":22,"note":"강변 명소 감상","icon":"🚤","repeatable":false,"id":"a4"},{"name":"더 샤드 전망대","price":35,"note":"고층 전망대","icon":"🌃","repeatable":false,"id":"a5"},{"name":"처칠 워룸","price":32,"note":"전쟁사 전시","icon":"🪖","repeatable":false,"id":"a6"},{"name":"웨스트엔드 뮤지컬","price":80,"note":"공연 관람","icon":"🎭","repeatable":false,"id":"a7"},{"name":"대영박물관·도심 산책","price":0,"note":"무료 박물관 중심","icon":"🚶","repeatable":true,"id":"a8"},{"name":"공원·마켓 자유시간","price":0,"note":"자유시간","icon":"🌳","repeatable":true,"id":"a9"}]},{"id":"ch","region":"유럽","flag":"🇨🇭","country":"스위스","city":"취리히","currency":"스위스 프랑","code":"CHF","unit":1,"currentRate":1700,"futureRate":1900,"prevInflation":1.1,"currentInflation":1.4,"expectedInflation":1.3,"airfare":1650000,"hotel":170,"food":70,"transport":25,"other":100,"foods":["뢰스티","치즈·빵 간편식","퐁뒤와 스위스식 정찬"],"attractions":[{"name":"취리히 미술관","price":23,"note":"근현대 미술 관람","icon":"🎨","repeatable":false,"id":"a0"},{"name":"스위스 국립박물관","price":10,"note":"역사·문화 전시","icon":"🏛️","repeatable":false,"id":"a1"},{"name":"취리히 호수 유람선","price":20,"note":"호수 풍경 감상","icon":"🚤","repeatable":false,"id":"a2"},{"name":"위틀리베르크 열차","price":18,"note":"근교 전망 산책","icon":"🚞","repeatable":false,"id":"a3"},{"name":"FIFA 박물관","price":26,"note":"축구 문화 전시","icon":"⚽","repeatable":false,"id":"a4"},{"name":"라인폭포 당일 탐방","price":45,"note":"근교 교통 포함","icon":"🌊","repeatable":false,"id":"a5"},{"name":"루체른 당일 탐방","price":60,"note":"열차 이동 포함","icon":"🏔️","repeatable":false,"id":"a6"},{"name":"초콜릿 체험관","price":17,"note":"스위스 초콜릿 체험","icon":"🍫","repeatable":false,"id":"a7"},{"name":"구시가지·리마트강 산책","price":0,"note":"무료 도심 탐방","icon":"🚶","repeatable":true,"id":"a8"},{"name":"호숫가 휴식","price":0,"note":"자유시간","icon":"🌿","repeatable":true,"id":"a9"}]},{"id":"za","region":"아프리카","flag":"🇿🇦","country":"남아프리카공화국","city":"케이프타운","currency":"랜드","code":"ZAR","unit":1,"currentRate":75,"futureRate":82,"prevInflation":4.1,"currentInflation":4.8,"expectedInflation":4.5,"airfare":1600000,"hotel":1250,"food":520,"transport":220,"other":900,"foods":["보보티","현지 카페·샌드위치","브라이와 해산물"],"attractions":[{"name":"테이블마운틴 케이블카","price":450,"note":"도시와 해안 전망","icon":"🚡","repeatable":false,"id":"a0"},{"name":"로벤섬 투어","price":650,"note":"역사 유적 탐방","icon":"⛴️","repeatable":false,"id":"a1"},{"name":"희망봉 당일 투어","price":1300,"note":"해안 드라이브 포함","icon":"🌊","repeatable":false,"id":"a2"},{"name":"투 오션스 아쿠아리움","price":300,"note":"해양 생태 관람","icon":"🐠","repeatable":false,"id":"a3"},{"name":"커스텐보시 식물원","price":250,"note":"식물원 산책","icon":"🌿","repeatable":false,"id":"a4"},{"name":"자이츠 현대미술관","price":250,"note":"아프리카 현대미술","icon":"🎨","repeatable":false,"id":"a5"},{"name":"와인랜드 당일 투어","price":1500,"note":"근교 와이너리 체험","icon":"🍇","repeatable":false,"id":"a6"},{"name":"지역문화 투어","price":900,"note":"지역 생활문화 체험","icon":"🥁","repeatable":false,"id":"a7"},{"name":"워터프런트·해변 산책","price":0,"note":"무료 해안 탐방","icon":"🚶","repeatable":true,"id":"a8"},{"name":"숙소·카페 휴식","price":0,"note":"자유시간","icon":"☕","repeatable":true,"id":"a9"}]},{"id":"ma","region":"아프리카","flag":"🇲🇦","country":"모로코","city":"마라케시","currency":"디르함","code":"MAD","unit":1,"currentRate":145,"futureRate":156,"prevInflation":2.7,"currentInflation":3.4,"expectedInflation":3.1,"airfare":1450000,"hotel":780,"food":300,"transport":120,"other":550,"foods":["민트티와 모로코식 아침","타진","쿠스쿠스와 현지 정찬"],"attractions":[{"name":"마조렐 정원","price":170,"note":"정원과 박물관 관람","icon":"🌵","repeatable":false,"id":"a0"},{"name":"바히아 궁전","price":100,"note":"궁전 건축 탐방","icon":"🏛️","repeatable":false,"id":"a1"},{"name":"사디안 무덤","price":100,"note":"왕조 유적 관람","icon":"🕌","repeatable":false,"id":"a2"},{"name":"르 자르댕 세크레","price":100,"note":"전통 정원 산책","icon":"🌿","repeatable":false,"id":"a3"},{"name":"모로코 요리 교실","price":500,"note":"현지 요리 체험","icon":"🍲","repeatable":false,"id":"a4"},{"name":"전통 하맘 체험","price":450,"note":"목욕 문화 체험","icon":"🧖","repeatable":false,"id":"a5"},{"name":"아틀라스 산맥 당일 투어","price":700,"note":"근교 마을 탐방","icon":"🏔️","repeatable":false,"id":"a6"},{"name":"사막 석양 투어","price":650,"note":"낙타·석양 체험","icon":"🐪","repeatable":false,"id":"a7"},{"name":"메디나·시장 산책","price":0,"note":"무료 구시가지 탐방","icon":"🚶","repeatable":true,"id":"a8"},{"name":"리야드·카페 휴식","price":0,"note":"자유시간","icon":"☕","repeatable":true,"id":"a9"}]},{"id":"ke","region":"아프리카","flag":"🇰🇪","country":"케냐","city":"나이로비","currency":"실링","code":"KES","unit":1,"currentRate":11,"futureRate":12,"prevInflation":4.8,"currentInflation":5.6,"expectedInflation":5.2,"airfare":1550000,"hotel":10500,"food":4200,"transport":1600,"other":8000,"foods":["우갈리","케냐식 스튜","냐마초마와 현지 커피"],"attractions":[{"name":"나이로비 국립공원","price":6000,"note":"도시 인근 사파리","icon":"🦁","repeatable":false,"id":"a0"},{"name":"기린센터","price":1500,"note":"기린 보호 활동 체험","icon":"🦒","repeatable":false,"id":"a1"},{"name":"카렌 블릭센 박물관","price":1200,"note":"문학·역사 공간","icon":"🏠","repeatable":false,"id":"a2"},{"name":"케냐 국립박물관","price":1200,"note":"자연사·문화 전시","icon":"🏛️","repeatable":false,"id":"a3"},{"name":"보마스 오브 케냐","price":1000,"note":"전통 공연과 마을","icon":"🥁","repeatable":false,"id":"a4"},{"name":"코끼리 보호소","price":2000,"note":"보호 활동 관람","icon":"🐘","repeatable":false,"id":"a5"},{"name":"커피 농장 투어","price":4500,"note":"농장과 시음 체험","icon":"☕","repeatable":false,"id":"a6"},{"name":"종일 사파리 투어","price":12000,"note":"차량·가이드 포함","icon":"🚙","repeatable":false,"id":"a7"},{"name":"시티마켓·도심 산책","price":0,"note":"무료 도심 탐방","icon":"🚶","repeatable":true,"id":"a8"},{"name":"숙소 휴식","price":0,"note":"자유시간","icon":"🌿","repeatable":true,"id":"a9"}]},{"id":"ae","region":"중동","flag":"🇦🇪","country":"아랍에미리트","city":"두바이","currency":"디르함","code":"AED","unit":1,"currentRate":375,"futureRate":410,"prevInflation":2.2,"currentInflation":2.9,"expectedInflation":2.6,"airfare":900000,"hotel":440,"food":170,"transport":75,"other":280,"foods":["샤와르마","메제와 그릴","해산물·중동식 정찬"],"attractions":[{"name":"부르즈 칼리파 전망대","price":180,"note":"초고층 전망대","icon":"🏙️","repeatable":false,"id":"a0"},{"name":"미래박물관","price":150,"note":"미래 기술 전시","icon":"🤖","repeatable":false,"id":"a1"},{"name":"사막 사파리","price":250,"note":"사막 차량·공연 체험","icon":"🏜️","repeatable":false,"id":"a2"},{"name":"두바이 프레임","price":50,"note":"도시 전망과 전시","icon":"🖼️","repeatable":false,"id":"a3"},{"name":"두바이 아쿠아리움","price":200,"note":"대형 수족관","icon":"🐠","repeatable":false,"id":"a4"},{"name":"미라클 가든","price":100,"note":"대형 꽃 정원","icon":"🌺","repeatable":false,"id":"a5"},{"name":"마리나 유람선","price":180,"note":"야경 유람","icon":"🚤","repeatable":false,"id":"a6"},{"name":"아틀란티스 워터파크","price":320,"note":"워터파크 체험","icon":"🌊","repeatable":false,"id":"a7"},{"name":"올드두바이·아브라 산책","price":10,"note":"전통시장과 수상택시","icon":"🚶","repeatable":true,"id":"a8"},{"name":"몰·카페 자유시간","price":0,"note":"자유시간","icon":"☕","repeatable":true,"id":"a9"}]},{"id":"jo","region":"중동","flag":"🇯🇴","country":"요르단","city":"암만","currency":"디나르","code":"JOD","unit":1,"currentRate":1940,"futureRate":2100,"prevInflation":2.6,"currentInflation":3.3,"expectedInflation":3.0,"airfare":1250000,"hotel":62,"food":24,"transport":10,"other":45,"foods":["팔라펠과 후무스","메제","만사프와 요르단식 정찬"],"attractions":[{"name":"암만 성채","price":3,"note":"도시 역사 유적","icon":"🏛️","repeatable":false,"id":"a0"},{"name":"로마 극장","price":2,"note":"고대 공연장 유적","icon":"🏟️","repeatable":false,"id":"a1"},{"name":"요르단 박물관","price":5,"note":"역사·고고학 전시","icon":"🏺","repeatable":false,"id":"a2"},{"name":"페트라 당일 탐방","price":50,"note":"대표 고대 도시","icon":"🏜️","repeatable":false,"id":"a3"},{"name":"사해 체험","price":25,"note":"부유 체험·해변 입장","icon":"🌊","repeatable":false,"id":"a4"},{"name":"제라시 유적","price":10,"note":"로마 시대 도시 유적","icon":"🏛️","repeatable":false,"id":"a5"},{"name":"요르단 요리 교실","price":35,"note":"현지 음식 만들기","icon":"🍲","repeatable":false,"id":"a6"},{"name":"와디럼 당일 투어","price":60,"note":"사막 지프 체험","icon":"🚙","repeatable":false,"id":"a7"},{"name":"다운타운·시장 산책","price":0,"note":"무료 도심 탐방","icon":"🚶","repeatable":true,"id":"a8"},{"name":"카페·숙소 휴식","price":0,"note":"자유시간","icon":"☕","repeatable":true,"id":"a9"}]},{"id":"th","region":"동남아시아","flag":"🇹🇭","country":"태국","city":"방콕","currency":"바트","code":"THB","unit":1,"currentRate":41,"futureRate":45,"prevInflation":1.8,"currentInflation":2.3,"expectedInflation":2.1,"airfare":550000,"hotel":2600,"food":950,"transport":350,"other":1500,"foods":["팟타이","똠얌과 볶음밥","태국식 해산물·디저트"],"attractions":[{"name":"왕궁","price":500,"note":"왕실 건축 탐방","icon":"👑","repeatable":false,"id":"a0"},{"name":"왓 아룬","price":200,"note":"강변 사원 관람","icon":"🛕","repeatable":false,"id":"a1"},{"name":"왓 포","price":300,"note":"와불상과 사원","icon":"🛕","repeatable":false,"id":"a2"},{"name":"운하 보트 투어","price":900,"note":"수상마을과 강변","icon":"🚤","repeatable":false,"id":"a3"},{"name":"짐 톰슨 하우스","price":200,"note":"태국 실크·건축","icon":"🏠","repeatable":false,"id":"a4"},{"name":"아유타야 당일 투어","price":1800,"note":"고대 도시 유적","icon":"🏛️","repeatable":false,"id":"a5"},{"name":"태국 요리 교실","price":1200,"note":"현지 요리 체험","icon":"🍳","repeatable":false,"id":"a6"},{"name":"무에타이 경기 관람","price":1500,"note":"전통 스포츠 관람","icon":"🥊","repeatable":false,"id":"a7"},{"name":"짜뚜짝·차이나타운 산책","price":0,"note":"시장과 거리 탐방","icon":"🚶","repeatable":true,"id":"a8"},{"name":"마사지·카페 휴식","price":0,"note":"자유시간","icon":"🌿","repeatable":true,"id":"a9"}]},{"id":"vn","region":"동남아시아","flag":"🇻🇳","country":"베트남","city":"다낭","currency":"동","code":"VND","unit":1000,"currentRate":55,"futureRate":62,"prevInflation":3.4,"currentInflation":4.1,"expectedInflation":3.8,"airfare":450000,"hotel":1200000,"food":420000,"transport":160000,"other":700000,"foods":["반미","쌀국수·분짜","해산물과 베트남식 정찬"],"attractions":[{"name":"바나힐","price":900000,"note":"케이블카와 테마공간","icon":"🚡","repeatable":false,"id":"a0"},{"name":"호이안 구시가지","price":120000,"note":"야경과 전통거리","icon":"🏮","repeatable":false,"id":"a1"},{"name":"오행산","price":40000,"note":"동굴·사원 탐방","icon":"⛰️","repeatable":false,"id":"a2"},{"name":"미선 유적","price":150000,"note":"참파 왕국 유적","icon":"🏛️","repeatable":false,"id":"a3"},{"name":"참 조각 박물관","price":60000,"note":"참파 예술 전시","icon":"🏺","repeatable":false,"id":"a4"},{"name":"한강 유람선","price":150000,"note":"도시 야경 감상","icon":"🚤","repeatable":false,"id":"a5"},{"name":"베트남 요리 교실","price":800000,"note":"현지 요리 체험","icon":"🍳","repeatable":false,"id":"a6"},{"name":"참섬 스노클링","price":900000,"note":"섬·해양 체험","icon":"🤿","repeatable":false,"id":"a7"},{"name":"미케비치·도심 산책","price":0,"note":"무료 해변 탐방","icon":"🚶","repeatable":true,"id":"a8"},{"name":"카페·마사지 휴식","price":0,"note":"자유시간","icon":"☕","repeatable":true,"id":"a9"}]},{"id":"sg","region":"동남아시아","flag":"🇸🇬","country":"싱가포르","city":"싱가포르","currency":"싱가포르 달러","code":"SGD","unit":1,"currentRate":1100,"futureRate":1240,"prevInflation":1.9,"currentInflation":2.5,"expectedInflation":2.2,"airfare":600000,"hotel":165,"food":52,"transport":14,"other":75,"foods":["호커센터 식사","치킨라이스·락사","칠리크랩과 현지 정찬"],"attractions":[{"name":"가든스 바이 더 베이","price":32,"note":"온실과 슈퍼트리","icon":"🌳","repeatable":false,"id":"a0"},{"name":"마리나베이 전망대","price":35,"note":"도시 전경 감상","icon":"🏙️","repeatable":false,"id":"a1"},{"name":"유니버설 스튜디오","price":85,"note":"테마파크 체험","icon":"🎢","repeatable":false,"id":"a2"},{"name":"나이트 사파리","price":55,"note":"야간 동물 관람","icon":"🦁","repeatable":false,"id":"a3"},{"name":"내셔널 갤러리","price":20,"note":"동남아 미술 관람","icon":"🎨","repeatable":false,"id":"a4"},{"name":"아트사이언스 뮤지엄","price":30,"note":"예술·과학 전시","icon":"🧪","repeatable":false,"id":"a5"},{"name":"센토사 케이블카","price":35,"note":"섬 이동과 전망","icon":"🚡","repeatable":false,"id":"a6"},{"name":"S.E.A. 아쿠아리움","price":45,"note":"대형 수족관","icon":"🐠","repeatable":false,"id":"a7"},{"name":"머라이언·마리나 산책","price":0,"note":"무료 도심 탐방","icon":"🚶","repeatable":true,"id":"a8"},{"name":"호커센터·공원 휴식","price":0,"note":"자유시간","icon":"🍜","repeatable":true,"id":"a9"}]},{"id":"jp","region":"동아시아","flag":"🇯🇵","country":"일본","city":"도쿄","currency":"엔","code":"JPY","unit":100,"currentRate":930,"futureRate":1060,"prevInflation":1.2,"currentInflation":1.8,"expectedInflation":1.5,"airfare":350000,"hotel":15000,"food":5600,"transport":1800,"other":8000,"foods":["주먹밥·편의점식","라멘·덮밥","스시·텐푸라 정식"],"attractions":[{"name":"도쿄 스카이트리","price":3100,"note":"도시 전망","icon":"🗼","repeatable":false,"id":"a0"},{"name":"팀랩 전시","price":4200,"note":"디지털 아트 체험","icon":"✨","repeatable":false,"id":"a1"},{"name":"도쿄 국립박물관","price":1000,"note":"일본 문화재 관람","icon":"🏛️","repeatable":false,"id":"a2"},{"name":"시부야 스카이","price":2200,"note":"도심 전망대","icon":"🌃","repeatable":false,"id":"a3"},{"name":"지브리 미술관","price":1000,"note":"애니메이션 전시","icon":"🎬","repeatable":false,"id":"a4"},{"name":"도쿄 디즈니시","price":10900,"note":"테마파크 체험","icon":"🎢","repeatable":false,"id":"a5"},{"name":"스미다강 유람선","price":1200,"note":"강변 이동·관람","icon":"🚤","repeatable":false,"id":"a6"},{"name":"하코네 당일 탐방","price":8000,"note":"열차·근교 체험","icon":"♨️","repeatable":false,"id":"a7"},{"name":"아사쿠사·메이지 신궁 산책","price":0,"note":"무료 전통·도심 탐방","icon":"🚶","repeatable":true,"id":"a8"},{"name":"공원·카페 휴식","price":0,"note":"자유시간","icon":"🌿","repeatable":true,"id":"a9"}]},{"id":"cn","region":"동아시아","flag":"🇨🇳","country":"중국","city":"상하이","currency":"위안","code":"CNY","unit":1,"currentRate":195,"futureRate":215,"prevInflation":2.0,"currentInflation":2.7,"expectedInflation":2.4,"airfare":400000,"hotel":620,"food":220,"transport":70,"other":300,"foods":["샤오룽바오","면요리·볶음밥","상하이식 정찬"],"attractions":[{"name":"상하이 타워 전망대","price":180,"note":"초고층 전망","icon":"🏙️","repeatable":false,"id":"a0"},{"name":"예원","price":40,"note":"전통 정원 관람","icon":"🌿","repeatable":false,"id":"a1"},{"name":"상하이 박물관","price":0,"note":"중국 예술·역사","icon":"🏛️","repeatable":false,"id":"a2"},{"name":"주자자오 당일 탐방","price":200,"note":"수향마을 이동 포함","icon":"🚤","repeatable":false,"id":"a3"},{"name":"황푸강 유람선","price":120,"note":"와이탄 야경","icon":"🛳️","repeatable":false,"id":"a4"},{"name":"상하이 디즈니랜드","price":500,"note":"테마파크 체험","icon":"🎢","repeatable":false,"id":"a5"},{"name":"과학기술관","price":45,"note":"과학 전시 관람","icon":"🔬","repeatable":false,"id":"a6"},{"name":"상하이 서커스 공연","price":280,"note":"곡예 공연 관람","icon":"🎪","repeatable":false,"id":"a7"},{"name":"와이탄·프랑스 조계지 산책","price":0,"note":"무료 도심 탐방","icon":"🚶","repeatable":true,"id":"a8"},{"name":"카페·공원 휴식","price":0,"note":"자유시간","icon":"☕","repeatable":true,"id":"a9"}]},{"id":"tw","region":"동아시아","flag":"🇹🇼","country":"대만","city":"타이베이","currency":"대만 달러","code":"TWD","unit":1,"currentRate":44,"futureRate":48,"prevInflation":1.7,"currentInflation":2.3,"expectedInflation":2.0,"airfare":300000,"hotel":3100,"food":1100,"transport":350,"other":1400,"foods":["단빙·두유","우육면·샤오룽바오","야시장 음식·대만식 정찬"],"attractions":[{"name":"타이베이 101 전망대","price":600,"note":"도시 전망","icon":"🏙️","repeatable":false,"id":"a0"},{"name":"국립고궁박물원","price":350,"note":"중화권 문화재 관람","icon":"🏛️","repeatable":false,"id":"a1"},{"name":"베이터우 온천 체험","price":300,"note":"온천 문화 체험","icon":"♨️","repeatable":false,"id":"a2"},{"name":"마오콩 곤돌라","price":260,"note":"산지 전망과 차 문화","icon":"🚡","repeatable":false,"id":"a3"},{"name":"지우펀 당일 탐방","price":900,"note":"근교 교통 포함","icon":"🏮","repeatable":false,"id":"a4"},{"name":"타이베이 동물원","price":100,"note":"동물 관람","icon":"🐼","repeatable":false,"id":"a5"},{"name":"타이베이 시립미술관","price":60,"note":"현대미술 관람","icon":"🎨","repeatable":false,"id":"a6"},{"name":"현지 음식 투어","price":1200,"note":"시장·맛집 체험","icon":"🥟","repeatable":false,"id":"a7"},{"name":"중정기념당·야시장 산책","price":0,"note":"무료 도심 탐방","icon":"🚶","repeatable":true,"id":"a8"},{"name":"카페·공원 휴식","price":0,"note":"자유시간","icon":"☕","repeatable":true,"id":"a9"}]},{"id":"us","region":"북미","flag":"🇺🇸","country":"미국","city":"뉴욕","currency":"달러","code":"USD","unit":1,"currentRate":1400,"futureRate":1550,"prevInflation":2.2,"currentInflation":2.9,"expectedInflation":2.6,"airfare":1500000,"hotel":220,"food":78,"transport":22,"other":105,"foods":["베이글·커피","델리 샌드위치·피자","스테이크·브런치"],"attractions":[{"name":"메트로폴리탄 미술관","price":30,"note":"세계 미술품 관람","icon":"🎨","repeatable":false,"id":"a0"},{"name":"뉴욕 현대미술관","price":30,"note":"현대미술 관람","icon":"🖼️","repeatable":false,"id":"a1"},{"name":"자유의 여신상·엘리스섬","price":25,"note":"페리와 역사 전시","icon":"🗽","repeatable":false,"id":"a2"},{"name":"엠파이어 스테이트 전망대","price":50,"note":"도시 전망","icon":"🏙️","repeatable":false,"id":"a3"},{"name":"브로드웨이 공연","price":120,"note":"뮤지컬 관람","icon":"🎭","repeatable":false,"id":"a4"},{"name":"탑 오브 더 록","price":45,"note":"맨해튼 전망","icon":"🌃","repeatable":false,"id":"a5"},{"name":"서클라인 유람선","price":45,"note":"맨해튼 수상 관광","icon":"🚤","repeatable":false,"id":"a6"},{"name":"자연사박물관","price":30,"note":"자연사 전시","icon":"🦖","repeatable":false,"id":"a7"},{"name":"센트럴파크·하이라인 산책","price":0,"note":"무료 도심 탐방","icon":"🚶","repeatable":true,"id":"a8"},{"name":"카페·공원 휴식","price":0,"note":"자유시간","icon":"☕","repeatable":true,"id":"a9"}]},{"id":"ca","region":"북미","flag":"🇨🇦","country":"캐나다","city":"밴쿠버","currency":"캐나다 달러","code":"CAD","unit":1,"currentRate":1030,"futureRate":1160,"prevInflation":2.0,"currentInflation":2.6,"expectedInflation":2.3,"airfare":1400000,"hotel":205,"food":72,"transport":19,"other":95,"foods":["베이커리·커피","푸틴·연어버거","해산물·브런치"],"attractions":[{"name":"캐필라노 현수교","price":75,"note":"숲과 현수교 체험","icon":"🌲","repeatable":false,"id":"a0"},{"name":"그라우스 마운틴","price":80,"note":"곤돌라와 전망","icon":"🚡","repeatable":false,"id":"a1"},{"name":"밴쿠버 아쿠아리움","price":60,"note":"해양 생태 관람","icon":"🐠","repeatable":false,"id":"a2"},{"name":"사이언스 월드","price":35,"note":"과학 체험 전시","icon":"🔬","repeatable":false,"id":"a3"},{"name":"인류학 박물관","price":25,"note":"원주민 문화 전시","icon":"🏛️","repeatable":false,"id":"a4"},{"name":"고래 관찰 투어","price":190,"note":"해양 생태 투어","icon":"🐋","repeatable":false,"id":"a5"},{"name":"빅토리아 당일 탐방","price":180,"note":"페리·교통 포함","icon":"⛴️","repeatable":false,"id":"a6"},{"name":"스탠리파크 자전거","price":50,"note":"자전거 대여 포함","icon":"🚲","repeatable":false,"id":"a7"},{"name":"스탠리파크·그랜빌 산책","price":0,"note":"무료 도심 탐방","icon":"🚶","repeatable":true,"id":"a8"},{"name":"해변·카페 휴식","price":0,"note":"자유시간","icon":"☕","repeatable":true,"id":"a9"}]},{"id":"mx","region":"북미","flag":"🇲🇽","country":"멕시코","city":"멕시코시티","currency":"페소","code":"MXN","unit":1,"currentRate":80,"futureRate":86,"prevInflation":3.7,"currentInflation":4.4,"expectedInflation":4.0,"airfare":1650000,"hotel":1800,"food":720,"transport":240,"other":950,"foods":["타코·타말","포솔레·토르타","몰레와 멕시코식 정찬"],"attractions":[{"name":"국립인류학박물관","price":100,"note":"고대 문명 전시","icon":"🏛️","repeatable":false,"id":"a0"},{"name":"프리다 칼로 박물관","price":350,"note":"예술가의 생가·작품","icon":"🎨","repeatable":false,"id":"a1"},{"name":"테오티우아칸 투어","price":1000,"note":"피라미드 유적 탐방","icon":"🔺","repeatable":false,"id":"a2"},{"name":"차풀테펙성","price":100,"note":"역사박물관과 전망","icon":"🏰","repeatable":false,"id":"a3"},{"name":"벨라스 아르테스 궁전","price":100,"note":"공연장·미술관","icon":"🎭","repeatable":false,"id":"a4"},{"name":"소치밀코 보트","price":800,"note":"수상 보트 체험","icon":"🚤","repeatable":false,"id":"a5"},{"name":"루차 리브레 관람","price":650,"note":"프로레슬링 경기","icon":"🤼","repeatable":false,"id":"a6"},{"name":"현지 음식 투어","price":1200,"note":"시장·타코 체험","icon":"🌮","repeatable":false,"id":"a7"},{"name":"소칼로·역사지구 산책","price":0,"note":"무료 도심 탐방","icon":"🚶","repeatable":true,"id":"a8"},{"name":"공원·카페 휴식","price":0,"note":"자유시간","icon":"☕","repeatable":true,"id":"a9"}]},{"id":"br","region":"남미","flag":"🇧🇷","country":"브라질","city":"리우데자네이루","currency":"헤알","code":"BRL","unit":1,"currentRate":250,"futureRate":285,"prevInflation":3.8,"currentInflation":4.6,"expectedInflation":4.2,"airfare":2100000,"hotel":520,"food":190,"transport":65,"other":250,"foods":["파웅지케이주·커피","페이조아다","슈하스코와 해산물"],"attractions":[{"name":"예수상","price":130,"note":"코르코바두 전망","icon":"🗿","repeatable":false,"id":"a0"},{"name":"슈가로프 케이블카","price":190,"note":"만과 도시 전망","icon":"🚡","repeatable":false,"id":"a1"},{"name":"마라카낭 투어","price":90,"note":"축구 경기장 탐방","icon":"⚽","repeatable":false,"id":"a2"},{"name":"미래박물관","price":40,"note":"과학·환경 전시","icon":"🔬","repeatable":false,"id":"a3"},{"name":"티주카 숲 투어","price":280,"note":"도심 열대우림 탐방","icon":"🌴","repeatable":false,"id":"a4"},{"name":"삼바 공연","price":300,"note":"브라질 공연 문화","icon":"💃","repeatable":false,"id":"a5"},{"name":"과나바라만 보트 투어","price":250,"note":"해안과 섬 관광","icon":"🚤","repeatable":false,"id":"a6"},{"name":"지역문화 투어","price":220,"note":"벽화·생활문화 체험","icon":"🎨","repeatable":false,"id":"a7"},{"name":"코파카바나·셀라론 산책","price":0,"note":"무료 해변·거리 탐방","icon":"🚶","repeatable":true,"id":"a8"},{"name":"해변·카페 휴식","price":0,"note":"자유시간","icon":"☕","repeatable":true,"id":"a9"}]},{"id":"pe","region":"남미","flag":"🇵🇪","country":"페루","city":"쿠스코","currency":"솔","code":"PEN","unit":1,"currentRate":375,"futureRate":420,"prevInflation":2.8,"currentInflation":3.6,"expectedInflation":3.2,"airfare":2000000,"hotel":240,"food":85,"transport":30,"other":150,"foods":["엠파나다·현지 빵","로모 살타도","세비체·안데스 정찬"],"attractions":[{"name":"마추픽추 패키지","price":850,"note":"열차·입장 수업용 묶음","icon":"🏔️","repeatable":false,"id":"a0"},{"name":"성스러운 계곡 투어","price":200,"note":"잉카 유적과 마을","icon":"⛰️","repeatable":false,"id":"a1"},{"name":"쿠스코 관광권","price":140,"note":"여러 유적 입장","icon":"🎟️","repeatable":false,"id":"a2"},{"name":"무지개산 투어","price":150,"note":"고산 자연 탐방","icon":"🌈","repeatable":false,"id":"a3"},{"name":"삭사이와만","price":80,"note":"잉카 석조 유적","icon":"🪨","repeatable":false,"id":"a4"},{"name":"페루 요리 교실","price":170,"note":"현지 요리 체험","icon":"🍳","repeatable":false,"id":"a5"},{"name":"코리칸차","price":25,"note":"잉카·식민지 유적","icon":"🏛️","repeatable":false,"id":"a6"},{"name":"우만타이 호수 투어","price":180,"note":"고산 호수 탐방","icon":"🏞️","repeatable":false,"id":"a7"},{"name":"산페드로시장·구시가지 산책","price":0,"note":"무료 도심 탐방","icon":"🚶","repeatable":true,"id":"a8"},{"name":"숙소·카페 휴식","price":0,"note":"자유시간","icon":"☕","repeatable":true,"id":"a9"}]}];
+
+    const products = [
+      { id:"simple", name:"트래블스타 단리적금", rate:0.048, rateText:"연 4.80% · 월초 납입 · 단리", type:"simple" },
+      { id:"monthly", name:"월드패스 월복리적금", rate:0.035, rateText:"연 3.50% · 월초 납입 · 월복리", type:"monthly" },
+      { id:"semi", name:"차곡차곡 반기복리적금", rate:0.041, rateText:"연 4.10% · 월초 납입 · 반기복리(월 환산)", type:"semi" },
+      { id:"annual", name:"글로벌드림 연복리적금", rate:0.045, rateText:"연 4.50% · 월초 납입 · 연복리(월 환산)", type:"annual" }
+    ];
+
+    const EXCHANGE_SCENARIOS = [
+      { id:"strong", label:"원화 강세", multiplier:0.90, description:"외화의 원화 가격이 현재보다 약 10% 낮아져 현지비용을 낮추는 방향으로 작용합니다." },
+      { id:"baseline", label:"기준", multiplier:1.00, description:"현재 환율이 10년 후에도 같은 수준으로 유지된다고 가정합니다." },
+      { id:"weak", label:"원화 약세", multiplier:1.10, description:"외화의 원화 가격이 현재보다 약 10% 높아져 현지비용을 높이는 방향으로 작용합니다." }
+    ];
+
+    const defaultState = {
+      className:"", studentNo:"", studentName:"", baseYear:new Date().getFullYear(),
+      purpose:"문화·역사 탐방", destinationId:"fr", itineraryDestinationId:"",
+      flightId:"standard", hotelId:"standard", prepId:"standard", itinerary:[],
+      reserve:10, monthlyContribution:100000, selectedProductId:"annual",
+      exchangeScenarioId:"", comparisonCriterion:"required",
+      travelPlan:"", productReason:"", finalReflection:""
+    };
+
+    let state = loadState();
+    let calculations = {};
+    let currentRegion = "전체";
+    let saveTimer = null;
+    let toastTimer = null;
+
+    const $ = id => document.getElementById(id);
+    const won = value => `${Math.round(value || 0).toLocaleString("ko-KR")}원`;
+    const num = (value, digits=0) => Number(value || 0).toLocaleString("ko-KR", {maximumFractionDigits:digits, minimumFractionDigits:digits});
+    const pct = (value, digits=1) => `${Number(value).toFixed(digits)}%`;
+    const escapeHTML = value => String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+    function withObjectParticle(value) {
+      const text=String(value??""),last=text.charCodeAt(text.length-1),hasBatchim=last>=0xAC00&&last<=0xD7A3&&(last-0xAC00)%28!==0;
+      return `${text}${hasBatchim?"을":"를"}`;
+    }
+    function randomScenarioId() {
+      const values=new Uint32Array(1);
+      if(window.crypto?.getRandomValues) window.crypto.getRandomValues(values);
+      else values[0]=Math.floor(Math.random()*0xFFFFFFFF);
+      return EXCHANGE_SCENARIOS[values[0]%EXCHANGE_SCENARIOS.length].id;
+    }
+    function ensureExchangeScenario() {
+      if(!EXCHANGE_SCENARIOS.some(x=>x.id===state.exchangeScenarioId)) state.exchangeScenarioId=randomScenarioId();
+    }
+    function getExchangeScenario() { return EXCHANGE_SCENARIOS.find(x=>x.id===state.exchangeScenarioId)||EXCHANGE_SCENARIOS[1]; }
+    function comparisonCriterionLabel() {
+      return ({required:"목표 달성 필요 월 납입액",interest:"예상 이자",rate:"표시 연이율",balanced:"월 납입 부담과 이자의 균형"})[state.comparisonCriterion]||"목표 달성 필요 월 납입액";
+    }
+
+    function loadState() {
+      try { return { ...defaultState, ...(JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}) }; }
+      catch (error) { return { ...defaultState }; }
+    }
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (error) {} }, 180);
+    }
+    function showToast(message) {
+      const toast = $("toast"); toast.textContent = message; toast.classList.add("show");
+      clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove("show"), 1900);
+    }
+    function getDestination() { return destinations.find(d => d.id === state.destinationId) || destinations[0]; }
+    function localDigits(d) { return d.code === "JOD" ? 1 : 0; }
+    function localMoney(value, d) { return `${num(value, localDigits(d))} ${d.code}`; }
+    function priceStep(d) {
+      if (d.code === "VND") return 10000;
+      if (d.code === "JPY" || d.code === "KES") return 100;
+      if (["THB","TWD","MXN"].includes(d.code)) return 10;
+      if (["ZAR","MAD","CNY","BRL"].includes(d.code)) return 5;
+      if (d.code === "JOD") return 0.5;
+      return 1;
+    }
+    function roundLocal(value,d) { const step=priceStep(d); return Math.max(0, Math.round(value/step)*step); }
+    function roundWon(value) { return Math.round(value/10000)*10000; }
+
+    function getFlightOptions(d) {
+      return [
+        {id:"saver", name:"세이버 항공권", tag:"절약형", price:roundWon(d.airfare*.88), note:"기내수하물 중심 · 변경 제한"},
+        {id:"standard", name:"스탠더드 항공권", tag:"표준형", price:roundWon(d.airfare), note:"위탁수하물 포함 · 일반 좌석"},
+        {id:"flex", name:"플렉스 항공권", tag:"편의형", price:roundWon(d.airfare*1.18), note:"일정 변경이 비교적 자유로운 조건"}
+      ];
+    }
+    function getHotelOptions(d) {
+      const specs = [
+        ["budget",`${d.city} 게스트 스테이`,"실속형",.65,"간단한 객실 · 도심 외곽 또는 공용시설 포함"],
+        ["practical",`${d.city} 시티 인`,"경제형",.88,"개인 객실 · 대중교통 접근 가능"],
+        ["standard",`${d.city} 센트럴 호텔`,"표준형",1.12,"도심 접근성 · 기본 조식 또는 편의시설"],
+        ["premium",`${d.city} 프리미엄 뷰 호텔`,"여유형",1.55,"넓은 객실 · 전망 또는 부대시설"],
+      ];
+      return specs.map(([id,name,tag,m,note]) => ({id,name,tag,night:roundLocal(d.hotel*m,d),note}));
+    }
+    function getMealOptions(d) {
+      return [
+        {id:"light", name:"간편 현지식", price:roundLocal(d.food*.65,d), note:`${d.foods[0]} 중심의 간단한 하루 식사`},
+        {id:"balanced", name:"현지 맛집형", price:roundLocal(d.food,d), note:`${d.foods[0]}·${d.foods[1]} 등을 균형 있게 선택`},
+        {id:"special", name:"미식 체험형", price:roundLocal(d.food*1.5,d), note:`${withObjectParticle(d.foods[2])} 포함한 여유 있는 식사`}
+      ];
+    }
+    function getTransportOptions(d) {
+      return [
+        {id:"public", name:"대중교통 중심", price:roundLocal(d.transport*.75,d), note:"도보·버스·지하철 중심"},
+        {id:"mixed", name:"대중교통+택시", price:roundLocal(d.transport*1.1,d), note:"효율적인 구간에 택시 병행"},
+        {id:"comfort", name:"택시·차량 중심", price:roundLocal(d.transport*1.7,d), note:"이동 편의를 높인 방식"}
+      ];
+    }
+    function getPrepOptions(d) {
+      return [
+        {id:"basic", name:"최소 준비", tag:"절약형", price:roundLocal(d.other*.6,d), note:"기본 eSIM·간단한 보험·소모품"},
+        {id:"standard", name:"기본 준비", tag:"표준형", price:roundLocal(d.other,d), note:"통신·여행자보험·기본 준비물"},
+        {id:"plus", name:"안심 준비", tag:"여유형", price:roundLocal(d.other*1.4,d), note:"넉넉한 통신·보험·비상 준비비"}
+      ];
+    }
+    function optionById(options,id) { return options.find(x => x.id===id) || options[0]; }
+
+    function createDefaultItinerary(d) {
+      const mealCycle=["balanced","light","balanced","special","balanced","light"];
+      const transportCycle=["mixed","public","public","mixed","comfort","public"];
+      const pairs=[["a8","a0"],["a1","a2"],["a3","a8"],["a4","a5"],["a6","a7"],["a9","a8"]];
+      return Array.from({length:DAYS},(_,i)=>({day:i+1,morningId:pairs[i][0],afternoonId:pairs[i][1],mealId:mealCycle[i],transportId:transportCycle[i]}));
+    }
+    function ensureDestinationState(force=false) {
+      const d=getDestination();
+      if (force || state.itineraryDestinationId!==d.id || !Array.isArray(state.itinerary) || state.itinerary.length!==DAYS) {
+        state.itineraryDestinationId=d.id;
+        state.flightId="standard"; state.hotelId="standard"; state.prepId="standard";
+        state.itinerary=createDefaultItinerary(d);
+        return;
+      }
+      const validAttr=new Set(d.attractions.map(a=>a.id));
+      state.itinerary=state.itinerary.map((day,i)=>({
+        day:i+1,
+        morningId:validAttr.has(day.morningId)?day.morningId:(i===0?"a8":`a${Math.min(i,7)}`),
+        afternoonId:validAttr.has(day.afternoonId)?day.afternoonId:"a9",
+        mealId:["light","balanced","special"].includes(day.mealId)?day.mealId:"balanced",
+        transportId:["public","mixed","comfort"].includes(day.transportId)?day.transportId:"mixed"
+      }));
+    }
+
+    function monthlyGrowthRate(product) {
+      const r=product.rate;
+      if(product.type==="monthly") return r/12;
+      if(product.type==="semi") return Math.pow(1+r/2,1/6)-1;
+      if(product.type==="annual") return Math.pow(1+r,1/12)-1;
+      return 0;
+    }
+    function savingsFactor(product) {
+      const r=product.rate;
+      if(product.type==="simple") return MONTHS + (r/12) * MONTHS * (MONTHS + 1) / 2;
+      const i=monthlyGrowthRate(product), q=1+i;
+      if(Math.abs(i)<1e-12) return MONTHS;
+      return q * (Math.pow(q,MONTHS)-1) / i;
+    }
+    function futureSavings(product, monthlyContribution) {
+      return Math.max(0,Number(monthlyContribution)||0) * savingsFactor(product);
+    }
+    function requiredMonthlyPayment(product, goal) {
+      const factor=savingsFactor(product);
+      return factor>0 ? Math.max(0,Number(goal)||0)/factor : 0;
+    }
+    function productFormula(product, monthlyContribution, fv) {
+      const monthly=won(monthlyContribution), factor=savingsFactor(product), result=won(fv), r=product.rate;
+      if(product.type==="simple") {
+        return `적금계수 = ${MONTHS} + (${r.toFixed(3)} ÷ 12) × ${MONTHS} × ${MONTHS+1} ÷ 2 = ${factor.toFixed(3)}
+만기금액 = ${monthly} × ${factor.toFixed(3)} = ${result}`;
+      }
+      const i=monthlyGrowthRate(product);
+      let rateFormula="";
+      if(product.type==="monthly") rateFormula=`월 이율 i = ${r.toFixed(3)} ÷ 12 = ${i.toFixed(6)}`;
+      if(product.type==="semi") rateFormula=`월 환산 이율 i = (1 + ${r.toFixed(3)} ÷ 2)^(1 ÷ 6) - 1 = ${i.toFixed(6)}`;
+      if(product.type==="annual") rateFormula=`월 환산 이율 i = (1 + ${r.toFixed(3)})^(1 ÷ 12) - 1 = ${i.toFixed(6)}`;
+      return `${rateFormula}
+적금계수 = (1+i)^1 + (1+i)^2 + … + (1+i)^${MONTHS} = ${factor.toFixed(3)}
+만기금액 = ${monthly} × ${factor.toFixed(3)} = ${result}`;
+    }
+    function requiredMonthlyFormula(product, goal, exact, rounded) {
+      const factor=savingsFactor(product);
+      return `필요 월 납입액 = 목표금액 ÷ 적금계수
+= ${won(goal)} ÷ ${factor.toFixed(3)} = ${won(exact)}
+→ 1,000원 단위 올림 = ${won(rounded)}`;
+    }
+
+    function calculateAll() {
+      ensureExchangeScenario();
+      ensureDestinationState();
+      const d=getDestination(),exchangeScenario=getExchangeScenario();
+      const futureRate=Math.max(1,Math.round(d.currentRate*exchangeScenario.multiplier));
+      const flights=getFlightOptions(d), hotels=getHotelOptions(d), meals=getMealOptions(d), transports=getTransportOptions(d), preps=getPrepOptions(d);
+      const flight=optionById(flights,state.flightId), hotel=optionById(hotels,state.hotelId), prep=optionById(preps,state.prepId);
+      const attrMap=new Map(d.attractions.map(a=>[a.id,a]));
+      const dayResults=state.itinerary.map((day,index)=>{
+        const morning=attrMap.get(day.morningId)||d.attractions[8], afternoon=attrMap.get(day.afternoonId)||d.attractions[9];
+        const meal=optionById(meals,day.mealId), transport=optionById(transports,day.transportId);
+        const attractionCost=morning.price+afternoon.price;
+        const lodging=index<NIGHTS?hotel.night:0;
+        const localSubtotal=meal.price+transport.price+attractionCost+lodging;
+        return {...day,index,morning,afternoon,meal,transport,attractionCost,lodging,localSubtotal};
+      });
+      const hotelTotal=hotel.night*NIGHTS;
+      const mealTotal=dayResults.reduce((s,x)=>s+x.meal.price,0);
+      const transportTotal=dayResults.reduce((s,x)=>s+x.transport.price,0);
+      const attractionTotal=dayResults.reduce((s,x)=>s+x.attractionCost,0);
+      const localTotal=hotelTotal+mealTotal+transportTotal+attractionTotal+prep.price;
+      const currentLocalKRW=(localTotal/d.unit)*d.currentRate;
+      const currentTotal=flight.price+currentLocalKRW;
+      const inflationFactor=Math.pow(1+d.expectedInflation/100,YEARS);
+      const futureLocal=localTotal*inflationFactor;
+      const futureLocalAtCurrentRate=(futureLocal/d.unit)*d.currentRate;
+      const currentLocalAtFutureRate=(localTotal/d.unit)*futureRate;
+      const futureLocalKRW=(futureLocal/d.unit)*futureRate;
+      const futureAirfare=flight.price*Math.pow(1+BASE_AIRFARE_INFLATION,YEARS);
+      const futureTotal=futureAirfare+futureLocalKRW;
+      const reserveRate=(Number(state.reserve)||0)/100;
+      const reserveAmount=futureTotal*reserveRate;
+      const rawGoal=futureTotal+reserveAmount;
+      const roundedGoal=Math.ceil(rawGoal/100000)*100000;
+      const monthlyContribution=Math.max(0,Number(state.monthlyContribution)||0);
+      const productResults=products.map(product=>{
+        const factor=savingsFactor(product);
+        const fv=futureSavings(product,monthlyContribution);
+        const requiredExact=requiredMonthlyPayment(product,roundedGoal);
+        const requiredMonthly=Math.ceil(requiredExact/1000)*1000;
+        const requiredFuture=futureSavings(product,requiredMonthly);
+        const totalPaid=monthlyContribution*MONTHS;
+        const interest=fv-totalPaid;
+        const requiredTotalPaid=requiredMonthly*MONTHS;
+        const requiredInterest=requiredFuture-requiredTotalPaid;
+        return {...product,factor,fv,requiredExact,requiredMonthly,requiredFuture,totalPaid,interest,requiredTotalPaid,requiredInterest,gap:fv-roundedGoal};
+      });
+      const best=[...productResults].sort((a,b)=>a.requiredExact-b.requiredExact)[0];
+      const selectedProduct=productResults.find(p=>p.id===state.selectedProductId)||productResults[0];
+      const inflationEffect=futureLocalAtCurrentRate-currentLocalKRW;
+      const exchangeEffect=currentLocalAtFutureRate-currentLocalKRW;
+      const dominant=Math.abs(inflationEffect)>Math.abs(exchangeEffect)?"물가상승":Math.abs(inflationEffect)<Math.abs(exchangeEffect)?"환율 변화":"물가와 환율 변화";
+      calculations={d,exchangeScenario,futureRate,flights,hotels,meals,transports,preps,flight,hotel,prep,dayResults,hotelTotal,mealTotal,transportTotal,attractionTotal,localTotal,currentLocalKRW,currentTotal,inflationFactor,futureLocal,futureLocalAtCurrentRate,currentLocalAtFutureRate,futureLocalKRW,futureAirfare,futureTotal,reserveRate,reserveAmount,rawGoal,roundedGoal,monthlyContribution,productResults,best,selectedProduct,inflationEffect,exchangeEffect,dominant};
+    }
+
+    function autoText() {
+      const c=calculations,d=c.d,departureYear=Number(state.baseYear||defaultState.baseYear)+YEARS;
+      const dayText=c.dayResults.map(x=>`${x.index+1}일차 ${x.morning.name}·${x.afternoon.name}`).join(", ");
+      const p=c.selectedProduct,surplus=p.requiredFuture-c.roundedGoal,criterion=comparisonCriterionLabel();
+      const pp=d.currentInflation-d.prevInflation;
+      const ppText=pp>0?`${pct(Math.abs(pp),1)}포인트 상승`:pp<0?`${pct(Math.abs(pp),1)}포인트 하락`:"변화 없음";
+      const exchangeText=c.exchangeScenario.id==="strong"?"원화 강세가 현지비용을 낮추는 방향":c.exchangeScenario.id==="weak"?"원화 약세가 현지비용을 높이는 방향":"기준 환율이 유지되는 방향";
+      state.travelPlan=`나는 ${departureYear}년에 ${d.country} ${d.city}로 5박 6일 동안 ${state.purpose} 여행을 계획하였다. ${c.flight.name}과 ${c.hotel.name}을 선택하였다. 날짜별 일정은 ${dayText}이다.`;
+      state.productReason=`${withObjectParticle(criterion)} 선택 기준으로 삼아 ${withObjectParticle(p.name)} 선택하였다. 목표금액 ${won(c.roundedGoal)}을 모으려면 매월 ${won(p.requiredMonthly)}씩 ${MONTHS}회 납입하면 된다. 총 납입원금은 ${won(p.requiredTotalPaid)}이고 예상 이자는 ${won(p.requiredInterest)}이며, 예상 만기금액은 ${won(p.requiredFuture)}으로 목표금액보다 ${won(surplus)} 많다.`;
+      state.finalReflection=`${d.country}의 물가상승률은 전년도보다 ${ppText}하였다. 무작위로 배정된 환율 시나리오는 ${c.exchangeScenario.label}이며, ${exchangeText}으로 작용하였다. 선택한 일정의 현재 총 여행비는 ${won(c.currentTotal)}이고, 물가와 환율 시나리오를 적용한 10년 후 예상 총 여행비는 ${won(c.futureTotal)}이다. 예비비 ${state.reserve}%를 포함한 목표금액은 ${won(c.roundedGoal)}이며, 선택한 ${c.selectedProduct.name}으로 이 금액을 모으기 위한 월 납입액은 ${won(c.selectedProduct.requiredMonthly)}이다.`;
+    }
+
+    function renderRegionTabs() {
+      const regions=["전체",...new Set(destinations.map(d=>d.region))];
+      $("regionTabs").innerHTML=regions.map(region=>`<button class="region-tab ${region===currentRegion?"active":""}" type="button" data-region="${escapeHTML(region)}">${escapeHTML(region)}</button>`).join("");
+      $("regionTabs").querySelectorAll("button").forEach(button=>button.addEventListener("click",()=>{currentRegion=button.dataset.region;renderRegionTabs();renderCountryCards();}));
+    }
+    function renderCountryCards() {
+      const list=currentRegion==="전체"?destinations:destinations.filter(d=>d.region===currentRegion);
+      $("countryGrid").innerHTML=list.map(d=>`<button type="button" class="country-card ${d.id===state.destinationId?"selected":""}" data-id="${d.id}" aria-pressed="${d.id===state.destinationId}"><div class="country-top"><span class="flag">${d.flag}</span><span class="country-name">${escapeHTML(d.country)}</span></div><div class="country-meta">${escapeHTML(d.region)} · ${escapeHTML(d.city)} · ${escapeHTML(d.code)}</div></button>`).join("");
+      $("countryGrid").querySelectorAll(".country-card").forEach(card=>card.addEventListener("click",()=>{
+        state.destinationId=card.dataset.id; state.itineraryDestinationId="";
+        updateAll(); showToast(`${withObjectParticle(getDestination().country)} 선택했습니다.`);
+      }));
+    }
+    function renderDestinationSummary() {
+      const d=calculations.d;
+      $("destinationSummary").innerHTML=`<div class="summary-row"><span>권역</span><strong>${escapeHTML(d.region)}</strong></div><div class="summary-row"><span>국가·도시</span><strong>${d.flag} ${escapeHTML(d.country)} · ${escapeHTML(d.city)}</strong></div><div class="summary-row"><span>통화</span><strong>${escapeHTML(d.currency)} (${escapeHTML(d.code)})</strong></div><div class="summary-row"><span>현재 수업용 환율</span><strong>${num(d.unit)} ${d.code} = ${won(d.currentRate)}</strong></div>`;
+      $("tripChoiceSummary").innerHTML=`<div class="summary-list"><div class="summary-row"><span>여행 목적</span><strong>${escapeHTML(state.purpose)}</strong></div><div class="summary-row"><span>항공권</span><strong>${escapeHTML(calculations.flight.name)}</strong></div><div class="summary-row"><span>숙소</span><strong>${escapeHTML(calculations.hotel.name)}</strong></div><div class="summary-row"><span>준비 패키지</span><strong>${escapeHTML(calculations.prep.name)}</strong></div></div>`;
+    }
+    function renderOptionCards(containerId,options,selectedId,kind,priceFn) {
+      $(containerId).innerHTML=options.map(o=>`<button type="button" class="option-card ${o.id===selectedId?"selected":""}" data-kind="${kind}" data-id="${o.id}" aria-pressed="${o.id===selectedId}"><span class="option-tag">${escapeHTML(o.tag||"선택")}</span><div class="option-title">${escapeHTML(o.name)}</div><div class="option-price">${priceFn(o)}</div><div class="option-note">${escapeHTML(o.note)}</div></button>`).join("");
+      $(containerId).querySelectorAll(".option-card").forEach(card=>card.addEventListener("click",()=>{
+        if(kind==="flight") state.flightId=card.dataset.id;
+        if(kind==="hotel") state.hotelId=card.dataset.id;
+        if(kind==="prep") state.prepId=card.dataset.id;
+        updateAll();
+      }));
+    }
+    function renderTripOptions() {
+      const c=calculations,d=c.d;
+      renderOptionCards("flightOptions",c.flights,state.flightId,"flight",o=>won(o.price));
+      renderOptionCards("hotelOptions",c.hotels,state.hotelId,"hotel",o=>`${localMoney(o.night,d)} / 1박 · 5박 ${localMoney(o.night*NIGHTS,d)}`);
+      renderOptionCards("prepOptions",c.preps,state.prepId,"prep",o=>localMoney(o.price,d));
+    }
+
+    function selectedAttractionIdsExcept(dayIndex,part) {
+      const ids=[];
+      state.itinerary.forEach((day,i)=>{
+        if(!(i===dayIndex&&part==="morning")) ids.push(day.morningId);
+        if(!(i===dayIndex&&part==="afternoon")) ids.push(day.afternoonId);
+      });
+      return new Set(ids);
+    }
+    function attractionOptionsHTML(currentId,dayIndex,part) {
+      const d=calculations.d;
+      return d.attractions.map(a=>`<option value="${a.id}" ${a.id===currentId?"selected":""}>${a.icon} ${escapeHTML(a.name)} · ${localMoney(a.price,d)}</option>`).join("");
+    }
+    function moveDuplicateAttractionToFreeTime(newId,currentDayIndex,currentPart) {
+      const attraction=calculations.d.attractions.find(a=>a.id===newId);
+      if(!attraction || attraction.repeatable) return false;
+      let moved=false;
+      state.itinerary.forEach((day,i)=>{
+        if(i===currentDayIndex && currentPart==="morning") return;
+        if(day.morningId===newId) { day.morningId="a9"; moved=true; }
+      });
+      state.itinerary.forEach((day,i)=>{
+        if(i===currentDayIndex && currentPart==="afternoon") return;
+        if(day.afternoonId===newId) { day.afternoonId="a9"; moved=true; }
+      });
+      return moved;
+    }
+    function selectOptionsHTML(options,currentId,d) {
+      return options.map(o=>`<option value="${o.id}" ${o.id===currentId?"selected":""}>${escapeHTML(o.name)} · ${localMoney(o.price,d)}</option>`).join("");
+    }
+    function renderItinerary() {
+      const c=calculations,d=c.d;
+      $("itineraryDays").innerHTML=c.dayResults.map(x=>{
+        const dayLabel=x.index===0?"도착일":x.index===DAYS-1?"출국일":"여행일";
+        const formulaParts=[localMoney(x.meal.price,d),localMoney(x.transport.price,d),localMoney(x.morning.price+x.afternoon.price,d)];
+        if(x.lodging) formulaParts.push(localMoney(x.lodging,d));
+        const prefix=`day${x.index+1}`;
+        return `<article class="day-card"><div class="day-head"><div class="day-title"><div class="day-badge">${x.index+1}</div><div><h3>${x.index+1}일차 · ${dayLabel}</h3><p>${x.index<NIGHTS?"일정 후 숙박 1박 포함":"마지막 날 · 숙박 없음"}</p></div></div><div class="day-cost"><span>당일 현지비용</span><strong>${localMoney(x.localSubtotal,d)}</strong></div></div><div class="day-choice-grid"><div class="field"><label for="${prefix}-morning">오전 관광·체험</label><select id="${prefix}-morning" class="itinerary-select" data-day="${x.index}" data-part="morning">${attractionOptionsHTML(x.morning.id,x.index,"morning")}</select></div><div class="field"><label for="${prefix}-afternoon">오후 관광·체험</label><select id="${prefix}-afternoon" class="itinerary-select" data-day="${x.index}" data-part="afternoon">${attractionOptionsHTML(x.afternoon.id,x.index,"afternoon")}</select></div><div class="field"><label for="${prefix}-meal">하루 식사 방식</label><select id="${prefix}-meal" class="itinerary-select" data-day="${x.index}" data-part="meal">${selectOptionsHTML(c.meals,x.meal.id,d)}</select></div><div class="field"><label for="${prefix}-transport">하루 교통 방식</label><select id="${prefix}-transport" class="itinerary-select" data-day="${x.index}" data-part="transport">${selectOptionsHTML(c.transports,x.transport.id,d)}</select></div></div><div class="selection-detail"><div><strong>${x.morning.icon} 오전:</strong> ${escapeHTML(x.morning.note)}</div><div><strong>${x.afternoon.icon} 오후:</strong> ${escapeHTML(x.afternoon.note)}</div><div><strong>🍽️ 식사:</strong> ${escapeHTML(x.meal.note)}</div><div><strong>🚇 교통:</strong> ${escapeHTML(x.transport.note)}</div></div><div class="daily-formula">${formulaParts.join(" + ")} = ${localMoney(x.localSubtotal,d)}</div></article>`;
+      }).join("");
+      $("itineraryDays").querySelectorAll(".itinerary-select").forEach(select=>select.addEventListener("change",event=>{
+        const i=Number(event.target.dataset.day), part=event.target.dataset.part, day=state.itinerary[i];
+        let moved=false;
+        if(part==="morning") { moved=moveDuplicateAttractionToFreeTime(event.target.value,i,"morning"); day.morningId=event.target.value; }
+        if(part==="afternoon") { moved=moveDuplicateAttractionToFreeTime(event.target.value,i,"afternoon"); day.afternoonId=event.target.value; }
+        if(part==="meal") day.mealId=event.target.value;
+        if(part==="transport") day.transportId=event.target.value;
+        updateAll();
+        if(moved) showToast("기존 일정의 같은 관광지는 자유시간으로 바뀌었습니다.");
+      }));
+      $("itinerarySummary").innerHTML=[
+        ["숙박 5박",localMoney(c.hotelTotal,d)],
+        ["식사 6일",localMoney(c.mealTotal,d)],
+        ["교통 6일",localMoney(c.transportTotal,d)],
+        ["관광·체험",localMoney(c.attractionTotal,d)],
+        ["현지비용 합계",localMoney(c.localTotal,d)]
+      ].map(([k,v])=>`<div class="mini-metric"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+    }
+
+    function renderCostTable() {
+      const c=calculations,d=c.d;
+      const rows=[
+        ["항공료",c.flight.name,"수업용 선택 가격",won(c.flight.price),true],
+        ["숙박비",c.hotel.name,`${localMoney(c.hotel.night,d)} × ${NIGHTS}박`,localMoney(c.hotelTotal,d)],
+        ["식비","6일 식사 방식 합계",c.dayResults.map(x=>localMoney(x.meal.price,d)).join(" + "),localMoney(c.mealTotal,d)],
+        ["현지 교통비","6일 교통 방식 합계",c.dayResults.map(x=>localMoney(x.transport.price,d)).join(" + "),localMoney(c.transportTotal,d)],
+        ["관광·체험비","오전·오후 일정 12칸 합계",c.dayResults.map(x=>localMoney(x.attractionCost,d)).join(" + "),localMoney(c.attractionTotal,d)],
+        ["여행 준비비",c.prep.name,"1회 묶음",localMoney(c.prep.price,d)]
+      ];
+      $("costTableBody").innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td>${escapeHTML(r[1])}</td><td>${escapeHTML(r[2])}</td><td><strong>${r[3]}</strong></td></tr>`).join("")+`<tr class="total-row"><td>현지비용 합계</td><td colspan="2">숙박 + 식비 + 교통 + 관광·체험 + 준비비</td><td>${localMoney(c.localTotal,d)}</td></tr>`;
+    }
+    function renderCurrentCost() {
+      const c=calculations,d=c.d;
+      $("currentExchangeInfo").innerHTML=`<strong>${num(d.unit)} ${escapeHTML(d.code)} = ${won(d.currentRate)}</strong><div class="hint">기준연도 수업용 환율</div>`;
+      $("currentExchangeFormula").textContent=`${localMoney(c.localTotal,d)} ÷ ${num(d.unit)} × ${num(d.currentRate)}원 = ${won(c.currentLocalKRW)}`;
+      $("currentAirfare").textContent=won(c.flight.price); $("currentLocalKRW").textContent=won(c.currentLocalKRW); $("currentTotal").textContent=won(c.currentTotal);
+    }
+    function renderFutureCost() {
+      const c=calculations,d=c.d,pp=d.currentInflation-d.prevInflation;
+      $("prevInflation").textContent=pct(d.prevInflation); $("currentInflation").textContent=pct(d.currentInflation);
+      $("inflationPP").textContent=pp>0?`${pct(Math.abs(pp))}p 상승`:pp<0?`${pct(Math.abs(pp))}p 하락`:"변화 없음";
+      $("expectedInflation").textContent=pct(d.expectedInflation);
+      $("exchangeScenarioLabel").textContent=c.exchangeScenario.label;
+      $("scenarioFutureRate").textContent=`${num(d.unit)} ${d.code} = ${won(c.futureRate)}`;
+      $("exchangeScenarioDescription").textContent=`처음 시작할 때 무작위로 배정되어 이 제출물에서는 고정됩니다. ${c.exchangeScenario.description}`;
+      $("inflationFormula").textContent=`${localMoney(c.localTotal,d)} × (1 + ${(d.expectedInflation/100).toFixed(3)})^${YEARS} = ${localMoney(c.futureLocal,d)}`;
+      $("futureExchangeFormula").textContent=`${localMoney(c.futureLocal,d)} ÷ ${num(d.unit)} × ${num(c.futureRate)}원 = ${won(c.futureLocalKRW)}  (${c.exchangeScenario.label}: ${num(d.unit)} ${d.code} = ${won(c.futureRate)})`;
+      $("futureAirfareFormula").textContent=`${won(c.flight.price)} × (1 + ${BASE_AIRFARE_INFLATION.toFixed(2)})^${YEARS} = ${won(c.futureAirfare)}`;
+      const base=c.currentLocalKRW,comparison=[["현재 현지비용","현재 물가 · 현재 환율",base,0],["물가상승만 반영","10년 후 물가 · 현재 환율",c.futureLocalAtCurrentRate,c.futureLocalAtCurrentRate-base],["환율 변화만 반영","현재 물가 · 10년 후 환율",c.currentLocalAtFutureRate,c.currentLocalAtFutureRate-base],["물가·환율 모두 반영","10년 후 물가 · 10년 후 환율",c.futureLocalKRW,c.futureLocalKRW-base]];
+      $("futureComparisonBody").innerHTML=comparison.map((r,i)=>`<tr class="${i===3?"total-row":""}"><td>${r[0]}</td><td>${r[1]}</td><td>${won(r[2])}</td><td>${i===0?"기준":`${r[3]>=0?"+":"-"}${won(Math.abs(r[3]))}`}</td></tr>`).join("");
+      $("futureAirfare").textContent=won(c.futureAirfare); $("futureLocalKRW").textContent=won(c.futureLocalKRW); $("futureTotal").textContent=won(c.futureTotal);
+      const growth=((c.futureTotal/c.currentTotal)-1)*100,growthDirection=growth>=0?"증가":"감소";
+      const scenarioEffect=c.exchangeScenario.id==="strong"?"현지비용을 낮추는":c.exchangeScenario.id==="weak"?"현지비용을 높이는":"현재 수준을 유지하는";
+      $("futureInterpretation").innerHTML=`배정된 환율 시나리오는 <strong>${c.exchangeScenario.label}</strong>이며 환율 변화가 ${scenarioEffect} 방향으로 작용합니다. 현재 총 여행비는 <strong>${won(c.currentTotal)}</strong>이고, 10년 후 예상 총 여행비는 <strong>${won(c.futureTotal)}</strong>으로 약 <strong>${pct(Math.abs(growth),1)}</strong> ${growthDirection}합니다. 현지비용에는 <strong>${c.dominant}</strong>의 영향이 더 크게 나타납니다.`;
+    }
+    function renderGoal() {
+      const c=calculations;
+      $("goalFutureCost").textContent=won(c.futureTotal); $("reserveAmount").textContent=`${won(c.reserveAmount)} (${state.reserve}%)`; $("rawGoal").textContent=won(c.rawGoal); $("roundedGoal").textContent=won(c.roundedGoal);
+      $("goalFormula").textContent=`${won(c.futureTotal)} × (1 + ${(Number(state.reserve)/100).toFixed(2)}) = ${won(c.rawGoal)} → 10만 원 단위 올림 = ${won(c.roundedGoal)}`;
+      document.querySelectorAll('input[name="reserve"]').forEach(input=>{input.checked=Number(input.value)===Number(state.reserve);});
+    }
+    function renderProducts() {
+      const c=calculations;
+      const highestRate=[...c.productResults].sort((a,b)=>b.rate-a.rate)[0];
+      $("monthlyContributionSummary").textContent=won(c.monthlyContribution);
+      $("totalContributionSummary").textContent=won(c.monthlyContribution*MONTHS);
+      $("goalSummary").textContent=won(c.roundedGoal);
+      $("bestMonthlySummary").innerHTML=`${escapeHTML(c.best.name)}<br><span class="hint">${won(c.best.requiredMonthly)}</span>`;
+      $("rateComparison").innerHTML=`표시 연이율이 가장 높은 상품은 <strong>${escapeHTML(highestRate.name)}(${pct(highestRate.rate*100,2)})</strong>이고, 필요 월 납입액이 가장 적은 상품은 <strong>${escapeHTML(c.best.name)}(${won(c.best.requiredMonthly)})</strong>입니다. ${highestRate.id===c.best.id?"이 자료에서는 두 상품이 같지만 항상 같은 것은 아닙니다.":"두 상품이 서로 다르므로 금리뿐 아니라 이자 계산 방식과 납입 시점도 함께 비교해야 합니다."}`;
+      $("productGrid").innerHTML=c.productResults.map(product=>{
+        const status=product.gap>=0
+          ? `<span class="status-ok">입력액 기준 목표 달성 · ${won(product.gap)} 남음</span>`
+          : `<span class="status-short">입력액 기준 ${won(Math.abs(product.gap))} 부족</span>`;
+        return `<article class="product-card ${product.id===c.best.id?"best":""} ${product.id===state.selectedProductId?"selected":""}">
+          <h3>${escapeHTML(product.name)}</h3>
+          <div class="product-sub">${escapeHTML(product.rateText)} · 월 납입 한도 없음</div>
+          <div class="hint">목표 달성 월 납입액</div>
+          <div class="product-value">${won(product.requiredMonthly)}</div>
+          <div class="product-status">${status}</div>
+          <div class="hint">현재 입력액의 만기금액: ${won(product.fv)}<br>필요액 기준 총 납입원금: ${won(product.requiredTotalPaid)} · 예상 이자: ${won(product.requiredInterest)}</div>
+          <div class="formula-box"><div class="formula-title">필요 월 납입액 자동 역산</div><div class="formula">${escapeHTML(requiredMonthlyFormula(product,c.roundedGoal,product.requiredExact,product.requiredMonthly))}</div></div>
+          <div class="product-actions"><button class="apply-required" type="button" data-product="${product.id}">필요액 적용</button><button class="select-product" type="button" data-product="${product.id}" aria-pressed="${product.id===state.selectedProductId}">${product.id===state.selectedProductId?"선택됨":"이 적금 선택"}</button></div>
+        </article>`;
+      }).join("");
+      $("productGrid").querySelectorAll(".select-product").forEach(button=>button.addEventListener("click",()=>{
+        state.selectedProductId=button.dataset.product;
+        updateAll();
+        showToast("적금상품을 선택했습니다.");
+      }));
+      $("productGrid").querySelectorAll(".apply-required").forEach(button=>button.addEventListener("click",()=>{
+        const product=c.productResults.find(x=>x.id===button.dataset.product);
+        if(!product) return;
+        state.selectedProductId=product.id;
+        state.monthlyContribution=product.requiredMonthly;
+        updateAll();
+        showToast(`${product.name}의 필요 월 납입액을 적용했습니다.`);
+      }));
+      const p=c.selectedProduct;
+      $("selectedProductSummary").innerHTML=`<strong>${escapeHTML(p.name)}</strong><br><span class="hint">목표 달성 필요 월 납입액 ${won(p.requiredMonthly)} · 총 납입원금 ${won(p.requiredTotalPaid)} · 예상 이자 ${won(p.requiredInterest)}<br>현재 입력액 ${won(c.monthlyContribution)}의 10년 후 만기금액 ${won(p.fv)}</span>`;
+      $("selectedProductFormula").textContent=`${requiredMonthlyFormula(p,c.roundedGoal,p.requiredExact,p.requiredMonthly)}
+
+${productFormula(p,c.monthlyContribution,p.fv)}`;
+    }
+
+    function reportData() {
+      const c=calculations,d=c.d,p=c.selectedProduct;
+      return {
+        version:3,
+        generatedAt:new Date().toISOString(),
+        student:{className:state.className,number:state.studentNo,name:state.studentName},
+        baseYear:Number(state.baseYear),
+        departureYear:Number(state.baseYear)+YEARS,
+        purpose:state.purpose,
+        destination:{region:d.region,country:d.country,city:d.city,currency:d.currency,code:d.code},
+        selections:{
+          flight:{id:c.flight.id,name:c.flight.name,price:c.flight.price},
+          hotel:{id:c.hotel.id,name:c.hotel.name,night:c.hotel.night,nights:NIGHTS},
+          prep:{id:c.prep.id,name:c.prep.name,price:c.prep.price},
+          itinerary:c.dayResults.map(x=>({day:x.index+1,morning:x.morning.name,afternoon:x.afternoon.name,meal:x.meal.name,transport:x.transport.name,localSubtotal:x.localSubtotal}))
+        },
+        travelPlan:state.travelPlan,
+        costs:{
+          breakdown:{currentAirfare:c.flight.price,hotelLocal:c.hotelTotal,mealLocal:c.mealTotal,transportLocal:c.transportTotal,attractionLocal:c.attractionTotal,prepLocal:c.prep.price},
+          currentLocalCurrency:c.localTotal,currentLocalKRW:c.currentLocalKRW,currentTotal:c.currentTotal,
+          expectedInflation:d.expectedInflation,currentRate:{unit:d.unit,krw:d.currentRate},futureRate:{unit:d.unit,krw:c.futureRate},
+          exchangeScenario:{id:c.exchangeScenario.id,label:c.exchangeScenario.label,multiplier:c.exchangeScenario.multiplier},
+          futureAirfare:c.futureAirfare,futureLocalCurrency:c.futureLocal,futureLocalKRW:c.futureLocalKRW,futureTotal:c.futureTotal
+        },
+        goal:{reservePercent:Number(state.reserve),reserveAmount:c.reserveAmount,raw:c.rawGoal,rounded:c.roundedGoal},
+        savings:{
+          months:MONTHS,
+          comparisonCriterion:{id:state.comparisonCriterion,label:comparisonCriterionLabel()},
+          monthlyContribution:c.monthlyContribution,
+          totalContribution:c.monthlyContribution*MONTHS,
+          selectedProduct:{id:p.id,name:p.name,rateText:p.rateText,projectedFutureValue:p.fv,projectedGap:p.gap,requiredMonthlyExact:p.requiredExact,requiredMonthly:p.requiredMonthly,requiredTotalContribution:p.requiredTotalPaid,requiredInterest:p.requiredInterest,requiredFutureValue:p.requiredFuture},
+          productResults:c.productResults.map(x=>({id:x.id,name:x.name,rateText:x.rateText,projectedFutureValue:x.fv,projectedGap:x.gap,requiredMonthlyExact:x.requiredExact,requiredMonthly:x.requiredMonthly,requiredTotalContribution:x.requiredTotalPaid,requiredInterest:x.requiredInterest,requiredFutureValue:x.requiredFuture}))
+        },
+        productReason:state.productReason,
+        finalReflection:state.finalReflection
+      };
+    }
+    function buildReportInner() {
+      const c=calculations,d=c.d,p=c.selectedProduct;
+      const studentText=[state.className,state.studentNo?`${state.studentNo}번`:"",state.studentName].filter(Boolean).join(" ")||"학생 정보 미입력";
+      const itineraryRows=c.dayResults.map(x=>`<tr><td>${x.index+1}일차</td><td>${escapeHTML(x.morning.name)}</td><td>${escapeHTML(x.afternoon.name)}</td><td>${escapeHTML(x.meal.name)}</td><td>${escapeHTML(x.transport.name)}</td><td>${localMoney(x.localSubtotal,d)}</td></tr>`).join("");
+      const costRows=[["선택 항공료",won(c.flight.price)],["숙박비",localMoney(c.hotelTotal,d)],["식비",localMoney(c.mealTotal,d)],["현지 교통비",localMoney(c.transportTotal,d)],["관광·체험비",localMoney(c.attractionTotal,d)],["여행 준비비",localMoney(c.prep.price,d)],["현재 현지비용",`${localMoney(c.localTotal,d)} → ${won(c.currentLocalKRW)}`],["현재 총 여행비",won(c.currentTotal)],["무작위 환율 시나리오",`${c.exchangeScenario.label} · ${num(d.unit)} ${d.code} = ${won(c.futureRate)}`],["10년 후 예상 총 여행비",won(c.futureTotal)]];
+      const productRows=c.productResults.map(x=>`<tr><td>${escapeHTML(x.name)}</td><td>${escapeHTML(x.rateText)}</td><td>${won(x.requiredMonthly)}</td><td>${won(x.requiredTotalPaid)}</td><td>${won(x.requiredInterest)}</td></tr>`).join("");
+      return `<div class="report-header"><h2>10년 후 해외여행 자금 설계 보고서</h2><div class="report-meta">${escapeHTML(studentText)} · 기준연도 ${escapeHTML(state.baseYear)}년 · 출발연도 ${Number(state.baseYear)+YEARS}년</div></div>
+      <div class="report-section"><h3>1. 여행 기본 계획</h3><div class="summary-list"><div class="summary-row"><span>여행지</span><strong>${d.flag} ${escapeHTML(d.country)} ${escapeHTML(d.city)}</strong></div><div class="summary-row"><span>여행 조건</span><strong>1명 · 5박 6일 · ${escapeHTML(state.purpose)}</strong></div><div class="summary-row"><span>항공권</span><strong>${escapeHTML(c.flight.name)} · ${won(c.flight.price)}</strong></div><div class="summary-row"><span>숙소</span><strong>${escapeHTML(c.hotel.name)} · ${localMoney(c.hotel.night,d)}/박</strong></div><div class="summary-row"><span>준비 패키지</span><strong>${escapeHTML(c.prep.name)} · ${localMoney(c.prep.price,d)}</strong></div></div><div class="report-answer" style="margin-top:12px;">${escapeHTML(state.travelPlan)}</div></div>
+      <div class="report-section"><h3>2. 직접 구성한 5박 6일 일정</h3><div class="table-wrap"><table class="report-itinerary"><thead><tr><th>일차</th><th>오전</th><th>오후</th><th>식사</th><th>교통</th><th>당일 현지비용</th></tr></thead><tbody>${itineraryRows}</tbody></table></div></div>
+      <div class="report-section"><h3>3. 현재 비용과 10년 후 예상 비용</h3><div class="table-wrap"><table><tbody>${costRows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("")}</tbody></table></div><div class="formula-box"><div class="formula-title">환율 환산</div><div class="formula">${escapeHTML(`${localMoney(c.localTotal,d)} ÷ ${num(d.unit)} × ${num(d.currentRate)}원 = ${won(c.currentLocalKRW)}`)}</div></div><div class="formula-box"><div class="formula-title">10년 후 현지비용</div><div class="formula">${escapeHTML(`${localMoney(c.localTotal,d)} × (1 + ${(d.expectedInflation/100).toFixed(3)})^${YEARS} = ${localMoney(c.futureLocal,d)} → ${won(c.futureLocalKRW)}`)}</div></div></div>
+      <div class="report-section"><h3>4. 목표금액</h3><div class="summary-list"><div class="summary-row"><span>예비비 비율</span><strong>${state.reserve}%</strong></div><div class="summary-row"><span>예비비</span><strong>${won(c.reserveAmount)}</strong></div><div class="summary-row"><span>최종 목표금액</span><strong>${won(c.roundedGoal)}</strong></div></div><div class="formula-box"><div class="formula-title">계산과정</div><div class="formula">${escapeHTML(`${won(c.futureTotal)} × (1 + ${(Number(state.reserve)/100).toFixed(2)}) = ${won(c.rawGoal)} → ${won(c.roundedGoal)}`)}</div></div></div>
+      <div class="report-section"><h3>5. 적금상품 비교</h3><div class="summary-list" style="margin-bottom:12px;"><div class="summary-row"><span>상품 선택 기준</span><strong>${escapeHTML(comparisonCriterionLabel())}</strong></div><div class="summary-row"><span>비교용 월 납입액</span><strong>${won(c.monthlyContribution)}</strong></div><div class="summary-row"><span>120회 총 납입원금</span><strong>${won(c.monthlyContribution*MONTHS)}</strong></div><div class="summary-row"><span>선택한 적금</span><strong>${escapeHTML(p.name)}</strong></div><div class="summary-row"><span>목표 달성 필요 월 납입액</span><strong>${won(p.requiredMonthly)}</strong></div></div><div class="table-wrap"><table><thead><tr><th>상품</th><th>조건</th><th>필요 월 납입액</th><th>총 납입원금</th><th>예상 이자</th></tr></thead><tbody>${productRows}</tbody></table></div><div class="formula-box"><div class="formula-title">선택한 적금의 필요 월 납입액</div><div class="formula">${escapeHTML(requiredMonthlyFormula(p,c.roundedGoal,p.requiredExact,p.requiredMonthly))}</div></div><div class="formula-box"><div class="formula-title">입력한 월 납입액의 만기금액</div><div class="formula">${escapeHTML(productFormula(p,c.monthlyContribution,p.fv))}</div></div></div>
+      <div class="report-section"><h3>6. 최종 선택과 해석</h3><div class="report-answer"><strong>선택 상품:</strong> ${escapeHTML(p.name)}
+
+${escapeHTML(state.productReason)}</div><div class="report-answer" style="margin-top:10px;">${escapeHTML(state.finalReflection)}</div></div>
+      <div class="report-section"><h3>수업용 자료 확인</h3><p class="report-meta">관광지 명칭은 실제 장소를 중심으로 구성했으며, 물가상승률·여행비·입장료·적금상품은 경제 수학 수행평가를 위해 반올림하거나 가상화한 고정 자료입니다. 10년 후 환율은 원화 강세(-약 10%)·기준(변화 없음)·원화 약세(+약 10%) 중 하나를 무작위 배정합니다. 적금은 매월 초 같은 금액을 120회 납입하는 것으로 가정하며 월 납입 한도, 관광세·숙박세, 환전 수수료·스프레드, 이자소득세는 계산하지 않았습니다.</p></div>`;
+    }
+    function renderReport() { $("reportPreview").innerHTML=buildReportInner(); }
+    function updateFormValues() {
+      $("className").value=state.className; $("studentNo").value=state.studentNo; $("studentName").value=state.studentName; $("baseYear").value=state.baseYear; $("purpose").value=state.purpose; $("monthlyContribution").value=state.monthlyContribution; $("comparisonCriterion").value=state.comparisonCriterion;
+      $("departureYearText").textContent=`${Number(state.baseYear||defaultState.baseYear)+YEARS}년 출발 (기준연도부터 10년 후)`;
+      $("travelPlan").value=state.travelPlan; $("productReason").value=state.productReason; $("finalReflection").value=state.finalReflection;
+    }
+    function updateAll() {
+      calculateAll(); autoText(); renderCountryCards(); renderDestinationSummary(); renderTripOptions(); renderItinerary(); renderCostTable(); renderCurrentCost(); renderFutureCost(); renderGoal(); renderProducts(); renderReport(); updateFormValues(); scheduleSave();
+    }
+
+    function bindInputs() {
+      [["className","className"],["studentNo","studentNo"],["studentName","studentName"]].forEach(([id,key])=>$(id).addEventListener("input",event=>{state[key]=event.target.value;renderReport();scheduleSave();}));
+      $("baseYear").addEventListener("input",event=>{state.baseYear=Math.max(2020,Math.min(2100,Number(event.target.value)||defaultState.baseYear));updateAll();});
+      $("purpose").addEventListener("change",event=>{state.purpose=event.target.value;updateAll();});
+      document.querySelectorAll('input[name="reserve"]').forEach(input=>input.addEventListener("change",event=>{state.reserve=Number(event.target.value);updateAll();}));
+      $("monthlyContribution").addEventListener("input",event=>{state.monthlyContribution=Math.max(0,Number(event.target.value)||0);updateAll();});
+      $("comparisonCriterion").addEventListener("change",event=>{state.comparisonCriterion=event.target.value;updateAll();});
+    }
+    function shuffleArray(arr) { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+    function randomizeItinerary() {
+      const d=getDestination(), fixed=shuffleArray(d.attractions.filter(a=>!a.repeatable).map(a=>a.id)), repeat=d.attractions.filter(a=>a.repeatable).map(a=>a.id);
+      const pool=[...fixed,...repeat,...repeat,...repeat];
+      state.itinerary=Array.from({length:DAYS},(_,i)=>({day:i+1,morningId:pool[i*2]||repeat[0],afternoonId:pool[i*2+1]||repeat[1],mealId:["light","balanced","special"][Math.floor(Math.random()*3)],transportId:["public","mixed","comfort"][Math.floor(Math.random()*3)]}));
+      updateAll();showToast("추천 일정을 새 조합으로 구성했습니다.");
+    }
+    function restoreDefaultPlan() { state.itinerary=createDefaultItinerary(getDestination());updateAll();showToast("기본 일정으로 되돌렸습니다."); }
+    function sanitizeFilename(value) { return String(value||"").trim().replace(/[\\/:*?"<>|]/g,"-").replace(/\s+/g,"_").slice(0,50); }
+    function downloadableReportHTML() {
+      const data=JSON.stringify(reportData()).replace(/</g,"\\u003c");
+      const studentText=[state.className,state.studentNo?`${state.studentNo}번`:"",state.studentName].filter(Boolean).join(" ")||"학생 정보 미입력";
+      const reportCSS=`*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#172033;background:#f3f5f9;line-height:1.65}.wrap{width:min(960px,calc(100% - 28px));margin:28px auto;background:#fff;border:1px solid #dfe5ef;border-radius:22px;padding:34px;box-shadow:0 14px 40px rgba(30,50,90,.08)}.report-header{border-bottom:3px solid #172033;padding-bottom:15px;margin-bottom:20px}.report-header h2{margin:0 0 5px;font-size:1.7rem}.report-meta{color:#667085;font-size:.9rem}.report-section{margin:24px 0}.report-section h3{font-size:1.08rem;margin:0 0 10px;padding-bottom:7px;border-bottom:1px solid #dfe5ef}.summary-list{display:grid;gap:9px}.summary-row{display:flex;justify-content:space-between;gap:14px;border-bottom:1px dashed #ccd5e7;padding-bottom:7px}.summary-row span:first-child{color:#667085}.summary-row strong{text-align:right}.report-answer{background:#f7f9fc;border-radius:12px;padding:14px;white-space:pre-wrap}.formula-box{border-left:4px solid #3659d9;background:#f8faff;border-radius:0 13px 13px 0;padding:13px 15px;margin-top:12px;overflow-wrap:anywhere}.formula-title{color:#2644b7;font-size:.82rem;font-weight:800;margin-bottom:3px}.formula{font-family:Consolas,monospace;font-size:.9rem;white-space:pre-wrap}.table-wrap{overflow-x:auto;border:1px solid #dfe5ef;border-radius:16px}table{width:100%;border-collapse:collapse;min-width:720px}th,td{padding:11px 12px;border-bottom:1px solid #dfe5ef;text-align:right;vertical-align:top}th:first-child,td:first-child{text-align:left}th{background:#f4f6fa;color:#475467;font-size:.84rem}tr:last-child td{border-bottom:0}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.actions button{border:0;border-radius:11px;padding:10px 14px;font-weight:800;cursor:pointer}.print{background:#3659d9;color:white}.note{background:#fff4dc;border:1px solid #efd8a3;border-radius:14px;padding:13px 15px;margin-top:20px;color:#68440b}@media(max-width:600px){.wrap{padding:20px}}@media print{body{background:white}.wrap{width:100%;margin:0;border:0;box-shadow:none;padding:0}.actions{display:none}@page{size:A4;margin:13mm}}`;
+      return `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHTML(studentText)}_해외여행자금설계</title><style>${reportCSS}</style></head><body><main class="wrap">${buildReportInner()}<div class="actions"><button class="print" onclick="window.print()">인쇄·PDF 저장</button></div><div class="note">교사용 참고: 이 파일에는 취합 도구에서 읽을 수 있는 구조화된 제출 데이터가 포함되어 있습니다.</div></main><script type="application/json" id="submission-data">${data}<\/script></body></html>`;
+    }
+    function validateSubmission() {
+      const requiredFields=[["className","학급"],["studentNo","번호"],["studentName","이름"]];
+      for(const [id,label] of requiredFields) {
+        const input=$(id),value=input.value.trim();
+        if(!value) { input.focus(); input.reportValidity(); showToast(`${withObjectParticle(label)} 입력해야 제출할 수 있습니다.`); return false; }
+        state[id]=value;
+      }
+      if(!state.travelPlan||!state.productReason||!state.finalReflection||!calculations.exchangeScenario) { showToast("선택 결과가 모두 계산된 뒤 제출할 수 있습니다."); return false; }
+      renderReport(); scheduleSave();
+      return true;
+    }
+    function downloadReport() {
+      if(!validateSubmission()) return;
+      const d=calculations.d,parts=[state.className,state.studentNo?`${state.studentNo}번`:"",state.studentName,d.country,"해외여행자금설계"].map(sanitizeFilename).filter(Boolean),filename=`${parts.join("_")||"해외여행자금설계"}.html`;
+      const blob=new Blob([downloadableReportHTML()],{type:"text/html;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);showToast("제출용 HTML 파일을 저장했습니다.");
+    }
+    async function copyReportText() {
+      if(!validateSubmission()) return;
+      const text=$("reportPreview").innerText;
+      try{await navigator.clipboard.writeText(text);showToast("보고서 문장을 복사했습니다.");}catch(error){const area=document.createElement("textarea");area.value=text;document.body.appendChild(area);area.select();document.execCommand("copy");area.remove();showToast("보고서 문장을 복사했습니다.");}
+    }
+    function printReport() { if(validateSubmission()) window.print(); }
+    function resetAll() {
+      if(!window.confirm("입력한 내용과 자동 저장 자료를 모두 지우고 처음부터 시작할까요?"))return;
+      state={...defaultState,baseYear:new Date().getFullYear(),itinerary:[]};currentRegion="전체";localStorage.removeItem(STORAGE_KEY);ensureExchangeScenario();renderRegionTabs();updateAll();window.scrollTo({top:0,behavior:"smooth"});showToast("처음 상태로 되돌렸습니다. 새 환율 시나리오가 배정되었습니다.");
+    }
+    function setupProgress() {
+      const sections=[...document.querySelectorAll("[data-step-section]")],links=[...document.querySelectorAll(".step-link")];
+      const updateProgress=()=>{const scrollY=window.scrollY+130;let current=1;sections.forEach(section=>{if(section.offsetTop<=scrollY)current=Number(section.dataset.stepSection);});links.forEach(link=>link.classList.toggle("active",Number(link.dataset.step)===current));const percent=Math.round(((current-1)/(sections.length-1))*100);$("progressBar").style.width=`${percent}%`;$("progressPercent").textContent=`${percent}%`;$("progressText").textContent=`${current}단계 진행 중`;};
+      window.addEventListener("scroll",updateProgress,{passive:true});updateProgress();
+    }
+    function init() {
+      ensureExchangeScenario();ensureDestinationState();renderRegionTabs();bindInputs();updateAll();setupProgress();
+      $("shufflePlanBtn").addEventListener("click",randomizeItinerary);$("defaultPlanBtn").addEventListener("click",restoreDefaultPlan);
+      $("downloadBtn").addEventListener("click",downloadReport);$("printBtn").addEventListener("click",printReport);$("copyBtn").addEventListener("click",copyReportText);$("resetBtn").addEventListener("click",resetAll);$("helpBtn").addEventListener("click",()=>$("helpDialog").showModal());$("closeHelp").addEventListener("click",()=>$("helpDialog").close());$("helpDialog").addEventListener("click",event=>{if(event.target===$("helpDialog"))$("helpDialog").close();});
+    }
+    document.addEventListener("DOMContentLoaded",init);
+  </script>
+</body>
+</html>

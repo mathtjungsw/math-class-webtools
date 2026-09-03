@@ -22,7 +22,9 @@ function extractCards(source) {
   }));
 }
 const cards = extractCards(html);
-const approvedIds = expectedNumbers.map(n => cards[n - 1].id);
+const archivedCards = extractCards(original);
+// Review numbers belong to the immutable archive, not the evolving live catalog.
+const approvedIds = expectedNumbers.map(n => archivedCards[n - 1].id);
 
 // Small DOM fixture for the runtime's node-preserving operations, without a dependency.
 class Element {
@@ -77,8 +79,10 @@ function setup(search = "", withCandidates = true, beforeRuntime) {
 const plain = value => JSON.parse(JSON.stringify(value));
 
 test("81개 원본 마크업을 별도 보관하며 메인 원본도 변경하지 않는다", () => {
-  assert.equal(cards.length, 81);
-  assert.deepEqual(extractCards(original), cards);
+  assert.equal(archivedCards.length, 81);
+  assert.ok(cards.length >= archivedCards.length);
+  const currentById = new Map(cards.map(card => [card.id, card]));
+  assert.deepEqual(archivedCards.map(card => currentById.get(card.id)), archivedCards);
   assert.match(read("assets/thumbnails/legacy/site.css"), /background: #101c2d/);
   assert.match(read("thumbnail-review-current.html"), /assets\/thumbnails\/legacy\/catalog.html/);
 });
