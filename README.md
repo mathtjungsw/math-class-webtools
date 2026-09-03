@@ -11,6 +11,15 @@
 - 오프라인 앱: HTTP 또는 HTTPS에서 한 번 연 페이지를 서비스 워커가 캐시하며, 설치 가능한 PWA manifest 제공
 - 개인정보 보호: 인기 통계는 사용자가 허용한 경우에만 도구 ID를 익명 전송하며 파일·수업 내용·이름은 전송하지 않음
 
+## 썸네일 승인·복원
+
+- 승인된 34개만 적용: 1~19, 24~25, 33~38, 41, 68~73번. 16·17·36번은 색상만 변경하고 나머지 31개는 밝은 장면형 그림을 사용합니다. 선택하지 않은 47개는 유지합니다.
+- 원본 81개와 당시 CSS는 `assets/thumbnails/legacy/`에 별도 보존합니다. 원본 자료는 덮어쓰거나 삭제하지 않습니다.
+- 로컬 서버에서 `thumbnail-review-comparison.html`을 열면 이전·이후 비교, `thumbnail-review-current.html`을 열면 번호가 있는 원본 전체를 볼 수 있습니다.
+- `index.html?thumbnails=legacy`로 모든 원본을 임시 확인합니다. 항목별 영구 복원은 `assets/tool-thumbnails.js`의 `approvedIds`에서 해당 도구 ID를 제거합니다.
+- 새 시안은 `assets/thumbnail-candidates.js`에만 추가하고 사용자 승인 후 `approvedIds`에 넣습니다. 승인 목록은 후보 목록과 독립적으로 관리합니다.
+- 검증: `node --test tests/tool-thumbnails.test.js`.
+
 ## 2026 교육과정 실험실 추가
 
 - 공통수학1: 다항식, 일차부등식, 순열·조합, 2×2 행렬
