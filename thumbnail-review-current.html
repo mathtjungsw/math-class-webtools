@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>원본 썸네일 전체 보관함</title>
+    <link rel="stylesheet" href="./assets/thumbnails/legacy/site.css" />
+    <style>
+      :root { color-scheme: light; }
+      body { margin: 0; background: #f5f7fb; color: #111c35; }
+      .review-shell { width: min(1440px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 64px; }
+      .review-head { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 20px; padding: 16px 20px; border: 1px solid #dce3ee; border-radius: 18px; background: rgba(255,255,255,.94); box-shadow: 0 10px 28px rgba(17,28,53,.08); backdrop-filter: blur(12px); }
+      .review-head h1 { margin: 0; font-size: clamp(21px, 2.4vw, 32px); letter-spacing: -.04em; }
+      .review-head p { margin: 5px 0 0; color: #69758b; font-size: 14px; }
+      .review-total { flex: 0 0 auto; padding: 8px 12px; border-radius: 999px; background: #e9f7f2; color: #167866; font-size: 13px; font-weight: 900; }
+      .review-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+      .review-card.tool-card { position: relative; display: block; min-width: 0; overflow: hidden; border: 1px solid #dce3ee; border-radius: 22px; background: white; box-shadow: 0 4px 12px rgba(17,28,53,.04); }
+      .review-card .tool-visual { min-height: 190px; height: 190px; border-radius: 0; }
+      .review-meta { display: flex; align-items: center; gap: 10px; min-height: 68px; padding: 12px 15px; }
+      .review-number { display: grid; width: 40px; height: 40px; flex: 0 0 auto; place-items: center; border-radius: 13px; background: #111c35; color: white; font-size: 15px; font-weight: 950; }
+      .review-title { min-width: 0; }
+      .review-title strong { display: block; overflow: hidden; color: #111c35; font-size: 15px; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+      .review-title small { display: block; overflow: hidden; margin-top: 3px; color: #8a95a8; font: 700 11px/1.3 ui-monospace, monospace; text-overflow: ellipsis; white-space: nowrap; }
+      .review-card::after { position: absolute; left: 12px; top: 12px; z-index: 10; display: grid; width: 39px; height: 39px; place-items: center; border: 3px solid white; border-radius: 50%; background: #ff6742; color: white; content: attr(data-review-number); font-size: 13px; font-weight: 950; box-shadow: 0 4px 12px rgba(17,28,53,.2); }
+      .review-loading { grid-column: 1/-1; padding: 60px 20px; color: #69758b; text-align: center; }
+      @media (max-width: 980px) { .review-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+      @media (max-width: 640px) { .review-shell { width: min(100% - 20px, 520px); padding-top: 10px; } .review-head { align-items: flex-start; flex-direction: column; border-radius: 15px; } .review-grid { grid-template-columns: 1fr; gap: 12px; } .review-card .tool-visual { height: 180px; min-height: 180px; } }
+    </style>
+  </head>
+  <body>
+    <main class="review-shell">
+      <header class="review-head">
+        <div><h1>원본 썸네일 전체 보관함</h1><p>변경 전 81개 원본입니다. 번호와 원본 그림은 그대로 보관합니다.</p></div>
+        <span class="review-total" id="review-total">불러오는 중</span>
+      </header>
+      <section class="review-grid" id="review-grid" aria-live="polite"><p class="review-loading">현재 썸네일을 불러오고 있습니다.</p></section>
+    </main>
+    <script>
+      (async () => {
+        const response = await fetch("./assets/thumbnails/legacy/catalog.html", { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const source = await response.text();
+        const parsed = new DOMParser().parseFromString(source, "text/html");
+        const cards = [...parsed.querySelectorAll(".tool-card[data-tool-id]")];
+        const grid = document.querySelector("#review-grid");
+        grid.replaceChildren();
+
+        cards.forEach((sourceCard, index) => {
+          const card = document.createElement("article");
+          card.className = `${sourceCard.className} review-card`;
+          card.dataset.reviewNumber = String(index + 1).padStart(2, "0");
+          card.dataset.toolId = sourceCard.dataset.toolId;
+
+          const visual = sourceCard.querySelector(".tool-visual")?.cloneNode(true);
+          if (visual) card.append(visual);
+
+          const meta = document.createElement("div");
+          meta.className = "review-meta";
+          const number = document.createElement("span");
+          number.className = "review-number";
+          number.textContent = String(index + 1).padStart(2, "0");
+          const title = document.createElement("div");
+          title.className = "review-title";
+          const strong = document.createElement("strong");
+          strong.textContent = sourceCard.querySelector("h3")?.textContent?.trim() || sourceCard.dataset.toolId;
+          const small = document.createElement("small");
+          small.textContent = sourceCard.dataset.toolId;
+          title.append(strong, small);
+          meta.append(number, title);
+          card.append(meta);
+          grid.append(card);
+        });
+
+        document.querySelector("#review-total").textContent = `총 ${cards.length}개`;
+      })().catch((error) => {
+        document.querySelector("#review-grid").innerHTML = `<p class="review-loading">불러오지 못했습니다: ${error.message}</p>`;
+      });
+    </script>
+  </body>
+</html>
