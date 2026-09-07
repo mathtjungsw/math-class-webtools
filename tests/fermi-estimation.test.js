@@ -60,7 +60,7 @@ function loadTool() {
   };
   vm.createContext(context);
   vm.runInContext(
-    match[1] + ";globalThis.__api={num,topics,state,topicState,computeRange,revisedResult,submissionAudit,generateConclusionText,renderTopics,buildReportHTML};",
+    match[1] + ";globalThis.__api={num,topics,state,topicState,computeRange,revisedResult,submissionAudit,generateConclusionText,cleanConclusionText,conclusionAuthoredText,renderTopics,buildReportHTML};",
     context
   );
   return { api: context.__api, elements, html };
@@ -124,4 +124,40 @@ test("필수 탐구 과정을 작성하면 제출 보고서를 만들 수 있다
   const report = api.buildReportHTML();
   assert.match(report, /테스트학생/);
   assert.match(report, /끝점 조합 중 작은 추정/);
+});
+
+test("근거 선택, 근거 메모, 가정값 수정은 각각 독립적으로 보완한 자료로 인정한다", () => {
+  const variants = [
+    state => { state.values.students.basis = "직접 관찰·측정"; },
+    state => { state.values.students.note = "학교알리미 확인"; },
+    state => { state.values.students.mid = Number(state.values.students.mid) + 1; }
+  ];
+  for (const applyEvidence of variants) {
+    const { api } = loadTool();
+    const state = api.topicState();
+    applyEvidence(state);
+    const evidence = api.submissionAudit().checks.find(item => item.label.includes("가정 근거"));
+    assert.equal(evidence.ok, true);
+  }
+});
+
+test("결론 틀 안내문이 남아 있어도 학생이 쓴 문장을 판정하고 보고서에서는 안내문을 제거한다", () => {
+  const { api } = loadTool();
+  const state = api.topicState();
+  const ownWriting = "학생 수와 하루 사용량을 곱하는 방식으로 문제를 나누었고, 실제 학교 자료를 사용해 대표값을 조정했다. 계산 결과는 정확한 정답이라기보다 합리적인 규모를 보여 주며, 표본 수가 적다는 한계가 있으므로 추가 조사가 필요하다.";
+  state.conclusion = api.generateConclusionText() + "\n" + ownWriting;
+  assert.ok(api.conclusionAuthoredText(state.conclusion).length >= 80);
+  const conclusion = api.submissionAudit().checks.find(item => item.label.includes("결론을 자신의 문장"));
+  assert.equal(conclusion.ok, true);
+  const report = api.buildReportHTML();
+  assert.match(report, /학생 수와 하루 사용량/);
+  assert.doesNotMatch(report, /자신의 문장으로 쓰세요/);
+});
+
+test("학생이 쓴 대괄호 표현은 미완성 안내문으로 오인하지 않는다", () => {
+  const { api } = loadTool();
+  const state = api.topicState();
+  state.conclusion = "[학교알리미 자료]를 참고하여 학생 수와 하루 사용량을 곱했다. 대표 추정값은 실제 규모를 설명하는 데 적절하지만 개인별 사용량 차이가 크다. 따라서 여러 학급의 표본을 더 조사하면 추정의 신뢰도를 높일 수 있다고 판단했다.";
+  const conclusion = api.submissionAudit().checks.find(item => item.label.includes("결론을 자신의 문장"));
+  assert.equal(conclusion.ok, true);
 });

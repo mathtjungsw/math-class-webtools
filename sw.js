@@ -1,4 +1,4 @@
-const CACHE="math-class-webtools-20260903-v6";
+const CACHE="math-class-webtools-20260907-v1";
 const CORE=["./","./index.html","./offline.html","./manifest.webmanifest","./assets/site.css","./assets/app.js","./assets/thumbnail-candidates.js","./assets/tool-thumbnails.js","./assets/app-icon.svg","./classroom/","./classroom/index.html","./classroom/style.css","./classroom/app.js","./classroom/vendor/qrcode.min.js","./classroom-response/","./classroom-response/index.html","./classroom-response/style.css","./classroom-response/model.js","./classroom-response/app.js","./curriculum-labs/","./curriculum-labs/index.html","./curriculum-labs/style.css","./curriculum-labs/model.js","./curriculum-labs/app.js","./math-project/fermi-estimation/","./math-project/fermi-estimation/index.html"];
 // Match the versioned catalog requests so the first installed shell works offline.
 const CATALOG_ASSETS=["./assets/site.css?v=20260903-6","./assets/thumbnail-candidates.js?v=20260903-6","./assets/tool-thumbnails.js?v=20260903-6","./assets/app.js?v=20260903-6","./assets/click-stats-config.js?v=20260714-1"];
