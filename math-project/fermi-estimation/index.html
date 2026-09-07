@@ -524,6 +524,22 @@
     const BASIS_OPTIONS = [
       "제공된 수업용 범위", "나의 경험", "직접 관찰·측정", "일부 표본에서 확대", "상식적 추론", "기타"
     ];
+    const CONCLUSION_TEMPLATE_PROMPTS = [
+      "[이 요소들로 문제를 나눈 이유와 단순화한 부분을 자신의 문장으로 쓰세요]",
+      "[대표값의 근거와 첫 예상값을 비교해 해석하세요]",
+      "[수정한 요소와 값, 달라진 결과를 쓰세요]",
+      "[불확실하다고 판단한 이유와 수정 결과의 의미를 설명하세요]",
+      "[최종 추정값을 선택한 이유와 이 추정의 한계를 자신의 문장으로 정리하세요]"
+    ];
+    const CONCLUSION_SCAFFOLD_LINES = [
+      /^탐구 문제:/,
+      /^[1-4]\. (?:문제 분해|가정과 결과|불확실성과 수정|최종 판단)$/,
+      /^사용한 요소:/,
+      /^대표 추정값:/,
+      /^끝점 조합 범위:/,
+      /^민감도가 가장 큰 요소:/,
+      /의 대표값:.*→.*결과:/
+    ];
     const CATEGORY_ORDER = ["학교생활", "과학", "사회", "체육", "예술", "역사"];
     const CATEGORY_ICON = {"학교생활":"🏫", "과학":"🔬", "사회":"🌐", "체육":"🏃", "예술":"🎨", "역사":"🏛️"};
 
@@ -1554,20 +1570,27 @@
       });
       const hasOwnEvidence = factors.some(x => {
         const value = ts.values[x.key] || {};
-        return String(value.note || "").trim().length >= 3 && value.basis !== "제공된 수업용 범위";
+        const changedBasis = Boolean(value.basis) && value.basis !== "제공된 수업용 범위";
+        const wroteNote = String(value.note || "").trim().length >= 3;
+        const changedValue = ["low","mid","high"].some(s => {
+          const current = num(value[s], NaN);
+          const original = num(x[s], NaN);
+          return Number.isFinite(current) && Number.isFinite(original) && Math.abs(current-original) > Math.max(1,Math.abs(original))*1e-12;
+        });
+        return changedBasis || wroteNote || changedValue;
       });
-      const conclusion = String(ts.conclusion || "").trim();
+      const authoredConclusion = conclusionAuthoredText(ts.conclusion);
       const checks = [
         {label:"학생 정보 4개 항목 작성", ok:[state.student.grade,state.student.classNo,state.student.studentNo,state.student.name].every(v => String(v || "").trim()), target:"student"},
         {label:"주제 선택 이유 작성", ok:String(ts.reason || "").trim().length >= 10, target:"step1"},
         {label:"계산 전 첫 예상값 입력", ok:num(ts.initialGuess, NaN) > 0, target:"step1"},
         {label:"분해 모형 검토 작성", ok:String(ts.modelComment || "").trim().length >= 15, target:"step2"},
         {label:"가정값과 순서 확인", ok:factorValuesValid && expressionStructure(ts.expression).valid && Number.isFinite(range.min) && range.min >= 0 && Number.isFinite(range.rep) && range.rep >= 0 && Number.isFinite(range.max) && range.max >= 0, target:"step2"},
-        {label:"가정 근거를 자신의 자료로 1개 이상 보완", ok:hasOwnEvidence, target:"step2"},
+        {label:"가정 근거·메모·값 중 1개 이상 보완", ok:hasOwnEvidence, target:"step2"},
         {label:"불확실한 요소를 고른 이유 작성", ok:String(ts.uncertainReason || "").trim().length >= 10, target:"step4"},
         {label:"대표값을 실제로 수정하고 이유 작성", ok:Number.isFinite(revisionValue) && revisionValue >= 0 && Number.isFinite(originalValue) && Math.abs(revisionValue-originalValue) > Math.max(1,Math.abs(originalValue))*1e-12 && String(ts.revisionReason || "").trim().length >= 10 && Number.isFinite(revised) && revised >= 0, target:"step4"},
         {label:"유효한 최종 추정값 선택", ok:Number.isFinite(final) && final >= 0, target:"step4"},
-        {label:"작성 틀을 자신의 문장으로 완성", ok:conclusion.length >= 80 && !/\[[^\]]+\]/.test(conclusion), target:"step5"},
+        {label:"결론을 자신의 문장으로 80자 이상 작성", ok:authoredConclusion.length >= 80, target:"step5"},
         {label:"탐구 반성 작성", ok:String(ts.reflection || "").trim().length >= 20, target:"step5"}
       ];
       return {checks, ready:checks.every(x => x.ok)};
@@ -1608,6 +1631,20 @@
       ].join("\n");
     }
 
+    function cleanConclusionText(value){
+      let text = String(value || "");
+      CONCLUSION_TEMPLATE_PROMPTS.forEach(prompt => { text = text.split(prompt).join(""); });
+      return text.replace(/\n{3,}/g,"\n\n").trim();
+    }
+
+    function conclusionAuthoredText(value){
+      const cleaned = cleanConclusionText(value);
+      if(!cleaned) return "";
+      return cleaned.split("\n").map(line => line.trim()).filter(line =>
+        line && !CONCLUSION_SCAFFOLD_LINES.some(pattern => pattern.test(line))
+      ).join(" ");
+    }
+
     function renderSubmissionChecklist(){
       const audit = submissionAudit();
       const missing = audit.checks.filter(x => !x.ok).length;
@@ -1633,7 +1670,7 @@
         <p><strong>${escapeHTML(state.student.grade || "-")}학년 ${escapeHTML(state.student.classNo || "-")}반 ${escapeHTML(state.student.studentNo || "-")}번 ${escapeHTML(studentName)}</strong></p>
         <p><strong>탐구 문제:</strong> ${escapeHTML(t.question)}</p>
         <p><strong>대표 추정:</strong> ${fmt(r.rep)} ${escapeHTML(t.unit)} / <strong>최종 추정:</strong> ${fmt(final)} ${escapeHTML(t.unit)}</p>
-        <p class="preview-summary"><strong>최종 결론:</strong> ${escapeHTML(ts.conclusion || "결론 작성 틀을 참고해 자신의 문장으로 완성하세요.")}</p>
+        <p class="preview-summary"><strong>최종 결론:</strong> ${escapeHTML(cleanConclusionText(ts.conclusion) || "결론 작성 틀을 참고해 자신의 문장으로 완성하세요.")}</p>
      `;
       renderSubmissionChecklist();
    }
@@ -1708,7 +1745,7 @@
       const revFactor = reportFactors.find(x => x.key === ts.revisionFactor);
       const now = new Date();
       const dateText = now.toLocaleString("ko-KR");
-      const conclusion = ts.conclusion;
+      const conclusion = cleanConclusionText(ts.conclusion);
       const initialGuess = num(ts.initialGuess, NaN);
       const sensitivityRows = sensitivity.map((x,i) => `<tr><td>${i+1}</td><td>${escapeHTML(x.label)}</td><td>${fmt(x.lowResult)}~${fmt(x.highResult)} ${escapeHTML(t.unit)}</td><td>${fmt(x.pct,1)}%</td></tr>`).join("");
       return `<!DOCTYPE html>
