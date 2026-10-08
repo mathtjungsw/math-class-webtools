@@ -16,13 +16,12 @@
     constructor(url){this.kind='sheets';this.url=url;}
     async request(action,input,signal){
       const research=action==='research';
-      const timeout=AbortSignal.timeout(research?240000:30000);
+      const timeout=AbortSignal.timeout(research?240000:60000);
       let response;
       try{
-        response=await fetch(this.url+(research?'':'?api=bootstrap'),{
-          method:research?'POST':'GET',credentials:'omit',redirect:'follow',
-          signal:signal?AbortSignal.any([signal,timeout]):timeout,
-          ...(research?{headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({action,input})}:{})
+        response=await fetch(this.url+'?api='+action+(research?'&input='+encodeURIComponent(JSON.stringify(input))+'&request='+encodeURIComponent(crypto.randomUUID()):''),{
+          method:'GET',credentials:'omit',redirect:'follow',cache:'no-store',
+          signal:signal?AbortSignal.any([signal,timeout]):timeout
         });
       }catch(error){
         if(signal?.aborted)throw error;

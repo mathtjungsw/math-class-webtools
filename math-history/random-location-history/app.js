@@ -182,6 +182,7 @@
   document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
   async function initialize(){
     renderCompass();
+    notice('육지 지도와 저장된 자료를 불러오는 중입니다. 공유 저장소의 첫 연결에는 시간이 걸릴 수 있습니다.');
     const cloud=repo.kind==='sheets';
     $('cloud-link').hidden=cloud;
     $('storage-label').textContent=cloud?'로그인 없이 탐험 · 자료 함께 저장':'이 브라우저에 누적 저장 · 시험용';

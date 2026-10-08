@@ -12,7 +12,10 @@ function publicHistoryApi_(action,input) {
 function jsonResponse_(result){return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);}
 function doGet(request) {
   if(request&&request.parameter&&request.parameter.api){
-    return jsonResponse_(request.parameter.api==='bootstrap'?publicHistoryApi_('bootstrap'): {ok:false,error:'조회 요청을 확인해 주세요.'});
+    try{
+      const action=request.parameter.api;
+      return jsonResponse_(publicHistoryApi_(action,action==='research'?JSON.parse(request.parameter.input||'{}'):{}));
+    }catch(error){return jsonResponse_({ok:false,error:String(error.message||error).slice(0,400)});}
   }
   return HtmlService.createTemplateFromFile('Index').evaluate().setTitle('랜덤 위치 역사 탐험').addMetaTag('viewport','width=device-width, initial-scale=1');
 }

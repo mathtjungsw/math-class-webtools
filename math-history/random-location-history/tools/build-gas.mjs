@@ -6,7 +6,7 @@ const read=name=>fs.readFile(path.join(root,name),'utf8');
 const escapeScript=s=>s.replace(/<\/script/gi,'<\\/script').replace(/<!--/g,'<\\!--');
 let html=await read('index.html');
 html=html.replace('<link rel="stylesheet" href="./style.css">',"<?!= include_('Styles'); ?>");
-html=html.replace(/  <script defer src="\.\/(config|engine|collector|repository|app)\.js"><\/script>\n/g,'');
+html=html.replace(/  <script defer src="\.\/(config|engine|collector|repository|app)\.js"><\/script>\r?\n/g,'');
 html=html.replace('</body>',"<?!= include_('Data'); ?>\n<?!= include_('Engine'); ?>\n<?!= include_('Collector'); ?>\n<?!= include_('Repository'); ?>\n<?!= include_('App'); ?>\n</body>");
 html=html.replace('href="../../index.html"','href="#"');
 await fs.writeFile(path.join(gas,'Index.html'),html);

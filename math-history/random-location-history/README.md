@@ -52,7 +52,9 @@ node math-history/random-location-history/tools/preview.mjs
 
 `http://127.0.0.1:8799/`에서도 `config.js`의 공개 API에 연결해 같은 Google Sheets를 사용합니다. 오프라인 개발에서 브라우저 저장만 사용하려면 `config.js`의 `HISTORY_API_URL`을 비워 주세요. 브라우저 저장은 공유 시트와 동기화되지 않습니다.
 
-공개 HTTP API는 `GET ?api=bootstrap`(조회)와 JSON을 `text/plain`으로 보내는 `POST`(수집)만 받습니다. Google ContentService의 JSON 응답을 사용하며 모든 공개 HTTP 응답에서는 소유자 여부와 관계없이 제외된 기록·관리 권한·시트 주소를 숨깁니다. HTML 파일을 바꾼 경우 GitHub Pages에도 배포하고, 서버 코드 변경은 아래 명령으로 별도로 배포합니다.
+공개 HTTP API는 `GET ?api=bootstrap`(조회), `GET ?api=research&input=…&request=…`(수집)와 `text/plain` JSON `POST`(수집)를 받습니다. 공개 화면은 브라우저에 따라 POST 응답 전달이 실패하는 문제를 피하도록 캐시하지 않는 GET 요청을 사용합니다. 수집 GET은 시트 쓰기와 일일 한도를 소비할 수 있으므로 링크로 노출하지 않고 탐험 버튼에서만 요청합니다. Google ContentService의 JSON 응답을 사용하며 모든 공개 HTTP 응답에서는 소유자 여부와 관계없이 제외된 기록·관리 권한·시트 주소를 숨깁니다. HTML 파일을 바꾼 경우 GitHub Pages에도 배포하고, 서버 코드 변경은 아래 명령으로 별도로 배포합니다.
+
+`config.js`의 데이터 API는 최초부터 익명 접근으로 만든 별도 배포입니다. 관리자 배포와 같은 프로젝트·시트를 사용합니다. 서버를 갱신할 때 공개 API도 갱신합니다.
 
 Apps Script용 파일 생성:
 
@@ -61,6 +63,7 @@ node math-history/random-location-history/tools/build-gas.mjs
 cd math-history/random-location-history/apps-script
 clasp push --force
 clasp redeploy AKfycbxIZQaUgPSE2x5aWQ0PeHhabjbqZiYFCjLFUtwBbMp-TUX9DEVTXSsiI3XIjOQrTOO2 --description "로그인 없는 공개 게임 버전 갱신"
+clasp redeploy AKfycbz5PwPqAFNrSyB5cHEUHYmAez2nW7na4qS99wPk8YOjEKhwglbwqDZ3V33yfSrFiiCCnw --description "공개 데이터 API 갱신"
 ```
 
 다른 계정·시트에 설치하려면 `Code.gs`의 `HISTORY_CONFIG.spreadsheetId`를 설정하고 그 계정으로 별도 Apps Script 프로젝트를 만듭니다. 공개 플레이는 `ANYONE_ANONYMOUS`와 `USER_DEPLOYING` 설정을 사용합니다. 인증 토큰은 저장소에 넣지 않습니다. `.clasp.json`과 생성된 HTML/GS 파일은 Git에서 제외되어 있습니다.

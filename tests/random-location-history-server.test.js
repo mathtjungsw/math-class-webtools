@@ -37,12 +37,15 @@ test('공개 HTTP 조회는 소유자 세션에서도 관리 권한·제외 기�
   assert.equal(output.type,'application/json');assert.equal(result.ok,true);assert.equal(result.data.isOwner,false);assert.equal(result.data.sheetUrl,'');assert.equal(result.data.events.length,0);
   assert.equal(h.api('bootstrap').data.isOwner,true);assert.equal(h.api('bootstrap').data.events.length,1);
   assert.equal(JSON.parse(h.context.doGet({parameter:{api:'research'}}).content).ok,false);
+  for(const api of ['manual','review','export'])assert.equal(JSON.parse(h.context.doGet({parameter:{api,input:JSON.stringify(raw())}}).content).ok,false);
 });
 test('공개 HTTP 수집은 자료를 저장·재사용하고 관리 요청을 거부한다',()=>{
   const h=harness();collection(h);const input={lat:37.666667,lon:32.828056,radiusKm:100};
   const send=body=>JSON.parse(h.context.doPost({postData:{contents:JSON.stringify(body)}}).content);
   const first=send({action:'research',input});assert.equal(first.ok,true,first.error);assert.equal(first.data.isOwner,undefined);assert.equal(first.data.events.length,1);
   assert.equal(send({action:'research',input}).data.reused,true);
+  const getResult=JSON.parse(h.context.doGet({parameter:{api:'research',input:JSON.stringify(input)}}).content);
+  assert.equal(getResult.ok,true);assert.equal(getResult.data.reused,true);
   for(const action of ['manual','review','export','bootstrap'])assert.equal(send({action,input:raw()}).ok,false);
   assert.equal(JSON.parse(h.context.doPost({postData:{contents:'invalid json'}}).content).ok,false);
   assert.equal(h.context.isOwner_(),true);
