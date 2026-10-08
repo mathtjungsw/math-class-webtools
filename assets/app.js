@@ -57,6 +57,7 @@ const RUNTIME_META = {
 };
 
 const SPECIAL_RUNTIME = {
+  "random-location-history": ["browser", "internet"],
   "betting-game": ["browser", "internet"],
   "monopoly-pricing-game": ["browser", "internet"],
   "motion-shot": ["browser", "offline", "camera"],

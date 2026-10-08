@@ -1,0 +1,9 @@
+{
+  "point": {"lat":37.666667,"lon":32.828056},
+  "places": [{"id":"example:catal","name":"차탈회위크","lat":37.666667,"lon":32.828056,"description":"아나톨리아 고원의 신석기·동석기 정착 유적입니다. 동쪽과 서쪽의 두 유적 언덕에는 서로 다른 시기의 거주 흔적이 남아 있습니다.","sourceTitle":"UNESCO 세계유산 설명","sourceUrl":"https://whc.unesco.org/en/list/1405/"}],
+  "events": [
+    {"id":"example:catal-east","placeId":"example:catal","placeName":"차탈회위크 동쪽 언덕","title":"신석기 정착 공동체의 거주 증거","description":"동쪽 언덕에서 기원전 약 7400~6200년의 거주층 18개가 확인됩니다. 주거 공간과 벽화 등은 정착 공동체의 생활을 보여줍니다.","lat":37.666667,"lon":32.828056,"radiusKm":0.4,"startYear":-7399,"endYear":-6199,"precision":"approximate","category":"habitation","status":"reviewed","sourceTitle":"UNESCO · 차탈회위크","sourceUrl":"https://whc.unesco.org/en/list/1405/","scope":"site"},
+    {"id":"example:catal-west","placeId":"example:catal-west","placeName":"차탈회위크 서쪽 언덕","title":"서쪽 언덕의 동석기 거주 흔적","description":"서쪽 언덕에는 기원전 약 6200~5200년의 동석기 거주 흔적이 남아 있습니다. 이 기록의 위치는 서쪽 유적이며, 동쪽 언덕의 같은 지점에 계속 살았다는 뜻은 아닙니다.","lat":37.667,"lon":32.817,"radiusKm":0.3,"startYear":-6199,"endYear":-5199,"precision":"approximate","category":"habitation","status":"reviewed","sourceTitle":"UNESCO · 차탈회위크","sourceUrl":"https://whc.unesco.org/en/list/1405/","scope":"site"},
+    {"id":"example:catal-2012","placeId":"example:catal","placeName":"차탈회위크","title":"UNESCO 세계유산 등재","description":"차탈회위크 신석기 유적이 2012년 UNESCO 세계유산 목록에 등재됩니다.","lat":37.666667,"lon":32.828056,"radiusKm":0.4,"startYear":2012,"endYear":2012,"precision":"year","category":"event","status":"reviewed","sourceTitle":"UNESCO · 등재 연도","sourceUrl":"https://whc.unesco.org/en/list/1405/","scope":"site"}
+  ]
+}
