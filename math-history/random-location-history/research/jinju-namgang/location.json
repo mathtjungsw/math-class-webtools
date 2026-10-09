@@ -1,0 +1,2597 @@
+{
+  "schemaVersion": "jinju-research-2.0",
+  "id": "kr-jinju-namgang",
+  "name": "한반도 진주 남강 유역",
+  "language": "ko",
+  "researchedOn": "2026-10-09",
+  "status": "initial_source_checked_research_pack",
+  "integrationStatus": "ready_for_static_build",
+  "representativePoint": {
+    "placeId": "jinjuseong",
+    "latitude": 35.1897457534,
+    "longitude": 128.0802763856,
+    "display": "북위 35.189746°, 동경 128.080276°",
+    "coordinateRole": "관광정보의 진주성 대표점; 조사 지역 선택용",
+    "sourceIds": [
+      "S01"
+    ],
+    "note": "남강 유역의 중심점이나 선사시대 최초 거주 지점이 아니다. 소수점 자릿수는 측량 정확도를 보증하지 않는다."
+  },
+  "spatialScope": {
+    "description": "남강 본류·지류와 연결된 진주 일대: 내촌리, 상촌리, 대평리, 평거동, 옥봉·수정봉, 진주성. 남강 전체 유역을 망라하지 않는다.",
+    "reuseRule": "좌표의 근접성만으로 다른 유적에 사실을 전용하지 않는다. placeId와 사건의 공간 범위를 함께 확인한다.",
+    "historicBoundariesVerified": false
+  },
+  "timelinePolicy": {
+    "lastPlayableYear": 1950,
+    "endInclusive": true,
+    "appliesToAllLocations": true,
+    "sourcePublicationYearMayExceedEndYear": true,
+    "radiocarbonReferenceYear": 1950,
+    "radiocarbonMethodSourceIds": [
+      "S22"
+    ],
+    "radiocarbonRule": "미보정 방사성탄소 BP 값을 1950에서 단순히 빼서 달력 연도로 바꾸지 않는다. 원 측정값과 보정된 달력 연대를 구분한다.",
+    "recommendedStart": {
+      "year": -3000,
+      "label": "기원전 약 3000년 무렵",
+      "recordId": "JN-002",
+      "isExactFirstHabitationYear": false
+    },
+    "earlierIntroRecordIds": [
+      "JN-001"
+    ],
+    "firstHabitationYear": null,
+    "earliestDatedSettlementInThisPack": "JN-002",
+    "yearEncoding": "기원전 N년 = -N, 서기 N년 = N. 역사 표기에 0년은 없다.",
+    "arithmeticRule": "시간 간격 계산 시 기원전 음수 연도를 year+1로 변환한 연속 축을 사용한다. 화면에는 0년을 표시하지 않는다.",
+    "skipRule": "날짜가 있는 카드만 시간축에 배치한다. 사건이 없는 구간은 이 자료집에 수록된 자료가 없는 구간이라고 표시한다. 사람이나 역사가 없었다고 설명하지 않는다.",
+    "uncertainDateRule": "date.label을 우선 표시한다. displayAnchorYear는 카드 배치용이며 실제 발생연도가 아니다. 시료 범위를 거주 기간으로 채색하지 않는다.",
+    "calendarRule": "음력 월일은 그대로 표기한다. 검증한 양력 환산값 없이 JavaScript 날짜로 바꾸지 않는다.",
+    "endRule": "진행·스킵 모두 1950년에서 종료한다. 마지막 사건이 더 이르더라도 종료 연도를 현재 연도로 늘리지 않는다."
+  },
+  "places": [
+    {
+      "id": "jinjuseong",
+      "name": "진주성",
+      "address": "경상남도 진주시 남강로 626",
+      "coordinate": {
+        "latitude": 35.1897457534,
+        "longitude": 128.0802763856
+      },
+      "sourceIds": [
+        "S01",
+        "S12"
+      ]
+    },
+    {
+      "id": "chokseongnu",
+      "name": "진주성 촉석루",
+      "address": "진주성 안 남강변",
+      "coordinate": null,
+      "sourceIds": [
+        "S24"
+      ],
+      "note": "진주성 안의 개별 건물. 진주성 대표 좌표를 건물의 측량 좌표로 취급하지 않는다."
+    },
+    {
+      "id": "naechonri",
+      "name": "진주 내촌리 유적",
+      "address": "경상남도 진주시 대평면 내촌리 산31·32, 665-12 일대",
+      "coordinate": null,
+      "sourceIds": [
+        "S02"
+      ]
+    },
+    {
+      "id": "pyeonggeodong",
+      "name": "진주 평거동 유적군",
+      "address": "경상남도 진주시 평거동 일대; 조사 지구별 위치 확인 필요",
+      "coordinate": null,
+      "sourceIds": [
+        "S03",
+        "S05"
+      ]
+    },
+    {
+      "id": "sangchonri",
+      "name": "진주 대평면 상촌리 유적",
+      "address": "경상남도 진주시 대평면 상촌리 59·207 일대",
+      "coordinate": null,
+      "sourceIds": [
+        "S04"
+      ]
+    },
+    {
+      "id": "daepyeong_okbang",
+      "name": "대평리 옥방 유적",
+      "address": "경상남도 진주시 대평면 대평리 673 일대",
+      "coordinate": null,
+      "sourceIds": [
+        "S06"
+      ]
+    },
+    {
+      "id": "daepyeong_settlement",
+      "name": "대평리 유적군(어은·옥방 등)",
+      "address": "진주시 대평면 대평리 일대의 여러 조사 구역",
+      "coordinate": null,
+      "sourceIds": [
+        "S06",
+        "S07",
+        "S19"
+      ]
+    },
+    {
+      "id": "sujeongbong_okbong",
+      "name": "수정봉·옥봉 고분군",
+      "address": "경상남도 진주시 옥봉동 일대",
+      "coordinate": null,
+      "sourceIds": [
+        "S09"
+      ]
+    },
+    {
+      "id": "jinju_historic_region",
+      "name": "진주 지역의 역사적 행정·생활권",
+      "address": null,
+      "coordinate": null,
+      "sourceIds": [
+        "S10",
+        "S11",
+        "S21"
+      ],
+      "note": "시대마다 경계가 달라지는 지역 단위. 현재 진주시와 같은 면적으로 가정하지 않는다."
+    },
+    {
+      "address": null,
+      "coordinate": null,
+      "id": "regional_background",
+      "name": "가야 여러 나라와 신라 · 진주 주변의 정치 배경",
+      "note": "대표 좌표에서 직접 발생한 사건이 아니다.",
+      "sourceIds": [
+        "S42"
+      ]
+    },
+    {
+      "address": null,
+      "coordinate": null,
+      "id": "national_background",
+      "name": "한반도·국가 차원의 배경",
+      "note": "지역사 이해를 위한 국가 차원의 사건. 진주 현장 기록과 구별한다.",
+      "sourceIds": [
+        "S37",
+        "S38",
+        "S39"
+      ]
+    },
+    {
+      "address": null,
+      "coordinate": null,
+      "id": "majinri",
+      "name": "진주 마진리 · 마호당 고문서 관련 가문",
+      "sourceIds": [
+        "S25",
+        "S44"
+      ]
+    },
+    {
+      "address": null,
+      "coordinate": null,
+      "id": "jinju_hyanggyo",
+      "name": "진주향교",
+      "sourceIds": [
+        "S25"
+      ]
+    },
+    {
+      "address": null,
+      "coordinate": null,
+      "id": "old_jinju_station",
+      "name": "옛 진주역 차량정비고 · 강남동",
+      "sourceIds": [
+        "S35"
+      ]
+    },
+    {
+      "address": null,
+      "coordinate": null,
+      "id": "jinju_victims",
+      "name": "진주지역 주민 · 명석면과 마산 진전면 등의 희생 장소",
+      "sourceIds": [
+        "S40"
+      ],
+      "note": "주민의 거주지·구금지·희생지는 서로 다르다. 마산 진전면까지 진주시 경계로 표시하지 않는다."
+    }
+  ],
+  "sources": [
+    {
+      "id": "S01",
+      "title": "진주성 - 한국관광공사 관광정보 LOD",
+      "url": "https://data.visitkorea.or.kr/linkedview/126833",
+      "publisher": "한국관광공사",
+      "kind": "official_geographic_metadata",
+      "access": "indexed_official_page_text",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "위도·경도·주소 항목",
+      "notes": "검색에 색인된 공식 페이지의 좌표 확인. 직접 페이지 요청은 503 오류. 관광지 대표점이며 측량점이 아니다."
+    },
+    {
+      "id": "S02",
+      "title": "내촌리유적",
+      "url": "https://portal.nrich.go.kr/kor/archeologyUsrView.do?idx=60&menuIdx=&sk=&st_char=2",
+      "publisher": "국립문화유산연구원 한국고고학전문사전",
+      "kind": "expert_reference",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "소재지·문화층 석기·편년 검토",
+      "authors": [
+        "장용준"
+      ],
+      "notes": "원 발굴보고서를 직접 읽은 것은 아니다. 절대연대에 서로 다른 해석이 소개되어 있다."
+    },
+    {
+      "id": "S03",
+      "title": "Construction Wood Selection of Prehistoric Hunter-Gatherers/Incipient Agriculturalists: An Examination of Carbonised Wood from Chulmun-Period Sites in Korea",
+      "url": "https://journal.kci.go.kr/snu-ioh/archive/articlePdf?artiId=ART002564543",
+      "publisher": "서울대학교 인문학연구원, 인문논총 77(1)",
+      "kind": "research_article",
+      "access": "full_text_relevant_sections_and_visual_table",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "인쇄면 142 표 1, 행 34-35; 143-144쪽 평거동·보정 방법 설명. 표가 있는 PDF 18쪽을 이미지로 확인.",
+      "authors": [
+        "Brian Li",
+        "Minkoo Kim"
+      ],
+      "publicationYear": 2020,
+      "doi": "10.17326/jhsnu.77.1.202002.127",
+      "localEvidence": {
+        "pathRelativeToWorkspace": "tmp/pdfs/jinju-namgang/construction-wood-2020.pdf",
+        "sha256": "222e75fc48a3ea9ee8ec78d2c5c43a1567ac283d7bf268eaac974494b9c922e4"
+      },
+      "notes": "관련 본문과 표를 확인했다. 논문이 인용한 2012년 발굴보고서 전체를 직접 검토한 것은 아니다."
+    },
+    {
+      "id": "S04",
+      "title": "상촌리 유적(晋州 上村里遺蹟)",
+      "url": "https://dka.nrich.go.kr/wiki/index.php/600-1426",
+      "publisher": "국립문화유산연구원 한국고고학사전",
+      "kind": "expert_reference",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "설명: A·B지구 신석기 유구; D지구 가마터 연대; 조사정보",
+      "authors": [
+        "류창환",
+        "송영진"
+      ],
+      "publicationYear": 2019
+    },
+    {
+      "id": "S05",
+      "title": "평거동 유적(晋州 平居洞遺蹟)",
+      "url": "https://dka.nrich.go.kr/wiki/index.php/600-3003",
+      "publisher": "국립문화유산연구원 한국고고학사전",
+      "kind": "expert_reference",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "청동기시대 집자리와 옥 가공 관련 유물",
+      "authors": [
+        "송영진"
+      ],
+      "publicationYear": 2019
+    },
+    {
+      "id": "S06",
+      "title": "대평리 옥방 유적(晋州 大坪里玉房遺蹟)",
+      "url": "https://dka.nrich.go.kr/wiki/index.php/진주대평리옥방유적",
+      "publisher": "국립문화유산연구원 한국고고학사전",
+      "kind": "expert_reference",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "설명: 1997-1999년 조사; 5지구 D2호 집자리 연대; 경작 유구·환호",
+      "authors": [
+        "송영진"
+      ],
+      "publicationYear": 2019
+    },
+    {
+      "id": "S07",
+      "title": "Craft Production and Social Change in Mumun Pottery Period Korea",
+      "url": "https://uhpress.hawaii.edu/asian-perspectives-vol-45-no-2-2006/",
+      "publisher": "University of Hawaiʻi Press, Asian Perspectives 45(2)",
+      "kind": "research_article",
+      "access": "publisher_abstract_only",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "해당 논문 초록: Early Middle Mumun / Late Middle Mumun",
+      "authors": [
+        "Martin T. Bale",
+        "Min-jung Ko"
+      ],
+      "publicationYear": 2006,
+      "notes": "출판사에 공개된 초록을 확인했다. 본문·개별 유구별 자료표까지 검증한 것으로 취급하지 않는다."
+    },
+    {
+      "id": "S08",
+      "title": "대평리 방어취락의 성립과 해체",
+      "url": "https://www.kci.go.kr/kciportal/landing/article.kci?arti_id=ART002851047",
+      "publisher": "한국고고학회, 한국고고학보 2022(2)",
+      "kind": "research_article",
+      "access": "abstract_only",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "초록: 방어취락과 자연재해에 의한 해체 해석",
+      "authors": [
+        "배덕환"
+      ],
+      "publicationYear": 2022,
+      "pages": "317-338",
+      "notes": "해체 원인은 연구자의 해석으로만 사용한다."
+    },
+    {
+      "id": "S09",
+      "title": "진주 옥봉 고분군",
+      "url": "https://encykorea.aks.ac.kr/Article/E0054914",
+      "publisher": "한국학중앙연구원 한국민족문화대백과사전",
+      "kind": "expert_reference",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "내용: 수정봉 2·3호분, 옥봉 7호분의 유물과 편년",
+      "publicationYear": 1995,
+      "updatedOn": "2025-08-12",
+      "notes": "초기 조사 기록의 한계가 있는 유적이다. 유물 양식을 정치적 지배의 확정 증거로 확대하지 않는다."
+    },
+    {
+      "id": "S10",
+      "title": "삼국사기 권34 잡지3 지리1 - 강주",
+      "url": "https://db.history.go.kr/id/sg_034r_0020_0480",
+      "publisher": "국사편찬위원회 한국고대사료DB",
+      "kind": "primary_chronicle_with_modern_annotations",
+      "access": "primary_text_translation_and_annotations",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "본문 및 주석 329-334",
+      "notes": "신라 기사와 현대 지명 비정·고려 연혁에 관한 현대 주석을 구분한다."
+    },
+    {
+      "id": "S11",
+      "title": "고려사 권57 지11 지리2 경상도 - 진주목",
+      "url": "https://db.history.go.kr/id/kr_057r_0010_0010_0080",
+      "publisher": "국사편찬위원회 고려시대사료DB",
+      "kind": "primary_chronicle",
+      "access": "primary_text_translation",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "진주목 연혁",
+      "notes": "983·995·1018년 기록을 사용. 청주 설치 연대는 삼국사기와 차이가 있어 별도 쟁점으로 보존."
+    },
+    {
+      "id": "S12",
+      "title": "진주성 - 국가유산 안내판",
+      "url": "https://heritage.go.kr/heri/cul/culGuidePostDetail.do?ccbaCpno=1333801180000&ccgbGbtype=UNI&ccgbGbtypeNo=1&pageNo=1_5_0_0",
+      "publisher": "국가유산청 국가유산포털",
+      "kind": "official_heritage_interpretation",
+      "access": "indexed_official_page_text",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "국문 설명: 1379년 석성 개축",
+      "notes": "색인된 안내문 본문 확인. 병력·희생자 수 등 다른 문장은 그대로 채택하지 않았다."
+    },
+    {
+      "id": "S13",
+      "title": "특별전 진주성 전투",
+      "url": "https://jinju.museum.go.kr/kor/html/sub02/0202.html?mng_no=40&mode=V",
+      "publisher": "국립진주박물관",
+      "kind": "museum_research_interpretation",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "전시 설명: 1592·1593년 전투와 호남 진입 경로",
+      "publicationYear": 2012
+    },
+    {
+      "id": "S14",
+      "title": "선조실록 권34, 선조 26년 1월 22일 정축 제3기사",
+      "url": "https://sillok.history.go.kr/id/kna_12601022_003",
+      "publisher": "국사편찬위원회 조선왕조실록",
+      "kind": "primary_chronicle",
+      "access": "primary_text_translation",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "김성일이 진주 전투의 공로를 보고한 기사",
+      "documentDate": {
+        "year": 1593,
+        "month": 1,
+        "day": 22,
+        "calendar": "korean_lunisolar"
+      },
+      "notes": "1593년 작성 기사에서 앞선 1592년 전투를 회고한다. 기사 날짜와 전투 날짜를 분리한다."
+    },
+    {
+      "id": "S15",
+      "title": "진주 농민 항쟁 - 임술록(영호민변일기), 영남",
+      "url": "https://contents.history.go.kr/mobile/hm/view.do?levelId=hm_109_0060",
+      "publisher": "국사편찬위원회 우리역사넷",
+      "kind": "primary_excerpt_with_modern_commentary",
+      "access": "excerpt_translation_and_commentary",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "1862년 음력 2월 19일 관련 사료 및 전개 과정 해설",
+      "primaryRecordUrl": "https://db.history.go.kr/id/sa_009_0010_0010_0010",
+      "notes": "일기의 2월 19일을 전체 항쟁의 시작일로 쓰지 않는다."
+    },
+    {
+      "id": "S16",
+      "title": "강달룡(姜達龍), 관리번호 8646 - 독립유공자공훈록",
+      "url": "https://e-gonghun.mpva.go.kr/user/ContribuReportDetail.do?goTocode=20001&mngNo=8646&pageTitle=Report",
+      "publisher": "국가보훈부 공훈전자사료관",
+      "kind": "official_biographical_compilation",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "공훈록: 1919년 3월 18일 진주 시위",
+      "publicationYear": 1987,
+      "notes": "공훈록 3권. 페이지에 연결된 1919년 판결문 원본은 이번 조사에서 직접 검토하지 않았다."
+    },
+    {
+      "id": "S17",
+      "title": "조선형평사 설립 취지문",
+      "url": "https://contents.history.go.kr/front/hm/view.do?levelId=hm_136_0050",
+      "publisher": "국사편찬위원회 우리역사넷",
+      "kind": "primary_newspaper_excerpt_with_modern_commentary",
+      "access": "excerpt_translation_and_commentary",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "조선일보 1923년 4월 30일 기사 수록 취지문; 창립일 해설",
+      "documentDate": {
+        "year": 1923,
+        "month": 4,
+        "day": 30,
+        "calendar": "gregorian"
+      },
+      "notes": "설립일 4월 25일과 신문 발행일 4월 30일을 구분한다."
+    },
+    {
+      "id": "S19",
+      "title": "진주 대평리유적",
+      "url": "https://www.gnu.ac.kr/museum/cm/cntnts/cntntsView.do?cntntsId=4346&mi=8252",
+      "publisher": "경상국립대학교 박물관",
+      "kind": "excavating_institution_summary",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "대표유적 본문: 1996년 이후 수몰 예정지 발굴과 유구"
+    },
+    {
+      "id": "S20",
+      "title": "진주시",
+      "url": "https://encykorea.aks.ac.kr/Article/E0054910",
+      "publisher": "한국학중앙연구원 한국민족문화대백과사전",
+      "kind": "expert_reference",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "역사: 940년 지명 서술 대조 및 1949년 진주시 개칭",
+      "notes": "이 항목의 연혁을 통째로 가져오지 않았다. 940년 개칭 주장은 검토 쟁점으로만 사용. 1949년은 국가기록원 자료와 대조."
+    },
+    {
+      "id": "S21",
+      "title": "세종실록 권150 지리지 경상도 - 진주목",
+      "url": "https://sillok.history.go.kr/id/kda_40006004",
+      "publisher": "국사편찬위원회 조선왕조실록",
+      "kind": "primary_geography",
+      "access": "primary_text_translation",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "연혁: 태조 원년 진양대도호부, 태종 2년 진주목",
+      "notes": "1392·1402년 행정 변화에 사용. 선행 시대 거열성 비정은 이 사료만으로 확정하지 않는다."
+    },
+    {
+      "id": "S22",
+      "title": "Radiocarbon: Preparing your materials",
+      "url": "https://www.cambridge.org/core/journals/radiocarbon/information/author-instructions/preparing-your-materials",
+      "publisher": "Radiocarbon / Cambridge University Press",
+      "kind": "journal_method_guidance",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "연대 보고 지침: BP는 1950년 이전 방사성탄소연대; 보정 연대 표기",
+      "notes": "1950년은 방사성탄소연대의 기준년이다. 게임 종료 연도 선택과 고고학의 시대 구분은 서로 다른 문제다."
+    },
+    {
+      "id": "S23",
+      "title": "기록물 생산기관 변천정보 - 경상남도 진주시",
+      "url": "https://theme.archives.go.kr/next/organ/organBasicInfo.do?code=OG0012679&isProvince=Y&mapInfo=mapno7",
+      "publisher": "국가기록원",
+      "kind": "archival_agency_history",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "기관연혁 및 존립기간: 1949.08.15"
+    },
+    {
+      "id": "S24",
+      "title": "진주 위치기반 관광 서비스 - 제1경 진주성 촉석루 항목",
+      "url": "https://www.jinju.go.kr/here/03630.web?idx=609&name=%EC%84%A0%ED%95%99%EC%82%B0&xposition=35.1912227&yposition=128.09716879999996",
+      "publisher": "진주시",
+      "kind": "municipal_heritage_interpretation",
+      "access": "indexed_official_page_text",
+      "checkedOn": "2026-10-08",
+      "checkedSections": "관광 목록 중 제1경 진주성 촉석루: 1950년 전쟁으로 소실",
+      "notes": "검색 색인의 해당 항목 본문 확인. 직접 요청은 시간초과. URL의 조회 중심 좌표를 촉석루 좌표로 쓰지 않는다."
+    },
+    {
+      "id": "S25",
+      "title": "천년 진주, 진주목 이야기 — 전시 유물 설명",
+      "url": "https://jinju.museum.go.kr/_prog/download/?file_id=e69vsea4qp505j6eerhfogcg66dfd8",
+      "publisher": "국립진주박물관",
+      "kind": "institutional_history",
+      "access": "pdf_relevant_pages_visually_checked",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "PDF 7쪽 향교 수리 장부, 8쪽 정지원 묘지명, 27쪽 노비 계문서. 해당 페이지 전체 이미지 확인.",
+      "publicationYear": 2025,
+      "localEvidence": {
+        "path": "tmp/pdfs/jinju-namgang/jinju-museum-2025-labels.pdf",
+        "sha256": "4F2E80FB629B5C48C465322086F187A5C96A7D9593A237B87D69F5F00C09F5EB"
+      },
+      "notes": "전시 해설을 확인한 수준이며 전시된 고문서 원문 전체를 독자 판독한 것은 아니다."
+    },
+    {
+      "id": "S26",
+      "title": "고려사 권128 열전41 — 정방의",
+      "url": "https://db.history.go.kr/id/kr_128r_0010_0040_0010",
+      "publisher": "국사편찬위원회 고려시대사료DB",
+      "kind": "primary_historical_text",
+      "access": "primary_text_translation",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "1200년 공·사 노비의 봉기와 향리·목관의 갈등에 대한 번역 본문"
+    },
+    {
+      "id": "S27",
+      "title": "진주민란 — 1200년의 저항",
+      "url": "https://encykorea.aks.ac.kr/Article/E0054894",
+      "publisher": "한국학중앙연구원 한국민족문화대백과사전",
+      "kind": "institutional_history",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "발단·경과 및 결과: 1200~1201년 저항의 주체 변화",
+      "authors": [
+        "신안식"
+      ],
+      "publicationYear": 2022
+    },
+    {
+      "id": "S28",
+      "title": "진주시 연혁 — 조선시대 이후",
+      "url": "https://www.jinju.go.kr/00135/01109/01130.web",
+      "publisher": "진주시",
+      "kind": "institutional_history",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "1604년 우병영 이전; 1895년 23부제; 1896년 8월 4일 경상남도 도청 소재지. 다운로드한 HTML 본문 확인."
+    },
+    {
+      "id": "S29",
+      "title": "진주성",
+      "url": "https://encykorea.aks.ac.kr/Article/E0054909",
+      "publisher": "한국학중앙연구원 한국민족문화대백과사전",
+      "kind": "institutional_history",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "역사적 변천·내용: 1377/1380년 축성 서술과 1591년 외성 확장",
+      "notes": "1379년 안내판과 연혁 차이가 있다. 문종 원년의 서기 병기와 전후 군영 직함에도 확인이 필요한 부분이 있어 해당 수치를 전용하지 않았다."
+    },
+    {
+      "id": "S30",
+      "title": "진주상무사: 진주상인 100년의 기록 — 전시 설명패널",
+      "url": "https://jinju.museum.go.kr/convert/preview/1575610397479/index.html",
+      "publisher": "국립진주박물관",
+      "kind": "institutional_history",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "2016-07-27 보도자료의 유물 설명·패널·연표: 1868년 교역권, 1884년 사전, 1899년 조직, 1935년 시장세 운동, 1936년 홍수",
+      "publicationYear": 2016
+    },
+    {
+      "id": "S31",
+      "title": "진주상무사 자료집 발간 — 보부상에서 근대 시장상인으로",
+      "url": "https://jinju.museum.go.kr/convert/preview/1575610372546/index.html",
+      "publisher": "국립진주박물관",
+      "kind": "institutional_history",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "1834년부터의 어과전 천금록; 1885·1902·1936년 회관 기금 기록; 건축 일기 소개",
+      "publicationYear": 2018,
+      "notes": "592쪽 자료집 전체가 아니라 박물관의 자료집 해제·소개를 확인했다."
+    },
+    {
+      "id": "S32",
+      "title": "진주 의기사 — 문화유산 해설문",
+      "url": "https://dh.aks.ac.kr/~heritage/wiki/index.php/진주_의기사",
+      "publisher": "한국학중앙연구원 HeritageWiki",
+      "kind": "institutional_history",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "국문 해설: 1740년 사당 건립. 참고 메모와 공식 해설을 구별함."
+    },
+    {
+      "id": "S33",
+      "title": "경남교육기네스 — 여성교육기관과 공립진주보통학교",
+      "url": "https://archives.gne.go.kr/didabom/cm/cntnts/cntntsView.do?cntntsId=10008&mi=20093",
+      "publisher": "경상남도교육청 경남교육디지털아카이브",
+      "kind": "institutional_history",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "1895년 9월 소학교 개교, 1907년 9월 정숙여학교, 1909년 여자학급. 전국 최초 여부의 비교 주장은 채택하지 않음."
+    },
+    {
+      "id": "S34",
+      "title": "한국 근현대사 사진 모음 — 1920년대 관공서",
+      "url": "https://contents.history.go.kr/mphoto/1920/1920_period03_01.do?lang=ko",
+      "publisher": "국사편찬위원회 우리역사넷",
+      "kind": "institutional_history",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "지방 도청: 1925년 진주에서 부산으로 경남도청 이전과 반대 운동"
+    },
+    {
+      "id": "S35",
+      "title": "진주역 차량정비고",
+      "url": "https://www.heritage.go.kr/heri/cul/culSelectDetail.do?ccbaAsno=02020000&ccbaCpno=4413802020000&ccbaCtcd=38&ccbaKdcd=79",
+      "publisher": "국가유산청 국가유산포털",
+      "kind": "institutional_history",
+      "access": "indexed_official_page_text",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "기본정보: 1925년경, 강남동 차량정비고. 대략의 건립 시기이며 개통일을 뜻하지 않음."
+    },
+    {
+      "id": "S36",
+      "title": "2016 시정백서 — 진주시 연혁",
+      "url": "https://archives.gyeongnam.go.kr/Download.do?key=document&name=%EC%A7%84%EC%A3%BC_2016%EC%8B%9C%EC%A0%95%EB%B0%B1%EC%84%9C.pdf",
+      "publisher": "진주시 · 경상남도기록원",
+      "kind": "institutional_history",
+      "access": "pdf_relevant_pages_visually_checked",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "인쇄면/PDF 32쪽 표 전체 이미지: 1931·1938·1939·1949년 행정 개편",
+      "publicationYear": 2016,
+      "localEvidence": {
+        "path": "tmp/pdfs/jinju-namgang/jinju-whitepaper-2016.pdf",
+        "sha256": "7C4ECFFA64EF2DFD352712B25D593771B47B1FD7018D9608EE2639D40F296E15"
+      },
+      "notes": "PDF 텍스트 추출에 글꼴 깨짐이 있어 원 페이지 이미지를 읽어 확인했다."
+    },
+    {
+      "id": "S37",
+      "title": "해방과 일상",
+      "url": "https://contents.history.go.kr/collection/level.do?levelId=mp_008_0010_0020",
+      "publisher": "국사편찬위원회 우리역사넷",
+      "kind": "institutional_history",
+      "access": "indexed_official_page_text",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "1945년 해방과 미·소의 38선 분할 점령. 한반도 차원의 배경 자료."
+    },
+    {
+      "id": "S38",
+      "title": "대한민국 정부 수립 선포식",
+      "url": "https://contents.history.go.kr/front/ki/printViewPopup.do?levelId=ki_070_20700",
+      "publisher": "국사편찬위원회 우리역사넷 · 국가기록원 사진",
+      "kind": "institutional_history",
+      "access": "indexed_official_page_text",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "1948년 8월 15일 서울 중앙청의 정부 수립 선포식 설명"
+    },
+    {
+      "id": "S39",
+      "title": "6·25 전쟁일 — 대통령 긴급명령 기록",
+      "url": "https://www.pa.go.kr/portal/online_contents/instant_record/instantRecordDetail.do?seq=37",
+      "publisher": "대통령기록관",
+      "kind": "institutional_history",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "1950년 6월 25일 전쟁 발발과 전쟁 초기 긴급명령 관련 설명·목록"
+    },
+    {
+      "id": "S40",
+      "title": "경남 진주 국민보도연맹 및 예비검속 사건(1) — 진실규명 결정",
+      "url": "https://jinsil.go.kr/fnt/nac/selectNoticeDetail.do?bbsId=BBSMSTR_000000000716&nttId=317907",
+      "publisher": "진실·화해를위한과거사정리위원회",
+      "kind": "official_investigation_finding",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "1950년 7월 진주지역 민간인 예비검속·집단 살해 결정요지. 이번 결정의 신원확인 7명과 사건 전체 희생규모를 구별함."
+    },
+    {
+      "id": "S41",
+      "title": "조선 형평사 — 백정의 신분을 해방하라",
+      "url": "https://contents.history.go.kr/mobile/kc/view.do?levelId=kc_o403500",
+      "publisher": "국사편찬위원회 우리역사넷 한국사 연대기",
+      "kind": "institutional_history",
+      "access": "indexed_official_page_text",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "설립 배경·창립과 조직 확대. 4월 24일 서술은 S17의 25일과 다름."
+    },
+    {
+      "id": "S42",
+      "title": "대가야 멸망 — 가야 제국의 마지막 희망 꺼지다",
+      "url": "https://contents.history.go.kr/front/kc/printViewPopup.do?levelId=kc_i100720",
+      "publisher": "국사편찬위원회 우리역사넷 한국사 연대기",
+      "kind": "institutional_history",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "532년 금관가야·562년 대가야의 소멸. 진주 귀속일이 아닌 주변 정치 변화로 사용."
+    },
+    {
+      "id": "S43",
+      "title": "천년 진주, 진주목 이야기 — 특별전 리플릿",
+      "url": "https://jinju.museum.go.kr/_prog/download/?file_id=wtuzfo1mzah630eamge2p47nw8paut",
+      "publisher": "국립진주박물관",
+      "kind": "institutional_history",
+      "access": "indexed_official_page_text",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "전시 서문과 1603년 군영 관련 설명의 검색 색인. 시청 1604년과 대조.",
+      "publicationYear": 2025,
+      "notes": "이 리플릿의 이미지 전면을 재검증한 것이 아니므로 정확한 이전일 확정 자료로 사용하지 않음."
+    },
+    {
+      "id": "S44",
+      "title": "18세기 전답 매매, 도록 그리고 분재를 통한 가산관리 — 1757년 진주 마진리 재령이씨",
+      "url": "https://www.kci.go.kr/kciportal/landing/article.kci?arti_id=ART003005608",
+      "publisher": "동양고전학회 · 동양고전연구 92",
+      "kind": "institutional_history",
+      "access": "abstract_only",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "공개 초록: 분재기·문서도록·매매명문의 대조와 가족 단위 토지 관리",
+      "authors": [
+        "정수환"
+      ],
+      "publicationYear": 2023,
+      "notes": "논문 전문의 표·문서 원본은 확인하지 않았다. 한 가문의 사례를 지역 전체의 상속 관행으로 확대하지 않는다."
+    },
+    {
+      "id": "S45",
+      "title": "1862년 진주농민항쟁 - 단계일기 -",
+      "url": "https://jinju.museum.go.kr/kor/html/sub04/0402.html?GotoPage=2&mode=V&no=1f21c6c07bc70770c3ccebb812b6e346",
+      "publisher": "국립진주박물관",
+      "kind": "institutional_history",
+      "access": "html_relevant_body",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "김인섭의 단계일기와 환곡 제도에 관한 박물관 설명",
+      "publicationYear": 2017,
+      "notes": "일기 전체를 읽은 것이 아니라 해당 전시 소개를 확인했다."
+    },
+    {
+      "id": "S46",
+      "title": "형평 운동 — 교과서 용어 해설",
+      "url": "https://contents.history.go.kr/front/tg/view.do?ganada=&levelId=tg_004_2020&pageUnit=10&treeId=0100",
+      "publisher": "국사편찬위원회 우리역사넷",
+      "kind": "institutional_history",
+      "access": "indexed_official_page_text",
+      "checkedOn": "2026-10-09",
+      "checkedSections": "1923년 학교 입학 차별, 4월 25일 창립대회와 사회단체의 연대"
+    }
+  ],
+  "records": [
+    {
+      "id": "JN-001",
+      "title": "내촌리의 구석기 활동 흔적",
+      "placeId": "naechonri",
+      "date": null,
+      "status": "context_only",
+      "theme": [
+        "생활",
+        "고고학"
+      ],
+      "narrative": "내촌리에서는 구석기 문화층의 석기가 확인되었다. 남강 유역의 인간 활동이 신석기 마을보다 앞섰음을 보여 주지만, 최초 거주 연도는 확정할 수 없다.",
+      "evidence": [
+        {
+          "sourceId": "S02",
+          "locator": "문화층·석기 및 연대 해석"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "원 보고서의 중기 구석기 또는 그 이전 편년과, 화산재·석기 제작기법을 이용한 후기 구석기 가능성이 함께 소개된다.",
+        "사전이 소개한 약 2만 5천 년 전 가능성을 확정 연도나 최초 정착일로 변환하지 않는다. 최신 층위·화산재 연대 재검토가 필요하다."
+      ]
+    },
+    {
+      "id": "JN-002",
+      "title": "평거동의 신석기 마을",
+      "placeId": "pyeonggeodong",
+      "date": {
+        "label": "기원전 약 3000년 무렵",
+        "startYear": -3340,
+        "endYear": -2920,
+        "kind": "calibrated_sample_range",
+        "calendar": "calibrated_BCE",
+        "displayAnchorYear": -3000,
+        "anchorIsExactEventDate": false,
+        "confidenceRangeAsPublished": "95%",
+        "sample": {
+          "feature": "5호 집자리",
+          "material": "목탄",
+          "labId": "SNU12-R022",
+          "radiocarbonAgeBP": 4450,
+          "errorYears": 50,
+          "calibration": "OxCal 4.3 / IntCal13; 원 논문의 보정값"
+        }
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "주거",
+        "고고학"
+      ],
+      "narrative": "평거동에는 신석기시대 움집이 있었다. 연구는 이 집자리들을 기원전 약 3000년 무렵으로 설명한다.",
+      "evidence": [
+        {
+          "sourceId": "S03",
+          "locator": "인쇄면 142 표 1 행 34; 143-144쪽"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "기원전 3340-2920년은 시료의 보정 연대 범위다. 마을의 존속 기간이나 최초 정착 연도가 아니다.",
+        "이 자료집에서 확인한 연대 자료이며, 남강 유역 전체에서 가장 오래된 거주 증거라고 단정하지 않는다."
+      ]
+    },
+    {
+      "id": "JN-003",
+      "title": "상촌리에도 남은 신석기 흔적",
+      "placeId": "sangchonri",
+      "date": null,
+      "status": "context_only",
+      "theme": [
+        "생활",
+        "고고학"
+      ],
+      "narrative": "상촌리 A·B지구에서도 신석기시대 유구가 확인되었다. 평거동 한 지점만으로 유역의 선사 생활을 설명할 수 없음을 보여 준다.",
+      "evidence": [
+        {
+          "sourceId": "S04",
+          "locator": "설명: A·B지구"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "이 카드의 절대연대는 확보하지 않았다. 평거동의 측정값을 상촌리에 옮겨 쓰지 않는다."
+      ]
+    },
+    {
+      "id": "JN-004",
+      "title": "옥방의 이른 청동기 집자리",
+      "placeId": "daepyeong_okbang",
+      "date": {
+        "label": "기원전 2천년기 중·후반의 집자리",
+        "startYear": -1620,
+        "endYear": -1310,
+        "kind": "multiple_calibrated_sample_envelope",
+        "calendar": "calibrated_BCE",
+        "displayAnchorYear": -1500,
+        "anchorIsExactEventDate": false,
+        "confidenceRangeAsPublished": null,
+        "samples": [
+          {
+            "feature": "옥방 5지구 D2호 집자리",
+            "radiocarbonAgeBP": 3180,
+            "errorYears": 50,
+            "startYear": -1590,
+            "endYear": -1310
+          },
+          {
+            "feature": "옥방 5지구 D2호 집자리",
+            "radiocarbonAgeBP": 3230,
+            "errorYears": 50,
+            "startYear": -1620,
+            "endYear": -1400
+          }
+        ]
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "주거",
+        "고고학"
+      ],
+      "narrative": "대평리 옥방의 이른 청동기 집자리에는 화덕과 기둥 구멍, 저장 구덩이가 남았다. D2호의 두 탄소연대 측정값은 기원전 2천년기 중·후반의 생활을 살피는 근거가 된다.",
+      "evidence": [
+        {
+          "sourceId": "S06",
+          "locator": "설명: 옥방 5지구 D2호 및 두 보정 연대"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "외곽 범위는 두 시료 범위를 묶은 검색용 값이며 하나의 통계적 신뢰구간이 아니다.",
+        "사전 본문에 보정 곡선·확률 수준·실험실 번호가 명시되지 않아 해당 값은 추가하지 않았다."
+      ]
+    },
+    {
+      "id": "JN-005",
+      "title": "상촌리의 토기 가마",
+      "placeId": "sangchonri",
+      "date": {
+        "label": "기원전 1410-1120년 범위의 가마 시료",
+        "startYear": -1410,
+        "endYear": -1120,
+        "kind": "calibrated_sample_range",
+        "calendar": "calibrated_BCE",
+        "displayAnchorYear": -1250,
+        "anchorIsExactEventDate": false,
+        "confidenceRangeAsPublished": null,
+        "sample": {
+          "feature": "D지구 B구역 2호 가마터",
+          "radiocarbonAgeBP": 3030,
+          "errorYears": 50,
+          "labId": null
+        }
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "생산",
+        "고고학"
+      ],
+      "narrative": "상촌리에서는 토기 가마와 석기·그물추 제작 관련 유구가 조사되었다. 2호 가마터의 연대 자료는 이곳의 생산 활동을 살피는 단서다.",
+      "evidence": [
+        {
+          "sourceId": "S04",
+          "locator": "D지구 B구역 생산 유구 및 2호 가마 보정 연대"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "해당 가마의 시료 연대를 모든 제작시설의 운영 기간으로 확대하지 않는다.",
+        "보정 곡선과 확률 수준은 확인 자료에 명시되지 않았다."
+      ]
+    },
+    {
+      "id": "JN-006",
+      "title": "평거동의 옥 가공 흔적",
+      "placeId": "pyeonggeodong",
+      "date": null,
+      "status": "context_only",
+      "theme": [
+        "생산",
+        "교류"
+      ],
+      "narrative": "평거동 청동기 유적에서는 옥과 가공 관련 도구가 확인되었다. 유역의 생활에는 농경 외에 장신구 제작 같은 활동도 있었다.",
+      "evidence": [
+        {
+          "sourceId": "S05",
+          "locator": "설명: 청동기시대 전기 옥 제작 관련 자료"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "대평리 논문의 단계별 연대를 평거동 개별 유구의 연대로 대체하지 않는다."
+      ]
+    },
+    {
+      "id": "JN-007",
+      "title": "대평리의 농경과 공예",
+      "placeId": "daepyeong_settlement",
+      "date": {
+        "label": "기원전 850-700년 무렵: 해당 연구의 단계 구분",
+        "startYear": -850,
+        "endYear": -700,
+        "kind": "research_phase",
+        "calendar": "historical_BCE",
+        "displayAnchorYear": -800,
+        "anchorIsExactEventDate": false
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "농경",
+        "생산"
+      ],
+      "narrative": "대평리에서는 집터와 경작 흔적이 조사되었다. 연구자들은 이 시기 농경과 옥 장신구 등의 전문 생산이 함께 발전했다고 해석한다.",
+      "evidence": [
+        {
+          "sourceId": "S19",
+          "locator": "발굴로 확인한 집터·농경지"
+        },
+        {
+          "sourceId": "S07",
+          "locator": "초록: Early Middle Mumun 850-700 BC"
+        }
+      ],
+      "interpretations": [
+        {
+          "text": "농경의 집약화와 전문 공예 생산의 관계는 Bale·Ko의 연구 해석이다.",
+          "sourceId": "S07"
+        }
+      ],
+      "limits": [
+        "단계 연대는 2006년 논문의 편년을 따른다. 초록 확인 범위를 넘어 세부 생산량·거래망을 만들지 않는다.",
+        "밭 유구를 곧바로 관개 논의 증거라고 설명하지 않는다."
+      ]
+    },
+    {
+      "id": "JN-008",
+      "title": "대평리의 사회적 차이를 읽는 연구",
+      "placeId": "daepyeong_settlement",
+      "date": {
+        "label": "기원전 700-550년 무렵: 해당 연구의 단계 구분",
+        "startYear": -700,
+        "endYear": -550,
+        "kind": "research_phase",
+        "calendar": "historical_BCE",
+        "displayAnchorYear": -600,
+        "anchorIsExactEventDate": false
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "사회",
+        "역사해석"
+      ],
+      "narrative": "공예품의 생산과 분배는 당시 사회를 연구하는 자료다. Bale·Ko는 이 단계 대평리에서 사회적 차이가 커지고 지도층이 공예품을 권력 형성에 활용했다고 해석한다.",
+      "evidence": [
+        {
+          "sourceId": "S07",
+          "locator": "초록: Late Middle Mumun 700-550 BC"
+        }
+      ],
+      "interpretations": [
+        {
+          "text": "지도층의 권력 형성 방식에 관한 가설이며, 직접 기록된 제도나 왕의 존재를 뜻하지 않는다.",
+          "sourceId": "S07"
+        }
+      ],
+      "limits": [
+        "실재가 확인되지 않은 왕국명·지도자 이름·조세 제도를 추가하지 않는다."
+      ]
+    },
+    {
+      "id": "JN-009",
+      "title": "대평리 마을의 변화와 해체를 둘러싼 연구",
+      "placeId": "daepyeong_settlement",
+      "date": null,
+      "status": "context_only",
+      "theme": [
+        "환경",
+        "역사해석"
+      ],
+      "narrative": "대평리의 환호와 목책은 취락의 방어를 연구하는 자료다. 취락 해체를 자연재해와 관련짓는 연구가 있으나, 원인을 하나로 확정할 수는 없다.",
+      "evidence": [
+        {
+          "sourceId": "S06",
+          "locator": "환호·목책"
+        },
+        {
+          "sourceId": "S08",
+          "locator": "초록: 취락의 해체 해석"
+        }
+      ],
+      "interpretations": [
+        {
+          "text": "자연재해와 취락 해체의 관계는 배덕환(2022)의 해석이다.",
+          "sourceId": "S08"
+        }
+      ],
+      "limits": [
+        "정확한 멸망 연도·특정 전쟁·주민 전체의 이주 목적지를 생성하지 않는다."
+      ]
+    },
+    {
+      "id": "JN-010",
+      "title": "수정봉·옥봉 고분과 가야시대 문화",
+      "placeId": "sujeongbong_okbong",
+      "date": {
+        "label": "6세기 전반-중엽으로 추정",
+        "startYear": 501,
+        "endYear": 600,
+        "kind": "century_index_with_phase",
+        "calendar": "year_only",
+        "phase": "전반-중엽",
+        "displayAnchorYear": 550,
+        "anchorIsExactEventDate": false
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "문화",
+        "교류"
+      ],
+      "narrative": "수정봉·옥봉 고분의 토기와 말갖춤 등은 당시 지역 사회와 교류를 살피는 자료다. 토기 양식에는 대가야 및 백제와 관련된 요소가 보인다.",
+      "evidence": [
+        {
+          "sourceId": "S09",
+          "locator": "내용: 2·3·7호분 유물 및 토기 양식 편년"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "501-600은 세기 검색 범위다. 실제 전시 연대는 반드시 6세기 전반-중엽으로 표시한다.",
+        "유물의 유사성만으로 백제나 대가야의 확정 국경을 그리지 않는다."
+      ]
+    },
+    {
+      "id": "JN-011",
+      "title": "청주 설치",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "685년",
+        "startYear": 685,
+        "endYear": 685,
+        "kind": "recorded_year",
+        "calendar": "year_only"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "행정"
+      ],
+      "narrative": "삼국사기는 신문왕 5년에 거타주를 나누어 청주를 설치했다고 기록한다. 현대 주석은 청주를 오늘날 진주에 해당하는 지역으로 설명한다.",
+      "evidence": [
+        {
+          "sourceId": "S10",
+          "locator": "본문 및 주석 331-333"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "고려사에는 684년으로 기록되어 있다. 이 카드의 연도는 삼국사기의 연대와 본기 대조 주석을 따른다.",
+        "거타·거열을 오늘날 진주의 별칭으로 단순 치환하지 않는다."
+      ]
+    },
+    {
+      "id": "JN-012",
+      "title": "청주에서 강주로",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "757년",
+        "startYear": 757,
+        "endYear": 757,
+        "kind": "recorded_year",
+        "calendar": "year_only"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "행정",
+        "지명"
+      ],
+      "narrative": "경덕왕 때 청주의 이름을 강주로 바꾸었다. 이 변화는 신라의 지방 행정과 지명 개편을 보여 준다.",
+      "evidence": [
+        {
+          "sourceId": "S10",
+          "locator": "본문 및 주석 329"
+        }
+      ],
+      "interpretations": [],
+      "limits": []
+    },
+    {
+      "id": "JN-013",
+      "title": "고려의 12목에 포함",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "983년",
+        "startYear": 983,
+        "endYear": 983,
+        "kind": "recorded_year",
+        "calendar": "year_only"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "행정"
+      ],
+      "narrative": "고려사는 성종 2년에 설치한 12목 가운데 이 지역이 포함되었다고 기록한다.",
+      "evidence": [
+        {
+          "sourceId": "S11",
+          "locator": "진주목 연혁: 성종 2년"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "이때의 관할 구역을 현재 진주시 경계와 동일하게 그리지 않는다."
+      ]
+    },
+    {
+      "id": "JN-014",
+      "title": "진주 정해군이라는 기록",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "995년",
+        "startYear": 995,
+        "endYear": 995,
+        "kind": "recorded_year",
+        "calendar": "year_only"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "행정",
+        "지명"
+      ],
+      "narrative": "고려사는 성종 14년의 지방제도 개편에서 진주 정해군이라는 이름을 기록한다.",
+      "evidence": [
+        {
+          "sourceId": "S11",
+          "locator": "진주목 연혁: 성종 14년"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "940년부터 진주로 불렀다는 별도 서술과 구분한다. 이 카드는 995년 사료의 명칭 확인을 뜻하며 최초 사용 시점 전체를 확정하지 않는다."
+      ]
+    },
+    {
+      "id": "JN-015",
+      "title": "8목 가운데 하나가 되다",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1018년",
+        "startYear": 1018,
+        "endYear": 1018,
+        "kind": "recorded_year",
+        "calendar": "year_only"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "행정"
+      ],
+      "narrative": "현종 9년에는 목으로 정비되어 고려의 8목 가운데 하나가 되었다. 진주는 주변 지역을 관할하는 행정 중심지였다.",
+      "evidence": [
+        {
+          "sourceId": "S11",
+          "locator": "진주목 연혁: 현종 9년 및 속군·속현"
+        }
+      ],
+      "interpretations": [],
+      "limits": []
+    },
+    {
+      "id": "JN-016",
+      "title": "고려 말 진주성을 고쳐 쌓다",
+      "placeId": "jinjuseong",
+      "date": {
+        "label": "1377~1380년 무렵 · 축성 연혁에 이견",
+        "startYear": 1377,
+        "endYear": 1380,
+        "kind": "source_disagreement",
+        "calendar": "korean_lunisolar",
+        "displayAnchorYear": 1379,
+        "anchorIsExactEventDate": false
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "방어",
+        "건축"
+      ],
+      "narrative": "고려 말 왜구의 침입에 대응해 진주성을 고쳐 쌓았다. 국가유산 안내판은 1379년을, 백과사전은 1377년과 1380년의 수축 과정을 서술한다.",
+      "evidence": [
+        {
+          "sourceId": "S12",
+          "locator": "국문 설명: 우왕 5년 석성 개축"
+        },
+        {
+          "sourceId": "S29",
+          "locator": "역사적 변천의 1377·1380년 서술"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "1379년을 진주성이 처음 생긴 해로 설명하지 않는다.",
+        "1379년 하나를 성곽 전체의 확정 완공일로 표시하지 않는다."
+      ]
+    },
+    {
+      "id": "JN-017",
+      "title": "진양대도호부가 되다",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1392년",
+        "startYear": 1392,
+        "endYear": 1392,
+        "kind": "recorded_year",
+        "calendar": "year_only"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "행정",
+        "지명"
+      ],
+      "narrative": "조선 태조 원년, 현비 강씨의 내향이라는 이유로 진양대도호부로 승격되었다고 세종실록 지리지가 기록한다.",
+      "evidence": [
+        {
+          "sourceId": "S21",
+          "locator": "연혁: 본조 태조 원년"
+        }
+      ],
+      "interpretations": [],
+      "limits": []
+    },
+    {
+      "id": "JN-018",
+      "title": "다시 진주목으로",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1402년",
+        "startYear": 1402,
+        "endYear": 1402,
+        "kind": "recorded_year",
+        "calendar": "year_only"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "행정",
+        "지명"
+      ],
+      "narrative": "태종 2년에는 다시 진주목으로 바뀌었다. 같은 지역도 시대에 따라 행정 단위와 이름이 달라졌다.",
+      "evidence": [
+        {
+          "sourceId": "S21",
+          "locator": "연혁: 태종 2년"
+        }
+      ],
+      "interpretations": [],
+      "limits": []
+    },
+    {
+      "id": "JN-019",
+      "title": "첫 번째 진주성 전투",
+      "placeId": "jinjuseong",
+      "date": {
+        "label": "1592년 음력 10월",
+        "startYear": 1592,
+        "endYear": 1592,
+        "kind": "recorded_year",
+        "calendar": "korean_lunisolar",
+        "month": 10,
+        "day": null
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "전쟁",
+        "지역관계"
+      ],
+      "narrative": "임진왜란 중 김시민이 지휘한 수비군과 성민, 주변 지원군이 진주성을 지켰다. 진주성은 호남으로 향하는 길목에 있었다.",
+      "evidence": [
+        {
+          "sourceId": "S13",
+          "locator": "전시 설명: 제1차 진주성 전투"
+        },
+        {
+          "sourceId": "S14",
+          "locator": "1592년 전투의 공로를 회고한 보고"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "음력 10월을 양력 10월 날짜로 그대로 변환하지 않는다.",
+        "1593년 실록 기사 작성일을 전투 발생일로 쓰지 않는다.",
+        "자료마다 달라지는 병력 수는 확정 수치로 표시하지 않는다."
+      ]
+    },
+    {
+      "id": "JN-020",
+      "title": "두 번째 진주성 전투와 함락",
+      "placeId": "jinjuseong",
+      "date": {
+        "label": "1593년 음력 6월",
+        "startYear": 1593,
+        "endYear": 1593,
+        "kind": "recorded_year",
+        "calendar": "korean_lunisolar",
+        "month": 6,
+        "day": null
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "전쟁",
+        "주민의 삶"
+      ],
+      "narrative": "일본군이 다시 진주성을 공격해 함락했다. 성을 지키던 군인과 주민들이 큰 피해를 입었다.",
+      "evidence": [
+        {
+          "sourceId": "S13",
+          "locator": "전시 설명: 제2차 진주성 전투"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "희생자 수와 전투 기간에 관한 서로 다른 서술을 하나의 정밀 수치로 고정하지 않는다.",
+        "전승 속 대사나 재현 영상 대본을 당대의 실제 발언으로 인용하지 않는다."
+      ]
+    },
+    {
+      "id": "JN-021",
+      "title": "진주 농민 항쟁",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1862년 음력 2월",
+        "startYear": 1862,
+        "endYear": 1862,
+        "kind": "recorded_year",
+        "calendar": "korean_lunisolar",
+        "month": 2,
+        "day": null
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "사회",
+        "경제"
+      ],
+      "narrative": "부당한 세금과 환곡 운영의 폐단에 저항하는 농민 항쟁이 일어났다. 임술록에는 진주 읍내의 항의와 충돌이 기록되어 있다.",
+      "evidence": [
+        {
+          "sourceId": "S15",
+          "locator": "임술록 발췌 및 원인·전개 해설"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "2월 19일 기사 한 건을 전체 항쟁의 시작일로 삼지 않는다.",
+        "관의 보고에 담긴 평가와 참여자들의 요구를 구분해 읽는다."
+      ]
+    },
+    {
+      "id": "JN-022",
+      "title": "진주의 독립 만세 시위",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1919년 3월 18일",
+        "startYear": 1919,
+        "endYear": 1919,
+        "kind": "recorded_year",
+        "calendar": "gregorian",
+        "month": 3,
+        "day": 18
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "독립운동",
+        "사회"
+      ],
+      "narrative": "진주에서 독립을 요구하는 만세 시위가 전개되었다. 공훈록은 강달룡과 이강우·김재화·강상호 등의 참여를 기록한다.",
+      "evidence": [
+        {
+          "sourceId": "S16",
+          "locator": "공훈록 본문: 1919년 3월 18일"
+        }
+      ],
+      "interpretations": [],
+      "limits": []
+    },
+    {
+      "id": "JN-023",
+      "title": "형평사 창립과 차별 철폐 운동",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1923년 4월 · 창립일은 출처별 24/25일",
+        "startYear": 1923,
+        "endYear": 1923,
+        "kind": "recorded_year",
+        "calendar": "gregorian",
+        "month": 4,
+        "day": null
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "인권",
+        "교육",
+        "사회"
+      ],
+      "narrative": "진주에서 형평사가 창립되었다. 백정에 대한 사회적 차별을 없애고 교육과 동등한 대우를 보장하자는 뜻을 밝혔다.",
+      "evidence": [
+        {
+          "sourceId": "S17",
+          "locator": "신문에 실린 설립 취지문 및 창립일 해설"
+        },
+        {
+          "sourceId": "S41",
+          "locator": "창립대회 4월 24일 서술"
+        },
+        {
+          "sourceId": "S46",
+          "locator": "창립대회 4월 25일 서술"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "4월 30일은 취지문을 실은 신문의 발행일이다. 창립일과 구분한다.",
+        "S17·S46의 4월 25일과 S41의 4월 24일이 달라 화면에는 월까지만 확정하여 표시한다."
+      ]
+    },
+    {
+      "id": "JN-024",
+      "title": "진주시로의 행정 개편",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1949년 8월 15일",
+        "startYear": 1949,
+        "endYear": 1949,
+        "kind": "recorded_year",
+        "calendar": "gregorian",
+        "month": 8,
+        "day": 15
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "행정"
+      ],
+      "narrative": "진주부가 진주시로 바뀌었다. 국가기록원 기관 연혁은 진주시의 설치일을 1949년 8월 15일로 기록한다.",
+      "evidence": [
+        {
+          "sourceId": "S23",
+          "locator": "기관연혁 및 존립기간"
+        },
+        {
+          "sourceId": "S20",
+          "locator": "역사: 1949년 진주부에서 진주시로 개칭"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "진주라는 정착지나 지역의 역사가 이때 처음 시작되었다는 뜻이 아니다. 당시의 시역은 현재의 경계와 다르다."
+      ]
+    },
+    {
+      "id": "JN-025",
+      "title": "한국전쟁과 촉석루 소실",
+      "placeId": "chokseongnu",
+      "date": {
+        "label": "1950년",
+        "startYear": 1950,
+        "endYear": 1950,
+        "kind": "recorded_year",
+        "calendar": "gregorian",
+        "displayAnchorMonth": 12,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "전쟁 발발 이후의 이야기로 읽도록 1950년 마지막에 배치한다. 12월에 소실되었다는 뜻이 아니다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "전쟁",
+        "문화유산"
+      ],
+      "narrative": "한국전쟁 중 진주성의 촉석루가 불탔다. 남강변 문화유산에도 전쟁의 피해가 남았다.",
+      "evidence": [
+        {
+          "sourceId": "S24",
+          "locator": "제1경 진주성 촉석루 항목: 1950년 소실"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "확인한 설명의 정밀도에 맞춰 연도만 표시한다. 소실 월일·구체적인 공격 주체는 추가 사료 대조 없이 확정하지 않는다.",
+        "게임은 1950년에 종료한다. 이후 복구 사건을 시간축에 넣지 않는다.",
+        "전쟁 발발 이후의 이야기로 읽도록 1950년 마지막에 배치한다. 12월에 소실되었다는 뜻이 아니다."
+      ]
+    },
+    {
+      "id": "JN-026",
+      "title": "가야 여러 나라를 둘러싼 정치 질서의 변화",
+      "placeId": "regional_background",
+      "date": {
+        "label": "562년",
+        "startYear": 562,
+        "endYear": 562,
+        "kind": "recorded_year",
+        "calendar": "korean_lunisolar"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "국가",
+        "주변관계"
+      ],
+      "narrative": "562년 대가야가 신라에 멸망했다. 진주의 고분 문화를 이해할 주변 지역의 정치 배경이며, 이 해를 진주 전체가 신라에 편입된 정확한 날짜로 확정하지는 않는다.",
+      "evidence": [
+        {
+          "sourceId": "S42",
+          "locator": "대가야 멸망 설명"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "사건의 직접 장소는 대가야이다. 진주 고분의 유물 양식과 영토 경계는 일치한다고 가정할 수 없다."
+      ],
+      "scope": "regional_context"
+    },
+    {
+      "id": "JN-027",
+      "title": "진주 사람의 개경 진출을 전하는 묘지명",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1125년",
+        "startYear": 1125,
+        "endYear": 1125,
+        "kind": "recorded_year",
+        "calendar": "korean_lunisolar"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "사람",
+        "교육"
+      ],
+      "narrative": "정지원의 묘지명에는 진주 출신인 그가 1125년 과거에 합격한 이력이 남아 있다. 지방 출신 인물이 중앙 관료가 되는 경로를 보여 준다.",
+      "evidence": [
+        {
+          "sourceId": "S25",
+          "locator": "PDF 8쪽 정지원 묘지명"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "묘지명 제작은 1149년이다. 1125년은 묘지명이 전하는 합격 연도이며, 진주에서 시험을 치렀다는 뜻이 아니다."
+      ]
+    },
+    {
+      "id": "JN-028",
+      "title": "공·사 노비의 봉기와 향리의 폭력",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1200년",
+        "startYear": 1200,
+        "endYear": 1200,
+        "kind": "recorded_year",
+        "calendar": "korean_lunisolar"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "신분",
+        "저항"
+      ],
+      "narrative": "『고려사』는 진주의 공·사 노비가 봉기하여 향리의 집을 불태웠다고 기록한다. 이후 정방의 세력과 지방관·주민의 대립으로 갈등 양상이 바뀌었다.",
+      "evidence": [
+        {
+          "sourceId": "S26",
+          "locator": "1200년 봉기와 정방의 관련 번역 본문"
+        },
+        {
+          "sourceId": "S27",
+          "locator": "경과 및 결과"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "노비의 봉기와 정방의의 권력 장악을 같은 목적의 단일 운동으로 설명하지 않는다. 사료의 대량 희생 수치는 확정 통계로 사용하지 않는다."
+      ]
+    },
+    {
+      "id": "JN-029",
+      "title": "주민들이 정방의 세력을 무너뜨리다",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1201년",
+        "startYear": 1201,
+        "endYear": 1201,
+        "kind": "recorded_year",
+        "calendar": "korean_lunisolar"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "사람",
+        "저항"
+      ],
+      "narrative": "진주 주민들은 정방의에게 맞섰고, 1201년 그가 죽으면서 일당이 흩어졌다. 중앙의 조치만으로 끝난 사건이 아니라 지역 주민들의 대응이 중요했던 충돌이다.",
+      "evidence": [
+        {
+          "sourceId": "S27",
+          "locator": "경과 및 결과 마지막 단락"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "1862년 진주 농민 항쟁과는 시대·신분제·참여 주체가 다른 사건이다."
+      ]
+    },
+    {
+      "id": "JN-030",
+      "title": "지리지에 담긴 논밭·가마·역과 봉수",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "15세기 전반의 상황을 전하는 지리지",
+        "startYear": 1401,
+        "endYear": 1454,
+        "kind": "period_context",
+        "calendar": "historical_period",
+        "displayAnchorYear": 1450,
+        "anchorIsExactEventDate": false
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "생업",
+        "교통",
+        "국가"
+      ],
+      "narrative": "『세종실록지리지』의 진주목 항목에는 경작지와 생산물, 가마, 역과 봉수가 함께 기록되어 있다. 농사와 수공업, 공물과 교통이 연결된 15세기 지역의 모습을 보여 준다.",
+      "evidence": [
+        {
+          "sourceId": "S21",
+          "locator": "진주목의 토산·토공·역·봉수 항목"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "1450년은 이 시대 해설의 배치용 시점이다. 모든 수치가 그 해에 동시에 조사된 것으로 처리하지 않는다. 역사적 진주목의 범위는 현재 진주시와 다르다."
+      ]
+    },
+    {
+      "id": "JN-031",
+      "title": "전쟁 직전 진주성의 외성을 넓히다",
+      "placeId": "jinjuseong",
+      "date": {
+        "label": "1591년",
+        "startYear": 1591,
+        "endYear": 1591,
+        "kind": "recorded_year",
+        "calendar": "korean_lunisolar"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "도시",
+        "방어"
+      ],
+      "narrative": "김수는 진주성의 동쪽을 넓혀 외성을 두었다. 이듬해 전투가 벌어질 성곽도 이전부터 고쳐 쌓아 온 공간이었다.",
+      "evidence": [
+        {
+          "sourceId": "S29",
+          "locator": "내용: 선조 24년 외성 확장"
+        }
+      ],
+      "interpretations": [],
+      "limits": []
+    },
+    {
+      "id": "JN-032",
+      "title": "전쟁 뒤 경상우병영이 자리 잡다",
+      "placeId": "jinjuseong",
+      "date": {
+        "label": "1603~1604년 무렵 · 출처별 연도 차이",
+        "startYear": 1603,
+        "endYear": 1604,
+        "displayAnchorYear": 1604,
+        "anchorIsExactEventDate": false,
+        "kind": "source_disagreement",
+        "calendar": "korean_lunisolar"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "전후복구",
+        "국가"
+      ],
+      "narrative": "전쟁 뒤 진주성에는 경상우병영이 자리 잡았다. 진주는 고을 행정과 넓은 지역의 군사 지휘가 만나는 거점이 되었다.",
+      "evidence": [
+        {
+          "sourceId": "S28",
+          "locator": "1604년 이전 서술"
+        },
+        {
+          "sourceId": "S43",
+          "locator": "1603년 군영 설명 색인"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "시청은 1604년, 박물관 리플릿 설명은 1603년을 제시한다. 이전 과정의 원 사료를 대조하기 전에는 하루의 확정 사건으로 만들지 않는다."
+      ]
+    },
+    {
+      "id": "JN-033",
+      "title": "논개를 기리는 의기사를 세우다",
+      "placeId": "jinjuseong",
+      "date": {
+        "label": "1740년",
+        "startYear": 1740,
+        "endYear": 1740,
+        "kind": "recorded_year",
+        "calendar": "korean_lunisolar"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "기억",
+        "문화"
+      ],
+      "narrative": "1740년 남덕하가 의기사를 세웠다. 전쟁의 기억이 후대의 사당과 제사를 통해 지역의 역사로 자리 잡는 과정을 보여 준다.",
+      "evidence": [
+        {
+          "sourceId": "S32",
+          "locator": "국문 해설의 창건 연도"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "사당의 건립 기록과 1593년 논개의 행동에 관한 전승의 세부 내용은 구분한다. 현재의 건물을 1740년 건물 그대로로 설명하지 않는다."
+      ]
+    },
+    {
+      "id": "JN-034",
+      "title": "마진리 한 가문의 토지와 상속",
+      "placeId": "majinri",
+      "date": {
+        "label": "1757년",
+        "startYear": 1757,
+        "endYear": 1757,
+        "kind": "recorded_year",
+        "calendar": "korean_lunisolar"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "생업",
+        "재산",
+        "가족"
+      ],
+      "narrative": "마진리 재령이씨 가문의 1757년 분재 자료를 연구한 논문은 토지 매매·장부 관리·상속이 연결된 모습을 분석한다. 한 가문을 통해 지역 경제를 구체적으로 살필 수 있는 사례다.",
+      "evidence": [
+        {
+          "sourceId": "S44",
+          "locator": "공개 초록의 분석 대상과 결론"
+        }
+      ],
+      "interpretations": [
+        {
+          "text": "정수환은 여러 종류의 문서를 대조해 가족 단위의 재산 관리와 분배를 해석했다.",
+          "sourceId": "S44"
+        }
+      ],
+      "limits": [
+        "공개 초록을 확인했다. 진주 모든 가구의 재산이나 상속 방식으로 일반화하지 않는다."
+      ]
+    },
+    {
+      "id": "JN-035",
+      "title": "노비와 평민이 함께한 계의 기록",
+      "placeId": "majinri",
+      "date": {
+        "label": "1774년",
+        "startYear": 1774,
+        "endYear": 1774,
+        "kind": "recorded_year",
+        "calendar": "korean_lunisolar"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "신분",
+        "공동체"
+      ],
+      "narrative": "마호당 고문서에 포함된 1774년 계문서는 노비와 평민이 함께 모임에 참여한 사례를 전한다. 신분의 제약 속에서도 사람들이 관계를 맺었던 흔적이다.",
+      "evidence": [
+        {
+          "sourceId": "S25",
+          "locator": "PDF 27쪽 노비 계문서"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "박물관의 문서 해설에 근거한다. 이 사례가 노비제 소멸이나 구성원의 완전한 평등을 뜻하지는 않는다."
+      ]
+    },
+    {
+      "id": "JN-036",
+      "title": "향교를 수리한 돈과 노동",
+      "placeId": "jinju_hyanggyo",
+      "date": {
+        "label": "1832년",
+        "startYear": 1832,
+        "endYear": 1832,
+        "kind": "recorded_year",
+        "calendar": "korean_lunisolar"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "교육",
+        "노동",
+        "공동체"
+      ],
+      "narrative": "향교 수리 장부에는 주민에게서 모은 재물과 공사비 지출이 남아 있다. 교육시설은 비용을 낸 사람과 실제로 일한 장인들의 노동으로 유지되었다.",
+      "evidence": [
+        {
+          "sourceId": "S25",
+          "locator": "PDF 7쪽 진주향교 수리시 물재집수기"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "해당 수리 사업의 사례이다. 출연·노동 참여와 향교 입학 자격을 동일하게 취급하지 않는다."
+      ]
+    },
+    {
+      "id": "JN-037",
+      "title": "장사하는 사람들의 규칙과 명단",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1834년",
+        "startYear": 1834,
+        "endYear": 1834,
+        "kind": "recorded_year",
+        "calendar": "korean_lunisolar"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "상업",
+        "공동체"
+      ],
+      "narrative": "『어과전 천금록』에는 1834년부터의 상인 임원 명단과 조직의 규칙이 남아 있다. 물건만 아니라 거래를 지탱하는 조직도 지역 시장의 역사였다.",
+      "evidence": [
+        {
+          "sourceId": "S31",
+          "locator": "1부 자료 소개와 어과전 천금록 설명"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "기록이 시작되는 해를 진주 시장이나 상업의 최초 발생년으로 단정하지 않는다."
+      ]
+    },
+    {
+      "id": "JN-038",
+      "title": "사천·단성의 장터로 이어진 상인 조직",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1868년 무렵",
+        "startYear": 1868,
+        "endYear": 1868,
+        "kind": "approximate_year",
+        "calendar": "korean_lunisolar",
+        "displayAnchorYear": 1868,
+        "anchorIsExactEventDate": false
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "상업",
+        "주변관계"
+      ],
+      "narrative": "1868년 무렵 진주 부상 조직은 사천과 단성의 장터에도 지부를 두었다. 진주의 상업은 주변 고을과 연결되어 있었다.",
+      "evidence": [
+        {
+          "sourceId": "S30",
+          "locator": "설명패널: 보부상에서 유래한 진주상인"
+        }
+      ],
+      "interpretations": [],
+      "limits": []
+    },
+    {
+      "id": "JN-039",
+      "title": "물품별 상점 조직인 사전이 등장하다",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1884년",
+        "startYear": 1884,
+        "endYear": 1884,
+        "kind": "recorded_year",
+        "calendar": "korean_lunisolar"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "상업",
+        "도시"
+      ],
+      "narrative": "1884년 진주에는 베·어물과 과일·비단·종이를 다루는 사전이 설치되었다. 장터를 오가는 상인과 자리를 잡고 영업하는 상인이 함께 도시 상업을 이루었다.",
+      "evidence": [
+        {
+          "sourceId": "S30",
+          "locator": "사전청금록 유물 설명과 1884년 연표"
+        }
+      ],
+      "interpretations": [],
+      "limits": []
+    },
+    {
+      "id": "JN-040",
+      "title": "진주목에서 진주군으로, 23부제의 중심으로",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1895년",
+        "startYear": 1895,
+        "endYear": 1895,
+        "kind": "recorded_year",
+        "calendar": "gregorian"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "국가",
+        "행정"
+      ],
+      "narrative": "전국을 23부로 나누는 개편에서 진주는 광역 단위인 진주부의 중심이 되었고, 종전 진주목은 진주군으로 바뀌었다. 같은 지명이라도 행정적 지위가 달라졌다.",
+      "evidence": [
+        {
+          "sourceId": "S28",
+          "locator": "1895년 항목"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "1895년 광역 진주부와 1939년 도시 행정단위 진주부는 같은 제도가 아니다."
+      ]
+    },
+    {
+      "id": "JN-041",
+      "title": "경상우도소학교가 문을 열다",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1895년 9월",
+        "startYear": 1895,
+        "endYear": 1895,
+        "kind": "recorded_year",
+        "calendar": "gregorian",
+        "month": 9,
+        "day": null
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "교육",
+        "사람"
+      ],
+      "narrative": "1895년 9월 경상우도소학교가 개교했다. 향교가 있던 지역에 근대 학교가 더해지는 변화를 확인할 수 있다.",
+      "evidence": [
+        {
+          "sourceId": "S33",
+          "locator": "공립진주보통학교 항목의 연혁"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "근대 학교 개교가 주민 전체의 취학이나 즉각적인 교육 평등을 의미하지 않는다."
+      ]
+    },
+    {
+      "id": "JN-042",
+      "title": "경상남도 도청이 있는 도시",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1896년 8월 4일",
+        "startYear": 1896,
+        "endYear": 1896,
+        "kind": "recorded_year",
+        "calendar": "gregorian",
+        "month": 8,
+        "day": 4
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "국가",
+        "도시"
+      ],
+      "narrative": "1896년 13도제가 시행되면서 진주는 경상남도의 도청 소재지가 되었다. 고을을 다스리던 공간이 도 전체를 관리하는 행정 중심의 역할을 함께 맡았다.",
+      "evidence": [
+        {
+          "sourceId": "S28",
+          "locator": "1896년 8월 4일 항목"
+        }
+      ],
+      "interpretations": [],
+      "limits": []
+    },
+    {
+      "id": "JN-043",
+      "title": "전국 조직 상무사와 진주의 상인들",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1899년",
+        "startYear": 1899,
+        "endYear": 1899,
+        "kind": "recorded_year",
+        "calendar": "gregorian"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "상업",
+        "국가"
+      ],
+      "narrative": "1899년 전국 보부상 조직이 상무사로 개편되고 진주에도 임소가 설치되었다. 지역 상업의 이해관계는 중앙의 상인 정책과도 연결되어 있었다.",
+      "evidence": [
+        {
+          "sourceId": "S30",
+          "locator": "연표 1899년"
+        }
+      ],
+      "interpretations": [],
+      "limits": []
+    },
+    {
+      "id": "JN-044",
+      "title": "여학생을 가르치는 정숙여학교",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1907년 9월",
+        "startYear": 1907,
+        "endYear": 1907,
+        "kind": "recorded_year",
+        "calendar": "gregorian",
+        "month": 9,
+        "day": null
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "교육",
+        "여성"
+      ],
+      "narrative": "1907년 9월 정숙여학교가 문을 열었다. 여자아이들이 공부하는 기관의 등장은 지역 교육의 대상이 넓어지는 과정을 살피게 한다.",
+      "evidence": [
+        {
+          "sourceId": "S33",
+          "locator": "사립정숙여학교 항목"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "학교의 존재만으로 당시 모든 여성이 교육 기회를 얻었다고 할 수 없다."
+      ]
+    },
+    {
+      "id": "JN-045",
+      "title": "공립진주보통학교의 여자학급",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1909년",
+        "startYear": 1909,
+        "endYear": 1909,
+        "kind": "recorded_year",
+        "calendar": "gregorian"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "교육",
+        "여성"
+      ],
+      "narrative": "1909년 공립진주보통학교에 여자학급이 설치되었다. 별도 여성교육기관과 공립학교의 변화가 나란히 진행되고 있었다.",
+      "evidence": [
+        {
+          "sourceId": "S33",
+          "locator": "공립진주보통학교 항목"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "전국 최초라는 비교 평가는 이번 조사에서 별도 검증하지 않아 제외했다."
+      ]
+    },
+    {
+      "id": "JN-046",
+      "title": "식민 통치 아래로 바뀐 행정 질서",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1910년",
+        "startYear": 1910,
+        "endYear": 1910,
+        "kind": "recorded_year",
+        "calendar": "gregorian"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "국가",
+        "식민지"
+      ],
+      "narrative": "대한제국이 일본에 강제 병합되면서 진주도 조선총독부의 식민 통치 아래 놓였다. 도청과 관청은 주민에게 통치 정책이 전달되는 공간이 되었다.",
+      "evidence": [
+        {
+          "sourceId": "S34",
+          "locator": "조선총독부·지방 도청 해설"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "national_context"
+    },
+    {
+      "id": "JN-047",
+      "title": "도청의 부산 이전과 주민들의 반대",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1925년",
+        "startYear": 1925,
+        "endYear": 1925,
+        "kind": "recorded_year",
+        "calendar": "gregorian"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "도시",
+        "주변관계",
+        "사회운동"
+      ],
+      "narrative": "경상남도 도청이 진주에서 부산으로 옮겨 갔다. 진주에서는 이전에 반대하는 운동도 일어났다. 도청 소재지라는 도시의 역할이 바뀌는 사건이었다.",
+      "evidence": [
+        {
+          "sourceId": "S34",
+          "locator": "지방 도청: 진주-부산 1925년과 반대 운동"
+        }
+      ],
+      "interpretations": [],
+      "limits": []
+    },
+    {
+      "id": "JN-048",
+      "title": "철도 차량을 관리하는 시설",
+      "placeId": "old_jinju_station",
+      "date": {
+        "label": "1925년경",
+        "startYear": 1925,
+        "endYear": 1925,
+        "kind": "approximate_year",
+        "calendar": "gregorian",
+        "displayAnchorYear": 1925,
+        "anchorIsExactEventDate": false
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "교통",
+        "노동"
+      ],
+      "narrative": "옛 진주역의 차량정비고는 1925년경의 철도시설로 소개된다. 철도는 선로와 역뿐 아니라 차량을 유지하는 작업 공간을 필요로 했다.",
+      "evidence": [
+        {
+          "sourceId": "S35",
+          "locator": "기본정보의 시대·시설 분류"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "시설의 대략적인 건립 시기이다. 이 기록만으로 열차 개통일·승객 수·노동 조건을 확정하지 않는다."
+      ]
+    },
+    {
+      "id": "JN-049",
+      "title": "진주면이 진주읍으로 바뀌다",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1931년 4월 1일",
+        "startYear": 1931,
+        "endYear": 1931,
+        "kind": "recorded_year",
+        "calendar": "gregorian",
+        "month": 4,
+        "day": 1
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "도시",
+        "행정"
+      ],
+      "narrative": "1931년 4월 1일 진주면이 진주읍으로 바뀌었다. 식민지기의 행정 제도 안에서 도시 지역의 지위가 조정되었다.",
+      "evidence": [
+        {
+          "sourceId": "S36",
+          "locator": "32쪽 1931년 항목"
+        }
+      ],
+      "interpretations": [],
+      "limits": []
+    },
+    {
+      "id": "JN-050",
+      "title": "시장세를 낮추려는 상인들의 운동",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1935년",
+        "startYear": 1935,
+        "endYear": 1935,
+        "kind": "recorded_year",
+        "calendar": "gregorian"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "상업",
+        "사회운동"
+      ],
+      "narrative": "1935년 진주 상인들은 시장 점포 요금인 시장세를 낮추는 운동을 벌였다. 상인 조직은 영업 비용과 생계 문제를 함께 다루었다.",
+      "evidence": [
+        {
+          "sourceId": "S30",
+          "locator": "설명패널: 자발적인 진주 상인 조직"
+        }
+      ],
+      "interpretations": [],
+      "limits": []
+    },
+    {
+      "id": "JN-051",
+      "title": "홍수 뒤 회관을 다시 마련하려는 상인들",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1936년",
+        "startYear": 1936,
+        "endYear": 1936,
+        "kind": "recorded_year",
+        "calendar": "gregorian"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "재해",
+        "공동체"
+      ],
+      "narrative": "1936년 홍수로 상무사 건물이 무너졌다. 같은 해 의연록 등 회관 기금 기록이 남아 있어, 재해 뒤 상인들이 공동 공간을 마련하려 한 과정을 살필 수 있다.",
+      "evidence": [
+        {
+          "sourceId": "S30",
+          "locator": "1936년 홍수와 건물 피해"
+        },
+        {
+          "sourceId": "S31",
+          "locator": "1936년 의연록·회관 건축 문서"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "모금 기록의 연도를 건물 준공일로 바꾸지 않는다. 홍수 피해가 지역 주민 모두에게 동일했다고 가정하지 않는다."
+      ]
+    },
+    {
+      "id": "JN-052",
+      "title": "주변 마을을 편입해 넓어진 진주읍",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1938년 7월 1일",
+        "startYear": 1938,
+        "endYear": 1938,
+        "kind": "recorded_year",
+        "calendar": "gregorian",
+        "month": 7,
+        "day": 1
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "도시",
+        "공간"
+      ],
+      "narrative": "1938년 7월 1일 평거리·상평리·주약리 등 주변 지역이 진주읍에 편입되었다. 행정상의 도시 범위가 커졌지만 편입과 실제 시가지 변화는 구별해 살펴야 한다.",
+      "evidence": [
+        {
+          "sourceId": "S36",
+          "locator": "32쪽 1938년 7월 1일 항목"
+        }
+      ],
+      "interpretations": [],
+      "limits": []
+    },
+    {
+      "id": "JN-053",
+      "title": "진주부와 진양군으로 갈라진 행정",
+      "placeId": "jinju_historic_region",
+      "date": {
+        "label": "1939년 10월 1일",
+        "startYear": 1939,
+        "endYear": 1939,
+        "kind": "recorded_year",
+        "calendar": "gregorian",
+        "month": 10,
+        "day": 1
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "행정",
+        "도시"
+      ],
+      "narrative": "1939년 10월 1일 진주읍은 진주부가 되고, 진주군은 진양군으로 이름을 바꾸었다. 도시와 주변 농촌의 행정 구역이 나뉘었다.",
+      "evidence": [
+        {
+          "sourceId": "S36",
+          "locator": "32쪽 1939년 항목"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "법령의 공포일은 9월 30일, 시행일은 10월 1일로 구분한다."
+      ]
+    },
+    {
+      "id": "JN-054",
+      "title": "해방과 새로운 정치 질서의 시작",
+      "placeId": "national_background",
+      "date": {
+        "label": "1945년 8월 15일",
+        "startYear": 1945,
+        "endYear": 1945,
+        "kind": "recorded_year",
+        "calendar": "gregorian",
+        "month": 8,
+        "day": 15
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "국가",
+        "해방"
+      ],
+      "narrative": "1945년 8월 15일 해방을 맞았다. 이어 한반도 남북에 미군과 소련군이 각각 들어오면서 새로운 정치 질서를 둘러싼 변화가 시작되었다.",
+      "evidence": [
+        {
+          "sourceId": "S37",
+          "locator": "해방과 일상 서문"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "한반도 차원의 배경이다. 진주 주민 개개인의 그날 행동을 재구성한 기록은 아니다."
+      ],
+      "scope": "national_context"
+    },
+    {
+      "id": "JN-055",
+      "title": "대한민국 정부가 수립되다",
+      "placeId": "national_background",
+      "date": {
+        "label": "1948년 8월 15일",
+        "startYear": 1948,
+        "endYear": 1948,
+        "kind": "recorded_year",
+        "calendar": "gregorian",
+        "month": 8,
+        "day": 15
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "국가",
+        "행정"
+      ],
+      "narrative": "1948년 8월 15일 대한민국 정부 수립이 선포되었다. 이듬해 진주시로 바뀌는 지역 행정은 이 새로운 국가 질서 안에서 이해할 수 있다.",
+      "evidence": [
+        {
+          "sourceId": "S38",
+          "locator": "정부 수립 선포식 사진 해설"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "선포식의 직접 장소는 서울이다. 해방과 정부 수립을 같은 해의 사건으로 합치지 않는다."
+      ],
+      "scope": "national_context"
+    },
+    {
+      "id": "JN-056",
+      "title": "한국전쟁이 시작되다",
+      "placeId": "national_background",
+      "date": {
+        "label": "1950년 6월 25일",
+        "startYear": 1950,
+        "endYear": 1950,
+        "kind": "recorded_year",
+        "calendar": "gregorian",
+        "month": 6,
+        "day": 25
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "전쟁",
+        "국가"
+      ],
+      "narrative": "1950년 6월 25일 북한군의 남침으로 한국전쟁이 시작되었다. 전쟁은 진주의 주민과 도시 공간에도 파괴와 희생을 가져왔다.",
+      "evidence": [
+        {
+          "sourceId": "S39",
+          "locator": "6·25 전쟁일 설명"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "전쟁 발발일을 진주 시내 전투의 시작일로 그대로 사용하지 않는다."
+      ],
+      "scope": "national_context"
+    },
+    {
+      "id": "JN-057",
+      "title": "예비검속된 진주지역 민간인들의 희생",
+      "placeId": "jinju_victims",
+      "date": {
+        "label": "1950년 7월경",
+        "startYear": 1950,
+        "endYear": 1950,
+        "kind": "approximate_month",
+        "calendar": "gregorian",
+        "month": 7,
+        "day": null,
+        "anchorIsExactEventDate": false
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "전쟁",
+        "사람",
+        "인권"
+      ],
+      "narrative": "1950년 7월 진주지역에서 예비검속된 민간인들이 명석면과 마산 진전면 등에서 군경에 의해 집단 살해되었다. 진실화해위원회는 이를 불법적인 민간인 집단 희생 사건으로 규명했다.",
+      "evidence": [
+        {
+          "sourceId": "S40",
+          "locator": "진실규명 결정요지 1~3항"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "이번 결정에서 신원이 확인된 7명은 사건 전체 사망자 수가 아니다. 진주의 민간인 전체를 보도연맹원으로 일반화하지 않는다. 개별 희생지와 사건일에는 추가 조사가 필요하다."
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "id": "C01",
+      "topic": "최초 거주",
+      "decision": "최초 거주 연도는 미상. 구석기 활동 소개 후, 이번에 연대를 확인한 신석기 집자리부터 시간축을 시작한다.",
+      "sourceIds": [
+        "S02",
+        "S03"
+      ]
+    },
+    {
+      "id": "C02",
+      "topic": "청주 설치 684/685년",
+      "decision": "삼국사기와 고려사에 차이가 있다. 본기와 지리지 대조 주석에 따라 카드에는 685년을 사용하고 차이를 남긴다.",
+      "sourceIds": [
+        "S10",
+        "S11"
+      ]
+    },
+    {
+      "id": "C03",
+      "topic": "진주 명칭 940/995년",
+      "decision": "940년 최초 개칭은 이 자료집의 확정 사건에서 제외. 995년 진주 정해군 명칭이 기록되었다는 범위로 채택.",
+      "sourceIds": [
+        "S20",
+        "S11"
+      ]
+    },
+    {
+      "id": "C04",
+      "topic": "거열·거타의 위치",
+      "decision": "현대 주석의 거창 비정을 고려해 662/663년 거열성 기사를 진주의 확정 사건으로 전용하지 않는다.",
+      "sourceIds": [
+        "S10",
+        "S11",
+        "S21"
+      ]
+    },
+    {
+      "id": "C05",
+      "topic": "자료 공개 범위",
+      "decision": "논문 초록만 확인한 S07·S08을 원문 전체 검증 자료로 표시하지 않는다.",
+      "sourceIds": [
+        "S07",
+        "S08"
+      ]
+    },
+    {
+      "id": "C06",
+      "topic": "종료 연도",
+      "decision": "모든 장소의 역사 진행은 서기 1950년까지. 이후 출판된 연구는 그 이전 역사를 검증하는 데 사용할 수 있다. 방사성탄소 BP의 기준년과 연결한 게임 설계이며 보편적 시대 구분을 의미하지 않는다.",
+      "sourceIds": [
+        "S22"
+      ]
+    },
+    {
+      "id": "C07",
+      "topic": "고려 말 진주성 축성",
+      "decision": "1377·1379·1380년 출처 차이를 범위로 표시. 1379년은 배치용.",
+      "sourceIds": [
+        "S12",
+        "S29"
+      ]
+    },
+    {
+      "id": "C08",
+      "topic": "우병영 이전",
+      "decision": "1603/1604년의 차이를 노출. 명령·이전·공사 단계 여부를 원 사료로 추가 대조할 때까지 유보.",
+      "sourceIds": [
+        "S28",
+        "S43"
+      ]
+    },
+    {
+      "id": "C09",
+      "topic": "형평사 창립일",
+      "decision": "같은 기관의 해설도 4월 24일과 25일이 다르다. 1923년 4월로 표시하고 양쪽을 안내.",
+      "sourceIds": [
+        "S17",
+        "S41",
+        "S46"
+      ]
+    },
+    {
+      "id": "C10",
+      "topic": "1950년 말 배치",
+      "decision": "촉석루 소실의 정확한 월일이 미확정이므로 재생 순서를 위한 12월 배치와 사건 연대 1950년을 구별한다.",
+      "sourceIds": [
+        "S24"
+      ]
+    }
+  ],
+  "coverage": {
+    "completeContinuousHistory": false,
+    "undatedContextCount": 4,
+    "datedRecordCount": 53,
+    "eightDirectionComparison": {
+      "status": "not_yet_researched",
+      "rule": "방위·거리와 시대별 공동체를 확인한 뒤 별도 카드로 추가한다. 현대 주변 시군을 고대 국가로 치환하지 않는다."
+    },
+    "gapsToResearch": [
+      "청동기 말부터 5세기까지의 지역사회 변화와 편년",
+      "고려의 사찰·교역과 일반 주민의 생활",
+      "여성·아동·노동자의 개인 기록과 생활 수준",
+      "1945~1950년 지역 정치·피란·전쟁 피해의 상세한 교차 검증",
+      "개별 유적의 발굴 도면에 근거한 좌표·범위"
+    ],
+    "note": "시대별 사건을 보강한 2차 조사본이다. 연속된 모든 해의 역사나 모든 집단의 경험을 완성했다는 의미는 아니다.",
+    "readingChapters": 6,
+    "readingLevels": [
+      "basic",
+      "detail",
+      "deep"
+    ]
+  },
+  "editorialRules": [
+    "확인된 사실, 사료의 주장, 연구자의 해석을 구분한다.",
+    "논문·발굴보고서가 출판된 해를 고대 사건의 연도로 쓰지 않는다.",
+    "국가 이름·국경·인구·인물의 대사·농업 생산량을 자료 없이 생성하지 않는다.",
+    "사진·도판·원문 PDF의 공개 재배포 권리는 별도 확인한다. 현재 데이터에는 링크와 자체 작성 요약만 포함한다."
+  ]
+}
