@@ -16,7 +16,7 @@
       if(d.startYear===0||d.endYear===0||d.startYear>d.endYear||d.endYear>END_YEAR||year<d.startYear||year>d.endYear)throw new Error('자료의 연대를 확인해 주세요: '+record.id);
       const month=d.displayAnchorMonth??(d.calendar==='gregorian'&&d.month?d.month:1);
       if(!Number.isInteger(month)||month<1||month>12)throw new Error('자료의 배치 월을 확인해 주세요: '+record.id);
-      return {record,month:monthOf(year,month),approximate:d.kind!=='recorded_year',year};
+      return {record,month:monthOf(year,month),approximate:!['recorded_year','year','document_date'].includes(d.kind),year};
     }).filter(e=>e.month>=start&&e.month<=end).sort((a,b)=>a.month-b.month||a.record.id.localeCompare(b.record.id));
     const chapters=[];
     for(const entry of entries){let chapter=chapters[chapters.length-1];if(!chapter||chapter.month!==entry.month){chapter={month:entry.month,entries:[]};chapters.push(chapter);}chapter.entries.push(entry);}

@@ -11,3 +11,7 @@
 첫 장소: [진주 남강 유역 조사 보고서](jinju-namgang/report.md) · [구현용 조사 데이터](jinju-namgang/location.json) · [세 단계 읽기 원고](jinju-namgang/readings.json)
 
 2026-10-09 보강본은 53개 연대 기록과 4개 연도 미확정 해설, 45개 출처, 여섯 장의 세 단계 읽기로 구성되어 있다. `tools/build-static.mjs`가 이 자료를 정적 HTML에 내장한다. [GitHub Pages 게임](https://mathtjungsw.github.io/math-class-webtools/math-history/random-location-history/)에서 읽을 수 있다.
+
+두 번째 장소: [이스탄불 조사 보고서](istanbul/report.md) · [바로 읽는 세 단계 원고](istanbul/readings.md) · [연표·출처 데이터](istanbul/location.json) · [읽기 데이터](istanbul/readings.json)
+
+2026-10-10 이스탄불 1차 조사본은 연대 기록 58개, 연도 없는 해설 3개, 출처 42개, 여덟 장의 세 단계 읽기로 구성되어 있다. 깊이 읽기는 장마다 3,000자 이상이며 600자/분 기준 약 5.1~5.5분이다. 예니카프의 신석기 흔적부터 1950년까지 다루며 최초 거주 연도는 확정하지 않는다. 정적 HTML에 내장하며 장소 선택으로 탐험할 수 있다. 구조 검증 결과는 HTML 통합 전 조사 단계의 기록이다. [구조 검증 결과](istanbul/validation.json)를 함께 보관한다.

@@ -13,6 +13,50 @@ const data = JSON.parse(script('history-data'));
 const jinju = data.locations[0];
 const timeline = C.prepare(jinju);
 
+test('두 장소의 연표·출처·읽기가 독립적으로 완성되며 1950년에 종료한다', () => {
+  assert.deepEqual(data.locations.map(l => l.id), ['kr-jinju-namgang', 'tr-istanbul']);
+  const istanbul = data.locations.find(l => l.id === 'tr-istanbul');
+  const t = C.prepare(istanbul);
+  assert.equal(t.entries.length, 58);
+  assert.equal(t.contexts.length, 3);
+  assert.equal(istanbul.sources.length, 42);
+  assert.equal(istanbul.readings.chapters.length, 8);
+  assert.equal(istanbul.timelinePolicy.firstHabitationYear, null);
+  const entry = id => t.entries.find(e => e.record.id === id);
+  assert.equal(entry('IST-026').approximate, false);
+  assert.equal(entry('IST-001').approximate, true);
+  assert.equal(C.parts(entry('IST-026').month).month, 5);
+  assert.ok(entry('IST-026').month < entry('IST-027').month);
+  assert.equal(entry('IST-057').record.date.kind, 'document_date');
+  assert.ok(entry('IST-057').month < entry('IST-058').month);
+  for (const location of data.locations) {
+    const prepared = C.prepare(location);
+    const sources = new Set(location.sources.map(s => s.id));
+    const assigned = location.readings.chapters.flatMap(c => c.recordIds);
+    assert.deepEqual([...assigned].sort(), prepared.entries.map(e => e.record.id).sort());
+    assert.equal(new Set(assigned).size, assigned.length);
+    for (const record of location.records) assert.ok(record.evidence.every(e => sources.has(e.sourceId)));
+    for (const chapter of location.readings.chapters) {
+      assert.ok(chapter.deep.flatMap(s => s.paragraphs).join('').length / location.readings.readingRateCharactersPerMinute >= 5);
+      for (const level of ['basic', 'detail', 'deep'])
+        for (const section of chapter[level]) assert.ok(section.sourceIds.every(id => sources.has(id)));
+    }
+    for (const skip of [false, true]) {
+      let month = prepared.start;
+      const seen = new Set(prepared.chapters[0].entries.map(e => e.record.id));
+      for (let step = 0; step < 150; step++) {
+        const next = C.advance(prepared, month, 100, 12000, skip);
+        month = next.month;
+        for (const e of prepared.chapters[C.indexAt(prepared.chapters, month)].entries) seen.add(e.record.id);
+        if (next.ended) break;
+      }
+      assert.equal(month, prepared.end);
+      assert.equal(C.parts(month).year, 1950);
+      assert.equal(seen.size, prepared.entries.length);
+    }
+  }
+});
+
 test('실제로 배포하는 HTML의 시간축은 기원전 1년 다음에 서기 1년을 표시한다', () => {
   const before = C.monthOf(-1, 12);
   assert.equal(C.parts(before).year, -1);

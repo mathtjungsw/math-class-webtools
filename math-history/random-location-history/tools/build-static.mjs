@@ -3,7 +3,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 const tools=path.dirname(fileURLToPath(import.meta.url)),root=path.resolve(tools,'..');
 // Add researched location.json files here. The generated page needs no server.
-const locationFiles=['research/jinju-namgang/location.json'];
+const locationFiles=['research/jinju-namgang/location.json','research/istanbul/location.json'];
 const locations=[];
 for(const file of locationFiles){
   const data=JSON.parse(await fs.readFile(path.join(root,file),'utf8'));

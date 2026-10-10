@@ -1,0 +1,80 @@
+{
+  "checkedOn": "2026-10-10",
+  "scope": "Research data integrity; not a full-text audit of every referenced work",
+  "sources": 42,
+  "datedRecords": 58,
+  "contextRecords": 3,
+  "chapters": [
+    {
+      "id": "before-the-capital",
+      "title": "수도보다 오래된 사람들의 자리",
+      "deepCharacters": 3113,
+      "estimatedDeepMinutes": 5.2,
+      "records": 4
+    },
+    {
+      "id": "feeding-the-capital",
+      "title": "수도를 먹이고 지키는 사람들",
+      "deepCharacters": 3100,
+      "estimatedDeepMinutes": 5.2,
+      "records": 9
+    },
+    {
+      "id": "ports-and-neighbours",
+      "title": "항구·시장·이웃으로 이어진 도시",
+      "deepCharacters": 3154,
+      "estimatedDeepMinutes": 5.3,
+      "records": 6
+    },
+    {
+      "id": "conquest-and-recovery",
+      "title": "점령과 회복, 다른 질서가 만나는 물가",
+      "deepCharacters": 3079,
+      "estimatedDeepMinutes": 5.1,
+      "records": 7
+    },
+    {
+      "id": "rebuilding-a-population",
+      "title": "정복 이후, 누가 이 도시의 주민이 되었나",
+      "deepCharacters": 3229,
+      "estimatedDeepMinutes": 5.4,
+      "records": 8
+    },
+    {
+      "id": "work-fire-and-belonging",
+      "title": "목욕탕·화재·책·이주민의 도시",
+      "deepCharacters": 3146,
+      "estimatedDeepMinutes": 5.2,
+      "records": 5
+    },
+    {
+      "id": "movement-and-rights",
+      "title": "배와 철도, 개혁과 권리의 목소리",
+      "deepCharacters": 3274,
+      "estimatedDeepMinutes": 5.5,
+      "records": 7
+    },
+    {
+      "id": "war-and-citizenship",
+      "title": "전쟁·추방·공화국과 시민의 불평등",
+      "deepCharacters": 3150,
+      "estimatedDeepMinutes": 5.3,
+      "records": 12
+    }
+  ],
+  "checks": [
+    "unique IDs",
+    "all record place/source references",
+    "all dated records assigned once",
+    "all three reading levels present",
+    "deep reading >=3000 characters at 600 characters/minute",
+    "end year <=1950; no year zero; ordered date ranges",
+    "source access levels retained",
+    "no game/build/deployment changes"
+  ],
+  "limitations": [
+    "상충하는 역사 해석을 모두 해결했다는 검증은 아니다.",
+    "개별 출처 접근 수준은 location.json에 기록했다.",
+    "실제 개인의 읽기 속도는 다르다."
+  ]
+}

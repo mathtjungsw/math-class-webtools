@@ -1,0 +1,2889 @@
+{
+  "schemaVersion": "istanbul-research-1.0",
+  "id": "tr-istanbul",
+  "name": "이스탄불 역사 반도·금각만·보스포루스",
+  "language": "ko",
+  "researchedOn": "2026-10-10",
+  "status": "source_checked_research_pack",
+  "integrationStatus": "ready_for_static_build",
+  "representativePoint": {
+    "placeId": "sultanahmet",
+    "latitude": 41.008,
+    "longitude": 28.983,
+    "display": "북위 41.008°, 동경 28.983°",
+    "coordinateRole": "UNESCO 술탄아흐메트 도시고고학 구성구역의 대표점; 장소 선택용",
+    "sourceIds": [
+      "IS01"
+    ],
+    "note": "선사 정착지는 예니카프 등 별도 지점이다. 도시권 전체의 사실을 이 좌표에서 일어난 사건으로 처리하지 않는다."
+  },
+  "spatialScope": {
+    "description": "역사 반도·예니카프를 중심으로 금각만 북쪽 갈라타와 보스포루스 양안의 관계를 포함. 현대 광역시 전체를 망라하지 않는다.",
+    "reuseRule": "좌표가 가깝다는 이유만으로 사건을 전용하지 않는다. placeId·scope와 시대별 공간 관계를 함께 확인한다.",
+    "historicBoundariesVerified": false
+  },
+  "timelinePolicy": {
+    "lastPlayableYear": 1950,
+    "endInclusive": true,
+    "appliesToAllLocations": true,
+    "sourcePublicationYearMayExceedEndYear": true,
+    "radiocarbonReferenceYear": 1950,
+    "radiocarbonRule": "미보정 BP의 단순 뺄셈으로 달력 연대를 만들지 않는다. 본 자료는 출처가 보고한 개괄 편년을 사용하며 시료별 측정표 검토를 주장하지 않는다.",
+    "recommendedStart": {
+      "year": -6500,
+      "label": "기원전 약 6500년 무렵",
+      "recordId": "IST-001",
+      "isExactFirstHabitationYear": false
+    },
+    "earlierIntroRecordIds": [
+      "IST-C01"
+    ],
+    "firstHabitationYear": null,
+    "earliestDatedSettlementInThisPack": "IST-001",
+    "yearEncoding": "기원전 N년=-N, 서기 N년=N. 역사 표기에 0년 없음.",
+    "arithmeticRule": "기원전 음수 연도를 year+1로 변환한 연속 축으로 간격 계산.",
+    "skipRule": "수록된 기록 사이의 공백만 건너뛴다. 사람이 살지 않았거나 역사가 없었다고 표현하지 않는다.",
+    "uncertainDateRule": "date.label 우선. 범위 시작값은 배치용이며 실제 시작일이 아니다.",
+    "calendarRule": "역사적 월일은 원문·연구의 표기를 따른다. 율리우스력·그레고리력 등 상호 환산은 추가 검증 없이 수행하지 않는다. month/day 필드와 UTC 날짜를 자동 생성하지 않는다.",
+    "endRule": "1950년까지 포함. 이후 사건은 수록하지 않는다."
+  },
+  "places": [
+    {
+      "id": "sultanahmet",
+      "name": "술탄아흐메트·하기아 소피아·히포드롬 일대",
+      "coordinate": {
+        "latitude": 41.008,
+        "longitude": 28.983
+      },
+      "sourceIds": [
+        "IS01",
+        "IS02"
+      ],
+      "note": "UNESCO 구성구역 대표점. 개별 건물의 측량 좌표가 아님."
+    },
+    {
+      "id": "historic_peninsula",
+      "name": "역사 반도와 이스탄불 도시권",
+      "coordinate": null,
+      "sourceIds": [
+        "IS02"
+      ],
+      "note": "이번 조사에서는 개별 좌표를 검증하지 않아 비워 둠. 대표 좌표로 치환하지 않음."
+    },
+    {
+      "id": "yenikapi",
+      "name": "예니카프·테오도시우스 항구 유적",
+      "coordinate": null,
+      "sourceIds": [
+        "IS03",
+        "IS04"
+      ],
+      "note": "이번 조사에서는 개별 좌표를 검증하지 않아 비워 둠. 대표 좌표로 치환하지 않음."
+    },
+    {
+      "id": "bosphorus",
+      "name": "보스포루스 해협과 양안",
+      "coordinate": null,
+      "sourceIds": [
+        "IS02",
+        "IS32"
+      ],
+      "note": "이번 조사에서는 개별 좌표를 검증하지 않아 비워 둠. 대표 좌표로 치환하지 않음."
+    },
+    {
+      "id": "golden_horn",
+      "name": "금각만과 항구·조선소 일대",
+      "coordinate": null,
+      "sourceIds": [
+        "IS13",
+        "IS27"
+      ],
+      "note": "이번 조사에서는 개별 좌표를 검증하지 않아 비워 둠. 대표 좌표로 치환하지 않음."
+    },
+    {
+      "id": "aqueduct",
+      "name": "발렌스 수로 및 트라키아 급수 연결망",
+      "coordinate": null,
+      "sourceIds": [
+        "IS09"
+      ],
+      "note": "이번 조사에서는 개별 좌표를 검증하지 않아 비워 둠. 대표 좌표로 치환하지 않음."
+    },
+    {
+      "id": "land_walls",
+      "name": "테오도시우스 육지 성벽",
+      "coordinate": null,
+      "sourceIds": [
+        "IS02",
+        "IS20"
+      ],
+      "note": "이번 조사에서는 개별 좌표를 검증하지 않아 비워 둠. 대표 좌표로 치환하지 않음."
+    },
+    {
+      "id": "galata",
+      "name": "갈라타·페라·베이오울루 일대",
+      "coordinate": null,
+      "sourceIds": [
+        "IS19",
+        "IS22",
+        "IS33"
+      ],
+      "note": "이번 조사에서는 개별 좌표를 검증하지 않아 비워 둠. 대표 좌표로 치환하지 않음."
+    },
+    {
+      "id": "chora",
+      "name": "코라 수도원 일대",
+      "coordinate": null,
+      "sourceIds": [
+        "IS18"
+      ],
+      "note": "이번 조사에서는 개별 좌표를 검증하지 않아 비워 둠. 대표 좌표로 치환하지 않음."
+    },
+    {
+      "id": "suleymaniye",
+      "name": "쉴레이마니예 복합시설",
+      "coordinate": null,
+      "sourceIds": [
+        "IS02"
+      ],
+      "note": "이번 조사에서는 개별 좌표를 검증하지 않아 비워 둠. 대표 좌표로 치환하지 않음."
+    },
+    {
+      "id": "cemberlitas",
+      "name": "쳄베를리타쉬 목욕탕",
+      "coordinate": null,
+      "sourceIds": [
+        "IS25"
+      ],
+      "note": "이번 조사에서는 개별 좌표를 검증하지 않아 비워 둠. 대표 좌표로 치환하지 않음."
+    },
+    {
+      "id": "eminonu",
+      "name": "에미뇌뉘 해안과 예니 모스크 주변",
+      "coordinate": null,
+      "sourceIds": [
+        "IS26"
+      ],
+      "note": "이번 조사에서는 개별 좌표를 검증하지 않아 비워 둠. 대표 좌표로 치환하지 않음."
+    }
+  ],
+  "sources": [
+    {
+      "id": "IS01",
+      "title": "Historic Areas of Istanbul — Periodic Report, Section II",
+      "url": "https://whc.unesco.org/document/216600",
+      "publisher": "UNESCO World Heritage Centre / State Party report",
+      "authors": [],
+      "kind": "state_party_report",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "PDF p.1: component coordinates"
+      ]
+    },
+    {
+      "id": "IS02",
+      "title": "Historic Areas of Istanbul",
+      "url": "https://whc.unesco.org/en/list/356/",
+      "publisher": "UNESCO World Heritage Centre",
+      "authors": [],
+      "kind": "institutional_description",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "Brief synthesis; criteria; integrity"
+      ]
+    },
+    {
+      "id": "IS03",
+      "title": "İstanbul Kazıları / Istanbul Excavations",
+      "url": "https://istanbultarihi.ist/15-istanbul-kazilari-marmaray-metro-projeleri-ve-arkeolojik-kurtarma-kazilarinin-sehir-tarihine-katkilari",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Zeynep Kızıltan"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "Yenikapı Neolitik Dönem Kazıları; Neolitik Mimari; Sonuç; Theodosius Harbor"
+      ],
+      "alternateUrl": "https://istanbultarihi.ist/385-istanbul-excavations-the-marmaray-and-metro-rail-construction-projects-and-the-contributions-of-archeological-recovery-excavations-to-the-urban-history-of-istanbul",
+      "notes": "터키어 본문과 영어 번역의 관련 절 대조. 결론의 약 기원전 6500~4800년을 개괄 편년으로 채택하며 같은 문장의 기간 산술값은 채택하지 않음. 영어 번역의 선박 전체 연대 표기는 IS12와 대조."
+    },
+    {
+      "id": "IS04",
+      "title": "Holocene coastal change in the ancient harbor of Yenikapi-Istanbul and its impact on cultural history",
+      "url": "https://avesis.istanbul.edu.tr/yayin/5019e9ee-4387-4ed9-841a-0d79f8a81627/holocene-coastal-change-in-the-ancient-harbor-of-yenikapi-istanbul-and-its-impact-on-cultural-history",
+      "publisher": "Quaternary Research / Istanbul University AVESİS",
+      "authors": [
+        "Oya Algan et al."
+      ],
+      "kind": "research_article",
+      "access": "abstract_only",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "Abstract"
+      ],
+      "publicationYear": 2011,
+      "doi": "10.1016/j.yqres.2011.04.002",
+      "notes": "원문 전체와 개별 시료표를 읽었다고 표시하지 않는다."
+    },
+    {
+      "id": "IS05",
+      "title": "Marmara Bölgesi Neolitik Dönem Ölü Gömme Geleneklerinde İlkler: Yenikapı Kazı Bulguları",
+      "url": "https://dergipark.org.tr/en/pub/tubaar/article/1723090",
+      "publisher": "TÜBA-AR 14",
+      "authors": [
+        "Yasemin Yılmaz"
+      ],
+      "kind": "research_article",
+      "access": "abstract_only",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "Turkish and English abstracts; bibliography and metadata"
+      ],
+      "publicationYear": 2011,
+      "notes": "공개 초록의 Fikirtepe 자료군 범위는 6500–5600 cal BC. IS03 결론의 더 넓은 6500–4800년 범위와 대상·편년의 차이를 구별한다. 인골의 친족관계를 확정하지 않는다. 원문 전체는 검토하지 않음."
+    },
+    {
+      "id": "IS06",
+      "title": "A Political History of Istanbul in Antiquity: From Byzantium to Constantinople",
+      "url": "https://istanbultarihi.ist/404-a-political-history-of-istanbul-in-antiquity-from-byzantium-to-constantinople",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Murat Arslan"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "Foundation traditions; Roman imperial period"
+      ],
+      "notes": "건국의 전승상 연도는 최초 거주 연도와 구별. 단일 건국년 대신 기원전 7세기로 표시."
+    },
+    {
+      "id": "IS07",
+      "title": "Fishery in Istanbul in Ancient History",
+      "url": "https://istanbultarihi.ist/553-fishery-in-istanbul-in-ancient-history",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Oğuz Tekin"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "고대 저술, 소금·염장, 하드리아누스 시대 비문, 어시장 위치의 불확실성"
+      ]
+    },
+    {
+      "id": "IS08",
+      "title": "Politics and Society in the Early Byzantine Capital (330–565)",
+      "url": "https://istanbultarihi.ist/405-politics-and-society-in-the-early-byzantine-capital-330-565",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Turhan Kaçar"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "교회·도시 정치; 히포드롬; 341년 갈등"
+      ]
+    },
+    {
+      "id": "IS09",
+      "title": "The Water Supply of Byzantine Constantinople",
+      "url": "https://istanbultarihi.ist/554-the-water-supply-of-byzantine-constantinople",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "James Crow"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "New Water Channels; Distribution; Iconoclast Revival; From Byzantine Constantinople to Ottoman Istanbul"
+      ],
+      "notes": "373년·626년·765년·약 1019년은 본문 채택. 765년을 다른 자료의 766년으로 임의 변경하지 않음. 큰 숫자와 인용문은 재현하지 않음."
+    },
+    {
+      "id": "IS10",
+      "title": "The Nika Riot",
+      "url": "https://istanbultarihi.ist/407-the-nika-riot",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Geoffrey Greatrex"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "532년 1월 봉기 전개와 진압"
+      ],
+      "notes": "사망자 수와 연설을 그대로 재구성하지 않는다."
+    },
+    {
+      "id": "IS11",
+      "title": "Procopius: The Plague, 542",
+      "url": "https://sourcebooks.web.fordham.edu/source/542procopius-plague.asp",
+      "publisher": "Fordham University Internet Medieval Sourcebook",
+      "authors": [
+        "Procopius"
+      ],
+      "kind": "primary_text_translation",
+      "access": "published_excerpt",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "History of the Wars, plague account, Constantinople and burial"
+      ],
+      "notes": "동시대 저자의 증언을 영어 번역 발췌로 읽음. 일별 사망 추정은 현대 통계로 사용하지 않음."
+    },
+    {
+      "id": "IS12",
+      "title": "“Yenikapı 12” Denizle Buluştu",
+      "url": "https://www.istanbul.edu.tr/tr/haber/yenikapi-12-denizle-bulustu-590042004100650066007900690068004A00360049003100",
+      "publisher": "Istanbul University",
+      "authors": [
+        "Istanbul University"
+      ],
+      "kind": "institutional_research_report",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "37 wrecks, fifth–eleventh centuries; reconstruction"
+      ],
+      "relatedUrl": "https://www.istanbul.edu.tr/tr/haber/yenikapi-batiklari-istanbul-bienalinde-50004A00570067005900340039006C0072004B0051003100",
+      "notes": "YK12의 9세기 편년과 화물·개인용기는 관련 대학 보도도 대조. 복원선 진수는 현대 연구 사건이며 고대 연표에 넣지 않음."
+    },
+    {
+      "id": "IS13",
+      "title": "Financial Foundation of Constantinople’s Rise",
+      "url": "https://istanbultarihi.ist/552-financial-foundation-of-constantinoples-rise",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Koray Durak"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "Book of the Eparch; markets and guilds; trade with Rus and Muslim merchants"
+      ]
+    },
+    {
+      "id": "IS15",
+      "title": "Konstantinopolis Yahudileri / The Jews in Byzantine Constantinople",
+      "url": "https://istanbultarihi.ist/159-konstantinopolis-yahudileri",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Nicholas de Lange"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "Yahudi Semtleri; Katkı"
+      ],
+      "alternateUrl": "https://istanbultarihi.ist/523-the-jews-in-byzantine-constantinople",
+      "notes": "벤야민의 여행기를 인용하는 연구 해설. 여행기 원문 직접 대조는 하지 않음. 12세기 관찰로 사용하고 주민 수는 확정하지 않음."
+    },
+    {
+      "id": "IS16",
+      "title": "Constantinople 1204–1261",
+      "url": "https://istanbultarihi.ist/408-constantinople-1204-1261",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Philip Van Tricht"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "Latin and Venetian administration; Greek residents and law; 25 July 1261"
+      ]
+    },
+    {
+      "id": "IS17",
+      "title": "Nicetas Choniates: The Sack of Constantinople (1204)",
+      "url": "https://sourcebooks.web.fordham.edu/source/choniates1.asp",
+      "publisher": "Fordham University Internet Medieval Sourcebook",
+      "authors": [
+        "Niketas Choniates"
+      ],
+      "kind": "primary_text_translation",
+      "access": "published_excerpt",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "Sack, desecration, capture and separation of residents"
+      ],
+      "notes": "패전 도시의 관료가 쓴 증언. D. C. Munro 1912 번역 발췌를 경유. 수사적 표현을 총 피해 통계로 바꾸지 않음."
+    },
+    {
+      "id": "IS18",
+      "title": "Frescoes and Wall Painting in Late Byzantine Art",
+      "url": "https://www.metmuseum.org/essays/frescoes-and-wall-painting-in-late-byzantine-art",
+      "publisher": "The Metropolitan Museum of Art",
+      "authors": [
+        "Annie Montgomery Labatt"
+      ],
+      "kind": "museum_scholarly_essay",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "Chora restoration and decoration, 1316–21"
+      ],
+      "publicationYear": 2004
+    },
+    {
+      "id": "IS19",
+      "title": "Galata Tower — museum leaflet",
+      "url": "https://muze.gov.tr/s3/MysFileLibrary/566f7fe8-c812-421d-9baa-86e7bb228337.pdf",
+      "publisher": "Türkiye Ministry of Culture and Tourism",
+      "authors": [],
+      "kind": "institutional_description",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "1267 Genoese colony; 1348 tower; 1509 earthquake and 1510 repair"
+      ],
+      "notes": "PDF 텍스트를 확인. 도판·사진을 재배포하지 않음."
+    },
+    {
+      "id": "IS20",
+      "title": "The Final Siege and Fall of Constantinople (1453)",
+      "url": "https://istanbultarihi.ist/424-the-final-siege-and-fall-of-constantinople-1453",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Feridun M. Emecen"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "Final attack; competing accounts and Ottoman/Byzantine preparations"
+      ],
+      "notes": "전쟁 과정의 현대 연구. 연설·징조를 실제 대사나 초자연적 사실로 채택하지 않음."
+    },
+    {
+      "id": "IS21",
+      "title": "Sultan Mehmed the Conqueror’s Istanbul",
+      "url": "https://istanbultarihi.ist/376-sultan-mehmed-the-conquerors-istanbul",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Halil İnalcık"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "1455 survey; resettlement and captives; Gennadios; houses and land; city names"
+      ]
+    },
+    {
+      "id": "IS22",
+      "title": "Galata",
+      "url": "https://istanbultarihi.ist/377-galata",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Halil İnalcık"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "1 June 1453 ahdname; 1455 survey and resident categories"
+      ]
+    },
+    {
+      "id": "IS23",
+      "title": "İstanbul Nüfusu: Fetihten XVIII. Yüzyıl Sonlarına Kadar",
+      "url": "https://istanbultarihi.ist/94-istanbul-nufusu-fetihten-xviii-yuzyil-sonlarina-kadar",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Mehmet Öz"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "1477 survey; household counting and estimates"
+      ],
+      "notes": "세대 수와 실제 인구를 구분하며 총인구 추정값을 게임에 고정하지 않음."
+    },
+    {
+      "id": "IS24",
+      "title": "Judeo-Espanyol/Ladino: Türkiye Yahudilerinin Dili",
+      "url": "https://istanbultarihi.ist/246-judeo-espanyol-ladino-turkiye-yahudilerinin-dili",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Karen Gerson Şarhon"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "1492 expulsion and Sephardic migration; language formation"
+      ],
+      "notes": "지역 언어·이주의 해설. 이주민 모두가 이스탄불로 왔다고 쓰지 않음."
+    },
+    {
+      "id": "IS25",
+      "title": "Çemberlitaş Hamam",
+      "url": "https://istanbultarihi.ist/491-cemberlitas-hamam",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Nina Ergin"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "1584 inscription; Nurbanu; revenue for Atik Valide; workers and fuel"
+      ]
+    },
+    {
+      "id": "IS26",
+      "title": "The Great Istanbul Fire of 1660",
+      "url": "https://istanbultarihi.ist/394-the-great-istanbul-fire-of-1660",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Kenan Yıldız"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "Fire and food shortage; reconstruction and removal of Jewish residents"
+      ],
+      "notes": "사료별 피해 규모가 달라 정밀한 사망·소실 수치 제외."
+    },
+    {
+      "id": "IS27",
+      "title": "Slavery in Ottoman Istanbul",
+      "url": "https://istanbultarihi.ist/473-slavery-in-ottoman-istanbul",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Nida Nebahat Nalçacı"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "Household slavery; imperial shipyard; probate and manumission records"
+      ],
+      "notes": "본문의 모순된 인구 숫자·비율은 채택하지 않음. 시대 전반 해설로만 수록."
+    },
+    {
+      "id": "IS28",
+      "title": "Near East Collections: Turkey",
+      "url": "https://wwws.loc.gov/rr/amed/guide/nes-turkey.html",
+      "publisher": "Library of Congress",
+      "authors": [],
+      "kind": "library_collection_description",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "1729 Vankulu dictionary, Müteferrika press and permission"
+      ]
+    },
+    {
+      "id": "IS29",
+      "title": "The 1730 Rebellion",
+      "url": "https://istanbultarihi.ist/413-the-1730-rebellion",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Selim Karahasanoğlu"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "28 September revolt; market closures; Ahmed III; 25 November suppression"
+      ]
+    },
+    {
+      "id": "IS30",
+      "title": "Surety (Kefalet) and Inspection Registers of Istanbul",
+      "url": "https://istanbultarihi.ist/509-surety-kefalet-and-inspection-registers-of-istanbul",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Betül Başaran"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "1790s inspections; guarantors; labor and lodgings; coverage limits"
+      ]
+    },
+    {
+      "id": "IS31",
+      "title": "Payitaht İstanbul’un Son Yüzyılı / The Last Century of Ottoman Istanbul",
+      "url": "https://istanbultarihi.ist/46-payitaht-istanbulun-son-yuzyili",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Gültekin Yıldız"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "1826; 1839 Tanzimat declaration; 1876; 1908"
+      ],
+      "alternateUrl": "https://istanbultarihi.ist/assets/uploads/pdf/payitaht-istanbulun-son-yuzyili-46.pdf"
+    },
+    {
+      "id": "IS32",
+      "title": "Sea Transportation in Ottoman Istanbul (Modern Period)",
+      "url": "https://istanbultarihi.ist/585-sea-transportation-in-ottoman-istanbul-modern-period",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Ali Akyıldız"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "Şirket-i Hayriyye foundation in autumn 1850; imperial concession 16 January 1851; boatmen"
+      ]
+    },
+    {
+      "id": "IS33",
+      "title": "Kronolojik Tarihçe — Tünel",
+      "url": "https://iett.istanbul/icerik/kronolojik-tarihce",
+      "publisher": "İETT",
+      "authors": [],
+      "kind": "institutional_history",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "1875 inauguration and public service"
+      ],
+      "notes": "1월 17일 개통식·18일 운행 구분. 카드 표시는 1875년 1월."
+    },
+    {
+      "id": "IS34",
+      "title": "“Kadınlık Yalnız Meyve Değildir”: Kadınlar Dünyası Dergisi’nin Başyazılarında Kadın Kategorisinin İnşası",
+      "url": "https://dergipark.org.tr/tr/download/article-file/935506",
+      "publisher": "Fe Dergi 9(1)",
+      "authors": [
+        "Özge Özdemir"
+      ],
+      "kind": "research_article",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "PDF pp.2–6: method, 1913 editorials, labor, education, telephone employment"
+      ],
+      "publicationYear": 2017,
+      "doi": "10.1501/Fe0001_0000000181",
+      "notes": "초기 100호 논설을 연구한 논문. 여성 전체의 목소리로 일반화하지 않음."
+    },
+    {
+      "id": "IS36",
+      "title": "The Armenian Genocide (1915–16): In Depth",
+      "url": "https://encyclopedia.ushmm.org/content/en/article/the-armenian-genocide-1915-16-in-depth",
+      "publisher": "United States Holocaust Memorial Museum",
+      "authors": [],
+      "kind": "museum_research_encyclopedia",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "Ottoman entry into World War I; 24 April 1915 Constantinople arrests and genocide"
+      ],
+      "notes": "수도의 체포와 제국 전역의 추방·학살을 공간적으로 구분."
+    },
+    {
+      "id": "IS37",
+      "title": "Istanbul during the Mütareke Era (1918–1923)",
+      "url": "https://istanbultarihi.ist/419-istanbul-during-the-mutareke-era-1918-1923",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Mete Tunçay"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "1918 armistice; formal occupation 16 March 1920; abolition of sultanate"
+      ]
+    },
+    {
+      "id": "IS38",
+      "title": "Convention Concerning the Exchange of Greek and Turkish Populations, 30 January 1923",
+      "url": "https://www.mfa.gov.tr/lausanne-peace-treaty-vi_-convention-concerning-the-exchange-of-greek-and-turkish-populations-signed-at-lausanne_.en.mfa",
+      "publisher": "Republic of Türkiye Ministry of Foreign Affairs",
+      "authors": [],
+      "kind": "primary_treaty_text",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "Articles 1, 2 and 16"
+      ],
+      "notes": "협약 문구 확인. 개별 가구의 실제 이주 경로·시행 분쟁까지 조사한 것은 아님."
+    },
+    {
+      "id": "IS39",
+      "title": "Political Events in Istanbul in the Republican Era",
+      "url": "https://istanbultarihi.ist/421-political-events-in-istanbul-in-the-republican-era",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Bülent Bakar"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "2/6 October 1923; republic declaration and celebrations"
+      ],
+      "notes": "영문 번역의 공화국 기념행사 날짜 오기(September)를 채택하지 않음."
+    },
+    {
+      "id": "IS40",
+      "title": "The Wealth Tax of 1942 and the Disappearance of Non-Muslim Enterprises in Turkey",
+      "url": "https://www.cambridge.org/core/journals/journal-of-economic-history/article/abs/wealth-tax-of-1942-and-the-disappearance-of-nonmuslim-enterprises-in-turkey/B05523EDB4D0AC1E4931C0562DE3E652",
+      "publisher": "The Journal of Economic History 79(1), 201–243",
+      "authors": [
+        "Seven Ağır",
+        "Cihan Artunç"
+      ],
+      "kind": "research_article",
+      "access": "abstract_only",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "Abstract; bibliographic metadata; erratum abstract"
+      ],
+      "publicationYear": 2019,
+      "doi": "10.1017/S0022050718000724",
+      "erratumUrl": "https://experts.arizona.edu/en/publications/erratum-the-wealth-tax-of-1942-and-the-disappearance-of-non-musli/",
+      "notes": "정오표는 온라인 목차의 저자명 철자 수정이다. 본 논문의 정량 분석·원자료표는 미검토. 초록의 정성적 결론만 저자에게 귀속해 사용."
+    },
+    {
+      "id": "IS41",
+      "title": "Transformation du Secteur du Çarşı. Extrait du plan d’aménagement.",
+      "url": "https://archives.saltresearch.org/handle/123456789/103333",
+      "publisher": "SALT Research",
+      "authors": [
+        "Henri Prost"
+      ],
+      "kind": "primary_archival_catalogue",
+      "access": "catalogue_metadata",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "Title; creator; date 1950-04-10"
+      ],
+      "notes": "기록목록 확인만 했으며 지도 도상 전체나 공사 실행 여부를 확인하지 않음."
+    },
+    {
+      "id": "IS42",
+      "title": "The History of Elections in Istanbul, 1876–1950",
+      "url": "https://istanbultarihi.ist/453-the-history-of-elections-in-istanbul-18761950",
+      "publisher": "History of Istanbul / Büyük İstanbul Tarihi, İSAM·İBB Kültür AŞ",
+      "authors": [
+        "Cezmi Eraslan",
+        "Kenan Olgun"
+      ],
+      "kind": "scholarly_book_chapter",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "1950 general election; Istanbul representatives"
+      ],
+      "notes": "국가 득표율을 이스탄불 득표율로 전용하지 않음. 1946년 설명의 상충 수치는 제외."
+    },
+    {
+      "id": "IS44",
+      "title": "Byzantium (ca. 330–1453)",
+      "url": "https://www.metmuseum.org/essays/byzantium-ca-330-1453",
+      "publisher": "The Metropolitan Museum of Art",
+      "authors": [
+        "Sarah T. Brooks"
+      ],
+      "kind": "museum_scholarly_essay",
+      "access": "relevant_sections",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "330 capital; Roman self-identification; periodization"
+      ],
+      "publicationYear": 2001,
+      "revisedYear": 2009
+    },
+    {
+      "id": "IS45",
+      "title": "Chronology / Kronoloji",
+      "url": "https://istanbultarihi.ist/chronology",
+      "publisher": "History of Istanbul / İSAM·İBB Kültür AŞ",
+      "authors": [],
+      "kind": "scholarly_reference_chronology",
+      "access": "selected_entries",
+      "checkedOn": "2026-10-10",
+      "checkedSections": [
+        "1493 printing; 1826; 1876; 1908; 1918; 1928 Gülhane announcement"
+      ],
+      "alternateUrl": "https://istanbultarihi.ist/kronoloji",
+      "notes": "개별 논문·공식 기록과 함께 날짜를 대조하는 용도. 연표만으로 사건 원인·주민 경험을 단정하지 않음."
+    }
+  ],
+  "records": [
+    {
+      "id": "IST-001",
+      "title": "예니카프의 신석기 정착 흔적",
+      "placeId": "yenikapi",
+      "date": {
+        "label": "기원전 약 6500~4800년의 개괄 편년",
+        "startYear": -6500,
+        "endYear": -4800,
+        "kind": "approximate_period",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": -6500,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시기·범위의 시작값은 화면 배치용이며 최초 발생일을 뜻하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "주거",
+        "환경"
+      ],
+      "narrative": "예니카프의 집터·도구·무덤은 이 반도에서 수도 이전의 삶을 보여 준다. 발굴 책임자의 개괄 편년을 사용하며 하나의 마을이 이 기간 내내 이어졌다고 단정하지 않는다.",
+      "evidence": [
+        {
+          "sourceId": "IS03",
+          "locator": "Yenikapı Neolitik Dönem Kazıları; Neolitik Mimari; Sonuç; Theodosius Harbor"
+        },
+        {
+          "sourceId": "IS04",
+          "locator": "Abstract"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "개별 시료의 보정 연대표를 모두 검토한 값이 아니다. 현재 해안선은 선사시대 해안선과 다르다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-002",
+      "title": "비잔티온의 성립 전승",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "기원전 7세기",
+        "startYear": -700,
+        "endYear": -601,
+        "kind": "century",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": -700,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시기·범위의 시작값은 화면 배치용이며 최초 발생일을 뜻하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "국가",
+        "이주"
+      ],
+      "narrative": "그리스계 식민도시 비잔티온의 성립은 보통 기원전 7세기의 맥락에서 설명된다. 비자스의 전설과 전승상의 건국년은 이곳에 인간이 처음 도착한 연도가 아니다.",
+      "evidence": [
+        {
+          "sourceId": "IS06",
+          "locator": "Foundation traditions; Roman imperial period"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "657년·668년 등 단일 전승 연도를 확정 사건일로 채택하지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-003",
+      "title": "어업과 소금의 도시",
+      "placeId": "bosphorus",
+      "date": {
+        "label": "기원전 5세기 무렵",
+        "startYear": -500,
+        "endYear": -401,
+        "kind": "century",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": -500,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시기·범위의 시작값은 화면 배치용이며 최초 발생일을 뜻하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "노동",
+        "교역"
+      ],
+      "narrative": "문헌은 비잔티온의 어업과 소금 거래를 연결한다. 생선을 잡는 일뿐 아니라 염장과 판매가 도시의 생업에 포함되었다.",
+      "evidence": [
+        {
+          "sourceId": "IS07",
+          "locator": "고대 저술, 소금·염장, 하드리아누스 시대 비문, 어시장 위치의 불확실성"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "고대 어시장의 정확한 위치는 확인되지 않았다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-004",
+      "title": "어업 공동체가 남긴 비문",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "서기 117~138년, 하드리아누스 재위기",
+        "startYear": 117,
+        "endYear": 138,
+        "kind": "reign_range",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 117,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시기·범위의 시작값은 화면 배치용이며 최초 발생일을 뜻하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "공동체",
+        "신앙"
+      ],
+      "narrative": "이 시기의 비문을 연구한 학자들은 디오니소스 숭배 집단과 어업 종사자의 연관을 설명한다. 비문은 고대의 직업 활동과 종교가 만나는 증거이다.",
+      "evidence": [
+        {
+          "sourceId": "IS07",
+          "locator": "고대 저술, 소금·염장, 하드리아누스 시대 비문, 어시장 위치의 불확실성"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "후대의 길드 제도를 이 집단에 그대로 적용하지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-C01",
+      "title": "첫 주민의 도착 연도는 모른다",
+      "placeId": "yenikapi",
+      "date": null,
+      "status": "ready_with_labels",
+      "theme": [
+        "자료읽기"
+      ],
+      "narrative": "이번 자료집의 시작은 조사한 예니카프 자료의 시작이다. 넓은 이스탄불 지역의 더 이른 인간 활동, 또는 모든 구역의 연속 거주를 망라하지 않는다. 신석기층과 역사시대 도시 사이에는 이번 조사에서 채우지 못한 긴 공백이 있다.",
+      "evidence": [
+        {
+          "sourceId": "IS03",
+          "locator": "Yenikapı Neolitik Dönem Kazıları; Neolitik Mimari; Sonuç; Theodosius Harbor"
+        },
+        {
+          "sourceId": "IS04",
+          "locator": "Abstract"
+        },
+        {
+          "sourceId": "IS05",
+          "locator": "English extended abstract / burial types"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "local"
+    },
+    {
+      "id": "IST-005",
+      "title": "콘스탄티노폴리스, 로마의 새 수도",
+      "placeId": "sultanahmet",
+      "date": {
+        "label": "330년",
+        "startYear": 330,
+        "endYear": 330,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 330,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "국가",
+        "도시"
+      ],
+      "narrative": "콘스탄티누스의 새 수도가 출범했다. 오늘날 비잔티움이라 부르는 제국의 주민은 스스로를 로마인으로 인식했다.",
+      "evidence": [
+        {
+          "sourceId": "IS44",
+          "locator": "330 capital; Roman self-identification; periodization"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "330년은 이 장소의 최초 정착년이 아니다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-006",
+      "title": "교회와 거리의 정치적 충돌",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "341년",
+        "startYear": 341,
+        "endYear": 341,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 341,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "주민",
+        "신앙"
+      ],
+      "narrative": "교회 지도자 선출을 둘러싼 충돌이 도시의 정치 문제가 되었다. 수도의 종교적 변화는 황제의 명령만으로 순조롭게 이루어진 과정이 아니었다.",
+      "evidence": [
+        {
+          "sourceId": "IS08",
+          "locator": "교회·도시 정치; 히포드롬; 341년 갈등"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "local"
+    },
+    {
+      "id": "IST-007",
+      "title": "서쪽 수원이 높은 언덕으로 연결되다",
+      "placeId": "aqueduct",
+      "date": {
+        "label": "373년",
+        "startYear": 373,
+        "endYear": 373,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 373,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "물",
+        "노동"
+      ],
+      "narrative": "제임스 크로는 문헌과 시설 연구를 바탕으로 트라키아에서 새 급수로를 통해 물이 도달한 해를 373년으로 설명한다.",
+      "evidence": [
+        {
+          "sourceId": "IS09",
+          "locator": "New Water Channels; Distribution; Iconoclast Revival; From Byzantine Constantinople to Ottoman Istanbul"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "관련 수로 전체가 이 한 해에 처음 건설되었다는 뜻은 아니다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-008",
+      "title": "테오도시우스 항구의 성장",
+      "placeId": "yenikapi",
+      "date": {
+        "label": "4세기 말, 테오도시우스 1세 재위기",
+        "startYear": 379,
+        "endYear": 395,
+        "kind": "approximate_period",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 379,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시기·범위의 시작값은 화면 배치용이며 최초 발생일을 뜻하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "식량",
+        "항구"
+      ],
+      "narrative": "예니카프에서 발견된 항구는 수도의 해상 공급을 설명하는 핵심 유적이다. 통상 테오도시우스 1세와 연결하지만 이전 항만 이용과 조성 시점에는 논의가 있다.",
+      "evidence": [
+        {
+          "sourceId": "IS03",
+          "locator": "Yenikapı Neolitik Dönem Kazıları; Neolitik Mimari; Sonuç; Theodosius Harbor"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "황제 재위 범위를 항구 공사 착공·완공일로 바꾸지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-009",
+      "title": "물 사용을 둘러싼 규정",
+      "placeId": "aqueduct",
+      "date": {
+        "label": "약 440~441년",
+        "startYear": 440,
+        "endYear": 441,
+        "kind": "approximate_period",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 440,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시기·범위의 시작값은 화면 배치용이며 최초 발생일을 뜻하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "물",
+        "제도"
+      ],
+      "narrative": "크로가 검토한 법령은 하드리아누스 수로의 용수를 공공 목욕탕과 황궁에 우선 배정하는 규정을 전한다. 시설의 존재와 물을 쓸 권리는 별개의 문제였다.",
+      "evidence": [
+        {
+          "sourceId": "IS09",
+          "locator": "New Water Channels; Distribution; Iconoclast Revival; From Byzantine Constantinople to Ottoman Istanbul"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "local"
+    },
+    {
+      "id": "IST-010",
+      "title": "육지 성벽의 방어 체계가 강화되다",
+      "placeId": "land_walls",
+      "date": {
+        "label": "447년",
+        "startYear": 447,
+        "endYear": 447,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 447,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "방어",
+        "도시"
+      ],
+      "narrative": "테오도시우스 성벽 체계에 방어선이 더해졌다. 성벽은 도시 공간을 둘러싸고 외부 공격에 대비하는 거대한 시설이었다.",
+      "evidence": [
+        {
+          "sourceId": "IS02",
+          "locator": "Brief synthesis; criteria; integrity"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "현존 성벽의 모든 부분이 447년 원형은 아니다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-011",
+      "title": "니카 봉기와 진압",
+      "placeId": "sultanahmet",
+      "date": {
+        "label": "532년 1월",
+        "startYear": 532,
+        "endYear": 532,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 532,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "출처에 기재된 연월에 배치한다. 일 단위 재생이나 검증되지 않은 달력 환산은 하지 않는다.",
+        "displayAnchorMonth": 1
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "정치",
+        "주민"
+      ],
+      "narrative": "경기장 파벌의 항의는 황제 권력을 위협하는 봉기로 확대되었고, 화재와 군대의 유혈 진압으로 이어졌다.",
+      "evidence": [
+        {
+          "sourceId": "IS10",
+          "locator": "532년 1월 봉기 전개와 진압"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "고대 저자의 사망자 추산을 확정 통계로 쓰지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-012",
+      "title": "하기아 소피아의 재건",
+      "placeId": "sultanahmet",
+      "date": {
+        "label": "532~537년",
+        "startYear": 532,
+        "endYear": 537,
+        "kind": "construction_period",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 532,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시기·범위의 시작값은 화면 배치용이며 최초 발생일을 뜻하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "신앙",
+        "건축"
+      ],
+      "narrative": "봉기 이후 재건된 하기아 소피아는 황제의 수도와 기독교 예배가 만나는 거대한 공간이 되었다.",
+      "evidence": [
+        {
+          "sourceId": "IS02",
+          "locator": "Brief synthesis; criteria; integrity"
+        },
+        {
+          "sourceId": "IS10",
+          "locator": "532년 1월 봉기 전개와 진압"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "local"
+    },
+    {
+      "id": "IST-013",
+      "title": "수도를 덮친 역병",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "542년",
+        "startYear": 542,
+        "endYear": 542,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 542,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "질병",
+        "돌봄"
+      ],
+      "narrative": "프로코피오스는 수도의 역병으로 간병과 매장이 감당하기 어려워진 상황을 기록했다. 국가의 대응과 주민의 일상 붕괴를 함께 읽을 수 있는 증언이다.",
+      "evidence": [
+        {
+          "sourceId": "IS11",
+          "locator": "History of the Wars, plague account, Constantinople and burial"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "기록의 일별 사망 수치는 현대 인구 통계가 아니다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-014",
+      "title": "포위전으로 끊긴 장거리 급수",
+      "placeId": "aqueduct",
+      "date": {
+        "label": "626년",
+        "startYear": 626,
+        "endYear": 626,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 626,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "전쟁",
+        "물"
+      ],
+      "narrative": "아바르의 포위 과정에서 발렌스 수로 계통이 끊겼다고 연구된다. 다른 급수와 저수 시설까지 모두 사라졌다는 뜻은 아니다.",
+      "evidence": [
+        {
+          "sourceId": "IS09",
+          "locator": "New Water Channels; Distribution; Iconoclast Revival; From Byzantine Constantinople to Ottoman Istanbul"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "local"
+    },
+    {
+      "id": "IST-015",
+      "title": "수로를 다시 잇는 노동",
+      "placeId": "aqueduct",
+      "date": {
+        "label": "765년, 채택한 연구의 편년",
+        "startYear": 765,
+        "endYear": 765,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 765,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "노동",
+        "물"
+      ],
+      "narrative": "가뭄 이후 콘스탄티누스 5세 치하에서 장거리 급수 체계가 복구되었다. 연대기는 여러 지역에서 동원된 기술자와 노동자를 전한다.",
+      "evidence": [
+        {
+          "sourceId": "IS09",
+          "locator": "New Water Channels; Distribution; Iconoclast Revival; From Byzantine Constantinople to Ottoman Istanbul"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "일부 문헌의 766년 표기와 구별하여 여기서는 크로의 765년을 채택. 동원 인원은 재현하지 않음."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-016",
+      "title": "9세기 화물선 YK12",
+      "placeId": "yenikapi",
+      "date": {
+        "label": "9세기",
+        "startYear": 800,
+        "endYear": 899,
+        "kind": "century",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 800,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시기·범위의 시작값은 화면 배치용이며 최초 발생일을 뜻하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "항구",
+        "생활"
+      ],
+      "narrative": "예니카프 12호선은 암포라 화물과 선상 생활용기를 남겼다. 잔해는 항해와 생활을 함께 살펴볼 수 있는 자료이다.",
+      "evidence": [
+        {
+          "sourceId": "IS12",
+          "locator": "37 wrecks, fifth–eleventh centuries; reconstruction"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "침몰을 특정 폭풍·날짜로 확정하지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-017",
+      "title": "시장 규칙을 적은 도시 행정",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "10세기",
+        "startYear": 900,
+        "endYear": 999,
+        "kind": "century",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 900,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시기·범위의 시작값은 화면 배치용이며 최초 발생일을 뜻하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "시장",
+        "제도"
+      ],
+      "narrative": "에파르코스의 서(Book of the Eparch)는 식품·사치품 업종의 규정을 전한다. 공급과 거래를 관리하려던 도시 행정을 보여 준다.",
+      "evidence": [
+        {
+          "sourceId": "IS13",
+          "locator": "Book of the Eparch; markets and guilds; trade with Rus and Muslim merchants"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "규정이 곧 실제 생활의 완벽한 묘사는 아니다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-018",
+      "title": "흑해와 동지중해를 잇는 상인들",
+      "placeId": "golden_horn",
+      "date": {
+        "label": "10~11세기 중심의 교역 맥락",
+        "startYear": 900,
+        "endYear": 1099,
+        "kind": "approximate_period",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 900,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시기·범위의 시작값은 화면 배치용이며 최초 발생일을 뜻하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "교역",
+        "주변지역"
+      ],
+      "narrative": "루스 및 무슬림 상인의 활동은 수도가 흑해 북쪽과 동지중해·서아시아의 연결망 안에 있었음을 보여 준다. 물품과 함께 사람들이 이동했다.",
+      "evidence": [
+        {
+          "sourceId": "IS13",
+          "locator": "Book of the Eparch; markets and guilds; trade with Rus and Muslim merchants"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "오늘날 국경과 국민 정체성을 중세 상인에게 그대로 적용하지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-019",
+      "title": "금각만 건너편 유대인 주민의 삶",
+      "placeId": "galata",
+      "date": {
+        "label": "12세기",
+        "startYear": 1100,
+        "endYear": 1199,
+        "kind": "century",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1100,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시기·범위의 시작값은 화면 배치용이며 최초 발생일을 뜻하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "주민",
+        "불평등"
+      ],
+      "narrative": "니컬러스 드 랭은 투델라의 벤야민이 남긴 기록으로 페라의 유대인 거주와 생업을 설명한다. 도시 경제 참여와 거주상의 제약이 함께 나타난다.",
+      "evidence": [
+        {
+          "sourceId": "IS15",
+          "locator": "Yahudi Semtleri; Katkı"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "여행자의 인구 추산과 여행 연도를 정밀 통계·정확한 사건일로 쓰지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-020",
+      "title": "1204년의 점령과 약탈",
+      "placeId": "sultanahmet",
+      "date": {
+        "label": "1204년",
+        "startYear": 1204,
+        "endYear": 1204,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1204,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "전쟁",
+        "주민"
+      ],
+      "narrative": "제4차 십자군의 점령 이후 약탈과 주민 피해가 발생했다. 니케타스 코니아테스는 성당의 약탈과 사람들의 포로화·이산을 증언한다.",
+      "evidence": [
+        {
+          "sourceId": "IS17",
+          "locator": "Sack, desecration, capture and separation of residents"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "local"
+    },
+    {
+      "id": "IST-021",
+      "title": "라틴 지배 아래 남은 도시 생활",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1204~1261년",
+        "startYear": 1204,
+        "endYear": 1261,
+        "kind": "political_period",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1204,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시기·범위의 시작값은 화면 배치용이며 최초 발생일을 뜻하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "국가",
+        "법"
+      ],
+      "narrative": "라틴 제국과 베네치아의 지배 아래에서도 그리스계 주민과 일부 기존 법·행정 관행은 이어졌다. 파괴와 제도의 지속을 함께 살펴야 한다.",
+      "evidence": [
+        {
+          "sourceId": "IS16",
+          "locator": "Latin and Venetian administration; Greek residents and law; 25 July 1261"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "local"
+    },
+    {
+      "id": "IST-022",
+      "title": "비잔티움의 수도 회복",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1261년 7월",
+        "startYear": 1261,
+        "endYear": 1261,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1261,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "출처에 기재된 연월에 배치한다. 일 단위 재생이나 검증되지 않은 달력 환산은 하지 않는다.",
+        "displayAnchorMonth": 7
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "국가"
+      ],
+      "narrative": "니케아 세력이 도시를 되찾아 비잔티움 황제의 통치가 복원되었다. 정권의 복귀를 곧바로 예전의 경제 규모 회복으로 해석하지 않는다.",
+      "evidence": [
+        {
+          "sourceId": "IS16",
+          "locator": "Latin and Venetian administration; Greek residents and law; 25 July 1261"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "local"
+    },
+    {
+      "id": "IST-023",
+      "title": "갈라타의 제노바 거류지",
+      "placeId": "galata",
+      "date": {
+        "label": "1267년",
+        "startYear": 1267,
+        "endYear": 1267,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1267,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "교역",
+        "주민"
+      ],
+      "narrative": "금각만 북쪽 페라에 제노바 거류지가 자리 잡았다. 물 건너 두 지역은 교역으로 이어지면서도 통치 질서가 달랐다.",
+      "evidence": [
+        {
+          "sourceId": "IS19",
+          "locator": "1267 Genoese colony; 1348 tower; 1509 earthquake and 1510 repair"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "local"
+    },
+    {
+      "id": "IST-024",
+      "title": "코라 수도원의 그림과 후원",
+      "placeId": "chora",
+      "date": {
+        "label": "1316~1321년",
+        "startYear": 1316,
+        "endYear": 1321,
+        "kind": "construction_period",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1316,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시기·범위의 시작값은 화면 배치용이며 최초 발생일을 뜻하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "예술",
+        "신앙"
+      ],
+      "narrative": "테오도로스 메토키테스의 후원 아래 코라 수도원이 복구·장식되었다. 모자이크와 벽화는 후기 비잔티움의 예술 생산을 보여 준다.",
+      "evidence": [
+        {
+          "sourceId": "IS18",
+          "locator": "Chora restoration and decoration, 1316–21"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "일부 후원자의 부를 주민 전체의 생활 수준으로 일반화하지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-025",
+      "title": "제노바의 갈라타 탑",
+      "placeId": "galata",
+      "date": {
+        "label": "1348년",
+        "startYear": 1348,
+        "endYear": 1348,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1348,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "방어",
+        "항구"
+      ],
+      "narrative": "오늘날 알려진 갈라타 탑은 제노바 거류지의 방어 체계와 연결된다. 바닷길의 교역과 군사적 경쟁이 같은 공간에 겹쳤다.",
+      "evidence": [
+        {
+          "sourceId": "IS19",
+          "locator": "1267 Genoese colony; 1348 tower; 1509 earthquake and 1510 repair"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "local"
+    },
+    {
+      "id": "IST-026",
+      "title": "오스만의 정복",
+      "placeId": "land_walls",
+      "date": {
+        "label": "1453년 5월",
+        "startYear": 1453,
+        "endYear": 1453,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1453,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "출처에 기재된 연월에 배치한다. 일 단위 재생이나 검증되지 않은 달력 환산은 하지 않는다.",
+        "displayAnchorMonth": 5
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "전쟁",
+        "국가"
+      ],
+      "narrative": "메흐메트 2세의 군대가 도시를 함락시켰다. 이 사건으로 비잔티움 제국이 끝났으며 주민에게는 죽음·포로화·이주와 새로운 통치가 뒤따랐다.",
+      "evidence": [
+        {
+          "sourceId": "IS20",
+          "locator": "Final attack; competing accounts and Ottoman/Byzantine preparations"
+        },
+        {
+          "sourceId": "IS21",
+          "locator": "1455 survey; resettlement and captives; Gennadios; houses and land; city names"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "정복의 승전 서사만으로 주민 피해를 덮지 않는다. 정확한 희생·포로 수는 수록하지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-027",
+      "title": "갈라타 항복 문서의 보장",
+      "placeId": "galata",
+      "date": {
+        "label": "1453년 6월",
+        "startYear": 1453,
+        "endYear": 1453,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1453,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "출처에 기재된 연월에 배치한다. 일 단위 재생이나 검증되지 않은 달력 환산은 하지 않는다.",
+        "displayAnchorMonth": 6
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "법",
+        "주민"
+      ],
+      "narrative": "갈라타의 항복 문서는 생명과 재산에 관한 보장을 제시했다. 동시에 오스만의 재판·행정 질서에 편입되었다.",
+      "evidence": [
+        {
+          "sourceId": "IS22",
+          "locator": "1 June 1453 ahdname; 1455 survey and resident categories"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "도시 전체의 무력 함락과 갈라타의 항복을 같은 조건으로 설명하지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-028",
+      "title": "겐나디오스와 정교회 조직",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1454년",
+        "startYear": 1454,
+        "endYear": 1454,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1454,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "신앙",
+        "통치"
+      ],
+      "narrative": "겐나디오스가 총대주교가 되었다. 오스만 수도를 재편하는 과정에 정교회 조직의 재구성도 포함되었다.",
+      "evidence": [
+        {
+          "sourceId": "IS21",
+          "locator": "1455 survey; resettlement and captives; Gennadios; houses and land; city names"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "종교 조직의 인정이 모든 주민의 동등한 권리를 뜻하지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-029",
+      "title": "집과 주민을 다시 기록하다",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1455년",
+        "startYear": 1455,
+        "endYear": 1455,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1455,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "주거",
+        "이주"
+      ],
+      "narrative": "정복 뒤의 조사 기록은 건물과 주민을 파악하려는 통치를 보여 준다. 정착 유도와 강제 이주, 귀환, 토지·가옥의 권리 문제가 얽혀 있었다.",
+      "evidence": [
+        {
+          "sourceId": "IS21",
+          "locator": "1455 survey; resettlement and captives; Gennadios; houses and land; city names"
+        },
+        {
+          "sourceId": "IS22",
+          "locator": "1 June 1453 ahdname; 1455 survey and resident categories"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "현재 전하는 조사 자료는 도시 전체의 완전한 인구 명부가 아니다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-030",
+      "title": "다양한 주민을 세대 단위로 세다",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1477년",
+        "startYear": 1477,
+        "endYear": 1477,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1477,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "인구",
+        "자료읽기"
+      ],
+      "narrative": "이 시기 조사에서는 여러 종교·공동체의 가구를 확인할 수 있다. 세대 수를 실제 주민 수로 환산할 때에는 별도의 가정이 필요하다.",
+      "evidence": [
+        {
+          "sourceId": "IS23",
+          "locator": "1477 survey; household counting and estimates"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "가구 수에 일정 계수를 곱한 추정 인구를 정확한 인구로 표시하지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-031",
+      "title": "이베리아에서 온 세파르디 유대인",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1492년 이후 이주가 이어짐",
+        "startYear": 1492,
+        "endYear": 1492,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1492,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "1492년은 추방과 이어지는 이주의 도입점. 이스탄불 이주가 이 해에 시작·종료되었다는 정밀한 집단 편년은 아니다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "이주",
+        "언어"
+      ],
+      "narrative": "이베리아의 추방을 겪은 유대인 일부가 오스만 영역과 이스탄불로 이주했다. 기존 유대인 공동체에 새로운 언어와 지역적 전통이 더해졌다.",
+      "evidence": [
+        {
+          "sourceId": "IS24",
+          "locator": "1492 expulsion and Sephardic migration; language formation"
+        },
+        {
+          "sourceId": "IS45",
+          "locator": "1493 printing; 1826; 1876; 1908; 1918; 1928"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "도시의 모든 유대인 공동체가 이때 처음 생긴 것은 아니다. 1492년은 이주의 종결년이 아니다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-032",
+      "title": "히브리어 인쇄의 등장",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1493년",
+        "startYear": 1493,
+        "endYear": 1493,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1493,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "책",
+        "공동체"
+      ],
+      "narrative": "다비드와 사무엘 벤 나흐미아스 형제의 인쇄소가 히브리어 법률서 Arba’ah Turim을 출판했다. 도시의 인쇄 역사는 여러 언어의 활동으로 이루어졌다.",
+      "evidence": [
+        {
+          "sourceId": "IS45",
+          "locator": "1493 printing; 1826; 1876; 1908; 1918; 1928"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "local"
+    },
+    {
+      "id": "IST-033",
+      "title": "지진 이후의 갈라타 탑 수리",
+      "placeId": "galata",
+      "date": {
+        "label": "1509년 지진과 1510년 수리",
+        "startYear": 1509,
+        "endYear": 1510,
+        "kind": "event_sequence",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1509,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시기·범위의 시작값은 화면 배치용이며 최초 발생일을 뜻하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "재해",
+        "건축"
+      ],
+      "narrative": "공식 박물관 안내는 지진으로 손상된 갈라타 탑이 이듬해 수리되었다고 설명한다. 현존 건물은 반복된 손상과 수리를 거친 결과물이다.",
+      "evidence": [
+        {
+          "sourceId": "IS19",
+          "locator": "1267 Genoese colony; 1348 tower; 1509 earthquake and 1510 repair"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "local"
+    },
+    {
+      "id": "IST-034",
+      "title": "쉴레이마니예 복합시설",
+      "placeId": "suleymaniye",
+      "date": {
+        "label": "1550~1557년",
+        "startYear": 1550,
+        "endYear": 1557,
+        "kind": "construction_period",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1550,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시기·범위의 시작값은 화면 배치용이며 최초 발생일을 뜻하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "도시",
+        "돌봄",
+        "신앙"
+      ],
+      "narrative": "쉴레이마니예는 모스크와 교육·복지 시설을 묶은 수도의 복합 공간이었다. 제국의 위엄과 일상 서비스를 함께 살펴볼 수 있다.",
+      "evidence": [
+        {
+          "sourceId": "IS02",
+          "locator": "Brief synthesis; criteria; integrity"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "개별 시설의 실제 이용자는 별도 문서로 확인해야 한다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-C02",
+      "title": "누가 자유롭게 이동할 수 있었나",
+      "placeId": "golden_horn",
+      "date": null,
+      "status": "ready_with_labels",
+      "theme": [
+        "노동",
+        "노예제"
+      ],
+      "narrative": "오스만 이스탄불에는 가사 노동과 조선소 등에서 일한 노예·포로가 있었다. 해방 기록과 재산 목록을 읽을 때 강제된 노동과 이동의 제약을 함께 살펴야 한다.",
+      "evidence": [
+        {
+          "sourceId": "IS27",
+          "locator": "Household slavery; imperial shipyard; probate and manumission records"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "노예화의 경로·노동 조건은 다양했다. 모순된 인구 추산은 채택하지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-035",
+      "title": "쳄베를리타쉬 목욕탕의 수입과 노동",
+      "placeId": "cemberlitas",
+      "date": {
+        "label": "1584년",
+        "startYear": 1584,
+        "endYear": 1584,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1584,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "생활",
+        "노동",
+        "재정"
+      ],
+      "narrative": "이 목욕탕은 누르바누의 후원 사업과 연결되며 수입은 위스퀴다르의 아티크 발리데 복합시설을 지원했다. 물을 데우고 시설을 유지하는 노동도 이 제도의 일부였다.",
+      "evidence": [
+        {
+          "sourceId": "IS25",
+          "locator": "1584 inscription; Nurbanu; revenue for Atik Valide; workers and fuel"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "누르바누는 1583년 사망했다. 1584년에 직접 운영했다고 쓰지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-036",
+      "title": "1660년 대화재와 재건의 불평등",
+      "placeId": "eminonu",
+      "date": {
+        "label": "1660년",
+        "startYear": 1660,
+        "endYear": 1660,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1660,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "재해",
+        "주거",
+        "불평등"
+      ],
+      "narrative": "대화재는 주거와 식량 공급을 흔들었다. 에미뇌뉘 재건 과정에서는 유대인 주민의 거주와 재산이 제약되고 모스크 사업을 위한 공간 재편이 진행되었다.",
+      "evidence": [
+        {
+          "sourceId": "IS26",
+          "locator": "Fire and food shortage; reconstruction and removal of Jewish residents"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "재건 정책의 결과를 화재 자체의 자연스러운 결과로 설명하지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-037",
+      "title": "1729년의 사전 인쇄",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1729년",
+        "startYear": 1729,
+        "endYear": 1729,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1729,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "책",
+        "언어"
+      ],
+      "narrative": "이브라힘 뮈테페리카의 인쇄소에서 반쿨루 사전이 출판되었다. 미국 의회도서관은 소장본과 출판 허가를 소개한다.",
+      "evidence": [
+        {
+          "sourceId": "IS28",
+          "locator": "1729 Vankulu dictionary, Müteferrika press and permission"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "이스탄불 전체의 첫 인쇄물이 아니다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-038",
+      "title": "시장이 멈춘 1730년 봉기",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1730년",
+        "startYear": 1730,
+        "endYear": 1730,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1730,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "정치",
+        "노동"
+      ],
+      "narrative": "파트로나 할릴이 관련된 봉기는 시장 폐쇄와 권력 교체로 이어졌다. 상인·군인·이주와 생계 경쟁을 함께 읽어야 하며 화려한 궁정 취향에 대한 반발 하나로 환원하지 않는다.",
+      "evidence": [
+        {
+          "sourceId": "IS29",
+          "locator": "28 September revolt; market closures; Ahmed III; 25 November suppression"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "local"
+    },
+    {
+      "id": "IST-039",
+      "title": "도시에 살기 위한 보증인",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1790년대",
+        "startYear": 1790,
+        "endYear": 1799,
+        "kind": "decade",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1790,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시기·범위의 시작값은 화면 배치용이며 최초 발생일을 뜻하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "이주",
+        "노동",
+        "통제"
+      ],
+      "narrative": "검문·조사 명부는 노동자와 숙소, 보증 관계를 보여 준다. 누군가의 보증은 이주민의 정착을 돕는 관계이자 당국이 사람을 추적하는 장치였다.",
+      "evidence": [
+        {
+          "sourceId": "IS30",
+          "locator": "1790s inspections; guarantors; labor and lodgings; coverage limits"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "명부에 기록된 노동자 수는 전체 도시 인구가 아니다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-C03",
+      "title": "이스탄불이라는 이름의 긴 역사",
+      "placeId": "historic_peninsula",
+      "date": null,
+      "status": "ready_with_labels",
+      "theme": [
+        "이름",
+        "자료읽기"
+      ],
+      "narrative": "이스탄불 계열 명칭은 1930년에 새로 발명된 것이 아니다. 시대·언어·공문서에 따라 콘스탄티노폴리스, 코스탄티니예 등 여러 이름이 병용되었다.",
+      "evidence": [
+        {
+          "sourceId": "IS21",
+          "locator": "1455 survey; resettlement and captives; Gennadios; houses and land; city names"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "local"
+    },
+    {
+      "id": "IST-040",
+      "title": "예니체리 군단의 폐지",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1826년",
+        "startYear": 1826,
+        "endYear": 1826,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1826,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "군대",
+        "국가"
+      ],
+      "narrative": "마흐무트 2세는 무력 진압을 거쳐 예니체리 군단을 폐지했다. 수도의 군사적 권력과 제도가 크게 재편되었다.",
+      "evidence": [
+        {
+          "sourceId": "IS31",
+          "locator": "1826; 1839 Tanzimat declaration; 1876; 1908"
+        },
+        {
+          "sourceId": "IS45",
+          "locator": "1493 printing; 1826; 1876; 1908; 1918; 1928"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "이를 도시 주민 전체가 지지한 개혁으로 표현하지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-041",
+      "title": "귈하네에서 발표된 개혁 칙령",
+      "placeId": "sultanahmet",
+      "date": {
+        "label": "1839년 11월",
+        "startYear": 1839,
+        "endYear": 1839,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1839,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "출처에 기재된 연월에 배치한다. 일 단위 재생이나 검증되지 않은 달력 환산은 하지 않는다.",
+        "displayAnchorMonth": 11
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "법",
+        "개혁"
+      ],
+      "narrative": "귈하네에서 공표된 탄지마트 칙령은 제국의 통치 개혁을 알렸다. 국가가 약속한 원칙과 주민이 실제 누린 권리를 구분해서 읽어야 한다.",
+      "evidence": [
+        {
+          "sourceId": "IS31",
+          "locator": "1826; 1839 Tanzimat declaration; 1876; 1908"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "local"
+    },
+    {
+      "id": "IST-042",
+      "title": "정기 증기선 회사의 설립과 인가",
+      "placeId": "bosphorus",
+      "date": {
+        "label": "1850년 설립 과정·1851년 인가",
+        "startYear": 1850,
+        "endYear": 1851,
+        "kind": "event_sequence",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1850,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시기·범위의 시작값은 화면 배치용이며 최초 발생일을 뜻하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "교통",
+        "노동"
+      ],
+      "narrative": "쉬르케티 하이리예의 설립은 보스포루스의 증기선 교통을 조직하는 전환점이었다. 가을의 설립 과정과 이듬해 황제의 인가를 구분한다.",
+      "evidence": [
+        {
+          "sourceId": "IS32",
+          "locator": "Şirket-i Hayriyye foundation in autumn 1850; imperial concession 16 January 1851; boatmen"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "1851년을 최초 증기선 운항년이라고 쓰지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-043",
+      "title": "갈라타와 언덕을 잇는 튀넬",
+      "placeId": "galata",
+      "date": {
+        "label": "1875년 1월",
+        "startYear": 1875,
+        "endYear": 1875,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1875,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "출처에 기재된 연월에 배치한다. 일 단위 재생이나 검증되지 않은 달력 환산은 하지 않는다.",
+        "displayAnchorMonth": 1
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "교통",
+        "도시"
+      ],
+      "narrative": "튀넬은 갈라타와 베이오울루 사이의 가파른 이동을 연결한 지하 강삭철도였다.",
+      "evidence": [
+        {
+          "sourceId": "IS33",
+          "locator": "1875 inauguration and public service"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "1월 17일 개통식과 18일 일반 운행을 구별. 현대 도시철도 전체의 개통으로 일반화하지 않음."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-044",
+      "title": "헌법과 의회의 시대가 열리다",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1876년",
+        "startYear": 1876,
+        "endYear": 1876,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1876,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "정치",
+        "제도"
+      ],
+      "narrative": "오스만 헌법이 공포되었다. 대표와 통치 권한을 둘러싼 문제가 수도 정치의 중요한 축으로 떠올랐다.",
+      "evidence": [
+        {
+          "sourceId": "IS31",
+          "locator": "1826; 1839 Tanzimat declaration; 1876; 1908"
+        },
+        {
+          "sourceId": "IS45",
+          "locator": "1493 printing; 1826; 1876; 1908; 1918; 1928"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "헌법 공포를 곧 보통·평등 선거의 실현으로 설명하지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-045",
+      "title": "입헌정의 부활",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1908년",
+        "startYear": 1908,
+        "endYear": 1908,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1908,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "정치",
+        "출판"
+      ],
+      "narrative": "입헌정의 복원 이후 정치적 결사와 출판을 통한 요구가 더욱 활발해졌다. 여성의 잡지와 단체 활동도 이 변화를 읽는 통로이다.",
+      "evidence": [
+        {
+          "sourceId": "IS31",
+          "locator": "1826; 1839 Tanzimat declaration; 1876; 1908"
+        },
+        {
+          "sourceId": "IS34",
+          "locator": "PDF pp.2–6: method, 1913 editorials, labor, education, telephone employment"
+        },
+        {
+          "sourceId": "IS45",
+          "locator": "1493 printing; 1826; 1876; 1908; 1918; 1928"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "local"
+    },
+    {
+      "id": "IST-046",
+      "title": "여성이 자신의 권리를 쓰다",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1913년",
+        "startYear": 1913,
+        "endYear": 1913,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1913,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "여성",
+        "노동",
+        "교육"
+      ],
+      "narrative": "Kadınlar Dünyası의 논설은 여성의 노동·교육과 권리를 당사자의 언어로 요구했다. 연구는 잡지의 주장이 연대와 차별적 경계를 동시에 가질 수 있음을 보여 준다.",
+      "evidence": [
+        {
+          "sourceId": "IS34",
+          "locator": "PDF pp.2–6: method, 1913 editorials, labor, education, telephone employment"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "이 잡지의 독자·필자를 모든 계층과 공동체 여성의 대표로 취급하지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-047",
+      "title": "제1차 세계대전에 들어선 제국",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1914년",
+        "startYear": 1914,
+        "endYear": 1914,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1914,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "전쟁",
+        "국가"
+      ],
+      "narrative": "오스만 제국이 제1차 세계대전에 참가했다. 다음 해 수도에서의 체포·추방을 제국 전역의 폭력과 연결해 읽어야 하는 배경이다.",
+      "evidence": [
+        {
+          "sourceId": "IS36",
+          "locator": "Ottoman entry into World War I; 24 April 1915 Constantinople arrests and genocide"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "전국적 사건을 수도 안에서 모두 일어난 사건처럼 표시하지 않는다."
+      ],
+      "scope": "national_context"
+    },
+    {
+      "id": "IST-048",
+      "title": "아르메니아인 지도자들의 체포",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1915년 4월 24일",
+        "startYear": 1915,
+        "endYear": 1915,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1915,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "출처에 기재된 연월에 배치한다. 일 단위 재생이나 검증되지 않은 달력 환산은 하지 않는다.",
+        "displayAnchorMonth": 4
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "폭력",
+        "주민",
+        "인권"
+      ],
+      "narrative": "오스만 당국은 수도의 아르메니아인 지도자들을 체포·추방했다. 미국 홀로코스트기념관은 이 사건을 아르메니아인 집단학살의 시작을 기리는 날짜와 연결해 설명한다.",
+      "evidence": [
+        {
+          "sourceId": "IS36",
+          "locator": "Ottoman entry into World War I; 24 April 1915 Constantinople arrests and genocide"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "수도의 모든 아르메니아인에게 똑같은 일이 일어났다고 쓰지 않는다. 이웃 공동체의 해체를 단순한 인구 이동으로 완화하지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-049",
+      "title": "휴전 뒤 연합군의 진입",
+      "placeId": "bosphorus",
+      "date": {
+        "label": "1918년 10~11월",
+        "startYear": 1918,
+        "endYear": 1918,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1918,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "전쟁",
+        "점령"
+      ],
+      "narrative": "무드로스 휴전 뒤 연합군 함대와 병력이 수도에 진입했다. 이 시기와 1920년의 공식 점령 단계를 구분한다.",
+      "evidence": [
+        {
+          "sourceId": "IS37",
+          "locator": "1918 armistice; formal occupation 16 March 1920; abolition of sultanate"
+        },
+        {
+          "sourceId": "IS45",
+          "locator": "1493 printing; 1826; 1876; 1908; 1918; 1928"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "local"
+    },
+    {
+      "id": "IST-050",
+      "title": "공식 점령과 수도의 통치",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1920년 3월 16일",
+        "startYear": 1920,
+        "endYear": 1920,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1920,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "출처에 기재된 연월에 배치한다. 일 단위 재생이나 검증되지 않은 달력 환산은 하지 않는다.",
+        "displayAnchorMonth": 3
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "점령",
+        "정치"
+      ],
+      "narrative": "연합군의 공식 점령이 이루어졌다. 수도의 정치 질서는 제국 정부와 점령 세력, 아나톨리아의 민족운동 사이에서 흔들렸다.",
+      "evidence": [
+        {
+          "sourceId": "IS37",
+          "locator": "1918 armistice; formal occupation 16 March 1920; abolition of sultanate"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "local"
+    },
+    {
+      "id": "IST-051",
+      "title": "술탄제의 폐지",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1922년 11월",
+        "startYear": 1922,
+        "endYear": 1922,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1922,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "출처에 기재된 연월에 배치한다. 일 단위 재생이나 검증되지 않은 달력 환산은 하지 않는다.",
+        "displayAnchorMonth": 11
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "국가"
+      ],
+      "narrative": "술탄제가 폐지되었다. 수백 년간 황실의 수도였던 도시가 새로운 정치 질서 속에 놓이는 과정의 한 단계이다.",
+      "evidence": [
+        {
+          "sourceId": "IS37",
+          "locator": "1918 armistice; formal occupation 16 March 1920; abolition of sultanate"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "national_context"
+    },
+    {
+      "id": "IST-052",
+      "title": "주민 교환 협약의 예외",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1923년 1월 30일",
+        "startYear": 1923,
+        "endYear": 1923,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1923,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "출처에 기재된 연월에 배치한다. 일 단위 재생이나 검증되지 않은 달력 환산은 하지 않는다.",
+        "displayAnchorMonth": 1
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "이주",
+        "법",
+        "주민"
+      ],
+      "narrative": "그리스·튀르키예 주민 교환 협약은 강제 교환을 규정했지만, 일정 조건을 충족하는 콘스탄티노폴리스의 그리스계 주민과 서트라키아 무슬림에게는 예외를 두었다.",
+      "evidence": [
+        {
+          "sourceId": "IS38",
+          "locator": "Articles 1, 2 and 16"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "이스탄불 예외는 1912년 행정 경계 안에 1918년 10월 30일 이전부터 정착한 주민이라는 협약 조건과 함께 읽는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-053",
+      "title": "점령의 종료",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1923년 10월",
+        "startYear": 1923,
+        "endYear": 1923,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1923,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "출처에 기재된 연월에 배치한다. 일 단위 재생이나 검증되지 않은 달력 환산은 하지 않는다.",
+        "displayAnchorMonth": 10
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "국가",
+        "도시"
+      ],
+      "narrative": "10월 초 연합군이 철수하고 6일 튀르키예군이 입성했다. 제국 수도였던 도시의 점령기가 끝났다.",
+      "evidence": [
+        {
+          "sourceId": "IS39",
+          "locator": "2/6 October 1923; republic declaration and celebrations"
+        }
+      ],
+      "interpretations": [],
+      "limits": [],
+      "scope": "local"
+    },
+    {
+      "id": "IST-054",
+      "title": "공화국의 탄생",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1923년 10월 29일",
+        "startYear": 1923,
+        "endYear": 1923,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1923,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "출처에 기재된 연월에 배치한다. 일 단위 재생이나 검증되지 않은 달력 환산은 하지 않는다.",
+        "displayAnchorMonth": 10
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "국가",
+        "시민"
+      ],
+      "narrative": "공화국이 선포되었다. 이스탄불에서도 새 정치 질서를 알리는 소식과 기념행사가 이어졌다.",
+      "evidence": [
+        {
+          "sourceId": "IS39",
+          "locator": "2/6 October 1923; republic declaration and celebrations"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "공화국 선포와 점령 종료를 같은 날로 처리하지 않는다."
+      ],
+      "scope": "national_context"
+    },
+    {
+      "id": "IST-055",
+      "title": "새 문자를 배우는 시대",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1928년",
+        "startYear": 1928,
+        "endYear": 1928,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1928,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "교육",
+        "언어"
+      ],
+      "narrative": "새 튀르키예 알파벳의 도입은 읽고 쓰는 방식과 교육을 바꾸는 국가적 개혁이었다. 이스탄불의 귈하네 공원에서 이루어진 관련 발표도 그 과정에 포함된다.",
+      "evidence": [
+        {
+          "sourceId": "IS45",
+          "locator": "1493 printing; 1826; 1876; 1908; 1918; 1928"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "문자 변경과 모든 주민의 즉각적인 문해력 향상을 동일시하지 않는다."
+      ],
+      "scope": "national_context"
+    },
+    {
+      "id": "IST-056",
+      "title": "재산세가 바꾼 기업과 재산",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1942년",
+        "startYear": 1942,
+        "endYear": 1942,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1942,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "해당 연도만 확인. 별도 검증 없이 월일 또는 타임스탬프를 생성하지 않는다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "경제",
+        "차별"
+      ],
+      "narrative": "아으르와 아르툰츠는 1942년 재산세가 비무슬림 기업에 불균형한 부담을 주고 이스탄불의 기업 청산·진입에 영향을 미쳤다고 분석한다.",
+      "evidence": [
+        {
+          "sourceId": "IS40",
+          "locator": "Abstract; bibliographic metadata; erratum abstract"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "초록 확인 범위의 결론이다. 정량 효과나 모든 개별 기업의 사정을 확정하지 않는다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-057",
+      "title": "시장 구역 재편을 그린 계획 기록",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1950년 4월 10일, 자료 작성일",
+        "startYear": 1950,
+        "endYear": 1950,
+        "kind": "document_date",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1950,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "자료 작성 연월에 배치한다. 계획의 실행일이나 공사 완료일을 뜻하지 않는다.",
+        "displayAnchorMonth": 4
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "계획",
+        "도시"
+      ],
+      "narrative": "SALT에는 앙리 프로스트의 시장 구역 재편 계획 관련 자료가 이 날짜로 등록되어 있다. 역사가는 계획한 도시와 실제로 지어진 도시를 구별해야 한다.",
+      "evidence": [
+        {
+          "sourceId": "IS41",
+          "locator": "Title; creator; date 1950-04-10"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "날짜는 목록의 자료 작성일이다. 도면 전체를 직접 판독하거나 공사 완료를 확인한 것은 아니다."
+      ],
+      "scope": "local"
+    },
+    {
+      "id": "IST-058",
+      "title": "1950년 선거와 대표의 교체",
+      "placeId": "historic_peninsula",
+      "date": {
+        "label": "1950년 5월 14일",
+        "startYear": 1950,
+        "endYear": 1950,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1950,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "출처에 기재된 연월에 배치한다. 일 단위 재생이나 검증되지 않은 달력 환산은 하지 않는다.",
+        "displayAnchorMonth": 5
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "정치",
+        "시민"
+      ],
+      "narrative": "총선에서 민주당이 승리했으며 이스탄불의 의석도 민주당 후보들에게 돌아갔다. 이 자료집은 이 해에서 역사 진행을 마친다.",
+      "evidence": [
+        {
+          "sourceId": "IS42",
+          "locator": "1950 general election; Istanbul representatives"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "1950년은 게임의 공통 종료점이며 지역사의 자연스러운 완결점은 아니다."
+      ],
+      "scope": "local"
+    }
+  ],
+  "issues": [
+    {
+      "id": "IC01",
+      "topic": "초기 연대와 공백",
+      "decision": "약 기원전 6500~4800년은 출토 자료군의 개괄 편년. 최초 거주·단일 마을의 연속 존속·개별 시료의 신뢰구간으로 표현하지 않는다.",
+      "sourceIds": [
+        "IS03",
+        "IS04"
+      ]
+    },
+    {
+      "id": "IC02",
+      "topic": "자료의 직접성",
+      "decision": "발굴 해설, 논문, 번역 사료, 기관 안내, 기록목록을 구분. 초록만 본 논문은 원문 전체 검토로 표시하지 않는다.",
+      "sourceIds": [
+        "IS04",
+        "IS05",
+        "IS40",
+        "IS41"
+      ]
+    },
+    {
+      "id": "IC03",
+      "topic": "번역과 숫자",
+      "decision": "신석기 기간 산술, 침몰선 전체 연대, 노예 인구 비율, 공화국 행사 월명의 오류·불일치를 그대로 복제하지 않는다.",
+      "sourceIds": [
+        "IS03",
+        "IS12",
+        "IS27",
+        "IS39"
+      ]
+    },
+    {
+      "id": "IC04",
+      "topic": "다양성과 권리",
+      "decision": "종교적 다양성을 법적 평등으로 설명하지 않는다. 1453년 포로화, 1660년 이후 배제, 1915년 집단학살, 1942년 차별을 함께 다룬다.",
+      "sourceIds": [
+        "IS21",
+        "IS26",
+        "IS36",
+        "IS40"
+      ]
+    },
+    {
+      "id": "IC05",
+      "topic": "주민 교환",
+      "decision": "1923년 협약의 종교·국적 기준과 이스탄불의 조건부 예외를 함께 표시한다.",
+      "sourceIds": [
+        "IS38"
+      ]
+    },
+    {
+      "id": "IC06",
+      "topic": "장소의 이름",
+      "decision": "1930년을 이스탄불이라는 이름이 처음 등장한 해로 쓰지 않는다.",
+      "sourceIds": [
+        "IS21"
+      ]
+    },
+    {
+      "id": "IC07",
+      "topic": "1950년 종료",
+      "decision": "사용자 지정 공통 종료점. 1955년 폭력과 이후 도시 개발은 다음 시대 사건으로 삽입하지 않는다.",
+      "sourceIds": []
+    },
+    {
+      "id": "IC08",
+      "topic": "신석기 편년의 서로 다른 범위",
+      "decision": "IS05의 6500–5600 cal BC는 초록이 설명하는 Fikirtepe 자료군의 범위이다. IS03의 6500–4800년 개괄 편년과 수치만 합치거나 단일 시료 범위로 취급하지 않는다.",
+      "sourceIds": [
+        "IS03",
+        "IS05"
+      ]
+    }
+  ],
+  "coverage": {
+    "completeContinuousHistory": false,
+    "datedRecordCount": 58,
+    "undatedContextCount": 3,
+    "readingChapters": 8,
+    "readingLevels": [
+      "basic",
+      "detail",
+      "deep"
+    ],
+    "eightDirectionComparison": {
+      "status": "regional_connections_researched_not_eight_direction_grid",
+      "rule": "트라키아 급수·흑해와 동지중해 교역·이베리아 이주 등 검증된 연결만 설명. 매 시기 8방위 국가를 가상으로 채우지 않는다."
+    },
+    "gapsToResearch": [
+      "신석기 이후 철기시대 이전의 역사 반도 활동과 개별 시료 편년",
+      "7~8세기 및 11~12세기의 주거·인구 변화",
+      "여성·아동·노예의 개별 생애와 소득·주거 수준",
+      "19세기 노동자·아르메니아인·그리스계 주민의 개인 기록",
+      "제1차 세계대전의 배급·물가·피란을 보여 주는 도시 단위 원자료",
+      "정확한 유적 좌표·역사 해안선·시대별 8방위 비교"
+    ],
+    "note": "사료를 확인한 첫 조사본. 연표 밀도가 시대마다 다르며 도시 전체 역사의 완성본이 아니다."
+  },
+  "editorialRules": [
+    "사실·사료의 주장·연구 해석·학습을 위한 질문을 구분한다.",
+    "가상 주민의 대사·감정·가족관계·인구·사망 통계를 만들지 않는다.",
+    "도시 자료와 제국 전체 사건의 범위를 표시한다.",
+    "현대 발굴·출판 연도와 역사적 사건 연도를 분리한다.",
+    "출처 링크와 자체 작성 요약만 수록. 사진·도판·PDF 전체를 재배포하지 않는다."
+  ],
+  "mapLabel": "이스탄불"
+}
