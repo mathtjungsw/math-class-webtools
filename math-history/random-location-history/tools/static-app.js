@@ -2,11 +2,17 @@
   'use strict';
   // Export only the game's embedded scripts, excluding browser-extension injections.
   const originalRoot=document.documentElement.cloneNode(true);
-  const includedScripts=new Set(['history-data','land-data','static-core','static-app']);
+  const includedScripts=new Set(['history-data','land-data','static-core','static-app','static-explore']);
   originalRoot.querySelectorAll('script').forEach(node=>{if(!includedScripts.has(node.id))node.remove();});
   originalRoot.querySelectorAll('link[rel="stylesheet"],style:not(#static-style)').forEach(node=>node.remove());
-  const originalHTML='<!doctype html>\n'+originalRoot.outerHTML;
   const $=id=>document.getElementById(id),C=StaticHistoryCore;
+  function exportHTML(){
+    // The browser parser has not reached the following discovery script when
+    // originalRoot is captured. Add that source, without live UI or user notes.
+    const discovery=$('static-explore');
+    if(discovery&&!originalRoot.querySelector('#static-explore'))originalRoot.querySelector('body').append(discovery.cloneNode(true));
+    return '<!doctype html>\n'+originalRoot.outerHTML;
+  }
   const bundle=JSON.parse($('history-data').textContent),land=JSON.parse($('land-data').textContent);
   const accessLabels={relevant_sections:'관련 본문 확인',published_excerpt:'공개 발췌문 확인',catalogue_metadata:'자료 목록·메타데이터 확인',selected_entries:'선별 항목 확인',indexed_official_page_text:'공식 페이지 색인 확인',html_relevant_body:'관련 본문 확인',full_text_relevant_sections_and_visual_table:'논문 본문·표 확인',publisher_abstract_only:'공개 초록 확인',abstract_only:'공개 초록 확인',primary_text_translation_and_annotations:'사료·번역·주석 확인',primary_text_translation:'사료 번역 확인',excerpt_translation_and_commentary:'사료 발췌·해설 확인',official_html_section_and_indexed_text:'공식 설명 확인'};
   const state={location:null,timeline:null,sources:new Map(),places:new Map(),month:0,playing:false,hold:0,lastFrame:0,frame:0,renderedIndex:-1,renderedMonth:null};
@@ -28,7 +34,7 @@
     const limits=record.limits.length?'<ul>'+record.limits.map(l=>'<li>'+escape(l)+'</li>').join('')+'</ul>':'';
     return '<div class="evidence-content">'+dating+interpretation+limits+locators+'</div>';
   }
-  function story(entry){const r=entry.record,chapter=readingFor(r.id),label=r.date.kind==='source_disagreement'?'출처별 연도 차이':r.date.kind==='document_date'?'자료 작성일':entry.approximate?'시기·연대 추정':r.date.calendar==='korean_lunisolar'?'음력 기록':'문헌·기관 기록';return '<article class="story-card"><div class="story-meta"><span class="record-date">'+escape(r.date.label)+'</span><span class="evidence-badge">'+label+'</span>'+(['national_context','regional_context'].includes(r.scope)?'<span class="evidence-badge">'+(r.scope==='national_context'?'국가 차원의 배경':'주변 지역의 배경')+'</span>':'')+'</div><h2>'+escape(r.title)+'</h2><p class="narrative">'+escape(r.narrative)+'</p>'+(r.date.anchorNote?'<p class="anchor-note">'+escape(r.date.anchorNote)+'</p>':'')+'<div class="place-label">'+escape(state.places.get(r.placeId)?.name||'조사 지역')+'</div>'+sourceLinks(r.evidence)+(chapter?'<div class="story-reading"><p>이 시대의 이야기 · '+escape(chapter.title)+'</p>'+readingButtons(chapter)+'</div>':'')+'<details class="story-evidence"><summary>근거와 연대 설명 보기</summary>'+evidence(r)+'</details></article>';}
+  function story(entry){const r=entry.record,chapter=readingFor(r.id),label=r.date.kind==='source_disagreement'?'출처별 연도 차이':r.date.kind==='document_date'?'자료 작성일':entry.approximate?'시기·연대 추정':r.date.calendar==='korean_lunisolar'?'음력 기록':'문헌·기관 기록';return '<article class="story-card"><div class="story-meta"><span class="record-date">'+escape(r.date.label)+'</span><span class="evidence-badge">'+label+'</span>'+(['national_context','regional_context'].includes(r.scope)?'<span class="evidence-badge">'+(r.scope==='national_context'?'국가 차원의 배경':'주변 지역의 배경')+'</span>':'')+'</div><h2>'+escape(r.title)+'</h2><p class="narrative">'+escape(r.narrative)+'</p>'+(r.date.anchorNote?'<p class="anchor-note">'+escape(r.date.anchorNote)+'</p>':'')+'<div class="place-label">'+escape(state.places.get(r.placeId)?.name||'조사 지역')+'</div>'+sourceLinks(r.evidence)+(chapter?'<div class="story-reading"><p>이 시대의 이야기 · '+escape(chapter.title)+'</p>'+readingButtons(chapter)+'</div>':'')+'<button class="note-button" data-note="'+escape(r.id)+'" aria-pressed="false">＋ 탐험 노트</button><details class="story-evidence"><summary>근거와 연대 설명 보기</summary>'+evidence(r)+'</details></article>';}
   function readingList(){$('reading-trail').innerHTML=state.location.readings.chapters.map((chapter,i)=>'<article class="reading-card"><span class="reading-number">'+String(i+1).padStart(2,'0')+'</span><p class="reading-period">'+escape(chapter.periodLabel)+'</p><h3>'+escape(chapter.title)+'</h3><p class="reading-question">'+escape(chapter.question)+'</p>'+readingButtons(chapter)+'<button class="era-jump" data-era-jump="'+escape(chapter.anchorRecordId)+'">이 시대의 첫 기록으로 →</button></article>').join('');}
   function readerProgress(){const el=$('reader-scroll'),range=el.scrollHeight-el.clientHeight;$('reader-progress').style.width=(range>0?Math.min(100,Math.max(0,el.scrollTop/range*100)):100)+'%';}
   function renderReader(){
@@ -46,7 +52,7 @@
   function save(){try{localStorage.setItem(storageKey,JSON.stringify({version:bundle.version,locationId:state.location.id,month:state.month,speed:$('speed').value,skip:$('skip').checked,readPause:$('read-pause').checked}));}catch{}}
   function render(){
     const i=C.indexAt(state.timeline.chapters,state.month),chapter=state.timeline.chapters[i],now=C.formatTime(state.month),whole=Math.floor(state.month);
-    if(state.renderedIndex!==i){$('current-stories').innerHTML=chapter.entries.map(story).join('');state.renderedIndex=i;}
+    if(state.renderedIndex!==i){$('current-stories').innerHTML=chapter.entries.map(story).join('');state.renderedIndex=i;document.dispatchEvent(new CustomEvent('history:scene'));}
     if(state.renderedMonth!==whole){$('clock').textContent=now.year;$('clock-month').textContent=now.month;$('timeline').value=whole;const progress=(state.month-state.timeline.start)/(state.timeline.end-state.timeline.start)*100;$('timeline').style.setProperty('--progress',progress+'%');$('travel-progress').textContent='탐험 진행 '+Math.round(progress)+'%';state.renderedMonth=whole;save();}
     $('story-progress').textContent=(i+1)+' / '+state.timeline.chapters.length+' 장면';
     $('previous').disabled=i===0&&Math.abs(state.month-chapter.month)<.01;$('next').disabled=i===state.timeline.chapters.length-1;
@@ -95,7 +101,7 @@
     const p=state.location.representativePoint;$('coordinate-label').textContent=p.display;$('point-name').textContent=state.places.get(p.placeId)?.name||'대표점';$('map-link').href='https://www.openstreetmap.org/?mlat='+p.latitude+'&mlon='+p.longitude+'#map=13/'+p.latitude+'/'+p.longitude;$('start-label').textContent=state.location.timelinePolicy.recommendedStart.label+'의 확인 자료부터 시간을 진행합니다.';
     $('timeline').min=state.timeline.start;$('timeline').max=state.timeline.end;$('time-start').textContent=state.location.timelinePolicy.recommendedStart.label;$('timeline-markers').innerHTML=state.timeline.chapters.map(c=>'<i style="left:'+((c.month-state.timeline.start)/(state.timeline.end-state.timeline.start)*100)+'%"></i>').join('');
     $('record-search').value='';contextList();sourceList();readingList();recordList();map.focus();render();$('playback-note').textContent=resume?'저장된 탐험 시점을 불러왔습니다. 재생으로 이어서 탐험하세요.':'재생을 누르면 탐험을 시작합니다.';
-    save();
+    save();document.dispatchEvent(new CustomEvent('history:location'));
   }
   function openDialog(id){stop('자료를 읽는 동안 탐험을 멈췄습니다.');$(id).showModal();}
   function download(content,type,filename){const blob=new Blob([content],{type}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
@@ -124,10 +130,10 @@
   document.querySelectorAll('[data-close]').forEach(button=>button.addEventListener('click',()=>button.closest('dialog').close()));
   document.querySelectorAll('dialog').forEach(dialog=>dialog.addEventListener('click',event=>{if(event.target!==dialog)return;const b=dialog.getBoundingClientRect();if(event.clientX<b.left||event.clientX>b.right||event.clientY<b.top||event.clientY>b.bottom)dialog.close();}));
   $('export-data').addEventListener('click',()=>download(JSON.stringify(state.location,null,2),'application/json;charset=utf-8',state.location.id+'.json'));
-  $('export-html').addEventListener('click',()=>{download(originalHTML,'text/html;charset=utf-8','시간의-좌표-역사탐험.html');notify('화면과 조사 자료가 담긴 HTML을 저장합니다.');});
+  $('export-html').addEventListener('click',()=>{download(exportHTML(),'text/html;charset=utf-8','시간의-좌표-역사탐험.html');notify('화면과 조사 자료가 담긴 HTML을 저장합니다.');});
   $('map-in').addEventListener('click',()=>map.zoom(.7));$('map-out').addEventListener('click',()=>map.zoom(1/.7));$('map-world').addEventListener('click',()=>map.world());
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&state.playing)stop('다시 볼 때 이어서 탐험할 수 있도록 일시 정지했습니다.');});
   window.addEventListener('pagehide',save);
-  // Read-only diagnostics for local verification; gameplay does not depend on APIs.
-  window.HistoryAtlas={getState:()=>({locationId:state.location.id,month:state.month,time:C.parts(state.month),playing:state.playing,chapter:C.indexAt(state.timeline.chapters,state.month),endYear:C.END_YEAR,records:state.timeline.entries.length})};
+  // Shared interface for discovery controls and local verification; no server API.
+  window.HistoryAtlas={getLocation:()=>state.location,openReading,pause:()=>stop('자료를 탐색하는 동안 재생을 멈췄습니다.'),goToRecord:id=>{const entry=state.timeline.entries.find(e=>e.record.id===id);if(entry)jump(entry.month);},getState:()=>({locationId:state.location.id,month:state.month,time:C.parts(state.month),playing:state.playing,chapter:C.indexAt(state.timeline.chapters,state.month),endYear:C.END_YEAR,records:state.timeline.entries.length})};
 })();

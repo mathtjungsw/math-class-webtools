@@ -165,9 +165,11 @@ test('모든 연대 기록이 세 단계 읽기에 연결되고 깊은 글은 �
 test('HTML 한 파일에 지도와 실행 코드가 포함되어 외부 API 없이 열린다', () => {
   assert.ok(JSON.parse(script('land-data')).polygons.length > 100);
   assert.ok(script('static-app'));
+  assert.ok(script('static-explore'));
   assert.doesNotMatch(html, /<script[^>]+src=|<link[^>]+rel="stylesheet"|__(?:STATIC|HISTORY|LAND)_/);
   assert.doesNotMatch(script('static-app'), /\bfetch\s*\(|XMLHttpRequest|HISTORY_API_URL/);
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
   assert.equal(new Set(ids).size, ids.length);
   new vm.Script(script('static-app'));
+  new vm.Script(script('static-explore'));
 });

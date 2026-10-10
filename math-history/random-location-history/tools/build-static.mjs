@@ -48,11 +48,12 @@ const map={source:land.source,sourceUrl:land.sourceUrl,polygons:land.polygons.fi
 const escapeJSON=value=>JSON.stringify(value).replace(/</g,'\\u003c').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029');
 let html=await fs.readFile(path.join(tools,'static-template.html'),'utf8');
 for(const [token,value] of [
-  ['__STATIC_STYLE__',await fs.readFile(path.join(tools,'static-style.css'),'utf8')],
+  ['__STATIC_STYLE__',(await fs.readFile(path.join(tools,'static-style.css'),'utf8'))+'\n'+(await fs.readFile(path.join(tools,'static-discovery.css'),'utf8'))],
   ['__HISTORY_DATA__',escapeJSON({version:'history-atlas-static/1',locations})],
   ['__LAND_DATA__',escapeJSON(map)],
   ['__STATIC_CORE__',await fs.readFile(path.join(tools,'static-core.js'),'utf8')],
-  ['__STATIC_APP__',await fs.readFile(path.join(tools,'static-app.js'),'utf8')]
+  ['__STATIC_APP__',await fs.readFile(path.join(tools,'static-app.js'),'utf8')],
+  ['__STATIC_EXPLORE__',await fs.readFile(path.join(tools,'static-explore.js'),'utf8')]
 ]){if(!html.includes(token))throw new Error('템플릿 항목 누락: '+token);html=html.replace(token,()=>value);}
 if(/__(?:STATIC|HISTORY|LAND)_/.test(html))throw new Error('치환하지 않은 템플릿 항목');
 await fs.writeFile(path.join(root,'index.html'),html);
