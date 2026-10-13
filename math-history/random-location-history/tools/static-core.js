@@ -34,6 +34,7 @@
     if(skip&&target>=yearBoundary&&(!next||next.month>yearBoundary)){const jump=next?next.month:timeline.end;skipped=jump>target;target=jump;}
     return {month:target,arrived:!!next&&Math.abs(target-next.month)<1e-7,skipped,ended:target>=timeline.end};
   }
-  function readingMinutes(sections,rate=600){return Math.max(1,Math.ceil(sections.flatMap(s=>s.paragraphs).join('').length/rate));}
-  return {END_YEAR,astronomical,historical,monthOf,parts,formatYear,formatTime,clamp,prepare,indexAt,advance,readingMinutes};
+  function readingLevels(chapter){return ['basic','detail','deep'].filter(level=>Array.isArray(chapter[level])&&chapter[level].length);}
+  function readingMinutes(sections,rate=600){if(!sections?.length)return 0;return Math.max(1,Math.ceil(sections.flatMap(s=>s.paragraphs).join('').length/rate));}
+  return {END_YEAR,astronomical,historical,monthOf,parts,formatYear,formatTime,clamp,prepare,indexAt,advance,readingMinutes,readingLevels};
 });

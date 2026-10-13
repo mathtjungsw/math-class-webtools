@@ -1,0 +1,16 @@
+{
+  "drawnAt": "2026-10-13T10:09:38.395Z",
+  "method": "crypto.randomBytes; uniform surface of Earth; reject non-land; accept first land point",
+  "attempts": 1,
+  "latitude": -5.370992142220525,
+  "longitude": 35.83865032899922,
+  "landSource": "Natural Earth 1:10 million land, public domain",
+  "landSourceUrl": "https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-land/",
+  "candidates": [
+    {
+      "lat": -5.370992142220525,
+      "lon": 35.83865032899922,
+      "land": true
+    }
+  ]
+}

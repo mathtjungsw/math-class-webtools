@@ -33,7 +33,27 @@ try{
       for(const place of places){await page.locator('#era-places [data-explore-place="'+place+'"]').click();assert.ok(await page.locator('#place-stories .explore-fact').count());}
     }
   }
+  await page.selectOption('#location-select','tz-chemba-kidoka');
+  assert.match(await page.locator('#start-label').textContent(),/98km/);
+  assert.match(await page.locator('#reading-status').textContent(),/보강 예정/);
+  assert.equal(await page.locator('#era-map .field-diagram').count(),1);
+  assert.doesNotMatch(await page.locator('#era-map').textContent(),/남강/);
+  for(const chapter of bundle.locations.find(l=>l.id==='tz-chemba-kidoka').readings.chapters){
+    for(const level of ['basic','detail']){
+      await page.evaluate(({id,level})=>HistoryAtlas.openReading(id,level),{id:chapter.id,level});
+      assert.ok((await page.locator('#reader-body').textContent()).length>80);
+      assert.equal(await page.locator('[data-level="deep"]').isDisabled(),true);
+      await page.locator('#reader-dialog [data-close]').click();
+    }
+  }
+  await tab('topic');await page.locator('[data-topic="work"]').click();
+  assert.ok(await page.locator('#topic-trail .explore-fact').count());
+  assert.equal(await page.locator('#topic-trail [data-reading-level="deep"]').count(),0);
+  await page.evaluate(()=>HistoryAtlas.openReading('CHK-R01','deep'));
+  assert.equal(await page.locator('[data-level="detail"]').getAttribute('aria-pressed'),'true');
+  await page.locator('#reader-dialog [data-close]').click();
   await page.selectOption('#location-select','tr-istanbul');
+  await tab('space');
   await page.locator('#era-map [data-explore-place="yenikapi"]').click();
   assert.match(await page.locator('#place-stories').textContent(),/신석기/);
   await page.locator('#era-reading [data-explore-jump]').click();
@@ -89,6 +109,15 @@ try{
       await page.locator('#discovery-heading').scrollIntoViewIfNeeded();await screen('discovery-'+width+'-'+mode);
     }
   }
+  await page.selectOption('#location-select','tz-chemba-kidoka');
+  for(const width of [390,320]){
+    await page.setViewportSize({width,height:844});
+    for(const mode of ['space','compare','topic','notebook']){
+      await tab(mode);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'chemba overflow '+width+' '+mode);
+    }
+    await tab('space');await page.locator('#discovery-heading').scrollIntoViewIfNeeded();await screen('chemba-'+width);
+  }
+  await page.setViewportSize({width:1440,height:1000});await screen('chemba-desktop');
   // The saved standalone HTML must include every new script and work offline.
   await page.setViewportSize({width:1440,height:1000});
   const saveHTML=page.waitForEvent('download');await page.locator('#export-html').click();
@@ -97,11 +126,15 @@ try{
   await context.setOffline(true);await local.goto(pathToFileURL(offlineFile).href);
   await local.selectOption('#location-select','tr-istanbul');
   assert.equal(await local.locator('#explore-era option').count(),8);
+  await local.selectOption('#location-select','tz-chemba-kidoka');
+  assert.equal(await local.locator('#explore-era option').count(),5);
+  await local.evaluate(()=>HistoryAtlas.openReading('CHK-R01','detail'));
+  assert.match(await local.locator('#reader-body').textContent(),/확인 범위/);
   await context.setOffline(false);await local.close();
   // Storage denial must not break exploration or the current-session notebook.
   const blocked=await context.newPage();await blocked.addInitScript(()=>{Storage.prototype.setItem=function(){throw new Error('blocked');};});
   await blocked.goto(origin);await blocked.locator('#current-stories [data-note]').first().click();
   assert.equal(await blocked.locator('#notebook-count').textContent(),'1');assert.match(await blocked.locator('#notebook-status').textContent(),/사용할 수 없습니다/);
   await blocked.close();assert.deepEqual(errors,[]);
-  console.log(JSON.stringify({locations:2,eraMaps:14,comparison:true,topicChronology:true,notes:{persisted:true,isolated:true,escaped:true,exported:true,removed:true},offline:true,storageBlocked:true,mobileWidths:[390,320],errors}));
+  console.log(JSON.stringify({locations:bundle.locations.length,eraMaps:bundle.locations.reduce((n,l)=>n+l.readings.chapters.length,0),chembaReadings:true,deepPending:true,comparison:true,topicChronology:true,notes:{persisted:true,isolated:true,escaped:true,exported:true,removed:true},offline:true,storageBlocked:true,mobileWidths:[390,320],errors}));
 }finally{await browser.close();await new Promise(resolve=>server.close(resolve));await fs.unlink(offlineFile).catch(()=>{});await fs.rmdir(offlineDir);}

@@ -14,6 +14,10 @@
   try{const stored=JSON.parse(localStorage.getItem(storageKey));if(stored&&typeof stored==='object'&&!Array.isArray(stored))notes=stored;}catch{}
   const hasTopic=(record,topic)=>record.theme.some(tag=>topic.tags.includes(tag));
   const chapterRecords=chapter=>chapter.recordIds.map(id=>records.get(id)).filter(Boolean);
+  function readingButton(chapter,level,label){
+    if(!StaticHistoryCore.readingLevels(chapter).includes(level))return '<span class="reading-pending">'+label+' · 보강 예정</span>';
+    return '<button data-reading="'+esc(chapter.id)+'" data-reading-level="'+level+'">'+label+'</button>';
+  }
   function sources(record){return '<div class="explore-sources">'+[...new Set(record.evidence.map(e=>e.sourceId))].map(id=>{const source=location.sources.find(s=>s.id===id);let href='#';try{const url=new URL(source?.url);if(/^https?:$/.test(url.protocol))href=url.href;}catch{}return '<a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer">'+esc(id)+' · '+esc(source?.publisher||'출처')+' ↗</a>';}).join('')+'</div>';}
   function noteFor(id){return notes[location.id]?.[id];}
   function noteButton(record){return '<button class="note-button" data-note="'+esc(record.id)+'" aria-pressed="'+!!noteFor(record.id)+'">'+(noteFor(record.id)?'✓ 노트에 저장됨':'＋ 탐험 노트')+'</button>';}
@@ -23,7 +27,7 @@
     const chapter=chapters[eraIndex],items=chapterRecords(chapter);
     $('explore-era').value=eraIndex;$('era-question').textContent=chapter.question;
     $('era-description').textContent=chapter.basic.flatMap(s=>s.paragraphs).join(' ');
-    $('era-reading').innerHTML='<button data-reading="'+esc(chapter.id)+'" data-reading-level="deep">이 시대 깊이 읽기 →</button><button data-explore-jump="'+esc(chapter.anchorRecordId)+'">이 시대 연표로 이동</button>';
+    $('era-reading').innerHTML=readingButton(chapter,StaticHistoryCore.readingLevels(chapter).includes('deep')?'deep':'detail',StaticHistoryCore.readingLevels(chapter).includes('deep')?'이 시대 깊이 읽기 →':'이 시대 상세히 보기 →')+'<button data-explore-jump="'+esc(chapter.anchorRecordId)+'">이 시대 연표로 이동</button>';
     const ids=new Set(items.map(r=>r.placeId));
     if(!ids.has(selectedPlace))selectedPlace=items[0]?.placeId;
     renderMap(items);renderPlace(items);
@@ -37,11 +41,15 @@
     if(location.id==='tr-istanbul'){
       $('era-map').innerHTML='<svg viewBox="0 0 800 430" role="img" aria-label="이스탄불 역사 반도의 공간 관계 개략도. 시대별 수록 기록이 있는 구역을 강조하며 정밀 위치나 과거 경계를 나타내지 않습니다."><rect width="800" height="430" rx="18" fill="#dce8e3"/><path d="M0 0H570L600 50L535 122L435 160L310 140L180 93L0 70Z" fill="#efeee2"/><path d="M0 110L160 132L270 177L440 190L550 250L595 330L560 370L260 389L0 340Z" fill="#efeee2"/><path d="M725 0H800V430H690L708 340L690 240L738 120Z" fill="#efeee2"/><text x="600" y="405" class="water-label">마르마라해</text><text x="20" y="32" class="diagram-label">공간 관계 개략도 · 축척 없음</text>'+zones.map(z=>'<g class="map-zone '+(active.has(z.id)?'has-records':'')+' '+(selectedPlace===z.id?'selected':'')+'">'+(active.has(z.id)?'<a href="#place-stories" data-explore-place="'+z.id+'" aria-label="'+z.label+'의 수록 기록 보기">':'')+'<circle cx="'+z.x+'" cy="'+z.y+'" r="'+(active.has(z.id)?9:5)+'"/><text x="'+z.x+'" y="'+(z.y+25)+'" text-anchor="middle">'+z.label+'</text>'+(active.has(z.id)?'</a>':'')+'</g>').join('')+'</svg>';
       $('map-method').innerHTML='북쪽 금각만·동쪽 보스포루스·남쪽 마르마라해의 관계를 단순화했습니다. 점의 배치는 설명용이며 유적 좌표·당시 해안선·국경을 뜻하지 않습니다. <a href="https://whc.unesco.org/en/list/356/" target="_blank" rel="noopener noreferrer">공간 설명 근거: UNESCO ↗</a>';
+    }else if(location.id==='tz-chemba-kidoka'){
+      const landmarks=location.places.filter(p=>['kisese_ii','kondoa_art','draw_point','farkwa'].includes(p.id));
+      $('era-map').innerHTML='<div class="field-diagram"><p class="eyebrow">추첨점과 주변 장소</p><h3>한 점에서, 여러 생활권으로</h3><p>각 기록이 다루는 장소를 구분해 살펴봅니다.</p><div class="scope-landmarks">'+landmarks.sort((a,b)=>b.coordinate.latitude-a.coordinate.latitude).map(p=>'<div class="scope-landmark '+(active.has(p.id)?'has-records':'')+'"><strong>'+esc(p.name)+'</strong><span>'+esc(p.id==='draw_point'?'기준점 · 초기 거주 미확인':p.directionFromDraw+'쪽 · 직선 약 '+Math.round(p.distanceFromDrawKm)+'km')+'</span></div>').join('')+'</div></div>';
+      $('map-method').textContent='현대 좌표 사이의 직선거리입니다. 위에서 아래로 북쪽 장소부터 나열했습니다. 이동 경로나 역사적 경계는 표시하지 않습니다. 파르콰는 현대 마을 대표점이며 옛 시설의 정확한 위치는 미확인입니다.';
     }else{
       $('era-map').innerHTML='<div class="river-diagram"><span>남강 유역의 기록</span><div class="river-line" aria-hidden="true"></div><strong>마을 · 생활권 · 진주성</strong><p>서로 다른 조사 장소를 한 시대의 자료로 연결합니다.</p></div>';
       $('map-method').textContent='아래 목록은 시대별 기록의 장소를 연결한 자료지도입니다. 장소의 배치 순서는 거리·방향·당시 경계를 뜻하지 않습니다. 정밀 좌표가 미확인인 유적은 지도 위에 임의로 표시하지 않았습니다.';
     }
-    $('era-places').innerHTML=places.map(p=>'<button data-explore-place="'+esc(p.id)+'" aria-pressed="'+(selectedPlace===p.id)+'"><span>'+esc(p.name)+'</span><small>'+items.filter(r=>r.placeId===p.id).length+'개 수록 기록</small></button>').join('');
+    $('era-places').innerHTML=places.map(p=>'<button data-explore-place="'+esc(p.id)+'" aria-pressed="'+(selectedPlace===p.id)+'"><span>'+esc(p.name)+'</span><small>'+items.filter(r=>r.placeId===p.id).length+'개 수록 기록'+(p.distanceFromDrawKm>0?' · '+esc(p.directionFromDraw)+'쪽 약 '+Math.round(p.distanceFromDrawKm)+'km':'')+'</small></button>').join('');
     $('map-legend').textContent='● 강조: 선택 시대의 수록 기록 있음 · 옅은 점: 이 시대 수록 기록 없음. 시설의 존재·소멸을 판정한 표시는 아닙니다.';
     $('map-legend').hidden=location.id!=='tr-istanbul';
   }
@@ -61,7 +69,7 @@
     $('topic-question').textContent=topic.question;
     $('topic-buttons').innerHTML=topics.map(t=>'<button data-topic="'+t.id+'" aria-pressed="'+(t.id===topicId)+'">'+t.symbol+' '+t.label+'</button>').join('');
     const total=location.records.filter(r=>r.date&&hasTopic(r,topic)).length;$('topic-count').textContent=total+'개 연대 기록';
-    $('topic-trail').innerHTML=chapters.map((chapter,i)=>{const matching=chapterRecords(chapter).filter(r=>hasTopic(r,topic));if(!matching.length)return '';return '<section class="topic-era"><div class="topic-era-head"><span>'+String(i+1).padStart(2,'0')+'</span><div><p>'+esc(chapter.periodLabel)+'</p><h3>'+esc(chapter.title)+'</h3></div></div><div class="topic-facts">'+matching.map(r=>fact(r)).join('')+'</div><div class="topic-reading">'+['basic','detail','deep'].map((level,n)=>'<button data-reading="'+esc(chapter.id)+'" data-reading-level="'+level+'">'+['짧게 읽기','상세히 보기','깊이 읽기'][n]+'</button>').join('')+'</div></section>';}).join('')||'<p class="unfilled">이 주제의 자료가 아직 수록되지 않았습니다.</p>';
+    $('topic-trail').innerHTML=chapters.map((chapter,i)=>{const matching=chapterRecords(chapter).filter(r=>hasTopic(r,topic));if(!matching.length)return '';return '<section class="topic-era"><div class="topic-era-head"><span>'+String(i+1).padStart(2,'0')+'</span><div><p>'+esc(chapter.periodLabel)+'</p><h3>'+esc(chapter.title)+'</h3></div></div><div class="topic-facts">'+matching.map(r=>fact(r)).join('')+'</div><div class="topic-reading">'+['basic','detail','deep'].map((level,n)=>readingButton(chapter,level,['짧게 읽기','상세히 보기','깊이 읽기'][n])).join('')+'</div></section>';}).join('')||'<p class="unfilled">이 주제의 자료가 아직 수록되지 않았습니다.</p>';
     const contexts=location.records.filter(r=>!r.date&&hasTopic(r,topic));$('topic-context').innerHTML=contexts.length?'<h3>연도 하나로 묶기 어려운 해설</h3>'+contexts.map(r=>fact(r)).join(''):'';
     updateNoteButtons();
   }

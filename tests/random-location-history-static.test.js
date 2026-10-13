@@ -13,8 +13,8 @@ const data = JSON.parse(script('history-data'));
 const jinju = data.locations[0];
 const timeline = C.prepare(jinju);
 
-test('두 장소의 연표·출처·읽기가 독립적으로 완성되며 1950년에 종료한다', () => {
-  assert.deepEqual(data.locations.map(l => l.id), ['kr-jinju-namgang', 'tr-istanbul']);
+test('세 장소의 연표·출처·읽기가 독립적으로 연결되며 1950년에 종료한다', () => {
+  assert.deepEqual(data.locations.map(l => l.id), ['kr-jinju-namgang', 'tr-istanbul', 'tz-chemba-kidoka']);
   const istanbul = data.locations.find(l => l.id === 'tr-istanbul');
   const t = C.prepare(istanbul);
   assert.equal(t.entries.length, 58);
@@ -37,8 +37,9 @@ test('두 장소의 연표·출처·읽기가 독립적으로 완성되며 1950�
     assert.equal(new Set(assigned).size, assigned.length);
     for (const record of location.records) assert.ok(record.evidence.every(e => sources.has(e.sourceId)));
     for (const chapter of location.readings.chapters) {
-      assert.ok(chapter.deep.flatMap(s => s.paragraphs).join('').length / location.readings.readingRateCharactersPerMinute >= 5);
-      for (const level of ['basic', 'detail', 'deep'])
+      if(location.readings.completion==='confirmed_notes')assert.deepEqual(Array.from(C.readingLevels(chapter)),['basic','detail']);
+      else assert.ok(chapter.deep.flatMap(s => s.paragraphs).join('').length / location.readings.readingRateCharactersPerMinute >= 5);
+      for (const level of C.readingLevels(chapter))
         for (const section of chapter[level]) assert.ok(section.sourceIds.every(id => sources.has(id)));
     }
     for (const skip of [false, true]) {
@@ -55,6 +56,27 @@ test('두 장소의 연표·출처·읽기가 독립적으로 완성되며 1950�
       assert.equal(seen.size, prepared.entries.length);
     }
   }
+});
+
+test('쳄바의 원 추첨점과 이웃 자료를 구분하고 준비되지 않은 깊이 읽기를 열지 않는다', () => {
+  const l=data.locations.find(l=>l.id==='tz-chemba-kidoka'),t=C.prepare(l);
+  assert.equal(l.representativePoint.latitude,-5.370992142220525);
+  assert.equal(l.representativePoint.longitude,35.83865032899922);
+  assert.equal(l.timelinePolicy.firstHabitationYear,null);
+  assert.equal(t.entries.length,19);assert.equal(t.contexts.length,6);
+  assert.equal(l.readings.chapters.length,5);
+  assert.equal(l.places.find(p=>p.id==='kisese_ii').distanceFromDrawKm,97.81);
+  assert.ok(l.records.filter(r=>r.date).every(r=>r.placeId!=='draw_point'&&r.theme.length));
+  const get=id=>t.entries.find(e=>e.record.id===id);
+  assert.equal(C.parts(get('CHK-008').month).month,6);
+  assert.equal(get('CHK-008').approximate,true);
+  assert.equal(C.parts(get('CHK-009').month).month,7);
+  assert.equal(get('CHK-009').approximate,false);
+  assert.equal(C.parts(get('CHK-017').month).month,12);
+  assert.equal(C.readingMinutes(l.readings.chapters[0].deep),0);
+  assert.match(script('static-app'),/보강 예정/);
+  assert.match(script('static-explore'),/tz-chemba-kidoka/);
+  assert.ok(l.records.some(r=>r.theme.includes('교역')));
 });
 
 test('실제로 배포하는 HTML의 시간축은 기원전 1년 다음에 서기 1년을 표시한다', () => {

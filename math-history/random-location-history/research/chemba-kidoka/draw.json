@@ -1,0 +1,36 @@
+{
+  "drawnAt": "2026-10-13T10:09:38.395Z",
+  "method": "crypto.randomBytes; uniform surface of Earth; reject non-land; accept first land point",
+  "attempts": 1,
+  "latitude": -5.370992142220525,
+  "longitude": 35.83865032899922,
+  "landSource": "Natural Earth 1:10 million land, public domain",
+  "landSourceUrl": "https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-land/",
+  "candidates": [
+    {
+      "lat": -5.370992142220525,
+      "lon": 35.83865032899922,
+      "land": true
+    }
+  ],
+  "identifiedArea": "Chemba, Dodoma, Tanzania; Kidoka 인근",
+  "identificationMethod": "첫 육지를 수락한 뒤 OpenStreetMap Nominatim 역지오코딩(zoom 10, 16)",
+  "originalCoastlineVerified": true,
+  "mapUrl": "https://www.openstreetmap.org/?mlat=-5.370992&mlon=35.838650#map=13/-5.370992/35.838650",
+  "reverseGeocoding": {
+    "district": {
+      "osmType": "relation",
+      "osmId": 13015748,
+      "name": "Chemba"
+    },
+    "nearbyVillage": {
+      "osmType": "node",
+      "osmId": 7747030139,
+      "name": "Kidoka",
+      "latitude": -5.4041921,
+      "longitude": 35.8540606
+    },
+    "warning": "역지오코딩은 인근 지물 반환이며 마을 경계 내부 판정이 아니다. 추첨 좌표를 반환 지물 좌표로 대체하지 않는다."
+  },
+  "archiveFile": "../../../../outputs/history-atlas-draws/2026-10-13T10-09-38-395Z.json"
+}

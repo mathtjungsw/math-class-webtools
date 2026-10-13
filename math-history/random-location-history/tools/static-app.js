@@ -19,8 +19,9 @@
   const storageKey='history-atlas:static:v1';let toastTimer;
   const reader={chapter:null,level:'basic'};
   accessLabels.pdf_relevant_pages_visually_checked='관련 PDF 페이지·이미지 확인';
+  Object.assign(accessLabels,{local_dataset_computed:'지리 데이터 판정',api_response_read:'지명 조회 결과 확인',page_read:'기관 설명 확인',relevant_full_text_sections_read:'관련 논문 본문 확인',selected_pdf_pages_visually_read:'선별 PDF 페이지·이미지 확인',relevant_pdf_text_read:'관련 PDF 본문 확인',author_uploaded_full_text_relevant_sections_read:'저자 공개본의 관련 본문 확인',transcription_and_editorial_context_read:'사료 전사본·편집 해설 확인',relevant_table_read:'공식 문서집 표 확인',relevant_pdf_text_and_table_image_read:'논문 본문·표 이미지 확인',guide_read_primary_text_not_read:'공식 자료 안내 확인 · 원문 미열람'});
   function readingFor(id){return state.location.readings.chapters.find(c=>c.recordIds.includes(id)||c.contextRecordIds.includes(id));}
-  function readingButtons(chapter){return '<div class="reading-actions">'+[['basic','짧게 읽기'],['detail','상세히 보기'],['deep','깊이 읽기']].map(([level,label])=>'<button data-reading="'+escape(chapter.id)+'" data-reading-level="'+level+'">'+label+' <small>'+C.readingMinutes(chapter[level],state.location.readings.readingRateCharactersPerMinute)+'분</small></button>').join('')+'</div>';}
+  function readingButtons(chapter){return '<div class="reading-actions">'+[['basic','짧게 읽기'],['detail','상세히 보기'],['deep','깊이 읽기']].map(([level,label])=>C.readingLevels(chapter).includes(level)?'<button data-reading="'+escape(chapter.id)+'" data-reading-level="'+level+'">'+label+' <small>'+C.readingMinutes(chapter[level],state.location.readings.readingRateCharactersPerMinute)+'분</small></button>':'<span class="reading-pending">'+label+' · 보강 예정</span>').join('')+'</div>';}
   function escape(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
   function url(value){try{const u=new URL(value);return /^https?:$/.test(u.protocol)?escape(u.href):'#';}catch{return '#';}}
   function notify(message){clearTimeout(toastTimer);$('toast').textContent=message;$('toast').hidden=false;toastTimer=setTimeout(()=>{$('toast').hidden=true;},4500);}
@@ -41,14 +42,14 @@
     const chapter=reader.chapter,sections=chapter[reader.level];
     $('reader-title').textContent=chapter.title;$('reader-period').textContent=chapter.periodLabel;$('reader-question').textContent=chapter.question;
     $('reader-duration').textContent='예상 '+C.readingMinutes(sections,state.location.readings.readingRateCharactersPerMinute)+'분';
-    for(const button of $('reading-levels').querySelectorAll('[data-level]'))button.setAttribute('aria-pressed',String(button.dataset.level===reader.level));
+    for(const button of $('reading-levels').querySelectorAll('[data-level]')){const available=C.readingLevels(chapter).includes(button.dataset.level);button.disabled=!available;button.textContent={basic:'짧게 읽기',detail:'상세히 보기',deep:available?'깊이 읽기':'깊이 읽기 · 보강 예정'}[button.dataset.level];button.setAttribute('aria-pressed',String(button.dataset.level===reader.level));}
     $('reader-toc').innerHTML=sections.length>1?'<span>차례</span>'+sections.map((s,i)=>'<button data-section="'+i+'">'+escape(s.heading)+'</button>').join(''):'';
     $('reader-body').innerHTML=sections.map((s,i)=>'<section id="reading-section-'+i+'"><h3>'+escape(s.heading)+'</h3>'+(s.kind==='reading_reflection'?'<span class="reading-type">자료를 연결해 생각하기</span>':'')+s.paragraphs.map(p=>'<p>'+escape(p)+'</p>').join('')+sourceLinks(s.sourceIds.map(id=>({sourceId:id})))+'</section>').join('');
     $('reader-transition').textContent=chapter.transition;$('reader-method').textContent=state.location.readings.methodNote;
     const next=state.location.readings.chapters[state.location.readings.chapters.indexOf(chapter)+1];$('reader-next').hidden=!next;$('reader-next').textContent=next?'다음 이야기 · '+next.title:'';
     $('reader-scroll').scrollTop=0;requestAnimationFrame(readerProgress);
   }
-  function openReading(id,level){const chapter=state.location.readings.chapters.find(c=>c.id===id);if(!chapter)return;stop('이야기를 읽는 동안 탐험을 멈췄습니다.');reader.chapter=chapter;reader.level=['basic','detail','deep'].includes(level)?level:'basic';renderReader();if(!$('reader-dialog').open)$('reader-dialog').showModal();requestAnimationFrame(readerProgress);}
+  function openReading(id,level){const chapter=state.location.readings.chapters.find(c=>c.id===id);if(!chapter)return;stop('이야기를 읽는 동안 탐험을 멈췄습니다.');reader.chapter=chapter;const levels=C.readingLevels(chapter);reader.level=levels.includes(level)?level:levels.includes('detail')?'detail':'basic';renderReader();if(!$('reader-dialog').open)$('reader-dialog').showModal();requestAnimationFrame(readerProgress);}
   function save(){try{localStorage.setItem(storageKey,JSON.stringify({version:bundle.version,locationId:state.location.id,month:state.month,speed:$('speed').value,skip:$('skip').checked,readPause:$('read-pause').checked}));}catch{}}
   function render(){
     const i=C.indexAt(state.timeline.chapters,state.month),chapter=state.timeline.chapters[i],now=C.formatTime(state.month),whole=Math.floor(state.month);
@@ -98,7 +99,10 @@
     if(resume&&Number.isFinite(resume.month))state.month=C.clamp(resume.month,state.timeline.start,state.timeline.end);
     $('location-select').value=state.location.id;$('location-count').textContent=bundle.locations.length+'곳 수록';$('hero-region').textContent=state.location.name.replace('한반도 ','');$('dated-count').textContent=state.timeline.entries.length;$('context-count').textContent=state.timeline.contexts.length;$('source-count').textContent=state.location.sources.length;
     $('location-description').textContent=state.location.spatialScope.description;
-    const p=state.location.representativePoint;$('coordinate-label').textContent=p.display;$('point-name').textContent=state.places.get(p.placeId)?.name||'대표점';$('map-link').href='https://www.openstreetmap.org/?mlat='+p.latitude+'&mlon='+p.longitude+'#map=13/'+p.latitude+'/'+p.longitude;$('start-label').textContent=state.location.timelinePolicy.recommendedStart.label+'의 확인 자료부터 시간을 진행합니다.';
+    const p=state.location.representativePoint;$('coordinate-label').textContent=p.display;$('point-name').textContent=state.places.get(p.placeId)?.name||'대표점';$('map-link').href='https://www.openstreetmap.org/?mlat='+p.latitude+'&mlon='+p.longitude+'#map=13/'+p.latitude+'/'+p.longitude;$('start-label').textContent=state.location.id==='tz-chemba-kidoka'?'이 점의 초기 거주는 아직 모릅니다. 북쪽 약 98km의 키세세Ⅱ 비교 유적부터 살펴봅니다.':state.location.timelinePolicy.recommendedStart.label+'의 확인 자료부터 시간을 진행합니다.';
+    $('collection-note').textContent=state.location.readings.completion==='confirmed_notes'?'확인된 기록을 먼저 수록했습니다. 깊이 읽기는 보강 예정입니다.':'조사한 자료가 HTML 안에 담겨 있습니다.';
+    $('reading-heading').textContent=state.location.readings.completion==='confirmed_notes'?'시대를 따라 확인 자료 읽기':'시대를 따라 깊이 읽기';
+    $('reading-status').hidden=state.location.readings.completion!=='confirmed_notes';
     $('timeline').min=state.timeline.start;$('timeline').max=state.timeline.end;$('time-start').textContent=state.location.timelinePolicy.recommendedStart.label;$('timeline-markers').innerHTML=state.timeline.chapters.map(c=>'<i style="left:'+((c.month-state.timeline.start)/(state.timeline.end-state.timeline.start)*100)+'%"></i>').join('');
     $('record-search').value='';contextList();sourceList();readingList();recordList();map.focus();render();$('playback-note').textContent=resume?'저장된 탐험 시점을 불러왔습니다. 재생으로 이어서 탐험하세요.':'재생을 누르면 탐험을 시작합니다.';
     save();document.dispatchEvent(new CustomEvent('history:location'));

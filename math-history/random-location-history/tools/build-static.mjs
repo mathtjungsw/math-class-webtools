@@ -3,7 +3,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 const tools=path.dirname(fileURLToPath(import.meta.url)),root=path.resolve(tools,'..');
 // Add researched location.json files here. The generated page needs no server.
-const locationFiles=['research/jinju-namgang/location.json','research/istanbul/location.json'];
+const locationFiles=['research/jinju-namgang/location.json','research/istanbul/location.json','research/chemba-kidoka/location.json'];
 const locations=[];
 for(const file of locationFiles){
   const data=JSON.parse(await fs.readFile(path.join(root,file),'utf8'));
@@ -20,16 +20,23 @@ for(const file of locationFiles){
     if(!chapter.recordIds.includes(chapter.anchorRecordId))throw new Error('읽기 시작 기록 누락: '+chapter.id);
     for(const id of chapter.recordIds){if(!records.get(id)?.date||assigned.has(id))throw new Error('읽기 기록 연결 확인: '+id);assigned.add(id);}
     for(const id of chapter.contextRecordIds){if(!records.has(id)||records.get(id).date)throw new Error('읽기 해설 연결 확인: '+id);}
-    for(const level of ['basic','detail','deep']){
+    const hasDeep=Array.isArray(chapter.deep)&&chapter.deep.length>0;
+    if(!hasDeep&&data.readings.completion!=='confirmed_notes')throw new Error('깊이 읽기 상태 확인: '+chapter.id);
+    for(const level of ['basic','detail',...(hasDeep?['deep']:[])]){
       if(!chapter[level]?.length)throw new Error('읽기 단계 누락: '+chapter.id);
       for(const section of chapter[level])if(!section.paragraphs?.length||!section.sourceIds.length||section.sourceIds.some(id=>!sourceIds.has(id)))throw new Error('읽기 출처 확인: '+chapter.id);
     }
-    const length=chapter.deep.flatMap(s=>s.paragraphs).join('').length;
-    if(length<data.readings.readingRateCharactersPerMinute*5)throw new Error('깊이 읽기 분량 부족: '+chapter.id);
+    if(hasDeep){const length=chapter.deep.flatMap(s=>s.paragraphs).join('').length;
+      if(length<data.readings.readingRateCharactersPerMinute*5)throw new Error('깊이 읽기 분량 부족: '+chapter.id);}
   }
   if(data.records.some(r=>r.date&&!assigned.has(r.id)))throw new Error('시대 이야기에 연결되지 않은 기록');
   for(const source of data.sources)delete source.localEvidence;
   data.integrationStatus='embedded_in_standalone_html';
+  if(data.id==='tz-chemba-kidoka'){
+    data.mapLabel='쳄바 · 키도카 인근';
+    data.researchReadiness.gameReady=true;
+    data.researchReadiness.note='확인된 기록과 두 단계 읽기를 게임에 수록했다. 깊이 읽기는 보강 예정.';
+  }
   locations.push(data);
 }
 // Simplify bundled Natural Earth coastlines for the overview map, preserving holes.
