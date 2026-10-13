@@ -1,12 +1,12 @@
 {
-  "checkedAt": "2026-10-13T10:35:50.652Z",
+  "checkedAt": "2026-10-13T22:00:08.752Z",
   "passed": true,
   "errors": [],
   "counts": {
-    "sources": 14,
-    "places": 10,
-    "datedRecords": 19,
-    "undatedContexts": 6
+    "sources": 17,
+    "places": 12,
+    "datedRecords": 25,
+    "undatedContexts": 7
   },
   "checks": [
     "원 추첨 좌표 유지",

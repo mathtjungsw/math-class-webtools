@@ -25,6 +25,13 @@ src('CH12','Depression, Dust Bowl, Demography, and Drought: The Colonial State a
 src('CH13','Geoarchaeology and Heritage Management: Identifying and Quantifying Multi-Scalar Erosional Processes at Kisese II Rockshelter, Tanzania','https://www.frontiersin.org/journals/earth-science/articles/10.3389/feart.2021.665193/full','Frontiers in Earth Science','peer_reviewed_geoarchaeology','relevant_full_text_sections_read',['Discussion: History of Landscape Processes and Environmental Change in Kondoa Region'],['최근 침식 측정값을 1950년 이전 풍경에 투사하지 않는다.'],2021);
 src('CH14','Tanganyika — UN Trusteeship Council Documentation','https://research.un.org/en/docs/tc/tanganyika','United Nations Dag Hammarskjöld Library','official_document_guide','guide_read_primary_text_not_read',['Agreement: A/RES/63(I), 13 Dec 1946; Reports of Administering Power'],['협정 승인일·영국과의 협정이라는 안내만 사용. 협정 본문 PDF는 열지 못했으므로 조항 내용은 인용하지 않는다.']);
 const point={lat:draw.latitude,lon:draw.longitude};
+// Second research pass: retain the draw, strengthen evidence access and add scoped records.
+sources.find(s=>s.id==='CH04').authors[1]='Jason E. Lewis';
+Object.assign(sources.find(s=>s.id==='CH06'),{access:'author_uploaded_full_text_relevant_sections_read',checkedSections:['pp.450–456: traditions, authorship discussion and conclusion'],notes:['열람본: https://www.researchgate.net/publication/287418493_The_rock_art_of_Kondoa_District_Tanzania','세 전통과 제작 집단 연결은 저자들의 해석이다. 현대 민족명으로 모든 옛 제작자를 확정하지 않는다.']});
+sources.find(s=>s.id==='CH08').checkedSections=['pp.81–86, 89–91: 조사지·과거 기록·이웃 교류; p.86 표 이미지 대조'];
+src('CH15','East and Central Africa','https://encyclopedia.1914-1918-online.net/wp-content/uploads/2023/01/ams/960370/pdf/1914-1918-Online-east_and_central_africa-2016-03-03.pdf','Freie Universität Berlin, 1914-1918-online','scholarly_historical_synthesis','relevant_pdf_text_read',['PDF p.6, Themes: Personnel'],['동·중앙아프리카 전역의 종합 연구. 동원 인원·사망 추정치를 키도카나 콘도아 수치로 재사용하지 않는다.'],2016,['Anne Samson']);
+src('CH16','Mtunya: Famine in Central Tanzania, 1917–20','https://doi.org/10.1017/S0021853700024993','The Journal of African History 31(2):181–197','archival_and_oral_historical_research','publisher_extract_and_references_read',['출판사 공개 Extract 및 각주 2의 Ugogo 공간 범위'],['논문 전체를 열람하지 않았다. 공개 발췌에 나온 기근·군 징발·자율성 상실의 해석만 사용. 주민의 말은 연구자의 요약을 통해 읽으며 구술 녹취 원문을 읽었다고 하지 않는다.','우고고는 남쪽 비교 지역이다. 현대 Dodoma Region이라는 명칭만으로 키도카의 직접 피해라고 판단하지 않는다.'],1990,['Gregory Maddox']);
+src('CH17','Trusteeship Agreement for the Territory of Tanganyika, approved 13 December 1946','https://treaties.un.org/doc/Publication/UNTS/Volume%208/v8.pdf','United Nations Treaty Series, volume 8, No.116','primary_treaty','relevant_pdf_text_and_image_read',['Tanganyika 협정 영문 pp.92,94,96,100,102: 제2·3·5·6·8·12·13·14·16조; p.100 이미지 대조'],['초안(FRUS 1946 문서 327)이 아닌 승인된 협정문. 제도적 의무와 주민이 실제로 누린 권리는 별개다.'],1947,['United Nations','United Kingdom']);
 const places=[];
 function pl(id,name,latitude,longitude,sourceIds,note){const coordinate=latitude===null?null:{latitude,longitude};places.push({id,name,coordinate,sourceIds,note,...(coordinate?{distanceFromDrawKm:+engine.distance(point,{lat:latitude,lon:longitude}).toFixed(2),directionFromDraw:id==='draw_point'?null:engine.direction(point,{lat:latitude,lon:longitude})}:{})});}
 pl('draw_point','실제 추첨 지점',draw.latitude,draw.longitude,['CH01','CH02'],'키도카 인근 육지. 이 점 자체의 발굴·정착·마을명은 미확인.');
@@ -38,6 +45,8 @@ pl('kondoa','콘도아 마을·이랑기 구릉',null,null,['CH07','CH09','CH10'
 pl('haubi','하우비와 주변 제철 유적',null,null,['CH07'],'하우비·바우라·파히 등에 관한 증거를 키도카 현장 유물로 표시하지 않는다.');
 pl('tanganyika','탕가니카(당시 통치 단위)',null,null,['CH11','CH14'],'국가·광역 통치 배경. 현대 탄자니아의 국경과 이름을 과거에 그대로 사용하지 않는다.');
 const records=[];
+pl('east_africa','동아프리카 전쟁 권역',null,null,['CH15'],'전쟁의 광역 배경. 특정 운반인의 출신·키도카 통과 경로는 확인하지 않았다.');
+pl('ugogo','우고고(남쪽 비교 지역)',null,null,['CH16'],'고고 공동체의 기근 연구 지역. 추첨점과 같은 피해를 입었다고 추정하지 않는다.');
 function rec(id,title,placeId,startYear,endYear,label,narrative,sourceId,locator,limits=[],kind='year',scope='regional_context'){
  records.push({id,title,placeId,date:startYear===null?null:{label,startYear,endYear,kind,calendar:'historical_CE_BCE_as_reported',displayAnchorYear:startYear,anchorIsExactEventDate:kind==='year'||kind==='day',anchorNote:kind==='year'?'연도만 확인; 월일 미확정':kind==='day'?'월일은 label에 보존':'시작값은 연표 배치용이며 사건 발생일이 아니다.'},status:'ready_with_labels',theme:[],narrative,evidence:[{sourceId,locator}],interpretations:[],limits,scope});
 }
@@ -79,6 +88,22 @@ const themes={
  'CHK-C03':['고고학','생산','역사해석'],'CHK-C04':['교역','생업','주변관계'],
  'CHK-C05':['환경','통제'],'CHK-C06':['자료읽기','역사해석']
 };
+rec('CHK-020','작은 석기가 널리 쓰이기까지','kisese_ii',-21750,-21150,'23.7–23.1 ka cal BP (약 기원전 21,750–21,150년)','키세세Ⅱ의 X층위에서 등 부분을 가공한 소형 석기가 풍부해진다고 연구는 해석한다. 드물게 처음 나타난 시기와 널리 사용된 시기는 다를 수 있다.','CH04','Discussion, spit X and backed microlith abundance',['옛 발굴의 층위 단위와 작은 유물의 이동 가능성이 있다. 기술 발명년 또는 모든 유적의 공통 경계가 아니다.'],'calibrated_range');
+rec('CHK-021','밀랍과 상아, 철제 괭이의 연결','sandawe',1850,1899,'19세기 중엽 이후의 교역 배경','산다웨와 랑기 사이에서는 철제 괭이와 밀랍을 교환했으며, 연구는 19세기 중엽 콘도아에 아랍 상인이 들어온 뒤 일부 상아도 교환품이 되었다고 설명한다.','CH08','p.91, Rangi–Sandawe exchanges',['1850–1899는 19세기 후반의 표시 범위다. 교역 개시·종료 연도를 확정하지 않는다. 특정 노선·키도카 거래는 미확인.'],'century');
+rec('CHK-022','해안 상인이 찾은 밀랍','sandawe',1924,1925,'1924–1925년 기록','후대 연구가 정리한 Bagshaw의 기록에는 산다웨의 밀랍을 사러 해안에서 상인들이 찾아왔다고 나온다. 채집 활동은 농사·교역과 연결될 수 있었다.','CH08','p.86 Table 2, Bagshaw 1924–5 행',['원 기록은 미대조. 채집·교역의 시작 연도가 아니며, 당시 관찰자의 민족·생업 평가를 사실로 그대로 옮기지 않는다.'],'reported_range');
+rec('CHK-023','전쟁을 움직인 운반 노동','east_africa',1914,1918,'1914–1918년 동아프리카 전쟁의 광역 배경','전쟁 참가 군대들은 식량·장비·탄약을 나르는 아프리카인 운반 노동에 크게 의존했다. 전투 병력만으로 전쟁 경험을 설명할 수 없다.','CH15','Themes: Personnel',['권역 전체의 종합 연구다. 키도카 출신 동원자·동원 규모·개별 경로는 미확인.'],'reported_range','regional_context');
+rec('CHK-024','전선이 지나간 뒤에도 남은 기근','ugogo',1917,1920,'1917–1920년 · 남쪽 우고고 비교','우고고의 므툰야 기근 연구는 독일군과 영국군의 인력·가축·식량 징발 뒤에 발생한 위기를 다룬다. 연구자가 요약한 고고 주민의 해석에서는 생활을 스스로 유지할 힘을 잃었다는 점이 중요하다.','CH16','공개 Extract; 각주 2',['논문 전체·구술 원문 미열람. 우고고 사례를 추첨점 피해로 옮기지 않는다. 사망자 추정 수치는 게임에 사용하지 않는다.'],'reported_range');
+rec('CHK-025','기념물 보호의 법적 틀','kondoa_art',1937,1937,'1937년 법령','UNESCO의 보호 이력은 1937년 제4호 국가 기념물 보존 법령을 콘도아 암벽화 관리의 초기 법적 틀로 설명한다.','CH05','Protection and management requirements',['법령 원문은 미열람. 1949년 12곳의 개별 지정과 구분하며, 1937년에 모든 그림이 지정되었다고 쓰지 않는다.']);
+rec('CHK-C07','농사를 배웠다는 기억의 시간','sandawe',null,null,null,'산다웨와 냐투루의 전승은 먹거리를 찾아 오가던 사람들이 경작 지식을 주고받았다고 전한다. 연구는 최초 도입 시기가 명확하지 않음을 함께 지적한다.','CH08','pp.90–91, Nyaturu and cultivation',['후대 연구를 통한 전승이다. 세대 수를 임의의 정확한 연도로 바꾸거나 모든 가구의 동일한 변화로 설명하지 않는다.'],'context');
+Object.assign(themes,{'CHK-020':['고고학','생산','역사해석'],'CHK-021':['교역','생업','주변관계'],'CHK-022':['교역','노동','생업'],'CHK-023':['전쟁','노동','식민지'],'CHK-024':['전쟁','식량','주민의 삶'],'CHK-025':['문화유산','법'],'CHK-C07':['농경','기억','주변관계']});
+const artContext=records.find(r=>r.id==='CHK-C02');
+artContext.narrative='양식・입지・겹침・민족지 비교를 통해 서로 다른 제작 전통을 설명하는 연구가 있다. 이는 제작 집단과 순서에 관한 논증이며, 바닥 유물 연대가 곧 모든 벽화의 제작 연대가 되지는 않는다.';
+artContext.evidence[0].locator='pp.450–456: 제작 집단 논의와 결론';
+artContext.limits=['저자들의 해석을 학계의 단일 확정 결론으로 표시하지 않는다. 현대 민족 이름으로 모든 옛 제작자를 확정하지 않는다.'];
+const trust=records.find(r=>r.id==='CHK-017');
+trust.evidence.push({sourceId:'CH17',locator:'pp.92–102, 제2·3·6·12·16조'});
+trust.narrative+=' 승인 협정은 주민의 정치 참여 확대, 기초 교육의 확장, 연례 보고 등 통치 당국의 의무도 정했다.';
+trust.limits=['협정 원문을 확인했으나 각 조항의 지역별 실제 이행은 별도 자료가 필요하다.'];
 for(const r of records)r.theme=themes[r.id];
 for(const [id,month] of [['CHK-008',6],['CHK-009',7],['CHK-017',12]]){
  const r=records.find(r=>r.id===id);r.date.displayAnchorMonth=month;
@@ -91,6 +116,12 @@ for(const [id,day] of [['CHK-009',20],['CHK-017',13]]){
  const d=records.find(r=>r.id===id).date;d.kind='document_date';d.day=day;d.anchorNote='출처에 제시된 승인 날짜를 보존하고 해당 월에 배치합니다.';
 }
 const data={schemaVersion:'chemba-kidoka-research-1.0',id:'tz-chemba-kidoka',name:'쳄바·키도카 인근과 콘도아 주변',language:'ko',researchedOn:day,status:'initial_research_with_scope_labels',integrationStatus:'research_only_not_integrated',representativePoint:{placeId:'draw_point',latitude:draw.latitude,longitude:draw.longitude,display:'남위 5.370992°, 동경 35.838650°',coordinateRole:'실제 육지 무작위 추첨값',sourceIds:['CH01','CH02'],provenanceFile:'draw.json',note:'발굴 유적이나 도시 중심으로 옮기지 않은 원 추첨점'},spatialScope:{description:'현대 쳄바 구역의 실제 추첨점을 기준으로 가까운 생활권과 북쪽 콘도아 비교 유적을 구분한다.',reuseRule:'반경만으로 역사 자료를 복사하지 말 것. 각 기록의 placeId·scope·limits를 함께 표시.',historicBoundariesVerified:false,exactPointSettlementVerified:false},timelinePolicy:{lastPlayableYear:1950,endInclusive:true,appliesToAllLocations:true,sourcePublicationYearMayExceedEndYear:true,radiocarbonReferenceYear:1950,radiocarbonRule:'미보정 BP는 변환하지 않는다. CHK-001·002의 cal BP는 원문의 보정 범위를 보존하고 BCE는 약 50년 단위 표시용 근사이다.',firstHabitationYear:null,earliestDatedSettlementInThisPack:null,earliestDatedActivityInThisPack:'CHK-001',recommendedStart:{year:-44250,label:'주변 유적의 보정 연대: 46.2–42.7 ka cal BP',recordId:'CHK-001',isExactFirstHabitationYear:false,note:'추첨점이 아닌 북쪽 약 98km의 유적에서 출발하는 비교 서사임을 첫 화면에 표시.'},yearEncoding:'기원전 N년=-N, 서기 N년=N. 0년 없음.',arithmeticRule:'engine.js는 천문학 연도이므로 통합 시 기원전 음수 연도를 year+1로 변환. 이 파일을 바로 엔진에 넣지 않는다.',skipRule:'연대 없는 해설은 별도 읽기. 기록 공백은 무인 상태를 뜻하지 않는다.',uncertainDateRule:'date.label 우선; 범위 시작은 배치용. recorded_by_year는 활동 시작년이 아니다.',endRule:'1950은 종료 경계이며 사건을 만들지 않는다.'},places,sources,records,researchReadiness:{fullThreeLevelReadingsWritten:false,gameReady:false,verifiedCardsCanBeAdapted:true,coreEvidence:'석기·암벽화, 교역·제철, 산다웨 생활, 파르콰 시설, 콘도아 전쟁·토지 정책, 탕가니카 통치 체계',remaining:['키도카와 추첨점의 직접 자료','하우비 정착·제철 원 연대표','주민·운반인 시점의 전쟁 연구','세 단계 읽기 집필과 HTML 통합'],note:'근거와 범위 표시를 유지하면 확인된 카드를 먼저 통합할 수 있다. 이 조사본 자체는 아직 게임에 반영되지 않았다.'}};
+data.schemaVersion='chemba-kidoka-research-2.0';
+data.revisedOn='2026-10-14';
+data.status='expanded_research_with_three_level_readings';
+data.integrationStatus='prepared_for_static_game';
+Object.assign(data.researchReadiness,{fullThreeLevelReadingsWritten:true,gameReady:true,remaining:['키도카와 추첨점의 직접 자료','하우비 정착·제철 원 연대표','개별 주민·운반인의 직접 사료','파르콰 교회·학교의 원 설립 문서와 이용 기록'],note:'세 단계 읽기와 확인된 카드를 정적 게임에 수록할 조사 원본. 장소 범위와 실제 열람 수준을 유지한다.'});
+sources.find(s=>s.id==='CH14').notes.push('보강 조사에서 승인 협정 원문을 CH17로 별도 확인했다. 이 CH14 항목 자체는 자료 안내 페이지이다.');
 for(const [name,value] of [['draw.json',draw],['location.json',data]]){const dest=path.join(root,name);fs.writeFileSync(dest+'.pending',JSON.stringify(value,null,2)+'\n');fs.renameSync(dest+'.pending',dest);}
 const names=new Map(places.map(p=>[p.id,p.name]));
 const link=r=>r.evidence.map(e=>{const s=sources.find(s=>s.id===e.sourceId);return `[${s.id}](${s.url})`;}).join(' · ');

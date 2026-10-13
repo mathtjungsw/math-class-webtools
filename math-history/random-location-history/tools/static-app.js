@@ -19,6 +19,8 @@
   const storageKey='history-atlas:static:v1';let toastTimer;
   const reader={chapter:null,level:'basic'};
   accessLabels.pdf_relevant_pages_visually_checked='관련 PDF 페이지·이미지 확인';
+  accessLabels.publisher_extract_and_references_read='출판사 공개 발췌·참고문헌 확인 · 전체 미열람';
+  accessLabels.relevant_pdf_text_and_image_read='사료 PDF 본문·이미지 확인';
   Object.assign(accessLabels,{local_dataset_computed:'지리 데이터 판정',api_response_read:'지명 조회 결과 확인',page_read:'기관 설명 확인',relevant_full_text_sections_read:'관련 논문 본문 확인',selected_pdf_pages_visually_read:'선별 PDF 페이지·이미지 확인',relevant_pdf_text_read:'관련 PDF 본문 확인',author_uploaded_full_text_relevant_sections_read:'저자 공개본의 관련 본문 확인',transcription_and_editorial_context_read:'사료 전사본·편집 해설 확인',relevant_table_read:'공식 문서집 표 확인',relevant_pdf_text_and_table_image_read:'논문 본문·표 이미지 확인',guide_read_primary_text_not_read:'공식 자료 안내 확인 · 원문 미열람'});
   function readingFor(id){return state.location.readings.chapters.find(c=>c.recordIds.includes(id)||c.contextRecordIds.includes(id));}
   function readingButtons(chapter){return '<div class="reading-actions">'+[['basic','짧게 읽기'],['detail','상세히 보기'],['deep','깊이 읽기']].map(([level,label])=>C.readingLevels(chapter).includes(level)?'<button data-reading="'+escape(chapter.id)+'" data-reading-level="'+level+'">'+label+' <small>'+C.readingMinutes(chapter[level],state.location.readings.readingRateCharactersPerMinute)+'분</small></button>':'<span class="reading-pending">'+label+' · 보강 예정</span>').join('')+'</div>';}

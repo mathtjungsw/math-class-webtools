@@ -58,12 +58,12 @@ test('세 장소의 연표·출처·읽기가 독립적으로 연결되며 1950�
   }
 });
 
-test('쳄바의 원 추첨점과 이웃 자료를 구분하고 준비되지 않은 깊이 읽기를 열지 않는다', () => {
+test('쳄바의 원 추첨점과 이웃 자료를 구분하고 다섯 시대의 세 단계 읽기를 제공한다', () => {
   const l=data.locations.find(l=>l.id==='tz-chemba-kidoka'),t=C.prepare(l);
   assert.equal(l.representativePoint.latitude,-5.370992142220525);
   assert.equal(l.representativePoint.longitude,35.83865032899922);
   assert.equal(l.timelinePolicy.firstHabitationYear,null);
-  assert.equal(t.entries.length,19);assert.equal(t.contexts.length,6);
+  assert.equal(t.entries.length,25);assert.equal(t.contexts.length,7);
   assert.equal(l.readings.chapters.length,5);
   assert.equal(l.places.find(p=>p.id==='kisese_ii').distanceFromDrawKm,97.81);
   assert.ok(l.records.filter(r=>r.date).every(r=>r.placeId!=='draw_point'&&r.theme.length));
@@ -73,8 +73,14 @@ test('쳄바의 원 추첨점과 이웃 자료를 구분하고 준비되지 않�
   assert.equal(C.parts(get('CHK-009').month).month,7);
   assert.equal(get('CHK-009').approximate,false);
   assert.equal(C.parts(get('CHK-017').month).month,12);
-  assert.equal(C.readingMinutes(l.readings.chapters[0].deep),0);
-  assert.match(script('static-app'),/보강 예정/);
+  for(const c of l.readings.chapters){
+    assert.deepEqual(Array.from(C.readingLevels(c)),['basic','detail','deep']);
+    assert.ok(c.deep.flatMap(s=>s.paragraphs).join('').length>=3000);
+    assert.ok(C.readingMinutes(c.deep)>=5);
+  }
+  assert.equal(l.sources.find(s=>s.id==='CH16').access,'publisher_extract_and_references_read');
+  assert.equal(l.records.find(r=>r.id==='CHK-024').placeId,'ugogo');
+  assert.ok(l.records.find(r=>r.id==='CHK-017').evidence.some(e=>e.sourceId==='CH17'));
   assert.match(script('static-explore'),/tz-chemba-kidoka/);
   assert.ok(l.records.some(r=>r.theme.includes('교역')));
 });

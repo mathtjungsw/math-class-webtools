@@ -6,21 +6,27 @@
 |---|---|---|---|
 | 46.2–42.7 ka cal BP (약 기원전 44,250–40,750년) | CHK-001 — 작은 알껍데기 구슬에 남은 사람의 손 | 키세세Ⅱ 바위그늘 유적 | [CH04](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0192029) |
 | 39.6–34.3 ka cal BP (약 기원전 37,650–32,350년) | CHK-002 — 석기 기술은 한순간에 바뀌지 않았다 | 키세세Ⅱ 바위그늘 유적 | [CH04](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0192029) |
+| 23.7–23.1 ka cal BP (약 기원전 21,750–21,150년) | CHK-020 — 작은 석기가 널리 쓰이기까지 | 키세세Ⅱ 바위그늘 유적 | [CH04](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0192029) |
 | 19세기 | CHK-003 — 행렬이 지나가면 마을의 수요도 달라진다 | 쳄바·참발로와 부룽게 주변 | [CH09](https://doi.org/10.1080/17531055.2010.487335) |
+| 19세기 중엽 이후의 교역 배경 | CHK-021 — 밀랍과 상아, 철제 괭이의 연결 | 산다웨 생활권 | [CH08](https://minpaku.repo.nii.ac.jp/record/7147/files/SES94_05.pdf) |
 | 1891–1893년 관찰에 관한 후대 연구 | CHK-004 — 곡물과 들의 먹거리를 함께 이용한 사람들 | 산다웨 생활권 | [CH08](https://minpaku.repo.nii.ac.jp/record/7147/files/SES94_05.pdf) |
 | 1900년 기록에 전하는 기존 제철 활동 | CHK-005 — 철을 만드는 사람과 쓰는 사람 | 콘도아 마을·이랑기 구릉 | [CH07](https://journals.udsm.ac.tz/index.php/uj/article/view/1187) |
 | 1908년 | CHK-006 — 종교의 새로운 접점 | 산다웨 생활권 | [CH08](https://minpaku.repo.nii.ac.jp/record/7147/files/SES94_05.pdf) |
 | 1908년 | CHK-007 — 암벽화가 외부 보고에 등장하다 | 콘도아 암벽화 유적군 대표점 | [CH05](https://whc.unesco.org/en/list/1183) |
+| 1914–1918년 동아프리카 전쟁의 광역 배경 | CHK-023 — 전쟁을 움직인 운반 노동 | 동아프리카 전쟁 권역 | [CH15](https://encyclopedia.1914-1918-online.net/wp-content/uploads/2023/01/ams/960370/pdf/1914-1918-Online-east_and_central_africa-2016-03-03.pdf) |
 | 1916년 6월 7–10일 | CHK-008 — 포성 곁의 병상 | 콘도아 마을·이랑기 구릉 | [CH10](https://samilitaryhistory.org/vol075et.html) |
+| 1917–1920년 · 남쪽 우고고 비교 | CHK-024 — 전선이 지나간 뒤에도 남은 기근 | 우고고(남쪽 비교 지역) | [CH16](https://doi.org/10.1017/S0021853700024993) |
 | 1922년 7월 20일 | CHK-009 — 탕가니카의 위임통치 조건 승인 | 탕가니카(당시 통치 단위) | [CH11](https://history.state.gov/historicaldocuments/frus1919Parisv13/ch10subch1) |
+| 1924–1925년 기록 | CHK-022 — 해안 상인이 찾은 밀랍 | 산다웨 생활권 | [CH08](https://minpaku.repo.nii.ac.jp/record/7147/files/SES94_05.pdf) |
 | 1927–1949년 | CHK-010 — 숲을 없애는 정책과 땅의 변화 | 콘도아 마을·이랑기 구릉 | [CH13](https://www.frontiersin.org/journals/earth-science/articles/10.3389/feart.2021.665193/full) |
 | 1928–1930년 | CHK-011 — 땅의 손상이 행정 문제로 기록되다 | 콘도아 마을·이랑기 구릉 | [CH12](https://www.african.cam.ac.uk/system/files/documents/anderson.pdf) |
 | 1929년 | CHK-012 — 파르콰 지역의 교회 | 파르콰 지역 | [CH08](https://minpaku.repo.nii.ac.jp/record/7147/files/SES94_05.pdf) |
 | 1932년 | CHK-013 — 농사 방식에 규칙이 들어오다 | 콘도아 마을·이랑기 구릉 | [CH12](https://www.african.cam.ac.uk/system/files/documents/anderson.pdf) |
 | 1935년 | CHK-014 — 키세세Ⅱ의 그림을 조사하다 | 키세세Ⅱ 바위그늘 유적 | [CH04](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0192029) |
 | 1937년 | CHK-015 — 콘도아가 보전 사업의 우선 대상이 되다 | 콘도아 마을·이랑기 구릉 | [CH12](https://www.african.cam.ac.uk/system/files/documents/anderson.pdf) |
+| 1937년 법령 | CHK-025 — 기념물 보호의 법적 틀 | 콘도아 암벽화 유적군 대표점 | [CH05](https://whc.unesco.org/en/list/1183) |
 | 1938–1939년 | CHK-016 — 계획과 예산의 역사 | 콘도아 마을·이랑기 구릉 | [CH12](https://www.african.cam.ac.uk/system/files/documents/anderson.pdf) |
-| 1946년 12월 13일 | CHK-017 — 신탁통치로 바뀐 국제적 틀 | 탕가니카(당시 통치 단위) | [CH14](https://research.un.org/en/docs/tc/tanganyika) |
+| 1946년 12월 13일 | CHK-017 — 신탁통치로 바뀐 국제적 틀 | 탕가니카(당시 통치 단위) | [CH14](https://research.un.org/en/docs/tc/tanganyika) · [CH17](https://treaties.un.org/doc/Publication/UNTS/Volume%208/v8.pdf) |
 | 1947년 | CHK-018 — 파르콰의 초등학교 | 파르콰 지역 | [CH08](https://minpaku.repo.nii.ac.jp/record/7147/files/SES94_05.pdf) |
 | 1949년 | CHK-019 — 일부 암벽화가 법적 보호 대상이 되다 | 콘도아 암벽화 유적군 대표점 | [CH05](https://whc.unesco.org/en/list/1183) |
 
@@ -34,5 +40,6 @@
 - CHK-C04 — 철 도구는 이웃과의 관계였다 ([CH07](https://journals.udsm.ac.tz/index.php/uj/article/view/1187))
 - CHK-C05 — 같은 정책, 다른 마을 ([CH09](https://doi.org/10.1080/17531055.2010.487335))
 - CHK-C06 — 기록 공백을 읽는 법 ([CH04](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0192029))
+- CHK-C07 — 농사를 배웠다는 기억의 시간 ([CH08](https://minpaku.repo.nii.ac.jp/record/7147/files/SES94_05.pdf))
 
 보정 연대의 약식 BCE 표시는 정확한 사건일이 아니다. 장기 기록 공백은 사람이 없었다는 뜻이 아니다.

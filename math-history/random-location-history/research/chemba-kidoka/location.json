@@ -1,11 +1,11 @@
 {
-  "schemaVersion": "chemba-kidoka-research-1.0",
+  "schemaVersion": "chemba-kidoka-research-2.0",
   "id": "tz-chemba-kidoka",
   "name": "쳄바·키도카 인근과 콘도아 주변",
   "language": "ko",
   "researchedOn": "2026-10-13",
-  "status": "initial_research_with_scope_labels",
-  "integrationStatus": "research_only_not_integrated",
+  "status": "expanded_research_with_three_level_readings",
+  "integrationStatus": "prepared_for_static_game",
   "representativePoint": {
     "placeId": "draw_point",
     "latitude": -5.370992142220525,
@@ -169,6 +169,24 @@
         "CH14"
       ],
       "note": "국가·광역 통치 배경. 현대 탄자니아의 국경과 이름을 과거에 그대로 사용하지 않는다."
+    },
+    {
+      "id": "east_africa",
+      "name": "동아프리카 전쟁 권역",
+      "coordinate": null,
+      "sourceIds": [
+        "CH15"
+      ],
+      "note": "전쟁의 광역 배경. 특정 운반인의 출신·키도카 통과 경로는 확인하지 않았다."
+    },
+    {
+      "id": "ugogo",
+      "name": "우고고(남쪽 비교 지역)",
+      "coordinate": null,
+      "sourceIds": [
+        "CH16"
+      ],
+      "note": "고고 공동체의 기근 연구 지역. 추첨점과 같은 피해를 입었다고 추정하지 않는다."
     }
   ],
   "sources": [
@@ -243,7 +261,7 @@
       "publicationYear": 2018,
       "authors": [
         "Christian A. Tryon",
-        "Jessica E. Lewis",
+        "Jason E. Lewis",
         "Kathryn L. Ranhorn",
         "Amandus Kwekason",
         "Bridget Alex",
@@ -275,13 +293,14 @@
       "url": "https://doi.org/10.1080/0067270X.2015.1120436",
       "publisher": "Azania: Archaeological Research in Africa",
       "kind": "peer_reviewed_review",
-      "access": "abstract_only",
+      "access": "author_uploaded_full_text_relevant_sections_read",
       "checkedOn": "2026-10-13",
       "checkedSections": [
-        "출판사 검색 색인의 초록·서지"
+        "pp.450–456: traditions, authorship discussion and conclusion"
       ],
       "notes": [
-        "본문 접근 실패. 양식 순서·제작 집단에 합의가 없다는 초록의 제한된 주장만 사용."
+        "열람본: https://www.researchgate.net/publication/287418493_The_rock_art_of_Kondoa_District_Tanzania",
+        "세 전통과 제작 집단 연결은 저자들의 해석이다. 현대 민족명으로 모든 옛 제작자를 확정하지 않는다."
       ],
       "publicationYear": 2015,
       "authors": [
@@ -319,7 +338,7 @@
       "access": "relevant_pdf_text_read",
       "checkedOn": "2026-10-13",
       "checkedSections": [
-        "pp.81–85: 초록·조사지 소개·선행연구"
+        "pp.81–86, 89–91: 조사지·과거 기록·이웃 교류; p.86 표 이미지 대조"
       ],
       "notes": [
         "후대 현지조사와 과거 기록의 재검토. 1971년 마을 형성과 그 이전 Farkwa 지역 시설을 구분한다. 언어 계통 분류는 재사용하지 않는다."
@@ -432,10 +451,70 @@
         "Agreement: A/RES/63(I), 13 Dec 1946; Reports of Administering Power"
       ],
       "notes": [
-        "협정 승인일·영국과의 협정이라는 안내만 사용. 협정 본문 PDF는 열지 못했으므로 조항 내용은 인용하지 않는다."
+        "협정 승인일·영국과의 협정이라는 안내만 사용. 협정 본문 PDF는 열지 못했으므로 조항 내용은 인용하지 않는다.",
+        "보강 조사에서 승인 협정 원문을 CH17로 별도 확인했다. 이 CH14 항목 자체는 자료 안내 페이지이다."
       ],
       "publicationYear": null,
       "authors": []
+    },
+    {
+      "id": "CH15",
+      "title": "East and Central Africa",
+      "url": "https://encyclopedia.1914-1918-online.net/wp-content/uploads/2023/01/ams/960370/pdf/1914-1918-Online-east_and_central_africa-2016-03-03.pdf",
+      "publisher": "Freie Universität Berlin, 1914-1918-online",
+      "kind": "scholarly_historical_synthesis",
+      "access": "relevant_pdf_text_read",
+      "checkedOn": "2026-10-13",
+      "checkedSections": [
+        "PDF p.6, Themes: Personnel"
+      ],
+      "notes": [
+        "동·중앙아프리카 전역의 종합 연구. 동원 인원·사망 추정치를 키도카나 콘도아 수치로 재사용하지 않는다."
+      ],
+      "publicationYear": 2016,
+      "authors": [
+        "Anne Samson"
+      ]
+    },
+    {
+      "id": "CH16",
+      "title": "Mtunya: Famine in Central Tanzania, 1917–20",
+      "url": "https://doi.org/10.1017/S0021853700024993",
+      "publisher": "The Journal of African History 31(2):181–197",
+      "kind": "archival_and_oral_historical_research",
+      "access": "publisher_extract_and_references_read",
+      "checkedOn": "2026-10-13",
+      "checkedSections": [
+        "출판사 공개 Extract 및 각주 2의 Ugogo 공간 범위"
+      ],
+      "notes": [
+        "논문 전체를 열람하지 않았다. 공개 발췌에 나온 기근·군 징발·자율성 상실의 해석만 사용. 주민의 말은 연구자의 요약을 통해 읽으며 구술 녹취 원문을 읽었다고 하지 않는다.",
+        "우고고는 남쪽 비교 지역이다. 현대 Dodoma Region이라는 명칭만으로 키도카의 직접 피해라고 판단하지 않는다."
+      ],
+      "publicationYear": 1990,
+      "authors": [
+        "Gregory Maddox"
+      ]
+    },
+    {
+      "id": "CH17",
+      "title": "Trusteeship Agreement for the Territory of Tanganyika, approved 13 December 1946",
+      "url": "https://treaties.un.org/doc/Publication/UNTS/Volume%208/v8.pdf",
+      "publisher": "United Nations Treaty Series, volume 8, No.116",
+      "kind": "primary_treaty",
+      "access": "relevant_pdf_text_and_image_read",
+      "checkedOn": "2026-10-13",
+      "checkedSections": [
+        "Tanganyika 협정 영문 pp.92,94,96,100,102: 제2·3·5·6·8·12·13·14·16조; p.100 이미지 대조"
+      ],
+      "notes": [
+        "초안(FRUS 1946 문서 327)이 아닌 승인된 협정문. 제도적 의무와 주민이 실제로 누린 권리는 별개다."
+      ],
+      "publicationYear": 1947,
+      "authors": [
+        "United Nations",
+        "United Kingdom"
+      ]
     }
   ],
   "records": [
@@ -991,16 +1070,20 @@
         "제도",
         "식민지"
       ],
-      "narrative": "유엔은 영국과의 탕가니카 신탁통치 협정을 승인했다. 통치의 국제적 틀이 바뀌었지만 이 날짜를 독립일로 읽어서는 안 된다.",
+      "narrative": "유엔은 영국과의 탕가니카 신탁통치 협정을 승인했다. 통치의 국제적 틀이 바뀌었지만 이 날짜를 독립일로 읽어서는 안 된다. 승인 협정은 주민의 정치 참여 확대, 기초 교육의 확장, 연례 보고 등 통치 당국의 의무도 정했다.",
       "evidence": [
         {
           "sourceId": "CH14",
           "locator": "Agreement 안내 및 A/RES/63(I) 표기"
+        },
+        {
+          "sourceId": "CH17",
+          "locator": "pp.92–102, 제2·3·6·12·16조"
         }
       ],
       "interpretations": [],
       "limits": [
-        "원 협정 본문은 미열람. 특정 조항·주민 권리의 실제 이행은 서술하지 않는다."
+        "협정 원문을 확인했으나 각 조항의 지역별 실제 이행은 별도 자료가 필요하다."
       ],
       "scope": "national_context"
     },
@@ -1101,16 +1184,16 @@
         "문화유산",
         "역사해석"
       ],
-      "narrative": "암벽화의 양식 순서와 제작 집단은 연구에서 계속 논의되고 있다. 바위그늘 바닥의 오래된 유물을 곧바로 벽화의 제작 연대로 삼을 수 없다.",
+      "narrative": "양식・입지・겹침・민족지 비교를 통해 서로 다른 제작 전통을 설명하는 연구가 있다. 이는 제작 집단과 순서에 관한 논증이며, 바닥 유물 연대가 곧 모든 벽화의 제작 연대가 되지는 않는다.",
       "evidence": [
         {
           "sourceId": "CH06",
-          "locator": "초록"
+          "locator": "pp.450–456: 제작 집단 논의와 결론"
         }
       ],
       "interpretations": [],
       "limits": [
-        "초록만 확인. 모든 그림을 산다웨·하자 등 하나의 집단에 귀속시키지 않는다."
+        "저자들의 해석을 학계의 단일 확정 결론으로 표시하지 않는다. 현대 민족 이름으로 모든 옛 제작자를 확정하지 않는다."
       ],
       "scope": "regional_context"
     },
@@ -1207,19 +1290,241 @@
         "스킵 모드는 데이터가 있는 시기로 이동할 뿐 인간 활동의 부재를 선언하지 않는다."
       ],
       "scope": "regional_context"
+    },
+    {
+      "id": "CHK-020",
+      "title": "작은 석기가 널리 쓰이기까지",
+      "placeId": "kisese_ii",
+      "date": {
+        "label": "23.7–23.1 ka cal BP (약 기원전 21,750–21,150년)",
+        "startYear": -21750,
+        "endYear": -21150,
+        "kind": "calibrated_range",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": -21750,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시작값은 연표 배치용이며 사건 발생일이 아니다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "고고학",
+        "생산",
+        "역사해석"
+      ],
+      "narrative": "키세세Ⅱ의 X층위에서 등 부분을 가공한 소형 석기가 풍부해진다고 연구는 해석한다. 드물게 처음 나타난 시기와 널리 사용된 시기는 다를 수 있다.",
+      "evidence": [
+        {
+          "sourceId": "CH04",
+          "locator": "Discussion, spit X and backed microlith abundance"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "옛 발굴의 층위 단위와 작은 유물의 이동 가능성이 있다. 기술 발명년 또는 모든 유적의 공통 경계가 아니다."
+      ],
+      "scope": "regional_context"
+    },
+    {
+      "id": "CHK-021",
+      "title": "밀랍과 상아, 철제 괭이의 연결",
+      "placeId": "sandawe",
+      "date": {
+        "label": "19세기 중엽 이후의 교역 배경",
+        "startYear": 1850,
+        "endYear": 1899,
+        "kind": "century",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1850,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시작값은 연표 배치용이며 사건 발생일이 아니다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "교역",
+        "생업",
+        "주변관계"
+      ],
+      "narrative": "산다웨와 랑기 사이에서는 철제 괭이와 밀랍을 교환했으며, 연구는 19세기 중엽 콘도아에 아랍 상인이 들어온 뒤 일부 상아도 교환품이 되었다고 설명한다.",
+      "evidence": [
+        {
+          "sourceId": "CH08",
+          "locator": "p.91, Rangi–Sandawe exchanges"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "1850–1899는 19세기 후반의 표시 범위다. 교역 개시·종료 연도를 확정하지 않는다. 특정 노선·키도카 거래는 미확인."
+      ],
+      "scope": "regional_context"
+    },
+    {
+      "id": "CHK-022",
+      "title": "해안 상인이 찾은 밀랍",
+      "placeId": "sandawe",
+      "date": {
+        "label": "1924–1925년 기록",
+        "startYear": 1924,
+        "endYear": 1925,
+        "kind": "reported_range",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1924,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시작값은 연표 배치용이며 사건 발생일이 아니다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "교역",
+        "노동",
+        "생업"
+      ],
+      "narrative": "후대 연구가 정리한 Bagshaw의 기록에는 산다웨의 밀랍을 사러 해안에서 상인들이 찾아왔다고 나온다. 채집 활동은 농사·교역과 연결될 수 있었다.",
+      "evidence": [
+        {
+          "sourceId": "CH08",
+          "locator": "p.86 Table 2, Bagshaw 1924–5 행"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "원 기록은 미대조. 채집·교역의 시작 연도가 아니며, 당시 관찰자의 민족·생업 평가를 사실로 그대로 옮기지 않는다."
+      ],
+      "scope": "regional_context"
+    },
+    {
+      "id": "CHK-023",
+      "title": "전쟁을 움직인 운반 노동",
+      "placeId": "east_africa",
+      "date": {
+        "label": "1914–1918년 동아프리카 전쟁의 광역 배경",
+        "startYear": 1914,
+        "endYear": 1918,
+        "kind": "reported_range",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1914,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시작값은 연표 배치용이며 사건 발생일이 아니다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "전쟁",
+        "노동",
+        "식민지"
+      ],
+      "narrative": "전쟁 참가 군대들은 식량·장비·탄약을 나르는 아프리카인 운반 노동에 크게 의존했다. 전투 병력만으로 전쟁 경험을 설명할 수 없다.",
+      "evidence": [
+        {
+          "sourceId": "CH15",
+          "locator": "Themes: Personnel"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "권역 전체의 종합 연구다. 키도카 출신 동원자·동원 규모·개별 경로는 미확인."
+      ],
+      "scope": "regional_context"
+    },
+    {
+      "id": "CHK-024",
+      "title": "전선이 지나간 뒤에도 남은 기근",
+      "placeId": "ugogo",
+      "date": {
+        "label": "1917–1920년 · 남쪽 우고고 비교",
+        "startYear": 1917,
+        "endYear": 1920,
+        "kind": "reported_range",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1917,
+        "anchorIsExactEventDate": false,
+        "anchorNote": "시작값은 연표 배치용이며 사건 발생일이 아니다."
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "전쟁",
+        "식량",
+        "주민의 삶"
+      ],
+      "narrative": "우고고의 므툰야 기근 연구는 독일군과 영국군의 인력·가축·식량 징발 뒤에 발생한 위기를 다룬다. 연구자가 요약한 고고 주민의 해석에서는 생활을 스스로 유지할 힘을 잃었다는 점이 중요하다.",
+      "evidence": [
+        {
+          "sourceId": "CH16",
+          "locator": "공개 Extract; 각주 2"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "논문 전체·구술 원문 미열람. 우고고 사례를 추첨점 피해로 옮기지 않는다. 사망자 추정 수치는 게임에 사용하지 않는다."
+      ],
+      "scope": "regional_context"
+    },
+    {
+      "id": "CHK-025",
+      "title": "기념물 보호의 법적 틀",
+      "placeId": "kondoa_art",
+      "date": {
+        "label": "1937년 법령",
+        "startYear": 1937,
+        "endYear": 1937,
+        "kind": "year",
+        "calendar": "historical_CE_BCE_as_reported",
+        "displayAnchorYear": 1937,
+        "anchorIsExactEventDate": true,
+        "anchorNote": "연도만 확인; 월일 미확정"
+      },
+      "status": "ready_with_labels",
+      "theme": [
+        "문화유산",
+        "법"
+      ],
+      "narrative": "UNESCO의 보호 이력은 1937년 제4호 국가 기념물 보존 법령을 콘도아 암벽화 관리의 초기 법적 틀로 설명한다.",
+      "evidence": [
+        {
+          "sourceId": "CH05",
+          "locator": "Protection and management requirements"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "법령 원문은 미열람. 1949년 12곳의 개별 지정과 구분하며, 1937년에 모든 그림이 지정되었다고 쓰지 않는다."
+      ],
+      "scope": "regional_context"
+    },
+    {
+      "id": "CHK-C07",
+      "title": "농사를 배웠다는 기억의 시간",
+      "placeId": "sandawe",
+      "date": null,
+      "status": "ready_with_labels",
+      "theme": [
+        "농경",
+        "기억",
+        "주변관계"
+      ],
+      "narrative": "산다웨와 냐투루의 전승은 먹거리를 찾아 오가던 사람들이 경작 지식을 주고받았다고 전한다. 연구는 최초 도입 시기가 명확하지 않음을 함께 지적한다.",
+      "evidence": [
+        {
+          "sourceId": "CH08",
+          "locator": "pp.90–91, Nyaturu and cultivation"
+        }
+      ],
+      "interpretations": [],
+      "limits": [
+        "후대 연구를 통한 전승이다. 세대 수를 임의의 정확한 연도로 바꾸거나 모든 가구의 동일한 변화로 설명하지 않는다."
+      ],
+      "scope": "regional_context"
     }
   ],
   "researchReadiness": {
-    "fullThreeLevelReadingsWritten": false,
-    "gameReady": false,
+    "fullThreeLevelReadingsWritten": true,
+    "gameReady": true,
     "verifiedCardsCanBeAdapted": true,
     "coreEvidence": "석기·암벽화, 교역·제철, 산다웨 생활, 파르콰 시설, 콘도아 전쟁·토지 정책, 탕가니카 통치 체계",
     "remaining": [
       "키도카와 추첨점의 직접 자료",
       "하우비 정착·제철 원 연대표",
-      "주민·운반인 시점의 전쟁 연구",
-      "세 단계 읽기 집필과 HTML 통합"
+      "개별 주민·운반인의 직접 사료",
+      "파르콰 교회·학교의 원 설립 문서와 이용 기록"
     ],
-    "note": "근거와 범위 표시를 유지하면 확인된 카드를 먼저 통합할 수 있다. 이 조사본 자체는 아직 게임에 반영되지 않았다."
-  }
+    "note": "세 단계 읽기와 확인된 카드를 정적 게임에 수록할 조사 원본. 장소 범위와 실제 열람 수준을 유지한다."
+  },
+  "revisedOn": "2026-10-14"
 }

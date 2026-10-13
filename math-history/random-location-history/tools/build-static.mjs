@@ -35,7 +35,7 @@ for(const file of locationFiles){
   if(data.id==='tz-chemba-kidoka'){
     data.mapLabel='쳄바 · 키도카 인근';
     data.researchReadiness.gameReady=true;
-    data.researchReadiness.note='확인된 기록과 두 단계 읽기를 게임에 수록했다. 깊이 읽기는 보강 예정.';
+    data.researchReadiness.note=data.readings.completion==='confirmed_notes'?'확인된 기록과 두 단계 읽기를 게임에 수록했다. 깊이 읽기는 보강 예정.':'확인된 기록과 다섯 시대의 세 단계 읽기를 수록했다. 깊이 읽기는 각 5분 이상이며 장소·출처의 확인 범위를 함께 표시한다.';
   }
   locations.push(data);
 }
