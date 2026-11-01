@@ -19,11 +19,11 @@ def build(output):
         car['image'] = uri
     for file, uri in photos.items():
         html = html.replace('src="' + file + '"', 'src="' + uri + '"')
-    html = html.replace('<link rel="stylesheet" href="style.css">', '<style>\n' + (ROOT / 'style.css').read_text(encoding='utf-8') + '\n</style>')
+    html = re.sub(r'<link rel="stylesheet" href="style\.css(?:\?[^\"]*)?">', lambda _: '<style>\n' + (ROOT / 'style.css').read_text(encoding='utf-8') + '\n</style>', html)
     for file in ['cars.js', 'core.js', 'app.js']:
         js = 'window.GARAGE_CARS = ' + json.dumps(cars, ensure_ascii=False) + ';' if file == 'cars.js' else (ROOT / file).read_text(encoding='utf-8')
         # Inlining retains parser-deferred execution after the body has been parsed.
-        html = html.replace('<script defer src="' + file + '"></script>', '')
+        html = re.sub(r'<script defer src="' + re.escape(file) + r'(?:\?[^\"]*)?"></script>', '', html)
         html = html.replace('</body>', '<script>\n' + js.replace('</script', '<\\/script') + '\n</script>\n</body>')
     html = html.replace('<a href="../../index.html">웹툴 모음 ↗</a>', '')
     output.parent.mkdir(parents=True, exist_ok=True)

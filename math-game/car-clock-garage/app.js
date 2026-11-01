@@ -14,7 +14,7 @@
   function conflict() {
     conflicted = true;
     warning('다른 탭에서 이 게임의 기록이 바뀌었습니다. 기록이 겹치지 않도록 이 탭은 잠시 멈췄어요. 이 페이지를 새로고침해 최신 기록을 불러와 주세요.');
-    for (const button of document.querySelectorAll('#choices button, #next-button, #hint-button, #start-button, #equip-unlocked')) button.disabled = true;
+    for (const button of document.querySelectorAll('#choices button, #submit-answer, #next-button, #hint-button, #start-button, #equip-unlocked')) button.disabled = true;
   }
   function writable() {
     if (conflicted) return false;
@@ -91,9 +91,7 @@
   }
   function hint(q) {
     const car = carById(q.carId);
-    if (q.mode === 'model') return `제조사는 ${car.brand}예요. 이름의 첫 글자는 ‘${[...car.model][0]}’입니다.`;
-    if (q.mode === 'series') return `이 자동차의 세대·개발 코드는 ${car.series}예요. 사진의 앞모습을 함께 기억해 봐요.`;
-    return `이 세대가 처음 나온 해는 ${car.year}년이에요. 사진 속 차량의 개별 연식과는 달라요.`;
+    return `제조사는 ${car.brand}예요. 이름의 첫 글자는 ‘${[...car.model][0]}’입니다. 사진 속 세대는 ${Math.floor(car.year/10)*10}년대에 처음 출시됐어요.`;
   }
   function hintText(q) {
     if (q.kind !== 'clock') return hint(q);
@@ -106,8 +104,12 @@
       feedback.append(text('strong', `정답이에요! +${q.reward} XP`), text('p', q.kind === 'clock' ? `지금 시각은 ${q.answer}이에요. 다음 여행도 함께해요!` : `${q.answer}, 잘 찾았어요!`));
     } else if (q.attempts.length) {
       feedback.classList.add('retry');
-      feedback.append(text('strong', '괜찮아요. 다시 골라 볼까요?'), text('p', '경험치는 줄어들지 않아요. 힌트를 봐도 좋아요.'));
-    } else feedback.append(text('strong', '잘 살펴보고 골라 봐요.'), text('p', '틀려도 다시 도전할 수 있어요.'));
+      if(q.kind==='car') {
+        const [model,year]=JSON.parse(q.attempts.at(-1));
+        const changed=C.pairKey(q.picks.model,q.picks.year)!==q.attempts.at(-1);
+        feedback.append(text('strong',changed?'선택한 답을 다시 확인해 보세요.':model===q.modelAnswer?'차종은 맞았어요. 출시연도를 다시 골라요.':year===q.yearAnswer?'출시연도는 맞았어요. 차종을 다시 골라요.':'차종과 출시연도를 다시 골라 볼까요?'),text('p',changed?'두 답을 골랐다면 ‘정답 확인’을 눌러 주세요.':'경험치는 줄어들지 않아요. 두 가지를 모두 맞히면 완료예요.'));
+      } else feedback.append(text('strong', '괜찮아요. 다시 골라 볼까요?'), text('p', '경험치는 줄어들지 않아요. 힌트를 봐도 좋아요.'));
+    } else feedback.append(text('strong',q.kind==='car'?'차종과 출시연도, 둘 다 도전해요.':'잘 살펴보고 골라 봐요.'), text('p',q.kind==='car'?'각각 하나씩 고르고 ‘정답 확인’을 눌러 주세요.':'틀려도 다시 도전할 수 있어요.'));
     $('hint-button').hidden = q.resolved;
     $('hint-button').disabled = q.hinted || conflicted;
     $('hint-button').lastChild.textContent = q.hinted ? ' 힌트를 보고 골라 보세요' : ' 힌트 보기';
@@ -120,8 +122,9 @@
     const q = C.ensureQuestion(state, cars), clock = q.kind === 'clock';
     $('mission-label').textContent = `ROUND ${String(state.round).padStart(2, '0')} · ${clock ? '시계 미션' : '자동차 퀴즈'}`;
     const car = clock ? null : carById(q.carId);
-    $('question-title').textContent = clock ? '시계는 몇 시 몇 분일까요?' : q.mode === 'model' ? '이 자동차의 이름은 무엇일까요?' : q.mode === 'series' ? `이 ${car.model}, 어떤 세대일까요?` : `이 ${car.model} 세대는 몇 년에 처음 나왔을까요?`;
-    $('question-tag').textContent = clock ? '짧은 바늘과 긴 바늘을 살펴봐요' : q.mode === 'year' ? '세대가 처음 출시된 해를 골라요' : '자동차를 자세히 살펴봐요';
+    $('question-title').textContent = clock ? '시계는 몇 시 몇 분일까요?' : '자동차 종류와 출시연도를 맞혀 보세요.';
+    $('question-tag').textContent = clock ? '짧은 바늘과 긴 바늘을 살펴봐요' : '자동차 사진 하나, 두 가지 도전';
+    $('answer-heading-copy').textContent=clock?'정답을 하나 골라 주세요':'차종과 출시연도를 각각 골라 주세요';
     $('question-number').textContent = clock ? 'BONUS MISSION' : `${String(state.carCount + 1).padStart(2, '0')} / 05`;
     $('reward-badge').textContent = clock ? '+20 XP' : '+10 XP';
     $('car-stage').hidden = clock; $('clock-stage').hidden = !clock; $('photo-source').hidden = clock;
@@ -129,13 +132,34 @@
     else {
       $('image-error').hidden = true;
       $('question-photo').src = car.image;
-      $('question-photo').alt = q.resolved ? `${car.brand} ${car.model} ${car.series}` : '이름을 맞혀 볼 자동차 사진';
+      $('question-photo').alt = q.resolved ? `${car.brand} ${car.model} ${car.series}` : '종류와 출시연도를 맞혀 볼 자동차 사진';
       if ($('question-photo').complete && !$('question-photo').naturalWidth) $('image-error').hidden = false;
-      $('visual-caption').textContent = q.resolved ? `${car.brand} ${car.model} · ${car.series}${car.year ? ` · ${car.year}년 세대 출시` : ''}` : q.mode === 'year' ? '개별 차량 연식이 아닌, 세대 출시연도 문제예요.' : '어떤 자동차인지 골라 주세요.';
+      $('visual-caption').textContent = q.resolved ? `${car.brand} ${car.model} · ${car.series} · ${car.year}년 출시` : '사진 속 세대가 처음 출시된 연도를 골라요.';
     }
     renderRoute();
     $('choices').replaceChildren();
-    q.choices.forEach((value, i) => {
+    $('choices').classList.toggle('dual-choices',!clock);
+    $('submit-answer').hidden=clock||q.resolved;
+    if(!clock) {
+      for(const [field,label,options] of [['model','01 자동차 종류',q.choices],['year','02 출시연도',q.yearChoices]]) {
+        const group=text('fieldset','','answer-group');group.append(text('legend',label));
+        const grid=text('div','','dual-options');
+        options.forEach(value=>{
+          const selected=q.picks[field]===value;
+          const button=text('button','','choice dual-choice'+(selected?' selected':'')+(q.resolved&&selected?' correct':''));
+          button.setAttribute('aria-pressed',String(selected));button.dataset.field=field;
+          button.append(text('span',q.resolved&&selected?'✓':selected?'●':'○','choice-index'),text('span',value,'choice-text'));
+          button.disabled=q.resolved||conflicted;
+          button.addEventListener('click',()=>{
+            if(!writable()||!C.select(state,field,value))return;
+            save();renderQuestion();
+            const picked=[...$('choices').querySelectorAll('button')].find(b=>b.dataset.field===field&&b.querySelector('.choice-text').textContent===value);
+            picked?.focus({preventScroll:true});
+          });grid.append(button);
+        });group.append(grid);$('choices').append(group);
+      }
+      $('submit-answer').disabled=conflicted||!q.picks.model||!q.picks.year||q.attempts.includes(C.pairKey(q.picks.model,q.picks.year));
+    } else q.choices.forEach((value, i) => {
       const correct = q.resolved && value === q.answer, wrong = q.attempts.includes(value) && value !== q.answer;
       const button = text('button', '', `choice${correct ? ' correct' : ''}${wrong ? ' wrong' : ''}`);
       button.append(text('span', correct ? '✓' : wrong ? '↺' : String(i + 1).padStart(2, '0'), 'choice-index'), text('span', value, 'choice-text'));
@@ -209,6 +233,7 @@
   }
   function exportBackup() { download(`부릉부릉-차고-기록-${new Date().toISOString().slice(0,10)}.json`, JSON.stringify({format:'car-clock-garage-backup', exportedAt:new Date().toISOString(), progress:state},null,2), 'application/json'); }
   $('start-button').addEventListener('click', start);
+  $('submit-answer').addEventListener('click',()=>{if(state.active?.kind==='car')choose({...state.active.picks});});
   $('pause-button').addEventListener('click', () => { playing = false; $('game').hidden = true; $('home').hidden = false; renderDashboard(); $('start-button').focus(); });
   $('next-button').addEventListener('click', () => { if (!writable() || !C.advance(state)) return; renderQuestion(true); save(); });
   $('hint-button').addEventListener('click', () => { if (!writable() || !state.active || state.active.resolved || state.active.hinted) return; state.active.hinted = true; save(); renderQuestion(); $('hint-text').setAttribute('tabindex','-1'); $('hint-text').focus({preventScroll:true}); });
@@ -227,7 +252,7 @@
   $('export-button').addEventListener('click', exportBackup); $('backup-before-import').addEventListener('click', exportBackup);
   $('csv-button').addEventListener('click', () => {
     const esc = x => `"${String(x ?? '').replaceAll('"','""')}"`;
-    const rows = [['시간','문제 종류','자동차','유형','정답','시도 횟수','힌트','처음 정답','경험치'], ...state.history.map(h => [h.at, h.kind === 'car' ? '자동차' : '시계', h.carId ? carById(h.carId).model : '', {model:'이름',series:'세대',year:'세대 출시연도',time:'시간'}[h.mode],h.answer,h.attempts,h.hinted?'예':'아니오',h.first?'예':'아니오',h.xp])];
+    const rows = [['시간','문제 종류','자동차','유형','정답','시도 횟수','힌트','처음 정답','경험치'], ...state.history.map(h => [h.at, h.kind === 'car' ? '자동차' : '시계', h.carId ? carById(h.carId).model : '', {dual:'차종·출시연도',model:'이름',series:'세대',year:'세대 출시연도',time:'시간'}[h.mode],h.answer,h.attempts,h.hinted?'예':'아니오',h.first?'예':'아니오',h.xp])];
     download('부릉부릉-차고-학습기록.csv', '\ufeff' + rows.map(r => r.map(esc).join(',')).join('\r\n'), 'text/csv;charset=utf-8');
   });
   $('import-button').addEventListener('click', () => { if (!writable()) return; $('import-file').click(); });

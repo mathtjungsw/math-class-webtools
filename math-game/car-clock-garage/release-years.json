@@ -1,0 +1,30 @@
+{
+  "definition": "사진 속 세대가 국내에서 처음 출시된 연도. 개별 차량 생산연도나 촬영연도가 아님.",
+  "verified": "2026-11-01",
+  "models": {
+    "morning-ja": {"year":2017,"source":"https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/all-new-morning-3rd-gen"},
+    "morning-ta": {"year":2011,"source":"https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/all-new-morning-2nd-gen"},
+    "avante-ad": {"year":2015,"source":"https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000001665"},
+    "avante-cn7": {"year":2020,"source":"https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000001665"},
+    "sonata-lf": {"year":2014,"source":"https://www.hyundaimotorgroup.com/ko/story/CONT0000000000187807"},
+    "sonata-dn8": {"year":2019,"source":"https://www.hyundaimotorgroup.com/ko/story/CONT0000000000187807"},
+    "grandeur-ig": {"year":2016,"source":"https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000059378"},
+    "grandeur-gn7": {"year":2022,"source":"https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000059378"},
+    "casper": {"year":2021,"source":"https://www.hyundaimotorgroup.com/ko/story/CONT0000000000004492"},
+    "ray": {"year":2011,"source":"https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/ray"},
+    "tucson": {"year":2020,"source":"https://www.hyundaimotorgroup.com/ko/news/CONT0000000000125545"},
+    "santafe": {"year":2023,"source":"https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000104767"},
+    "palisade": {"year":2018,"source":"https://www.hyundai.com/kr/ko/brand/brandstory/model/palisade-history/2018-palisade"},
+    "ioniq5": {"year":2021,"source":"https://www.hyundai.com/kr/ko/brand/brandstory/model/ioniq-history/2021-ioniq5"},
+    "ioniq6": {"year":2022,"source":"https://www.hyundai.com/kr/ko/brand/brandstory/model/ioniq-history/2022-ioniq6"},
+    "k3": {"year":2018,"source":"https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/all-new-k3/"},
+    "k5": {"year":2019,"source":"https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000119896"},
+    "k8": {"year":2021,"source":"https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000002525"},
+    "sportage": {"year":2021,"source":"https://www.hyundaimotorgroup.com/ko/story/CONT0000000000001689"},
+    "sorento": {"year":2020,"source":"https://www.hyundaimotorgroup.com/ko/news/CONT0000000000105082"},
+    "carnival": {"year":2020,"source":"https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000120188"},
+    "ev6": {"year":2021,"source":"https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000149363"},
+    "g80": {"year":2020,"source":"https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000127982"},
+    "gv80": {"year":2020,"source":"https://www.genesis.com/kr/ko/support/pr-center/detail.html?seq=0000000233"}
+  }
+}

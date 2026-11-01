@@ -6,7 +6,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT.parents[1] / 'outputs' / 'car-clock-garage'
-FILES = [ROOT / name for name in ['index.html', 'style.css', 'app.js', 'core.js', 'cars.js', 'README.md', 'PHOTO-LICENSES.md']]
+FILES = [ROOT / name for name in ['index.html', 'style.css', 'app.js', 'core.js', 'cars.js', 'release-years.json', 'README.md', 'PHOTO-LICENSES.md']]
 FILES += list((ROOT / 'photos').glob('*'))
 html = (OUTPUT / '부릉부릉-차고.html').read_text(encoding='utf-8')
 assert not re.search(r'<script[^>]+src=', html)

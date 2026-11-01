@@ -105,7 +105,8 @@ def collect(seed):
         image.thumbnail((1200, 900), Image.Resampling.LANCZOS)
         image_path.parent.mkdir(exist_ok=True)
         image.save(image_path, 'WEBP', quality=85, method=6)
-    result = dict(id=id_, brand=brand, model=model, series=series, year=year, yearSource=YEAR_SOURCES.get(id_), image='photos/' + id_ + '.webp',
+    release = json.loads((ROOT / 'release-years.json').read_text(encoding='utf-8'))['models'].get(id_)
+    result = dict(id=id_, brand=brand, model=model, series=series, year=release['year'] if release else year, yearSource=release['source'] if release else YEAR_SOURCES.get(id_), image='photos/' + id_ + '.webp',
                   title=info['title'].removeprefix('File:'), source=ii['descriptionurl'], author=clean(meta.get('Artist', {}).get('value', '')), license=clean(meta['LicenseShortName']['value']),
                   licenseUrl=meta.get('LicenseUrl', {}).get('value', ''), description=clean(meta.get('ImageDescription', {}).get('value', '')), category=category,
                   changes='크기 축소 및 WebP 변환. 원본 구도 유지.', collected='2026-11-01')

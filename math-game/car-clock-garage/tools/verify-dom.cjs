@@ -32,9 +32,17 @@ function boot(storage = new Map()) {
   const state=()=>JSON.parse(storage.get(KEY));
   const answer=(correct=true)=>{
     const q=state().active;
-    const value=correct?q.answer:q.choices.find(x=>x!==q.answer);
-    const b=[...$('choices').querySelectorAll('button')].find(b=>b.querySelector('.choice-text').textContent===value);
-    b.click();
+    if(q.kind==='car') {
+      for(const [field,value] of [['model',q.modelAnswer],['year',correct?q.yearAnswer:q.yearChoices.find(y=>y!==q.yearAnswer)]]) {
+        const b=[...$('choices').querySelectorAll('button')].find(b=>b.dataset.field===field&&b.querySelector('.choice-text').textContent===value);
+        b.click();
+      }
+      $('submit-answer').click();
+    } else {
+      const value=correct?q.answer:q.choices.find(x=>x!==q.answer);
+      const b=[...$('choices').querySelectorAll('button')].find(b=>b.querySelector('.choice-text').textContent===value);
+      b.click();
+    }
   };
   return {window,document,$,click,state,answer,storage,errors};
 }
@@ -43,9 +51,13 @@ function boot(storage = new Map()) {
   assert.equal(app.$('home').hidden,false);
   app.click('start-button');
   assert.equal(app.$('game').hidden,false);
-  assert.equal(app.$('choices').children.length,3);
+  assert.equal(app.$('choices').querySelectorAll('[data-field="model"]').length,4);
+  assert.equal(app.$('choices').querySelectorAll('[data-field="year"]').length,4);
+  assert.equal(app.$('submit-answer').disabled,true);
+  app.$('choices').querySelector('[data-field="model"]').click();
+  assert.equal(app.$('submit-answer').disabled,true);assert.equal(app.state().xp,0);
   app.answer(false);
-  assert.match(app.$('feedback').textContent,/다시 골라/);
+  assert.match(app.$('feedback').textContent,/출시연도를 다시/);
   assert.equal(app.state().xp,0);
   app.answer();
   assert.match(app.$('feedback').textContent,/정답이에요/);
@@ -70,13 +82,13 @@ function boot(storage = new Map()) {
   assert.equal(resumed.state().round,2);
   assert.equal(resumed.state().active.kind,'car');
   resumed.click('settings-button');
-  resumed.$('difficulty').value='year'; resumed.$('choice-count').value='4'; resumed.$('clock-step').value='60';
+  resumed.$('difficulty').value='dual'; resumed.$('choice-count').value='4'; resumed.$('clock-step').value='60';
   resumed.$('settings-form').dispatchEvent(new resumed.window.Event('submit',{bubbles:true,cancelable:true}));
-  assert.equal(resumed.state().settings.difficulty,'year');
+  assert.equal(resumed.state().settings.difficulty,'dual');
   assert.equal(resumed.$('settings-dialog').open,false);
   resumed.answer();resumed.click('next-button');
-  assert.equal(resumed.state().active.mode,'year');
-  assert.equal(resumed.$('choices').children.length,4);
+  assert.equal(resumed.state().active.mode,'dual');
+  assert.equal(resumed.$('choices').querySelectorAll('button').length,8);
   resumed.click('photo-source');
   assert.equal(resumed.$('credits-dialog').open,true);
   assert.equal(resumed.$('credits-list').children.length,24);
