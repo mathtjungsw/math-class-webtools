@@ -1,0 +1,98 @@
+{
+  "pageid": 44372908,
+  "ns": 6,
+  "title": "File:20151020 Hyundai AVANTE Front-side.png",
+  "imagerepository": "local",
+  "imageinfo": [
+    {
+      "thumburl": "https://upload.wikimedia.org/wikipedia/commons/9/9e/20151020_Hyundai_AVANTE_Front-side.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "thumbwidth": 1200,
+      "thumbheight": 800,
+      "thumbattribs": {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/9/9e/20151020_Hyundai_AVANTE_Front-side.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "decoding": "async",
+        "loading": "lazy",
+        "width": 1200,
+        "height": 800
+      },
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9e/20151020_Hyundai_AVANTE_Front-side.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:20151020_Hyundai_AVANTE_Front-side.png",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=44372908",
+      "extmetadata": {
+        "DateTime": {
+          "value": "2015-10-21 16:54:26",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "20151020 Hyundai AVANTE Front-side",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Self-published work|White Hyundai sedans|Hyundai Avante (AD)",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "현대 아반떼(AD) 정측면",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2015-09-13",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Ki_hoon&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Ki hoon (page does not exist)\">Ki hoon</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 4.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 4.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/4.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-4.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      }
+    }
+  ]
+}

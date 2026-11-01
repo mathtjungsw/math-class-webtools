@@ -1,0 +1,102 @@
+{
+  "pageid": 135341844,
+  "ns": 6,
+  "title": "File:0 Hyundai Tucson (NX4) 1.jpg",
+  "imagerepository": "local",
+  "imageinfo": [
+    {
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e8/0_Hyundai_Tucson_%28NX4%29_1.jpg/1280px-0_Hyundai_Tucson_%28NX4%29_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1200,
+      "thumbheight": 839,
+      "responsiveUrls": {
+        "2": "https://upload.wikimedia.org/wikipedia/commons/e/e8/0_Hyundai_Tucson_%28NX4%29_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+      },
+      "thumbattribs": {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e8/0_Hyundai_Tucson_%28NX4%29_1.jpg/1280px-0_Hyundai_Tucson_%28NX4%29_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "decoding": "async",
+        "loading": "lazy",
+        "width": 1200,
+        "height": 839,
+        "srcset": "https://upload.wikimedia.org/wikipedia/commons/e/e8/0_Hyundai_Tucson_%28NX4%29_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+      },
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/e8/0_Hyundai_Tucson_%28NX4%29_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:0_Hyundai_Tucson_(NX4)_1.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=135341844",
+      "extmetadata": {
+        "DateTime": {
+          "value": "2023-07-31 14:31:56",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "0 Hyundai Tucson (NX4) 1",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Self-published work|Black Hyundai SUVs|Hyundai Tucson (NX4, LWB)",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Hyundai Tucson (NX4)",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2023-04-15 16:30:00",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Benespit\" title=\"User:Benespit\">Benespit</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 4.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 4.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/4.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-4.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      }
+    }
+  ]
+}

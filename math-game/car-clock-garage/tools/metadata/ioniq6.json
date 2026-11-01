@@ -1,0 +1,103 @@
+{
+  "pageid": 132489652,
+  "ns": 6,
+  "title": "File:2023 Hyundai Ioniq 6 Limited, front 4.27.23.jpg",
+  "index": 1,
+  "imagerepository": "local",
+  "imageinfo": [
+    {
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/2023_Hyundai_Ioniq_6_Limited%2C_front_4.27.23.jpg/1280px-2023_Hyundai_Ioniq_6_Limited%2C_front_4.27.23.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1200,
+      "thumbheight": 614,
+      "responsiveUrls": {
+        "2": "https://upload.wikimedia.org/wikipedia/commons/9/96/2023_Hyundai_Ioniq_6_Limited%2C_front_4.27.23.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+      },
+      "thumbattribs": {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/2023_Hyundai_Ioniq_6_Limited%2C_front_4.27.23.jpg/1280px-2023_Hyundai_Ioniq_6_Limited%2C_front_4.27.23.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "decoding": "async",
+        "loading": "lazy",
+        "width": 1200,
+        "height": 614,
+        "srcset": "https://upload.wikimedia.org/wikipedia/commons/9/96/2023_Hyundai_Ioniq_6_Limited%2C_front_4.27.23.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+      },
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/96/2023_Hyundai_Ioniq_6_Limited%2C_front_4.27.23.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:2023_Hyundai_Ioniq_6_Limited,_front_4.27.23.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=132489652",
+      "extmetadata": {
+        "DateTime": {
+          "value": "2023-05-30 18:12:11",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "2023 Hyundai Ioniq 6 Limited, front 4.27.23",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "New York City photographs taken on 2023-04-27|Self-published work|Silver Hyundai sedans|Automobiles in Manhattan, New York City|Midtown Manhattan in 2023|April 2023 in Manhattan, New York City|Hyundai Ioniq 6 (2022)",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "A 2023 Hyundai Ioniq 6 Limited photographed in <a href=\"https://en.wikipedia.org/wiki/Midtown_Manhattan\" class=\"extiw\" title=\"en:Midtown Manhattan\"> Midtown Manhattan</a>, New York, USA",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2023-04-27 17:54:44",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Kevauto\" title=\"User:Kevauto\">Kevauto</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 4.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 4.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/4.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-4.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      }
+    }
+  ]
+}

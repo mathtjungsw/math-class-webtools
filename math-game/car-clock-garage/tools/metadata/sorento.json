@@ -1,0 +1,102 @@
+{
+  "pageid": 95713649,
+  "ns": 6,
+  "title": "File:2021 Kia Sorento AWD white front view in Brunei.jpg",
+  "imagerepository": "local",
+  "imageinfo": [
+    {
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fe/2021_Kia_Sorento_AWD_white_front_view_in_Brunei.jpg/1280px-2021_Kia_Sorento_AWD_white_front_view_in_Brunei.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1200,
+      "thumbheight": 900,
+      "responsiveUrls": {
+        "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fe/2021_Kia_Sorento_AWD_white_front_view_in_Brunei.jpg/3840px-2021_Kia_Sorento_AWD_white_front_view_in_Brunei.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+      },
+      "thumbattribs": {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fe/2021_Kia_Sorento_AWD_white_front_view_in_Brunei.jpg/1280px-2021_Kia_Sorento_AWD_white_front_view_in_Brunei.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "decoding": "async",
+        "loading": "lazy",
+        "width": 1200,
+        "height": 900,
+        "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fe/2021_Kia_Sorento_AWD_white_front_view_in_Brunei.jpg/3840px-2021_Kia_Sorento_AWD_white_front_view_in_Brunei.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x"
+      },
+      "url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/2021_Kia_Sorento_AWD_white_front_view_in_Brunei.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:2021_Kia_Sorento_AWD_white_front_view_in_Brunei.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=95713649",
+      "extmetadata": {
+        "DateTime": {
+          "value": "2020-11-01 14:14:52",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "2021 Kia Sorento AWD white front view in Brunei",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Self-published work|Kia Sorento (MQ4)",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "2021 Kia Sorento AWD white front view. Photographed at Grand Motors Kia showroom, Beribi, Brunei.",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2020-11-01 12:32:17",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:AIMHO%27S_REBELLION_8490s&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:AIMHO'S REBELLION 8490s (page does not exist)\">AIMHO'S REBELLION 8490s</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 4.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 4.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/4.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-4.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      }
+    }
+  ]
+}

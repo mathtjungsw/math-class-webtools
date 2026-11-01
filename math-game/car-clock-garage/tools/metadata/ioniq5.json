@@ -1,0 +1,102 @@
+{
+  "pageid": 107306946,
+  "ns": 6,
+  "title": "File:2021 Hyundai Ioniq 5 (France) front view.jpg",
+  "imagerepository": "local",
+  "imageinfo": [
+    {
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/2021_Hyundai_Ioniq_5_%28France%29_front_view.jpg/1280px-2021_Hyundai_Ioniq_5_%28France%29_front_view.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1200,
+      "thumbheight": 708,
+      "responsiveUrls": {
+        "2": "https://upload.wikimedia.org/wikipedia/commons/9/98/2021_Hyundai_Ioniq_5_%28France%29_front_view.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+      },
+      "thumbattribs": {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/2021_Hyundai_Ioniq_5_%28France%29_front_view.jpg/1280px-2021_Hyundai_Ioniq_5_%28France%29_front_view.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "decoding": "async",
+        "loading": "lazy",
+        "width": 1200,
+        "height": 708,
+        "srcset": "https://upload.wikimedia.org/wikipedia/commons/9/98/2021_Hyundai_Ioniq_5_%28France%29_front_view.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+      },
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/98/2021_Hyundai_Ioniq_5_%28France%29_front_view.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:2021_Hyundai_Ioniq_5_(France)_front_view.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=107306946",
+      "extmetadata": {
+        "DateTime": {
+          "value": "2021-07-18 11:59:36",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "2021 Hyundai Ioniq 5 (France) front view",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "CC-Zero|Hyundai Ioniq 5|White Hyundai SUVs|Flickr images reviewed by FlickreviewR 2|Taken with Oppo Find X2 Pro",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "2021 Hyundai Ioniq 5 (France) front view",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2021-07-04 11:17:36",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<a rel=\"nofollow\" class=\"external free\" href=\"https://www.flickr.com/photos/152930510@N02/51289952476/\">https://www.flickr.com/photos/152930510@N02/51289952476/</a>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "crash71100",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Zero, Public Domain Dedication",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "false",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      }
+    }
+  ]
+}
