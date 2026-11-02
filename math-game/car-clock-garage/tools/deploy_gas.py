@@ -14,7 +14,7 @@ import urllib.request
 ROOT=Path(__file__).resolve().parents[1]
 STATE=ROOT/'.private/deployment.json'
 ASSET_BASE='https://mathtjungsw.github.io/math-class-webtools/math-game/car-clock-garage/'
-BUILD='20261102-expanded-1'
+BUILD='20261102-expanded-2'
 
 def credentials():
     value=json.loads((Path.home()/'.clasprc.json').read_text(encoding='utf-8'))['tokens']['default']

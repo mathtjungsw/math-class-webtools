@@ -33,8 +33,8 @@ DOMESTIC=[
 ('veloster-n','현대','벨로스터 N','고성능 N · JS','Hyundai Veloster N',2018,H+'veloster-history'),
 ('aslan','현대','아슬란','AG','Hyundai Aslan',2014,H+'aslan-history'),
 ('xcient','현대','엑시언트','대형 트럭 · QZ','Hyundai Xcient',2013,W+'Hyundai_Xcient'),
-('malibu-v300','쉐보레','말리부','8세대 · V300','Chevrolet Malibu (8th generation)',2011,'https://ko.wikipedia.org/wiki/쉐보레_말리부'),
-('malibu-v400','쉐보레','말리부','9세대 · V400','Chevrolet Malibu (9th generation)',2016,'https://ko.wikipedia.org/wiki/쉐보레_말리부'),
+('malibu-v300','쉐보레','말리부','8세대 · V300','Chevrolet Malibu (2008-2011)',2011,'https://ko.wikipedia.org/wiki/쉐보레_말리부'),
+('malibu-v400','쉐보레','말리부','9세대 · V400','Chevrolet Malibu E2XX',2016,'https://ko.wikipedia.org/wiki/쉐보레_말리부'),
 ('sm6','르노삼성','SM6','초기형 · 프라임 포함','Renault Samsung SM6',2016,'https://ko.wikipedia.org/wiki/르노코리아_SM6'),
 ('spark','쉐보레','스파크','2세대 · M400','Chevrolet Spark (M400)',2015,'https://ko.wikipedia.org/wiki/쉐보레_스파크'),
 ('matiz','대우','마티즈','1세대 · M100','Daewoo Matiz (M100)',1998,W+'Daewoo_Matiz'),
@@ -106,6 +106,8 @@ SOURCE_OVERRIDES={
  'excel':'https://www.hyundai.com/kr/ko/brand/brandstory/heritage/1980-excel-x2',
  'mighty':'https://www.edaily.co.kr/News/Read?mediaCodeNo=257&newsId=03827766609302336',
  'g90-limo':'https://www.genesis.com/kr/ko/support/pr-center/detail.html?seq=0000000232'
+ ,'malibu-v300':'https://blog.gm-korea.co.kr/5270'
+ ,'malibu-v400':'https://blog.gm-korea.co.kr/5273'
 }
 DOMESTIC=[(*row[:6],SOURCE_OVERRIDES.get(row[0],row[6])) for row in DOMESTIC]
 

@@ -1,1 +1,1 @@
-window.GARAGE_CONFIG={"cloud":false,"build":"20261102-expanded-1"};
+window.GARAGE_CONFIG={"cloud":false,"build":"20261102-expanded-2"};
