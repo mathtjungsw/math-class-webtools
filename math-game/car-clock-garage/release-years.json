@@ -1,30 +1,514 @@
 {
   "definition": "사진 속 세대가 국내에서 처음 출시된 연도. 개별 차량 생산연도나 촬영연도가 아님.",
-  "verified": "2026-11-01",
+  "verified": "2026-11-02",
   "models": {
-    "morning-ja": {"year":2017,"source":"https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/all-new-morning-3rd-gen"},
-    "morning-ta": {"year":2011,"source":"https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/all-new-morning-2nd-gen"},
-    "avante-ad": {"year":2015,"source":"https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000001665"},
-    "avante-cn7": {"year":2020,"source":"https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000001665"},
-    "sonata-lf": {"year":2014,"source":"https://www.hyundaimotorgroup.com/ko/story/CONT0000000000187807"},
-    "sonata-dn8": {"year":2019,"source":"https://www.hyundaimotorgroup.com/ko/story/CONT0000000000187807"},
-    "grandeur-ig": {"year":2016,"source":"https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000059378"},
-    "grandeur-gn7": {"year":2022,"source":"https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000059378"},
-    "casper": {"year":2021,"source":"https://www.hyundaimotorgroup.com/ko/story/CONT0000000000004492"},
-    "ray": {"year":2011,"source":"https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/ray"},
-    "tucson": {"year":2020,"source":"https://www.hyundaimotorgroup.com/ko/news/CONT0000000000125545"},
-    "santafe": {"year":2023,"source":"https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000104767"},
-    "palisade": {"year":2018,"source":"https://www.hyundai.com/kr/ko/brand/brandstory/model/palisade-history/2018-palisade"},
-    "ioniq5": {"year":2021,"source":"https://www.hyundai.com/kr/ko/brand/brandstory/model/ioniq-history/2021-ioniq5"},
-    "ioniq6": {"year":2022,"source":"https://www.hyundai.com/kr/ko/brand/brandstory/model/ioniq-history/2022-ioniq6"},
-    "k3": {"year":2018,"source":"https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/all-new-k3/"},
-    "k5": {"year":2019,"source":"https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000119896"},
-    "k8": {"year":2021,"source":"https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000002525"},
-    "sportage": {"year":2021,"source":"https://www.hyundaimotorgroup.com/ko/story/CONT0000000000001689"},
-    "sorento": {"year":2020,"source":"https://www.hyundaimotorgroup.com/ko/news/CONT0000000000105082"},
-    "carnival": {"year":2020,"source":"https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000120188"},
-    "ev6": {"year":2021,"source":"https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000149363"},
-    "g80": {"year":2020,"source":"https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000127982"},
-    "gv80": {"year":2020,"source":"https://www.genesis.com/kr/ko/support/pr-center/detail.html?seq=0000000233"}
+    "morning-ja": {
+      "year": 2017,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/all-new-morning-3rd-gen"
+    },
+    "morning-ta": {
+      "year": 2011,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/all-new-morning-2nd-gen"
+    },
+    "avante-ad": {
+      "year": 2015,
+      "source": "https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000001665"
+    },
+    "avante-cn7": {
+      "year": 2020,
+      "source": "https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000001665"
+    },
+    "sonata-lf": {
+      "year": 2014,
+      "source": "https://www.hyundaimotorgroup.com/ko/story/CONT0000000000187807"
+    },
+    "sonata-dn8": {
+      "year": 2019,
+      "source": "https://www.hyundaimotorgroup.com/ko/story/CONT0000000000187807"
+    },
+    "grandeur-ig": {
+      "year": 2016,
+      "source": "https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000059378"
+    },
+    "grandeur-gn7": {
+      "year": 2022,
+      "source": "https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000059378"
+    },
+    "casper": {
+      "year": 2021,
+      "source": "https://www.hyundaimotorgroup.com/ko/story/CONT0000000000004492"
+    },
+    "ray": {
+      "year": 2011,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/ray"
+    },
+    "tucson": {
+      "year": 2020,
+      "source": "https://www.hyundaimotorgroup.com/ko/news/CONT0000000000125545"
+    },
+    "santafe": {
+      "year": 2023,
+      "source": "https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000104767"
+    },
+    "palisade": {
+      "year": 2018,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/palisade-history/2018-palisade"
+    },
+    "ioniq5": {
+      "year": 2021,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/ioniq-history/2021-ioniq5"
+    },
+    "ioniq6": {
+      "year": 2022,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/ioniq-history/2022-ioniq6"
+    },
+    "k3": {
+      "year": 2018,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/all-new-k3/"
+    },
+    "k5": {
+      "year": 2019,
+      "source": "https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000119896"
+    },
+    "k8": {
+      "year": 2021,
+      "source": "https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000002525"
+    },
+    "sportage": {
+      "year": 2021,
+      "source": "https://www.hyundaimotorgroup.com/ko/story/CONT0000000000001689"
+    },
+    "sorento": {
+      "year": 2020,
+      "source": "https://www.hyundaimotorgroup.com/ko/news/CONT0000000000105082"
+    },
+    "carnival": {
+      "year": 2020,
+      "source": "https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000120188"
+    },
+    "ev6": {
+      "year": 2021,
+      "source": "https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000149363"
+    },
+    "g80": {
+      "year": 2020,
+      "source": "https://www.hyundaimotorgroup.com/ko/amp/CONT0000000000127982"
+    },
+    "gv80": {
+      "year": 2020,
+      "source": "https://www.genesis.com/kr/ko/support/pr-center/detail.html?seq=0000000233"
+    },
+    "k7-vg": {
+      "year": 2009,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/k7"
+    },
+    "k7-vg-view2": {
+      "year": 2009,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/k7"
+    },
+    "k7-yg": {
+      "year": 2016,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/all-new-k7"
+    },
+    "k7-yg-view2": {
+      "year": 2016,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/all-new-k7"
+    },
+    "equus-lz": {
+      "year": 1999,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/equus-history"
+    },
+    "equus-lz-view2": {
+      "year": 1999,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/equus-history"
+    },
+    "equus-vi": {
+      "year": 2009,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/equus-history"
+    },
+    "equus-vi-view2": {
+      "year": 2009,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/equus-history"
+    },
+    "equus-limo-view2": {
+      "year": 2009,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/equus-history"
+    },
+    "starex": {
+      "year": 1997,
+      "source": "https://www.hyundai.com/worldwide/ko/footer/corporate/vehicle-history/1990/h-1"
+    },
+    "starex-view2": {
+      "year": 1997,
+      "source": "https://www.hyundai.com/worldwide/ko/footer/corporate/vehicle-history/1990/h-1"
+    },
+    "grand-starex": {
+      "year": 2007,
+      "source": "https://www.hyundai.com/worldwide/ko/footer/corporate/vehicle-history/1990/h-1"
+    },
+    "grand-starex-view2": {
+      "year": 2007,
+      "source": "https://www.hyundai.com/worldwide/ko/footer/corporate/vehicle-history/1990/h-1"
+    },
+    "grand-starex-urban": {
+      "year": 2017,
+      "source": "https://www.hyundai.com/content/dam/hyundai/kr/ko/data/wbzn/legacy/hyundai_motor_2018_1-2.pdf"
+    },
+    "grand-starex-urban-view2": {
+      "year": 2017,
+      "source": "https://www.hyundai.com/content/dam/hyundai/kr/ko/data/wbzn/legacy/hyundai_motor_2018_1-2.pdf"
+    },
+    "staria": {
+      "year": 2021,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/staria-history"
+    },
+    "staria-view2": {
+      "year": 2021,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/staria-history"
+    },
+    "staria-limo": {
+      "year": 2022,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/staria-history"
+    },
+    "staria-limo-view2": {
+      "year": 2022,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/staria-history"
+    },
+    "veloster-fs": {
+      "year": 2011,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/veloster-history"
+    },
+    "veloster-fs-view2": {
+      "year": 2011,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/veloster-history"
+    },
+    "veloster-js": {
+      "year": 2018,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/veloster-history"
+    },
+    "veloster-js-view2": {
+      "year": 2018,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/veloster-history"
+    },
+    "veloster-n": {
+      "year": 2018,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/veloster-history"
+    },
+    "veloster-n-view2": {
+      "year": 2018,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/veloster-history"
+    },
+    "aslan": {
+      "year": 2014,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2010-aslan"
+    },
+    "aslan-view2": {
+      "year": 2014,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2010-aslan"
+    },
+    "xcient": {
+      "year": 2013,
+      "source": "https://en.wikipedia.org/wiki/Hyundai_Xcient"
+    },
+    "xcient-view2": {
+      "year": 2013,
+      "source": "https://en.wikipedia.org/wiki/Hyundai_Xcient"
+    },
+    "sm6": {
+      "year": 2016,
+      "source": "https://ko.wikipedia.org/wiki/르노코리아_SM6"
+    },
+    "sm6-view2": {
+      "year": 2016,
+      "source": "https://ko.wikipedia.org/wiki/르노코리아_SM6"
+    },
+    "spark": {
+      "year": 2015,
+      "source": "https://ko.wikipedia.org/wiki/쉐보레_스파크"
+    },
+    "spark-view2": {
+      "year": 2015,
+      "source": "https://ko.wikipedia.org/wiki/쉐보레_스파크"
+    },
+    "matiz": {
+      "year": 1998,
+      "source": "https://en.wikipedia.org/wiki/Daewoo_Matiz"
+    },
+    "matiz-view2": {
+      "year": 1998,
+      "source": "https://en.wikipedia.org/wiki/Daewoo_Matiz"
+    },
+    "lanos": {
+      "year": 1996,
+      "source": "https://en.wikipedia.org/wiki/Daewoo_Lanos"
+    },
+    "lanos-view2": {
+      "year": 1996,
+      "source": "https://en.wikipedia.org/wiki/Daewoo_Lanos"
+    },
+    "leganza": {
+      "year": 1997,
+      "source": "https://en.wikipedia.org/wiki/Daewoo_Leganza"
+    },
+    "leganza-view2": {
+      "year": 1997,
+      "source": "https://en.wikipedia.org/wiki/Daewoo_Leganza"
+    },
+    "nubira": {
+      "year": 1997,
+      "source": "https://en.wikipedia.org/wiki/Daewoo_Nubira"
+    },
+    "nubira-view2": {
+      "year": 1997,
+      "source": "https://en.wikipedia.org/wiki/Daewoo_Nubira"
+    },
+    "tosca": {
+      "year": 2006,
+      "source": "https://en.wikipedia.org/wiki/Daewoo_Tosca"
+    },
+    "tosca-view2": {
+      "year": 2006,
+      "source": "https://en.wikipedia.org/wiki/Daewoo_Tosca"
+    },
+    "lacetti": {
+      "year": 2002,
+      "source": "https://en.wikipedia.org/wiki/Daewoo_Lacetti"
+    },
+    "optima": {
+      "year": 2000,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/optima"
+    },
+    "optima-view2": {
+      "year": 2000,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/optima"
+    },
+    "lotze": {
+      "year": 2005,
+      "source": "https://en.wikipedia.org/wiki/Kia_Optima"
+    },
+    "lotze-view2": {
+      "year": 2005,
+      "source": "https://en.wikipedia.org/wiki/Kia_Optima"
+    },
+    "opirus": {
+      "year": 2003,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/opirus"
+    },
+    "opirus-view2": {
+      "year": 2003,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/opirus"
+    },
+    "potentia": {
+      "year": 1992,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/potentia"
+    },
+    "potentia-view2": {
+      "year": 1992,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/potentia"
+    },
+    "credos": {
+      "year": 1995,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/credos"
+    },
+    "credos-view2": {
+      "year": 1995,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/credos"
+    },
+    "forte": {
+      "year": 2008,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/forte"
+    },
+    "forte-view2": {
+      "year": 2008,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/forte"
+    },
+    "retona": {
+      "year": 1998,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/retona"
+    },
+    "retona-view2": {
+      "year": 1998,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/retona"
+    },
+    "carens": {
+      "year": 1999,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/carens"
+    },
+    "carens-view2": {
+      "year": 1999,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/carens"
+    },
+    "soul": {
+      "year": 2008,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/soul"
+    },
+    "soul-view2": {
+      "year": 2008,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/soul"
+    },
+    "niro": {
+      "year": 2016,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/niro"
+    },
+    "niro-view2": {
+      "year": 2016,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/niro"
+    },
+    "mohave": {
+      "year": 2008,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/mohave"
+    },
+    "mohave-view2": {
+      "year": 2008,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/mohave"
+    },
+    "besta": {
+      "year": 1986,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/besta"
+    },
+    "besta-view2": {
+      "year": 1986,
+      "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/besta"
+    },
+    "dynasty": {
+      "year": 1996,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/1990-dynasty-lx"
+    },
+    "dynasty-view2": {
+      "year": 1996,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/1990-dynasty-lx"
+    },
+    "terracan": {
+      "year": 2001,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2000-terracan-hp"
+    },
+    "terracan-view2": {
+      "year": 2001,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2000-terracan-hp"
+    },
+    "veracruz": {
+      "year": 2006,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2000-veracruz-en"
+    },
+    "veracruz-view2": {
+      "year": 2006,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2000-veracruz-en"
+    },
+    "tuscani": {
+      "year": 2001,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2000-tuscani-gk"
+    },
+    "tuscani-view2": {
+      "year": 2001,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2000-tuscani-gk"
+    },
+    "tiburon": {
+      "year": 1996,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/tiburon-history"
+    },
+    "tiburon-view2": {
+      "year": 1996,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/tiburon-history"
+    },
+    "lavita": {
+      "year": 2001,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2000-lavita-fc"
+    },
+    "lavita-view2": {
+      "year": 2001,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2000-lavita-fc"
+    },
+    "libero": {
+      "year": 2000,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2000-libero-sr"
+    },
+    "mighty": {
+      "year": 1998,
+      "source": "https://www.edaily.co.kr/News/Read?mediaCodeNo=257&newsId=03827766609302336"
+    },
+    "mighty-view2": {
+      "year": 1998,
+      "source": "https://www.edaily.co.kr/News/Read?mediaCodeNo=257&newsId=03827766609302336"
+    },
+    "universe": {
+      "year": 2006,
+      "source": "https://en.wikipedia.org/wiki/Hyundai_Universe"
+    },
+    "universe-view2": {
+      "year": 2006,
+      "source": "https://en.wikipedia.org/wiki/Hyundai_Universe"
+    },
+    "galloper": {
+      "year": 1991,
+      "source": "https://en.wikipedia.org/wiki/Hyundai_Galloper"
+    },
+    "galloper-view2": {
+      "year": 1991,
+      "source": "https://en.wikipedia.org/wiki/Hyundai_Galloper"
+    },
+    "stellar": {
+      "year": 1983,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/stellar-history"
+    },
+    "stellar-view2": {
+      "year": 1983,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/stellar-history"
+    },
+    "excel": {
+      "year": 1989,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/1980-excel-x2"
+    },
+    "excel-view2": {
+      "year": 1989,
+      "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/1980-excel-x2"
+    },
+    "ssangyong-korando": {
+      "year": 1996,
+      "source": "https://en.wikipedia.org/wiki/SsangYong_Korando"
+    },
+    "ssangyong-korando-view2": {
+      "year": 1996,
+      "source": "https://en.wikipedia.org/wiki/SsangYong_Korando"
+    },
+    "ssangyong-chairman": {
+      "year": 1997,
+      "source": "https://en.wikipedia.org/wiki/SsangYong_Chairman"
+    },
+    "ssangyong-chairman-view2": {
+      "year": 1997,
+      "source": "https://en.wikipedia.org/wiki/SsangYong_Chairman"
+    },
+    "ssangyong-rexton": {
+      "year": 2001,
+      "source": "https://en.wikipedia.org/wiki/SsangYong_Rexton"
+    },
+    "ssangyong-rexton-view2": {
+      "year": 2001,
+      "source": "https://en.wikipedia.org/wiki/SsangYong_Rexton"
+    },
+    "ssangyong-tivoli": {
+      "year": 2015,
+      "source": "https://en.wikipedia.org/wiki/SsangYong_Tivoli"
+    },
+    "ssangyong-tivoli-view2": {
+      "year": 2015,
+      "source": "https://en.wikipedia.org/wiki/SsangYong_Tivoli"
+    },
+    "sm5": {
+      "year": 1998,
+      "source": "https://en.wikipedia.org/wiki/Renault_Samsung_SM5"
+    },
+    "sm5-view2": {
+      "year": 1998,
+      "source": "https://en.wikipedia.org/wiki/Renault_Samsung_SM5"
+    },
+    "qm5": {
+      "year": 2007,
+      "source": "https://en.wikipedia.org/wiki/Renault_Samsung_QM5"
+    },
+    "qm5-view2": {
+      "year": 2007,
+      "source": "https://en.wikipedia.org/wiki/Renault_Samsung_QM5"
+    }
   }
 }

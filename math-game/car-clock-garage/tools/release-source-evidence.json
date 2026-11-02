@@ -1,0 +1,522 @@
+[
+  {
+    "id": "k7-vg",
+    "year": 2009,
+    "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/k7",
+    "title": "K7 | 2009년 K 시리즈를 연 준대형 세단 | 기아 헤리티지 아카이브",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "k7-yg",
+    "year": 2016,
+    "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/all-new-k7",
+    "title": "올 뉴 K7 | 2016년 한국 최초 전륜 8단 변속기 세단 | 기아 헤리티지 아카이브",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "equus-lz",
+    "year": 1999,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/equus-history",
+    "title": "에쿠스 History | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "equus-vi",
+    "year": 2009,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/equus-history",
+    "title": "에쿠스 History | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "equus-limo",
+    "year": 2009,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/equus-history",
+    "title": "에쿠스 History | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "starex",
+    "year": 1997,
+    "source": "https://www.hyundai.com/worldwide/ko/footer/corporate/vehicle-history/1990/h-1",
+    "title": "모델 연혁 - 1990 스타렉스(H-1) l 기업소개 - 현대자동차 월드와이드",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "grand-starex",
+    "year": 2007,
+    "source": "https://www.hyundai.com/worldwide/ko/footer/corporate/vehicle-history/1990/h-1",
+    "title": "모델 연혁 - 1990 스타렉스(H-1) l 기업소개 - 현대자동차 월드와이드",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "new-grand-starex",
+    "year": 2017,
+    "source": "https://www.hyundai.com/content/dam/hyundai/kr/ko/data/wbzn/legacy/hyundai_motor_2018_1-2.pdf",
+    "title": "",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "grand-starex-urban",
+    "year": 2017,
+    "source": "https://www.hyundai.com/content/dam/hyundai/kr/ko/data/wbzn/legacy/hyundai_motor_2018_1-2.pdf",
+    "title": "",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "staria",
+    "year": 2021,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/staria-history",
+    "title": "스타리아 History | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "staria-kinder",
+    "year": 2021,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/staria-history/2021-staria-kinder",
+    "title": "2021 Staria Kinder | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "staria-limo",
+    "year": 2022,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/staria-history",
+    "title": "스타리아 History | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "veloster-fs",
+    "year": 2011,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/veloster-history",
+    "title": "벨로스터 History | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "veloster-js",
+    "year": 2018,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/veloster-history",
+    "title": "벨로스터 History | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "veloster-n",
+    "year": 2018,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/veloster-history",
+    "title": "벨로스터 History | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "aslan",
+    "year": 2014,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2010-aslan",
+    "title": "Lineage of Hyundai Cars > 2014 Aslan | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "xcient",
+    "year": 2013,
+    "source": "https://en.wikipedia.org/wiki/Hyundai_Xcient",
+    "title": "Hyundai Xcient - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "malibu-v300",
+    "year": 2011,
+    "source": "https://ko.wikipedia.org/wiki/쉐보레_말리부",
+    "title": "쉐보레 말리부 - 위키백과, 우리 모두의 백과사전",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "malibu-v400",
+    "year": 2016,
+    "source": "https://ko.wikipedia.org/wiki/쉐보레_말리부",
+    "title": "쉐보레 말리부 - 위키백과, 우리 모두의 백과사전",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "sm6",
+    "year": 2016,
+    "source": "https://ko.wikipedia.org/wiki/르노코리아_SM6",
+    "title": "르노 SM6 - 위키백과, 우리 모두의 백과사전",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "spark",
+    "year": 2015,
+    "source": "https://ko.wikipedia.org/wiki/쉐보레_스파크",
+    "title": "쉐보레 스파크 - 위키백과, 우리 모두의 백과사전",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "matiz",
+    "year": 1998,
+    "source": "https://en.wikipedia.org/wiki/Daewoo_Matiz",
+    "title": "Chevrolet Spark - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "lanos",
+    "year": 1996,
+    "source": "https://en.wikipedia.org/wiki/Daewoo_Lanos",
+    "title": "Daewoo Lanos - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "leganza",
+    "year": 1997,
+    "source": "https://en.wikipedia.org/wiki/Daewoo_Leganza",
+    "title": "Daewoo Leganza - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "nubira",
+    "year": 1997,
+    "source": "https://en.wikipedia.org/wiki/Daewoo_Nubira",
+    "title": "Daewoo Nubira - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "tosca",
+    "year": 2006,
+    "source": "https://en.wikipedia.org/wiki/Daewoo_Tosca",
+    "title": "Daewoo Tosca - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "lacetti",
+    "year": 2002,
+    "source": "https://en.wikipedia.org/wiki/Daewoo_Lacetti",
+    "title": "Daewoo Lacetti - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "optima",
+    "year": 2000,
+    "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/optima",
+    "title": "옵티마 | 2000년 통합 이후 선보인 첫 중형 세단 | 기아 헤리티지 아카이브",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "lotze",
+    "year": 2005,
+    "source": "https://en.wikipedia.org/wiki/Kia_Optima",
+    "title": "Kia K5 - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "opirus",
+    "year": 2003,
+    "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/opirus",
+    "title": "오피러스 | 2003년 북미에 진출한 한국 최초의 대형 세단 | 기아 헤리티지 아카이브",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "potentia",
+    "year": 1992,
+    "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/potentia",
+    "title": "포텐샤 | 1992년 기아 고급 세단의 출발점 | 기아 헤리티지 아카이브",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "credos",
+    "year": 1995,
+    "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/credos",
+    "title": "크레도스 | 1995년 자체 설계 T8D 엔진을 탑재한 고유모델 | 기아 헤리티지 아카이브",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "forte",
+    "year": 2008,
+    "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/forte",
+    "title": "포르테 | 2008년 준중형 세단의 스테디셀러 | 기아 헤리티지 아카이브",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "retona",
+    "year": 1998,
+    "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/retona",
+    "title": "레토나 | 1998년 오프로드 감성을 이은 콤팩트 SUV | 기아 헤리티지 아카이브",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "carens",
+    "year": 1999,
+    "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/carens",
+    "title": "카렌스 | 1999년 MPV 전성기를 연 도심형 모델 | 기아 헤리티지 아카이브",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "soul",
+    "year": 2008,
+    "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/soul",
+    "title": "쏘울 | 2008년 한국 자동차 최초로 레드닷을 받은 CUV | 기아 헤리티지 아카이브",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "niro",
+    "year": 2016,
+    "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/niro",
+    "title": "니로 | 2016년 대한민국 최초의 하이브리드 SUV | 기아 헤리티지 아카이브",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "mohave",
+    "year": 2008,
+    "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/mohave",
+    "title": "모하비 | 2008년 기아의 첫 정통 대형 SUV | 기아 헤리티지 아카이브",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "besta",
+    "year": 1986,
+    "source": "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/besta",
+    "title": "베스타 | 1986년 기아 독자 기술의 소형 승합차 | 기아 헤리티지 아카이브",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "dynasty",
+    "year": 1996,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/1990-dynasty-lx",
+    "title": "Lineage of Hyundai Cars > 1996 Dynasty LX | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "terracan",
+    "year": 2001,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2000-terracan-hp",
+    "title": "Lineage of Hyundai Cars > 2001 Terracan HP | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "veracruz",
+    "year": 2006,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2000-veracruz-en",
+    "title": "Lineage of Hyundai Cars > 2006 Veracruz EN | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "tuscani",
+    "year": 2001,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2000-tuscani-gk",
+    "title": "Lineage of Hyundai Cars > 2000-tuscani-gk | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "tiburon",
+    "year": 1996,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/tiburon-history",
+    "title": "티뷰론 History | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "lavita",
+    "year": 2001,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2000-lavita-fc",
+    "title": "Lineage of Hyundai Cars > 2000-lavita-fc | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "libero",
+    "year": 2000,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2000-libero-sr",
+    "title": "Lineage of Hyundai Cars > 2000 Libero SR | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "porter2",
+    "year": 2004,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/porter-history",
+    "title": "포터 History | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "mighty",
+    "year": 1998,
+    "source": "https://www.edaily.co.kr/News/Read?mediaCodeNo=257&newsId=03827766609302336",
+    "title": "현대차, 내달 중형트럭 '마이티' 신모델 출시",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "county",
+    "year": 1998,
+    "source": "https://en.wikipedia.org/wiki/Hyundai_County",
+    "title": "Hyundai County - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "universe",
+    "year": 2006,
+    "source": "https://en.wikipedia.org/wiki/Hyundai_Universe",
+    "title": "Hyundai Universe - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "galloper",
+    "year": 1991,
+    "source": "https://en.wikipedia.org/wiki/Hyundai_Galloper",
+    "title": "Hyundai Galloper - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "pony",
+    "year": 1975,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/pony-history",
+    "title": "포니 History | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "stellar",
+    "year": 1983,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/model/stellar-history",
+    "title": "스텔라 History | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "excel",
+    "year": 1989,
+    "source": "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/1980-excel-x2",
+    "title": "Lineage of Hyundai Cars > 1988 Excel X2 | 현대자동차 - 현대닷컴 | 대한민국 대표 자동차회사 hyundai.com",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "ssangyong-musso",
+    "year": 1993,
+    "source": "https://en.wikipedia.org/wiki/SsangYong_Musso",
+    "title": "SsangYong Musso - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "ssangyong-korando",
+    "year": 1996,
+    "source": "https://en.wikipedia.org/wiki/SsangYong_Korando",
+    "title": "SsangYong Korando - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "ssangyong-chairman",
+    "year": 1997,
+    "source": "https://en.wikipedia.org/wiki/SsangYong_Chairman",
+    "title": "SsangYong Chairman - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "ssangyong-rexton",
+    "year": 2001,
+    "source": "https://en.wikipedia.org/wiki/SsangYong_Rexton",
+    "title": "SsangYong Rexton - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "ssangyong-tivoli",
+    "year": 2015,
+    "source": "https://en.wikipedia.org/wiki/SsangYong_Tivoli",
+    "title": "KGM Tivoli - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "sm5",
+    "year": 1998,
+    "source": "https://en.wikipedia.org/wiki/Renault_Samsung_SM5",
+    "title": "Renault Samsung SM5 - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "sm3",
+    "year": 2002,
+    "source": "https://en.wikipedia.org/wiki/Renault_Samsung_SM3",
+    "title": "Renault Samsung SM3 - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "sm7",
+    "year": 2004,
+    "source": "https://en.wikipedia.org/wiki/Renault_Samsung_SM7",
+    "title": "Renault Samsung SM7 - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "qm5",
+    "year": 2007,
+    "source": "https://en.wikipedia.org/wiki/Renault_Samsung_QM5",
+    "title": "Renault Koleos - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "g90-limo",
+    "year": 2019,
+    "source": "https://www.genesis.com/kr/ko/support/pr-center/detail.html?seq=0000000232",
+    "title": "제네시스, G90 리무진 출시",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  },
+  {
+    "id": "carnival-limo",
+    "year": 2020,
+    "source": "https://en.wikipedia.org/wiki/Kia_Carnival",
+    "title": "Kia Carnival - Wikipedia",
+    "yearFound": true,
+    "reviewed": "2026-11-02"
+  }
+]

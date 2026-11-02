@@ -1,0 +1,1242 @@
+[
+  [
+    "k7-vg",
+    "기아",
+    "K7",
+    "1세대 · VG",
+    "Kia Cadenza (VG)",
+    2009,
+    "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/k7",
+    false
+  ],
+  [
+    "k7-yg",
+    "기아",
+    "K7",
+    "2세대 · YG",
+    "Kia Cadenza (YG)",
+    2016,
+    "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/all-new-k7",
+    false
+  ],
+  [
+    "equus-lz",
+    "현대",
+    "에쿠스",
+    "1세대 · LZ",
+    "Hyundai Equus (LZ)",
+    1999,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/model/equus-history",
+    false
+  ],
+  [
+    "equus-vi",
+    "현대",
+    "에쿠스",
+    "2세대 · VI",
+    "Hyundai Equus (VI)",
+    2009,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/model/equus-history",
+    false
+  ],
+  [
+    "equus-limo",
+    "현대",
+    "에쿠스 리무진",
+    "에쿠스 L · VI",
+    "Hyundai Equus limousine",
+    2009,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/model/equus-history",
+    false
+  ],
+  [
+    "starex",
+    "현대",
+    "스타렉스",
+    "1세대 · A1",
+    "Hyundai Starex (A1)",
+    1997,
+    "https://www.hyundai.com/worldwide/ko/footer/corporate/vehicle-history/1990/h-1",
+    false
+  ],
+  [
+    "grand-starex",
+    "현대",
+    "그랜드 스타렉스",
+    "2세대 · TQ",
+    "Hyundai Starex (TQ)",
+    2007,
+    "https://www.hyundai.com/worldwide/ko/footer/corporate/vehicle-history/1990/h-1",
+    false
+  ],
+  [
+    "new-grand-starex",
+    "현대",
+    "더 뉴 그랜드 스타렉스",
+    "부분변경 · TQ",
+    "Hyundai Grand Starex facelift",
+    2017,
+    "https://www.hyundai.com/content/dam/hyundai/kr/ko/data/wbzn/legacy/hyundai_motor_2018_1-2.pdf",
+    false
+  ],
+  [
+    "grand-starex-urban",
+    "현대",
+    "그랜드 스타렉스 어반",
+    "어반 · TQ",
+    "Hyundai Grand Starex Urban",
+    2017,
+    "https://www.hyundai.com/content/dam/hyundai/kr/ko/data/wbzn/legacy/hyundai_motor_2018_1-2.pdf",
+    false
+  ],
+  [
+    "staria",
+    "현대",
+    "스타리아",
+    "US4",
+    "Hyundai Staria",
+    2021,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/model/staria-history",
+    false
+  ],
+  [
+    "staria-kinder",
+    "현대",
+    "스타리아 킨더",
+    "어린이 통학차량",
+    "Hyundai Staria Kinder",
+    2021,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/model/staria-history/2021-staria-kinder",
+    false
+  ],
+  [
+    "staria-limo",
+    "현대",
+    "스타리아 라운지 리무진",
+    "US4 리무진",
+    "Hyundai Staria limousine",
+    2022,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/model/staria-history",
+    false
+  ],
+  [
+    "veloster-fs",
+    "현대",
+    "벨로스터",
+    "1세대 · FS",
+    "Hyundai Veloster (FS)",
+    2011,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/model/veloster-history",
+    false
+  ],
+  [
+    "veloster-js",
+    "현대",
+    "벨로스터",
+    "2세대 · JS",
+    "Hyundai Veloster (JS)",
+    2018,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/model/veloster-history",
+    false
+  ],
+  [
+    "veloster-n",
+    "현대",
+    "벨로스터 N",
+    "고성능 N · JS",
+    "Hyundai Veloster N",
+    2018,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/model/veloster-history",
+    false
+  ],
+  [
+    "aslan",
+    "현대",
+    "아슬란",
+    "AG",
+    "Hyundai Aslan",
+    2014,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2010-aslan",
+    false
+  ],
+  [
+    "xcient",
+    "현대",
+    "엑시언트",
+    "대형 트럭 · QZ",
+    "Hyundai Xcient",
+    2013,
+    "https://en.wikipedia.org/wiki/Hyundai_Xcient",
+    false
+  ],
+  [
+    "malibu-v300",
+    "쉐보레",
+    "말리부",
+    "8세대 · V300",
+    "Chevrolet Malibu (8th generation)",
+    2011,
+    "https://ko.wikipedia.org/wiki/쉐보레_말리부",
+    false
+  ],
+  [
+    "malibu-v400",
+    "쉐보레",
+    "말리부",
+    "9세대 · V400",
+    "Chevrolet Malibu (9th generation)",
+    2016,
+    "https://ko.wikipedia.org/wiki/쉐보레_말리부",
+    false
+  ],
+  [
+    "sm6",
+    "르노삼성",
+    "SM6",
+    "초기형 · 프라임 포함",
+    "Renault Samsung SM6",
+    2016,
+    "https://ko.wikipedia.org/wiki/르노코리아_SM6",
+    false
+  ],
+  [
+    "spark",
+    "쉐보레",
+    "스파크",
+    "2세대 · M400",
+    "Chevrolet Spark (M400)",
+    2015,
+    "https://ko.wikipedia.org/wiki/쉐보레_스파크",
+    false
+  ],
+  [
+    "matiz",
+    "대우",
+    "마티즈",
+    "1세대 · M100",
+    "Daewoo Matiz (M100)",
+    1998,
+    "https://en.wikipedia.org/wiki/Daewoo_Matiz",
+    false
+  ],
+  [
+    "lanos",
+    "대우",
+    "라노스",
+    "T100",
+    "Daewoo Lanos",
+    1996,
+    "https://en.wikipedia.org/wiki/Daewoo_Lanos",
+    false
+  ],
+  [
+    "leganza",
+    "대우",
+    "레간자",
+    "V100",
+    "Daewoo Leganza",
+    1997,
+    "https://en.wikipedia.org/wiki/Daewoo_Leganza",
+    false
+  ],
+  [
+    "nubira",
+    "대우",
+    "누비라",
+    "1세대 · J100",
+    "Daewoo Nubira (J100)",
+    1997,
+    "https://en.wikipedia.org/wiki/Daewoo_Nubira",
+    false
+  ],
+  [
+    "tosca",
+    "대우",
+    "토스카",
+    "V250",
+    "Daewoo Tosca",
+    2006,
+    "https://en.wikipedia.org/wiki/Daewoo_Tosca",
+    false
+  ],
+  [
+    "lacetti",
+    "대우",
+    "라세티",
+    "J200",
+    "Daewoo Lacetti sedan",
+    2002,
+    "https://en.wikipedia.org/wiki/Daewoo_Lacetti",
+    false
+  ],
+  [
+    "optima",
+    "기아",
+    "옵티마",
+    "MS",
+    "Kia Optima (MS)",
+    2000,
+    "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/optima",
+    false
+  ],
+  [
+    "lotze",
+    "기아",
+    "로체",
+    "MG",
+    "Kia Lotze",
+    2005,
+    "https://en.wikipedia.org/wiki/Kia_Optima",
+    false
+  ],
+  [
+    "opirus",
+    "기아",
+    "오피러스",
+    "GH",
+    "Kia Opirus",
+    2003,
+    "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/opirus",
+    false
+  ],
+  [
+    "potentia",
+    "기아",
+    "포텐샤",
+    "V6 고급 세단",
+    "Kia Potentia",
+    1992,
+    "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/potentia",
+    false
+  ],
+  [
+    "credos",
+    "기아",
+    "크레도스",
+    "중형 세단",
+    "Kia Credos",
+    1995,
+    "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/credos",
+    false
+  ],
+  [
+    "forte",
+    "기아",
+    "포르테",
+    "TD",
+    "Kia Forte (TD)",
+    2008,
+    "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/forte",
+    false
+  ],
+  [
+    "retona",
+    "기아",
+    "레토나",
+    "CE",
+    "Kia Retona",
+    1998,
+    "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/retona",
+    false
+  ],
+  [
+    "carens",
+    "기아",
+    "카렌스",
+    "1세대 · RS",
+    "Kia Carens (RS)",
+    1999,
+    "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/carens",
+    false
+  ],
+  [
+    "soul",
+    "기아",
+    "쏘울",
+    "1세대 · AM",
+    "Kia Soul (AM)",
+    2008,
+    "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/soul",
+    false
+  ],
+  [
+    "niro",
+    "기아",
+    "니로",
+    "1세대 · DE",
+    "Kia Niro (DE)",
+    2016,
+    "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/niro",
+    false
+  ],
+  [
+    "mohave",
+    "기아",
+    "모하비",
+    "HM",
+    "Kia Mohave",
+    2008,
+    "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/mohave",
+    false
+  ],
+  [
+    "besta",
+    "기아",
+    "베스타",
+    "승합차",
+    "Kia Besta",
+    1986,
+    "https://worldwide.kia.com/ko/brand/our-brand/heritage/vehicles/besta",
+    false
+  ],
+  [
+    "dynasty",
+    "현대",
+    "다이너스티",
+    "LX",
+    "Hyundai Dynasty",
+    1996,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/1990-dynasty-lx",
+    false
+  ],
+  [
+    "terracan",
+    "현대",
+    "테라칸",
+    "HP",
+    "Hyundai Terracan",
+    2001,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2000-terracan-hp",
+    false
+  ],
+  [
+    "veracruz",
+    "현대",
+    "베라크루즈",
+    "EN",
+    "Hyundai Veracruz",
+    2006,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2000-veracruz-en",
+    false
+  ],
+  [
+    "tuscani",
+    "현대",
+    "투스카니",
+    "GK",
+    "Hyundai Coupe (GK)",
+    2001,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2000-tuscani-gk",
+    false
+  ],
+  [
+    "tiburon",
+    "현대",
+    "티뷰론",
+    "RD",
+    "Hyundai Coupe (RD)",
+    1996,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/model/tiburon-history",
+    false
+  ],
+  [
+    "lavita",
+    "현대",
+    "라비타",
+    "FC",
+    "Hyundai Matrix",
+    2001,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2000-lavita-fc",
+    false
+  ],
+  [
+    "libero",
+    "현대",
+    "리베로",
+    "SR",
+    "Hyundai Libero",
+    2000,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/2000-libero-sr",
+    false
+  ],
+  [
+    "porter2",
+    "현대",
+    "포터 II",
+    "소형 트럭 · HR",
+    "Hyundai Porter (HR)",
+    2004,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/model/porter-history",
+    false
+  ],
+  [
+    "mighty",
+    "현대",
+    "마이티",
+    "2세대 · QT",
+    "Hyundai Mighty II",
+    1998,
+    "https://www.edaily.co.kr/News/Read?mediaCodeNo=257&newsId=03827766609302336",
+    false
+  ],
+  [
+    "county",
+    "현대",
+    "카운티",
+    "CN",
+    "Hyundai County",
+    1998,
+    "https://en.wikipedia.org/wiki/Hyundai_County",
+    false
+  ],
+  [
+    "universe",
+    "현대",
+    "유니버스",
+    "고속·관광버스",
+    "Hyundai Universe",
+    2006,
+    "https://en.wikipedia.org/wiki/Hyundai_Universe",
+    false
+  ],
+  [
+    "galloper",
+    "현대",
+    "갤로퍼",
+    "1세대",
+    "Hyundai Galloper",
+    1991,
+    "https://en.wikipedia.org/wiki/Hyundai_Galloper",
+    false
+  ],
+  [
+    "pony",
+    "현대",
+    "포니",
+    "1세대",
+    "Hyundai Pony (1975)",
+    1975,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/model/pony-history",
+    false
+  ],
+  [
+    "stellar",
+    "현대",
+    "스텔라",
+    "Y",
+    "Hyundai Stellar",
+    1983,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/model/stellar-history",
+    false
+  ],
+  [
+    "excel",
+    "현대",
+    "엑셀",
+    "X2",
+    "Hyundai Excel (X2)",
+    1989,
+    "https://www.hyundai.com/kr/ko/brand/brandstory/heritage/1980-excel-x2",
+    false
+  ],
+  [
+    "ssangyong-musso",
+    "쌍용",
+    "무쏘",
+    "FJ",
+    "SsangYong Musso (FJ)",
+    1993,
+    "https://en.wikipedia.org/wiki/SsangYong_Musso",
+    false
+  ],
+  [
+    "ssangyong-korando",
+    "쌍용",
+    "뉴 코란도",
+    "KJ",
+    "SsangYong Korando (KJ)",
+    1996,
+    "https://en.wikipedia.org/wiki/SsangYong_Korando",
+    false
+  ],
+  [
+    "ssangyong-chairman",
+    "쌍용",
+    "체어맨",
+    "H",
+    "SsangYong Chairman H",
+    1997,
+    "https://en.wikipedia.org/wiki/SsangYong_Chairman",
+    false
+  ],
+  [
+    "ssangyong-rexton",
+    "쌍용",
+    "렉스턴",
+    "Y200",
+    "SsangYong Rexton (Y200)",
+    2001,
+    "https://en.wikipedia.org/wiki/SsangYong_Rexton",
+    false
+  ],
+  [
+    "ssangyong-tivoli",
+    "쌍용",
+    "티볼리",
+    "X100",
+    "SsangYong Tivoli",
+    2015,
+    "https://en.wikipedia.org/wiki/SsangYong_Tivoli",
+    false
+  ],
+  [
+    "sm5",
+    "르노삼성",
+    "SM5",
+    "1세대 · KPQ",
+    "Samsung SM5 (KPQ)",
+    1998,
+    "https://en.wikipedia.org/wiki/Renault_Samsung_SM5",
+    false
+  ],
+  [
+    "sm3",
+    "르노삼성",
+    "SM3",
+    "1세대 · N17",
+    "Renault Samsung SM3 (N17)",
+    2002,
+    "https://en.wikipedia.org/wiki/Renault_Samsung_SM3",
+    false
+  ],
+  [
+    "sm7",
+    "르노삼성",
+    "SM7",
+    "1세대 · EX2",
+    "Renault Samsung SM7 (EX2)",
+    2004,
+    "https://en.wikipedia.org/wiki/Renault_Samsung_SM7",
+    false
+  ],
+  [
+    "qm5",
+    "르노삼성",
+    "QM5",
+    "H45",
+    "Renault Samsung QM5",
+    2007,
+    "https://en.wikipedia.org/wiki/Renault_Samsung_QM5",
+    false
+  ],
+  [
+    "g90-limo",
+    "제네시스",
+    "G90 리무진",
+    "HI 리무진",
+    "Genesis G90 limousine",
+    2019,
+    "https://www.genesis.com/kr/ko/support/pr-center/detail.html?seq=0000000232",
+    false
+  ],
+  [
+    "carnival-limo",
+    "기아",
+    "카니발 하이리무진",
+    "4세대 · KA4",
+    "Kia Carnival (KA4) high limousine",
+    2020,
+    "https://en.wikipedia.org/wiki/Kia_Carnival",
+    false
+  ],
+  [
+    "honda-nbox",
+    "혼다",
+    "N-BOX",
+    "일본 경차",
+    "Honda N-Box",
+    null,
+    null,
+    true
+  ],
+  [
+    "honda-none",
+    "혼다",
+    "N-ONE",
+    "일본 경차",
+    "Honda N-One",
+    null,
+    null,
+    true
+  ],
+  [
+    "honda-nwgn",
+    "혼다",
+    "N-WGN",
+    "일본 경차",
+    "Honda N-WGN",
+    null,
+    null,
+    true
+  ],
+  [
+    "honda-nvan",
+    "혼다",
+    "N-VAN",
+    "일본 경차",
+    "Honda N-Van",
+    null,
+    null,
+    true
+  ],
+  [
+    "honda-s660",
+    "혼다",
+    "S660",
+    "일본 경차",
+    "Honda S660",
+    null,
+    null,
+    true
+  ],
+  [
+    "honda-beat",
+    "혼다",
+    "비트",
+    "일본 경차",
+    "Honda Beat",
+    null,
+    null,
+    true
+  ],
+  [
+    "honda-life",
+    "혼다",
+    "라이프",
+    "일본 경차",
+    "Honda Life",
+    null,
+    null,
+    true
+  ],
+  [
+    "honda-zest",
+    "혼다",
+    "제스트",
+    "일본 경차",
+    "Honda Zest",
+    null,
+    null,
+    true
+  ],
+  [
+    "honda-today",
+    "혼다",
+    "투데이",
+    "일본 경차",
+    "Honda Today",
+    null,
+    null,
+    true
+  ],
+  [
+    "honda-vamos",
+    "혼다",
+    "바모스",
+    "일본 경차",
+    "Honda Vamos",
+    null,
+    null,
+    true
+  ],
+  [
+    "honda-acty",
+    "혼다",
+    "액티",
+    "일본 경차",
+    "Honda Acty",
+    null,
+    null,
+    true
+  ],
+  [
+    "suzuki-alto",
+    "스즈키",
+    "알토",
+    "일본 경차",
+    "Suzuki Alto",
+    null,
+    null,
+    true
+  ],
+  [
+    "suzuki-wagonr",
+    "스즈키",
+    "왜건 R",
+    "일본 경차",
+    "Suzuki Wagon R",
+    null,
+    null,
+    true
+  ],
+  [
+    "suzuki-hustler",
+    "스즈키",
+    "허슬러",
+    "일본 경차",
+    "Suzuki Hustler",
+    null,
+    null,
+    true
+  ],
+  [
+    "suzuki-jimny",
+    "스즈키",
+    "짐니",
+    "일본 경차",
+    "Suzuki Jimny (JB64)",
+    null,
+    null,
+    true
+  ],
+  [
+    "suzuki-spacia",
+    "스즈키",
+    "스페이시아",
+    "일본 경차",
+    "Suzuki Spacia",
+    null,
+    null,
+    true
+  ],
+  [
+    "suzuki-lapin",
+    "스즈키",
+    "라팡",
+    "일본 경차",
+    "Suzuki Alto Lapin",
+    null,
+    null,
+    true
+  ],
+  [
+    "suzuki-every",
+    "스즈키",
+    "에브리",
+    "일본 경차",
+    "Suzuki Every",
+    null,
+    null,
+    true
+  ],
+  [
+    "suzuki-carry",
+    "스즈키",
+    "캐리",
+    "일본 경차",
+    "Suzuki Carry",
+    null,
+    null,
+    true
+  ],
+  [
+    "suzuki-cappuccino",
+    "스즈키",
+    "카푸치노",
+    "일본 경차",
+    "Suzuki Cappuccino",
+    null,
+    null,
+    true
+  ],
+  [
+    "suzuki-mr-wagon",
+    "스즈키",
+    "MR 왜건",
+    "일본 경차",
+    "Suzuki MR Wagon",
+    null,
+    null,
+    true
+  ],
+  [
+    "suzuki-cervo",
+    "스즈키",
+    "세르보",
+    "일본 경차",
+    "Suzuki Cervo",
+    null,
+    null,
+    true
+  ],
+  [
+    "suzuki-palette",
+    "스즈키",
+    "팔레트",
+    "일본 경차",
+    "Suzuki Palette",
+    null,
+    null,
+    true
+  ],
+  [
+    "suzuki-kei",
+    "스즈키",
+    "케이",
+    "일본 경차",
+    "Suzuki Kei",
+    null,
+    null,
+    true
+  ],
+  [
+    "suzuki-twin",
+    "스즈키",
+    "트윈",
+    "일본 경차",
+    "Suzuki Twin",
+    null,
+    null,
+    true
+  ],
+  [
+    "daihatsu-tanto",
+    "다이하츠",
+    "탄토",
+    "일본 경차",
+    "Daihatsu Tanto",
+    null,
+    null,
+    true
+  ],
+  [
+    "daihatsu-move",
+    "다이하츠",
+    "무브",
+    "일본 경차",
+    "Daihatsu Move",
+    null,
+    null,
+    true
+  ],
+  [
+    "daihatsu-copen",
+    "다이하츠",
+    "코펜",
+    "일본 경차",
+    "Daihatsu Copen",
+    null,
+    null,
+    true
+  ],
+  [
+    "daihatsu-mira",
+    "다이하츠",
+    "미라",
+    "일본 경차",
+    "Daihatsu Mira L700",
+    null,
+    null,
+    true
+  ],
+  [
+    "daihatsu-mira-cocoa",
+    "다이하츠",
+    "미라 코코아",
+    "일본 경차",
+    "Daihatsu Mira Cocoa",
+    null,
+    null,
+    true
+  ],
+  [
+    "daihatsu-mira-tocot",
+    "다이하츠",
+    "미라 토코트",
+    "일본 경차",
+    "Daihatsu Mira Tocot",
+    null,
+    null,
+    true
+  ],
+  [
+    "daihatsu-cast",
+    "다이하츠",
+    "캐스트",
+    "일본 경차",
+    "Daihatsu Cast",
+    null,
+    null,
+    true
+  ],
+  [
+    "daihatsu-taft",
+    "다이하츠",
+    "태프트",
+    "일본 경차",
+    "Daihatsu Taft (LA900)",
+    null,
+    null,
+    true
+  ],
+  [
+    "daihatsu-wake",
+    "다이하츠",
+    "웨이크",
+    "일본 경차",
+    "Daihatsu Wake",
+    null,
+    null,
+    true
+  ],
+  [
+    "daihatsu-hijet",
+    "다이하츠",
+    "하이젯",
+    "일본 경차",
+    "Daihatsu Hijet",
+    null,
+    null,
+    true
+  ],
+  [
+    "daihatsu-atrai",
+    "다이하츠",
+    "아트레이",
+    "일본 경차",
+    "Daihatsu Atrai",
+    null,
+    null,
+    true
+  ],
+  [
+    "daihatsu-sonica",
+    "다이하츠",
+    "소니카",
+    "일본 경차",
+    "Daihatsu Sonica",
+    null,
+    null,
+    true
+  ],
+  [
+    "daihatsu-esse",
+    "다이하츠",
+    "에쎄",
+    "일본 경차",
+    "Daihatsu Esse",
+    null,
+    null,
+    true
+  ],
+  [
+    "daihatsu-naked",
+    "다이하츠",
+    "네이키드",
+    "일본 경차",
+    "Daihatsu Naked",
+    null,
+    null,
+    true
+  ],
+  [
+    "daihatsu-opt i",
+    "다이하츠",
+    "옵티",
+    "일본 경차",
+    "Daihatsu Opti",
+    null,
+    null,
+    true
+  ],
+  [
+    "nissan-dayz",
+    "닛산",
+    "데이즈",
+    "일본 경차",
+    "Nissan Dayz",
+    null,
+    null,
+    true
+  ],
+  [
+    "nissan-roox",
+    "닛산",
+    "룩스",
+    "일본 경차",
+    "Nissan Roox",
+    null,
+    null,
+    true
+  ],
+  [
+    "nissan-moco",
+    "닛산",
+    "모코",
+    "일본 경차",
+    "Nissan Moco",
+    null,
+    null,
+    true
+  ],
+  [
+    "nissan-clipper",
+    "닛산",
+    "클리퍼",
+    "일본 경차",
+    "Nissan Clipper",
+    null,
+    null,
+    true
+  ],
+  [
+    "mitsubishi-ek",
+    "미쓰비시",
+    "eK 왜건",
+    "일본 경차",
+    "Mitsubishi eK Wagon",
+    null,
+    null,
+    true
+  ],
+  [
+    "mitsubishi-i",
+    "미쓰비시",
+    "아이",
+    "일본 경차",
+    "Mitsubishi i",
+    null,
+    null,
+    true
+  ],
+  [
+    "mitsubishi-pajero-mini",
+    "미쓰비시",
+    "파제로 미니",
+    "일본 경차",
+    "Mitsubishi Pajero Mini",
+    null,
+    null,
+    true
+  ],
+  [
+    "mitsubishi-minica",
+    "미쓰비시",
+    "미니카",
+    "일본 경차",
+    "Mitsubishi Minica",
+    null,
+    null,
+    true
+  ],
+  [
+    "mitsubishi-toppo",
+    "미쓰비시",
+    "토포",
+    "일본 경차",
+    "Mitsubishi Toppo",
+    null,
+    null,
+    true
+  ],
+  [
+    "mitsubishi-minicab",
+    "미쓰비시",
+    "미니캡",
+    "일본 경차",
+    "Mitsubishi Minicab",
+    null,
+    null,
+    true
+  ],
+  [
+    "subaru-r1",
+    "스바루",
+    "R1",
+    "일본 경차",
+    "Subaru R1",
+    null,
+    null,
+    true
+  ],
+  [
+    "subaru-r2",
+    "스바루",
+    "R2",
+    "일본 경차",
+    "Subaru R2",
+    null,
+    null,
+    true
+  ],
+  [
+    "subaru-pleo",
+    "스바루",
+    "플레오",
+    "일본 경차",
+    "Subaru Pleo",
+    null,
+    null,
+    true
+  ],
+  [
+    "subaru-stella",
+    "스바루",
+    "스텔라",
+    "일본 경차",
+    "Subaru Stella",
+    null,
+    null,
+    true
+  ],
+  [
+    "subaru-vivio",
+    "스바루",
+    "비비오",
+    "일본 경차",
+    "Subaru Vivio",
+    null,
+    null,
+    true
+  ],
+  [
+    "subaru-sambar",
+    "스바루",
+    "삼바",
+    "일본 경차",
+    "Subaru Sambar",
+    null,
+    null,
+    true
+  ],
+  [
+    "mazda-carol",
+    "마쓰다",
+    "캐롤",
+    "일본 경차",
+    "Mazda Carol",
+    null,
+    null,
+    true
+  ],
+  [
+    "mazda-flair",
+    "마쓰다",
+    "플레어",
+    "일본 경차",
+    "Mazda Flair",
+    null,
+    null,
+    true
+  ],
+  [
+    "mazda-az1",
+    "마쓰다",
+    "AZ-1",
+    "일본 경차",
+    "Autozam AZ-1",
+    null,
+    null,
+    true
+  ]
+]

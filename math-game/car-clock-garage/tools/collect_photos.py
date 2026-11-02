@@ -1,5 +1,6 @@
 """Reproducible Commons photo collection; run only when updating bundled assets."""
 import concurrent.futures
+import gzip
 import html
 import io
 import json
@@ -8,10 +9,11 @@ import re
 import time
 import urllib.parse
 import urllib.request
+import urllib.error
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 ROOT = Path(__file__).resolve().parents[1]
-HEADERS = {'User-Agent': 'CarClockGarage/1.0 (classroom static photo collection)'}
+HEADERS = {'User-Agent': 'CarClockGarage/2.0 (educational photo collection; https://github.com/mathtjungsw/math-class-webtools)', 'Accept-Encoding':'gzip'}
 SEEDS = [
     ('morning-ja', '기아', '모닝', '3세대 · JA', 'Kia Morning (JA)', '2017 kia morning Front-side.jpg', 2017),
     ('morning-ta', '기아', '모닝', '2세대 · TA', 'Kia Morning (TA)', '20110201 kia morning 001.jpg', None),
@@ -49,14 +51,23 @@ YEAR_SOURCES = {
 def fetch(url):
     for attempt in range(4):
         try:
-            return urllib.request.urlopen(urllib.request.Request(url, headers=HEADERS), timeout=40).read()
-        except Exception:
+            response = urllib.request.urlopen(urllib.request.Request(url, headers=HEADERS), timeout=40)
+            data=response.read()
+            return gzip.decompress(data) if response.headers.get('Content-Encoding')=='gzip' else data
+        except Exception as error:
             if attempt == 3:
                 raise
-            time.sleep(2 + attempt * 3)
+            if isinstance(error,urllib.error.HTTPError) and error.code==429:
+                retry=error.headers.get('Retry-After','30')
+                time.sleep(int(retry) if retry.isdigit() else 30)
+            else:
+                time.sleep(2 + attempt * 3)
 
 def api(**params):
-    return json.loads(fetch('https://commons.wikimedia.org/w/api.php?' + urllib.parse.urlencode({'action': 'query', 'format': 'json', **params})))
+    start=time.monotonic()
+    data=json.loads(fetch('https://commons.wikimedia.org/w/api.php?' + urllib.parse.urlencode({'action': 'query', 'format': 'json', **params})))
+    time.sleep(5 if time.monotonic()-start>1 else .35)
+    return data
 
 def clean(value):
     return re.sub(r'\s+', ' ', html.unescape(re.sub('<[^>]*>', '', value))).strip()

@@ -1,0 +1,11 @@
+.private/
+apps-script/Index.html
+apps-script/Core.gs
+apps-script/Catalog.gs
+apps-script/BackendConfig.gs
+**/__pycache__/
+*.pyc
+tools/review/
+tools/search-cache/
+tools/metadata/
+tools/photo-review.jpg

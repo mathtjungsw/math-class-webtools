@@ -1,0 +1,57 @@
+[
+  {
+    "id": "new-grand-starex",
+    "error": "No licensed identifiable candidate",
+    "phrase": "Hyundai Grand Starex facelift"
+  },
+  {
+    "id": "staria-kinder",
+    "error": "No licensed identifiable candidate",
+    "phrase": "Hyundai Staria Kinder"
+  },
+  {
+    "id": "malibu-v300",
+    "error": "No licensed identifiable candidate",
+    "phrase": "Chevrolet Malibu (8th generation)"
+  },
+  {
+    "id": "malibu-v400",
+    "error": "No licensed identifiable candidate",
+    "phrase": "Chevrolet Malibu (9th generation)"
+  },
+  {
+    "id": "porter2",
+    "error": "No licensed identifiable candidate",
+    "phrase": "Hyundai Porter (HR)"
+  },
+  {
+    "id": "pony",
+    "error": "No licensed identifiable candidate",
+    "phrase": "Hyundai Pony (1975)"
+  },
+  {
+    "id": "ssangyong-musso",
+    "error": "No licensed identifiable candidate",
+    "phrase": "SsangYong Musso (FJ)"
+  },
+  {
+    "id": "sm3",
+    "error": "No licensed identifiable candidate",
+    "phrase": "Renault Samsung SM3 (N17)"
+  },
+  {
+    "id": "sm7",
+    "error": "No licensed identifiable candidate",
+    "phrase": "Renault Samsung SM7 (EX2)"
+  },
+  {
+    "id": "g90-limo",
+    "error": "No licensed identifiable candidate",
+    "phrase": "Genesis G90 limousine"
+  },
+  {
+    "id": "carnival-limo",
+    "error": "No licensed identifiable candidate",
+    "phrase": "Kia Carnival (KA4) high limousine"
+  }
+]

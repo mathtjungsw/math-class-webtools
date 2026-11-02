@@ -20,7 +20,9 @@ def build(output):
     for file, uri in photos.items():
         html = html.replace('src="' + file + '"', 'src="' + uri + '"')
     html = re.sub(r'<link rel="stylesheet" href="style\.css(?:\?[^\"]*)?">', lambda _: '<style>\n' + (ROOT / 'style.css').read_text(encoding='utf-8') + '\n</style>', html)
-    for file in ['cars.js', 'core.js', 'app.js']:
+    html=re.sub(r'<script defer src="config\.js(?:\?[^\"]*)?"></script>','',html)
+    html=html.replace('</body>','<script>window.GARAGE_CONFIG={cloud:false,build:"offline"};</script>\n</body>')
+    for file in ['cars.js', 'core.js', 'cloud.js', 'app.js']:
         js = 'window.GARAGE_CARS = ' + json.dumps(cars, ensure_ascii=False) + ';' if file == 'cars.js' else (ROOT / file).read_text(encoding='utf-8')
         # Inlining retains parser-deferred execution after the body has been parsed.
         html = re.sub(r'<script defer src="' + re.escape(file) + r'(?:\?[^\"]*)?"></script>', '', html)

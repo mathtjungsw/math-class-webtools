@@ -9,7 +9,7 @@ const sandbox = {window: {}};
 vm.runInNewContext(fs.readFileSync(path.join(root, 'cars.js'), 'utf8'), sandbox);
 const cars = JSON.parse(JSON.stringify(sandbox.window.GARAGE_CARS));
 const good = q => q.kind==='car' ? {model:q.modelAnswer,year:q.yearAnswer} : q.answer;
-const wrongYear = q => ({model:q.modelAnswer,year:q.yearChoices.find(y=>y!==q.yearAnswer)});
+const wrongYear = q => q.requiresYear===false?{model:q.choices.find(m=>m!==q.modelAnswer),year:null}:({model:q.modelAnswer,year:q.yearChoices.find(y=>y!==q.yearAnswer)});
 
 test('사진 파일·출처·라이선스와 차고 보상이 모두 존재한다', () => {
   assert.ok(cars.length >= 24);
@@ -20,8 +20,7 @@ test('사진 파일·출처·라이선스와 차고 보상이 모두 존재한�
     assert.match(car.source, /^https:\/\/commons.wikimedia.org\/wiki\/File:/);
     assert.match(car.license, /^(CC BY|CC0|Public domain)/);
     assert.ok(car.author);
-    assert.ok(car.year);
-    assert.match(car.yearSource, /^https:\/\/(www.hyundaimotorgroup.com|worldwide.kia.com|www.hyundai.com|www.genesis.com)\//);
+    if(car.requiresYear!==false){assert.ok(car.year);assert.match(car.yearSource,/^https?:\/\//);}
   }
   for (const reward of C.REWARDS) assert.ok(cars.some(c => c.id === reward.id));
 });
@@ -90,12 +89,11 @@ test('모든 사진에서 차종과 출시연도를 각각 중복 없는 2~4지�
   for (const source of cars) for (const choices of [2,3,4]) for (let i=0;i<5;i++) {
     const q = C.makeCar(cars, {...C.DEFAULTS, choices},[],Math.random,source.id);
     const car = cars.find(c => c.id === q.carId);
-    assert.equal(q.mode,'dual');assert.equal(q.carId,source.id);
+    assert.equal(q.mode,car.requiresYear===false?'model-only':'dual');assert.equal(q.carId,source.id);
     assert.equal(q.choices.filter(c => c === q.modelAnswer).length, 1);
-    assert.equal(q.yearChoices.filter(c => c === q.yearAnswer).length, 1);
+    if(q.requiresYear!==false)assert.equal(q.yearChoices.filter(c => c === q.yearAnswer).length, 1);
     assert.equal(new Set(q.choices).size, choices);
-    assert.equal(new Set(q.yearChoices).size, choices);
-    assert.ok(car.yearSource); assert.equal(q.yearAnswer, `${car.year}년`);
+    if(q.requiresYear!==false){assert.equal(new Set(q.yearChoices).size, choices);assert.ok(car.yearSource); assert.equal(q.yearAnswer, `${car.year}년`);}else{assert.equal(q.yearAnswer,null);assert.deepEqual(q.yearChoices,[]);}
   }
 });
 
@@ -126,7 +124,7 @@ test('어떤 오답 횟수도 자동차 5문제와 시계의 학습 순서를 �
   const state = C.fresh();
   for (let n=0;n<5;n++) {
     const q = C.ensureQuestion(state,cars);
-    q.yearChoices.filter(c=>c!==q.yearAnswer).forEach(year=>C.answer(state,{model:q.modelAnswer,year}));
+    if(q.requiresYear===false)C.answer(state,wrongYear(q));else q.yearChoices.filter(c=>c!==q.yearAnswer).forEach(year=>C.answer(state,{model:q.modelAnswer,year}));
     assert.equal(state.carCount,n);
     C.answer(state,good(q)); C.advance(state);
   }
@@ -136,7 +134,7 @@ test('어떤 오답 횟수도 자동차 5문제와 시계의 학습 순서를 �
 });
 
 test('자동차는 두 선택을 제출해 모두 맞혀야 완료·보상 처리된다',()=>{
-  const state=C.fresh(),q=C.ensureQuestion(state,cars);
+  const state=C.fresh();state.active=C.makeCar(cars,state.settings,[],Math.random,'morning-ja');const q=state.active;
   assert.equal(state.settings.choices,4);
   assert.equal(C.answer(state,q.modelAnswer).incomplete,true);
   assert.equal(C.answer(state,{model:q.modelAnswer}).incomplete,true);
@@ -154,7 +152,7 @@ test('자동차는 두 선택을 제출해 모두 맞혀야 완료·보상 처�
 });
 
 test('4×4개의 조합을 모두 시도한 기록도 백업에서 보존하고 중복 제출은 막는다',()=>{
-  const state=C.fresh(),q=C.ensureQuestion(state,cars);
+  const state=C.fresh();state.active=C.makeCar(cars,state.settings,[],Math.random,'morning-ja');const q=state.active;
   for(const model of q.choices)for(const year of q.yearChoices){
     if(model===q.modelAnswer&&year===q.yearAnswer)continue;
     C.answer(state,{model,year});
@@ -182,4 +180,16 @@ test('기존 버전의 경험치·차고·현재 시계·풀던 자동차를 새
   assert.equal(completed.active.resolved,true);assert.equal(C.answer(completed,good(completed.active)).changed,false);assert.equal(completed.xp,80);
   old.carCount=5;old.active=C.makeClock(5,3);
   const clock=C.validate(old,cars);assert.deepEqual(clock.active,old.active);assert.equal(clock.xp,80);
+});
+
+test('일본 경차는 출시연도 없이 차종만 고르고 저장·재개·보상을 처리한다',()=>{
+  const kei={...cars[0],id:'kei-fixture',model:'혼다 N-BOX',year:null,yearSource:null,requiresYear:false,group:'kei'};
+  const library=[...cars,kei],state=C.fresh();state.active=C.makeCar(library,state.settings,[],Math.random,kei.id);
+  const q=state.active;assert.equal(q.requiresYear,false);assert.equal(q.mode,'model-only');assert.deepEqual(q.yearChoices,[]);
+  assert.equal(C.select(state,'year','2020년'),false);C.select(state,'model',kei.model);
+  const saved=C.validate(JSON.parse(JSON.stringify(state)),library);assert.equal(saved.active.picks.model,kei.model);
+  assert.equal(C.answer(saved,{model:kei.model}).reward,10);assert.equal(saved.history[0].mode,'model-only');
+  assert.equal(saved.stats.car.total,1);assert.equal(C.advance(saved),true);
+  for(let i=1;i<5;i++){saved.active=C.makeCar(library,saved.settings,[],Math.random,kei.id);C.answer(saved,{model:kei.model});C.advance(saved);}
+  assert.equal(C.ensureQuestion(saved,library).kind,'clock');assert.equal(saved.carCount,5);
 });

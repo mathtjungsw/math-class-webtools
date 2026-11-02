@@ -1,0 +1,50 @@
+[
+  {
+    "id": "equus-limo",
+    "reason": "사진은 일반 에쿠스 세단이며 리무진 차체가 아님"
+  },
+  {
+    "id": "county",
+    "reason": "두 사진 모두 카운티 차종을 식별할 수 없음"
+  },
+  {
+    "id": "county-view2",
+    "reason": "두 사진 모두 카운티 차종을 식별할 수 없음"
+  },
+  {
+    "id": "libero-view2",
+    "reason": "리베로가 아닌 견인 현장 사진"
+  },
+  {
+    "id": "suzuki-wagonr",
+    "reason": "자동차가 아닌 조향 부품 사진"
+  },
+  {
+    "id": "suzuki-cappuccino-view2",
+    "reason": "자동차가 아닌 안내 표지 사진"
+  },
+  {
+    "id": "daihatsu-hijet-view2",
+    "reason": "하이젯 자동차가 아닌 감속기 부품 사진"
+  },
+  {
+    "id": "subaru-sambar",
+    "reason": "삼바 자동차를 식별할 수 없는 엔진 부품 사진"
+  },
+  {
+    "id": "subaru-sambar-view2",
+    "reason": "삼바 차종을 식별하기 어려운 푸드트럭 사진"
+  },
+  {
+    "id": "mazda-flair",
+    "reason": "마쓰다 플레어가 아닌 인도네시아형 스즈키 리본 사진"
+  },
+  {
+    "id": "mazda-flair-view2",
+    "reason": "마쓰다 플레어가 아닌 인도네시아형 스즈키 리본 사진"
+  },
+  {
+    "id": "nissan-clipper-view2",
+    "reason": "서로 다른 차종이 함께 보여 정답을 판별하기 어려움"
+  }
+]

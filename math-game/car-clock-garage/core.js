@@ -33,19 +33,21 @@
   const CATEGORIES = [ ['모닝','레이','캐스퍼'], ['아반떼','쏘나타','그랜저','K3','K5','K8','G80'], ['투싼','싼타페','팰리세이드','스포티지','쏘렌토','GV80'], ['아이오닉 5','아이오닉 6','EV6'], ['카니발','레이','팰리세이드','쏘렌토'] ];
   const pairKey = (model, year) => JSON.stringify([model, year]);
   function makeCar(cars, settings, recent = [], random = Math.random, fixedId = null) {
-    const pool = cars.filter(c => c.year && c.yearSource);
+    const pool = cars.filter(c => c.requiresYear===false || (c.year && c.yearSource));
     if (!pool.length) throw new Error('출시연도가 확인된 자동차 자료가 필요합니다.');
-    const unseen = pool.filter(c => !recent.includes(c.id));
+    const recentModels=new Set(recent.map(id=>cars.find(c=>c.id===id)?.model));
+    const unseen = pool.filter(c => !recent.includes(c.id)&&!recentModels.has(c.model));
     const car = pool.find(c => c.id === fixedId) || shuffle(unseen.length ? unseen : pool, random)[0];
     const models = [...new Set(cars.map(c => c.model))].filter(m => m !== car.model);
-    const similar = CATEGORIES.find(g => g.includes(car.model)) || [];
+    const similar = car.group ? cars.filter(c=>c.group===car.group).map(c=>c.model) : CATEGORIES.find(g => g.includes(car.model)) || [];
     const wrong = [...shuffle(models.filter(m => similar.includes(m)), random), ...shuffle(models.filter(m => !similar.includes(m)), random)];
+    const requiresYear=car.requiresYear!==false;
     const otherGenerations = [...new Set(cars.filter(c => c.model === car.model && c.year && c.year !== car.year).map(c => c.year))];
     const nearYears = shuffle([car.year-1, car.year+1, car.year-2, car.year+2], random);
     const years = [...new Set([...otherGenerations, ...nearYears])].filter(y => y !== car.year);
     const count = settings.choices;
-    return {kind:'car', mode:'dual', carId:car.id, modelAnswer:car.model, yearAnswer:`${car.year}년`, answer:`${car.model} · ${car.year}년`,
-      choices:shuffle([car.model,...wrong.slice(0,count-1)],random), yearChoices:shuffle([`${car.year}년`,...years.slice(0,count-1).map(y=>`${y}년`)],random),
+    return {kind:'car', mode:requiresYear?'dual':'model-only', requiresYear, carId:car.id, modelAnswer:car.model, yearAnswer:requiresYear?`${car.year}년`:null, answer:requiresYear?`${car.model} · ${car.year}년`:car.model,
+      choices:shuffle([car.model,...wrong.slice(0,count-1)],random), yearChoices:requiresYear?shuffle([`${car.year}년`,...years.slice(0,count-1).map(y=>`${y}년`)],random):[],
       picks:{model:null,year:null}, attempts:[], hinted:false, resolved:false, reward:0};
   }
   function select(state, field, value) {
@@ -58,7 +60,7 @@
   function ensureQuestion(state, cars, random = Math.random) {
     if (!state.active) {
       state.active = state.carCount === 5 ? makeClock(state.settings.clockStep, state.settings.choices, random) : makeCar(cars, state.settings, state.recent, random);
-      if (state.active.carId) state.recent = [...state.recent, state.active.carId].slice(-8);
+      if (state.active.carId) state.recent = [...state.recent, state.active.carId].slice(-40);
     }
     return state.active;
   }
@@ -67,11 +69,13 @@
     if (!q || q.resolved) return {changed:false};
     let key, correct, parts;
     if (q.kind === 'car') {
-      if (!choice || typeof choice !== 'object' || !q.choices.includes(choice.model) || !q.yearChoices.includes(choice.year)) return {changed:false,incomplete:true};
-      key = pairKey(choice.model,choice.year);
-      parts = {model:choice.model===q.modelAnswer,year:choice.year===q.yearAnswer};
+      const requiresYear=q.requiresYear!==false;
+      if (!choice || typeof choice !== 'object' || !q.choices.includes(choice.model) || (requiresYear&&!q.yearChoices.includes(choice.year))) return {changed:false,incomplete:true};
+      const year=requiresYear?choice.year:null;
+      key = pairKey(choice.model,year);
+      parts = {model:choice.model===q.modelAnswer,year:!requiresYear||year===q.yearAnswer};
       correct = parts.model && parts.year;
-      q.picks = {model:choice.model,year:choice.year};
+      q.picks = {model:choice.model,year};
     } else {
       if (!q.choices.includes(choice)) return {changed:false};
       key = choice; correct = choice === q.answer;
@@ -114,11 +118,11 @@
       if (!st || !['total', 'first', 'assisted'].every(k => integer(st[k], 0, 10000000)) || st.first + st.assisted !== st.total) fail();
       out.stats[kind] = {total: st.total, first: st.first, assisted: st.assisted};
     }
-    if (!Array.isArray(raw.history) || raw.history.length > 2000 || !Array.isArray(raw.recent) || raw.recent.length > 8) fail();
+    if (!Array.isArray(raw.history) || raw.history.length > 2000 || !Array.isArray(raw.recent) || raw.recent.length > 40) fail();
     out.recent = raw.recent.filter(id => ids.has(id));
     out.history = raw.history.map(h => {
       if (!h || !['car', 'clock'].includes(h.kind) || typeof h.at !== 'string' || !Number.isFinite(Date.parse(h.at)) || typeof h.answer !== 'string' || h.answer.length > 100 || !integer(h.attempts, 1, 16) || typeof h.hinted !== 'boolean' || typeof h.first !== 'boolean' || ![5, 10, 20].includes(h.xp) || (h.carId !== null && !ids.has(h.carId))) fail();
-      return {at: h.at, kind: h.kind, carId: h.carId, mode: ['dual','model', 'series', 'year', 'time'].includes(h.mode) ? h.mode : 'model', answer: h.answer, attempts: h.attempts, hinted: h.hinted, first: h.first, xp: h.xp};
+      return {at: h.at, kind: h.kind, carId: h.carId, mode: ['model-only','dual','model', 'series', 'year', 'time'].includes(h.mode) ? h.mode : 'model', answer: h.answer, attempts: h.attempts, hinted: h.hinted, first: h.first, xp: h.xp};
     });
     if (raw.active !== null) {
       const q = raw.active;
@@ -132,7 +136,7 @@
         out.active = {kind: 'clock', hour: q.hour, minute: q.minute};
       } else {
         const car = cars.find(c => c.id === q.carId);
-        if (raw.carCount===5 || !car || !car.yearSource) fail();
+        if (raw.carCount===5 || !car || (car.requiresYear!==false&&!car.yearSource)) fail();
         if (legacy) {
           if (!['model','series','year'].includes(q.mode) || q.answer!==(q.mode==='model'?car.model:q.mode==='series'?car.series:`${car.year}년`)) fail();
           out.active=makeCar(cars,out.settings,[],Math.random,car.id);
@@ -140,11 +144,12 @@
           if(q.resolved){out.active.picks={model:car.model,year:`${car.year}년`};out.active.attempts=[pairKey(car.model,`${car.year}년`)];out.active.resolved=true;out.active.reward=q.reward;}
           return out;
         }
-        if(q.mode!=='dual' || q.modelAnswer!==car.model || q.yearAnswer!==`${car.year}년` || q.answer!==`${car.model} · ${car.year}년` || !q.choices.includes(q.modelAnswer) || !options(q.yearChoices) || !q.yearChoices.includes(q.yearAnswer) || q.yearChoices.length!==q.choices.length || !q.picks || ![null,...q.choices].includes(q.picks.model) || ![null,...q.yearChoices].includes(q.picks.year)) fail();
-        for(const attempt of q.attempts){try{const pair=JSON.parse(attempt);if(!Array.isArray(pair)||pair.length!==2||!q.choices.includes(pair[0])||!q.yearChoices.includes(pair[1])||pairKey(...pair)!==attempt)fail();}catch(_){fail();}}
+        const requiresYear=car.requiresYear!==false;
+        if(q.mode!==(requiresYear?'dual':'model-only') || (q.requiresYear!==undefined&&q.requiresYear!==requiresYear) || q.modelAnswer!==car.model || q.yearAnswer!==(requiresYear?`${car.year}년`:null) || q.answer!==(requiresYear?`${car.model} · ${car.year}년`:car.model) || !q.choices.includes(q.modelAnswer) || (requiresYear?(!options(q.yearChoices)||!q.yearChoices.includes(q.yearAnswer)||q.yearChoices.length!==q.choices.length):(!Array.isArray(q.yearChoices)||q.yearChoices.length!==0)) || !q.picks || ![null,...q.choices].includes(q.picks.model) || ![null,...q.yearChoices].includes(q.picks.year)) fail();
+        for(const attempt of q.attempts){try{const pair=JSON.parse(attempt);if(!Array.isArray(pair)||pair.length!==2||!q.choices.includes(pair[0])||(requiresYear?!q.yearChoices.includes(pair[1]):pair[1]!==null)||pairKey(...pair)!==attempt)fail();}catch(_){fail();}}
         const correctKey=pairKey(q.modelAnswer,q.yearAnswer);
         if(q.resolved!==q.attempts.includes(correctKey) || (q.resolved&&(q.picks.model!==q.modelAnswer||q.picks.year!==q.yearAnswer)))fail();
-        out.active={kind:'car',mode:'dual',carId:q.carId,modelAnswer:q.modelAnswer,yearAnswer:q.yearAnswer,yearChoices:[...q.yearChoices],picks:{model:q.picks.model,year:q.picks.year}};
+        out.active={kind:'car',mode:q.mode,requiresYear,carId:q.carId,modelAnswer:q.modelAnswer,yearAnswer:q.yearAnswer,yearChoices:[...q.yearChoices],picks:{model:q.picks.model,year:q.picks.year}};
       }
       Object.assign(out.active, {answer: q.answer, choices: [...q.choices], attempts: [...q.attempts], hinted: q.hinted, resolved: q.resolved, reward: q.reward});
     }

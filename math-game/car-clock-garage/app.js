@@ -1,23 +1,27 @@
 (() => {
   'use strict';
   const C = window.GarageCore, cars = window.GARAGE_CARS, KEY = 'car-clock-garage/v1';
+  const config=window.GARAGE_CONFIG||{},isCloud=config.cloud===true;
+  const PUBLIC_DOMAIN_LICENSE="https://creativecommons.org/publicdomain/zero/1.0/";
+  if(config.cloudUrl&&!isCloud&&/^https?:$/.test(location.protocol)){location.replace(config.cloudUrl);return;}
+  let cloudSession=null,activeId=null;
   const $ = id => document.getElementById(id), carById = id => cars.find(c => c.id === id);
   let state = C.fresh(), expected = null, saveDisabled = false, conflicted = false, pendingImport = null, latestUnlock = null, playing = false, loadWarning = '';
   try {
-    expected = localStorage.getItem(KEY);
-    if (expected) state = C.validate(JSON.parse(expected), cars);
+    if(!isCloud){expected = localStorage.getItem(KEY);if (expected) state = C.validate(JSON.parse(expected), cars);}
   } catch (error) {
     saveDisabled = true;
     loadWarning = '저장 기록을 읽을 수 없어 임시로 시작합니다. 기존 기록은 덮어쓰지 않습니다. 지금 진행한 기록은 선생님 설정에서 백업해 주세요.';
   }
   function warning(message) { $('storage-warning').hidden = false; $('storage-warning').textContent = message; $('save-status').textContent = '기록 백업을 확인해 주세요'; }
-  function conflict() {
+  function conflict(message) {
     conflicted = true;
-    warning('다른 탭에서 이 게임의 기록이 바뀌었습니다. 기록이 겹치지 않도록 이 탭은 잠시 멈췄어요. 이 페이지를 새로고침해 최신 기록을 불러와 주세요.');
+    warning(message||'다른 탭에서 이 게임의 기록이 바뀌었습니다. 기록이 겹치지 않도록 이 탭은 잠시 멈췄어요. 이 페이지를 새로고침해 최신 기록을 불러와 주세요.');
     for (const button of document.querySelectorAll('#choices button, #submit-answer, #next-button, #hint-button, #start-button, #equip-unlocked')) button.disabled = true;
   }
   function writable() {
     if (conflicted) return false;
+    if(isCloud)return !!activeId;
     if (!saveDisabled) {
       try { if (localStorage.getItem(KEY) !== expected) { conflict(); return false; } }
       catch (_) { saveDisabled = true; warning('자동 저장을 사용할 수 없습니다. 게임은 계속할 수 있어요. 종료 전에 선생님 설정에서 기록을 백업해 주세요.'); }
@@ -25,6 +29,7 @@
     return true;
   }
   function save() {
+    if(isCloud){if(cloudSession&&activeId&&!conflicted)cloudSession.queue(state);return;}
     if (saveDisabled) return;
     try {
       if (localStorage.getItem(KEY) !== expected) return conflict();
@@ -91,6 +96,7 @@
   }
   function hint(q) {
     const car = carById(q.carId);
+    if(q.requiresYear===false)return `일본 경차 문제는 자동차 종류만 고르면 돼요. 제조사는 ${car.brand}, 이름의 첫 글자는 ‘${[...car.model][0]}’입니다.`;
     return `제조사는 ${car.brand}예요. 이름의 첫 글자는 ‘${[...car.model][0]}’입니다. 사진 속 세대는 ${Math.floor(car.year/10)*10}년대에 처음 출시됐어요.`;
   }
   function hintText(q) {
@@ -107,9 +113,9 @@
       if(q.kind==='car') {
         const [model,year]=JSON.parse(q.attempts.at(-1));
         const changed=C.pairKey(q.picks.model,q.picks.year)!==q.attempts.at(-1);
-        feedback.append(text('strong',changed?'선택한 답을 다시 확인해 보세요.':model===q.modelAnswer?'차종은 맞았어요. 출시연도를 다시 골라요.':year===q.yearAnswer?'출시연도는 맞았어요. 차종을 다시 골라요.':'차종과 출시연도를 다시 골라 볼까요?'),text('p',changed?'두 답을 골랐다면 ‘정답 확인’을 눌러 주세요.':'경험치는 줄어들지 않아요. 두 가지를 모두 맞히면 완료예요.'));
+        feedback.append(text('strong',changed?'선택한 답을 다시 확인해 보세요.':q.requiresYear===false?'자동차 종류를 다시 골라 볼까요?':model===q.modelAnswer?'차종은 맞았어요. 출시연도를 다시 골라요.':year===q.yearAnswer?'출시연도는 맞았어요. 차종을 다시 골라요.':'차종과 출시연도를 다시 골라 볼까요?'),text('p',changed?'답을 골랐다면 ‘정답 확인’을 눌러 주세요.':q.requiresYear===false?'경험치는 줄어들지 않아요. 사진을 다시 살펴봐요.':'경험치는 줄어들지 않아요. 두 가지를 모두 맞히면 완료예요.'));
       } else feedback.append(text('strong', '괜찮아요. 다시 골라 볼까요?'), text('p', '경험치는 줄어들지 않아요. 힌트를 봐도 좋아요.'));
-    } else feedback.append(text('strong',q.kind==='car'?'차종과 출시연도, 둘 다 도전해요.':'잘 살펴보고 골라 봐요.'), text('p',q.kind==='car'?'각각 하나씩 고르고 ‘정답 확인’을 눌러 주세요.':'틀려도 다시 도전할 수 있어요.'));
+    } else feedback.append(text('strong',q.kind==='car'?(q.requiresYear===false?'어떤 일본 경차일까요?':'차종과 출시연도, 둘 다 도전해요.'):'잘 살펴보고 골라 봐요.'), text('p',q.kind==='car'?(q.requiresYear===false?'차종을 고르고 ‘정답 확인’을 눌러 주세요.':'각각 하나씩 고르고 ‘정답 확인’을 눌러 주세요.'):'틀려도 다시 도전할 수 있어요.'));
     $('hint-button').hidden = q.resolved;
     $('hint-button').disabled = q.hinted || conflicted;
     $('hint-button').lastChild.textContent = q.hinted ? ' 힌트를 보고 골라 보세요' : ' 힌트 보기';
@@ -122,9 +128,9 @@
     const q = C.ensureQuestion(state, cars), clock = q.kind === 'clock';
     $('mission-label').textContent = `ROUND ${String(state.round).padStart(2, '0')} · ${clock ? '시계 미션' : '자동차 퀴즈'}`;
     const car = clock ? null : carById(q.carId);
-    $('question-title').textContent = clock ? '시계는 몇 시 몇 분일까요?' : '자동차 종류와 출시연도를 맞혀 보세요.';
-    $('question-tag').textContent = clock ? '짧은 바늘과 긴 바늘을 살펴봐요' : '자동차 사진 하나, 두 가지 도전';
-    $('answer-heading-copy').textContent=clock?'정답을 하나 골라 주세요':'차종과 출시연도를 각각 골라 주세요';
+    $('question-title').textContent = clock ? '시계는 몇 시 몇 분일까요?' : q.requiresYear===false?'이 일본 경차의 이름은 무엇일까요?':'자동차 종류와 출시연도를 맞혀 보세요.';
+    $('question-tag').textContent = clock ? '짧은 바늘과 긴 바늘을 살펴봐요' : q.requiresYear===false?'일본 경차 · 차종만 맞히기':'자동차 사진 하나, 두 가지 도전';
+    $('answer-heading-copy').textContent=clock||q.requiresYear===false?'정답을 하나 골라 주세요':'차종과 출시연도를 각각 골라 주세요';
     $('question-number').textContent = clock ? 'BONUS MISSION' : `${String(state.carCount + 1).padStart(2, '0')} / 05`;
     $('reward-badge').textContent = clock ? '+20 XP' : '+10 XP';
     $('car-stage').hidden = clock; $('clock-stage').hidden = !clock; $('photo-source').hidden = clock;
@@ -134,7 +140,7 @@
       $('question-photo').src = car.image;
       $('question-photo').alt = q.resolved ? `${car.brand} ${car.model} ${car.series}` : '종류와 출시연도를 맞혀 볼 자동차 사진';
       if ($('question-photo').complete && !$('question-photo').naturalWidth) $('image-error').hidden = false;
-      $('visual-caption').textContent = q.resolved ? `${car.brand} ${car.model} · ${car.series} · ${car.year}년 출시` : '사진 속 세대가 처음 출시된 연도를 골라요.';
+      $('visual-caption').textContent = q.resolved ? `${car.brand} ${car.model} · ${car.series}${q.requiresYear===false?'':` · ${car.year}년 출시`}` : q.requiresYear===false?'일본 경차는 출시연도를 묻지 않아요.':'사진 속 모델이 처음 출시된 연도를 골라요.';
     }
     renderRoute();
     $('choices').replaceChildren();
@@ -142,6 +148,7 @@
     $('submit-answer').hidden=clock||q.resolved;
     if(!clock) {
       for(const [field,label,options] of [['model','01 자동차 종류',q.choices],['year','02 출시연도',q.yearChoices]]) {
+        if(field==='year'&&q.requiresYear===false)continue;
         const group=text('fieldset','','answer-group');group.append(text('legend',label));
         const grid=text('div','','dual-options');
         options.forEach(value=>{
@@ -158,7 +165,7 @@
           });grid.append(button);
         });group.append(grid);$('choices').append(group);
       }
-      $('submit-answer').disabled=conflicted||!q.picks.model||!q.picks.year||q.attempts.includes(C.pairKey(q.picks.model,q.picks.year));
+      $('submit-answer').disabled=conflicted||!q.picks.model||(q.requiresYear!==false&&!q.picks.year)||q.attempts.includes(C.pairKey(q.picks.model,q.picks.year));
     } else q.choices.forEach((value, i) => {
       const correct = q.resolved && value === q.answer, wrong = q.attempts.includes(value) && value !== q.answer;
       const button = text('button', '', `choice${correct ? ' correct' : ''}${wrong ? ' wrong' : ''}`);
@@ -189,6 +196,7 @@
   }
   function start() {
     if (!writable()) return;
+    document.body.classList.add('playing');
     playing = true; $('home').hidden = true; $('game').hidden = false; renderQuestion(true); save();
   }
   function renderGarage() {
@@ -221,7 +229,7 @@
     for (const car of cars) {
       const item = text('article', '', `credit-item${car.id === highlight ? ' credit-highlight' : ''}`); item.id = `credit-${car.id}`;
       const img = document.createElement('img'); img.src = car.image; img.alt = `${car.brand} ${car.model}`; img.loading = 'lazy';
-      const info = text('div', ''); info.append(text('h3', `${car.brand} ${car.model} · ${car.series}`), text('p', `사진: ${car.author} · ${car.changes}`), link('원본 사진', car.source), document.createTextNode(' · '), link(car.license, car.licenseUrl || 'https://creativecommons.org/publicdomain/zero/1.0/'));
+      const info = text('div', ''); info.append(text('h3', `${car.brand} ${car.model} · ${car.series}`), text('p', `사진: ${car.author} · ${car.changes}`), link('원본 사진', car.source), document.createTextNode(' · '), link(car.license, car.licenseUrl || PUBLIC_DOMAIN_LICENSE));
       if (car.yearSource) { const year = text('p', `${car.year}년 세대 출시 · `); year.append(link('제조사 자료', car.yearSource)); info.append(year); }
       item.append(img, info); $('credits-list').append(item);
     }
@@ -232,9 +240,55 @@
     const blob = new Blob([content], {type}), url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
   function exportBackup() { download(`부릉부릉-차고-기록-${new Date().toISOString().slice(0,10)}.json`, JSON.stringify({format:'car-clock-garage-backup', exportedAt:new Date().toISOString(), progress:state},null,2), 'application/json'); }
+  function cloudStatus(status){
+    const labels={pending:'저장 대기 중',saving:'구글에 저장 중…',saved:'구글에 저장 완료',offline:'연결을 기다리는 중 · 기록은 임시 보관',conflict:'다른 기기와 기록 확인 필요',invalid:'기록 백업이 필요해요','local-unavailable':'기기 임시 저장 사용 불가','recovered-cloud':'최신 구글 기록을 불러왔어요'};
+    $('cloud-status').textContent=labels[status]||status;
+    $('cloud-status').dataset.status=status;
+    $('save-status').textContent=labels[status]||status;
+    if(status==='offline')warning('인터넷 연결을 기다리고 있어요. 이 화면에서 한 도전은 임시 보관하며 연결되면 다시 저장합니다. 저장 완료 표시를 확인하고 창을 닫아 주세요.');
+    if(status==='saved'&&!conflicted)$('storage-warning').hidden=true;
+  }
+  function accountScreen(){
+    document.body.classList.remove('playing');
+    $('account-screen').hidden=false;$('home').hidden=true;$('game').hidden=true;
+    for(const id of ['driver-bar','collection-strip','account-toolbar'])$(id).hidden=true;
+    $('garage-button').disabled=true;$('settings-button').disabled=true;
+    try{$('account-id').value=localStorage.getItem('car-clock-last-id')||'';}catch(_){}
+  }
+  async function openAccount(action){
+    if($('account-continue').disabled)return;
+    $('account-message').textContent='기록을 확인하고 있어요…';
+    $('account-continue').disabled=true;$('account-create').disabled=true;
+    try{
+      if(!window.GarageCloud?.available())throw new Error('UNAVAILABLE');
+      cloudSession=new window.GarageCloud.Session({storage:localStorage,validate:p=>C.validate(p,cars),onStatus:cloudStatus,onConflict:()=>conflict('다른 기기에서 이 아이디의 기록이 바뀌어 이 화면의 진행을 멈췄어요. 현재 기록은 백업할 수 있습니다. 새로고침해 구글의 최신 기록을 불러와 주세요.')});
+      const result=await cloudSession.open($('account-id').value,action);
+      activeId=result.id;state=result.progress;conflicted=false;saveDisabled=false;playing=false;
+      try{localStorage.setItem('car-clock-last-id',activeId);}catch(_){}
+      $('account-name').textContent=activeId;$('account-screen').hidden=true;
+      for(const id of ['driver-bar','collection-strip','account-toolbar'])$(id).hidden=false;
+      $('home').hidden=false;$('game').hidden=true;$('garage-button').disabled=false;$('settings-button').disabled=false;
+      $('start-button').disabled=false;renderDashboard();
+      if(result.backup){$('pending-backup').hidden=false;warning('다른 기기의 최신 기록을 불러왔어요. 이 기기에 남은 미저장 기록은 ‘임시 기록 백업’으로 따로 보관할 수 있습니다.');}
+    }catch(error){$('account-message').textContent=window.GarageCloud?.messages[error.message]||'기록 서버에 연결하지 못했어요. 구글웹앱 주소와 인터넷 연결을 확인해 주세요.';cloudSession=null;}
+    finally{$('account-continue').disabled=false;$('account-create').disabled=false;}
+  }
+  $('account-continue').addEventListener('click',()=>openAccount('load'));
+  $('account-create').addEventListener('click',()=>openAccount('register'));
+  $('account-form').addEventListener('submit',event=>{event.preventDefault();openAccount('load');});
+  $('switch-account').addEventListener('click',async()=>{
+    $('switch-account').disabled=true;
+    try{
+      if(cloudSession?.dirty){let saved=await cloudSession.flush();if(!saved&&cloudSession.dirty){warning('아직 저장 중이거나 연결이 끊겨 있어요. 저장 완료를 확인한 뒤 아이디를 바꿔 주세요. 현재 기록은 선생님 설정에서 백업할 수 있습니다.');return;}}
+      cloudSession?.close();cloudSession=null;activeId=null;state=C.fresh();playing=false;accountScreen();
+    }finally{$('switch-account').disabled=false;}
+  });
+  $('pending-backup').addEventListener('click',()=>{if(cloudSession?.backup)download('부릉부릉-차고-임시기록.json',JSON.stringify({format:'car-clock-garage-backup',progress:cloudSession.backup},null,2),'application/json');});
+  window.addEventListener('online',()=>cloudSession?.flush());
+  window.addEventListener('beforeunload',event=>{if(cloudSession?.dirty){event.preventDefault();event.returnValue='';}});
   $('start-button').addEventListener('click', start);
   $('submit-answer').addEventListener('click',()=>{if(state.active?.kind==='car')choose({...state.active.picks});});
-  $('pause-button').addEventListener('click', () => { playing = false; $('game').hidden = true; $('home').hidden = false; renderDashboard(); $('start-button').focus(); });
+  $('pause-button').addEventListener('click', () => { playing = false; document.body.classList.remove('playing'); $('game').hidden = true; $('home').hidden = false; renderDashboard(); $('start-button').focus(); });
   $('next-button').addEventListener('click', () => { if (!writable() || !C.advance(state)) return; renderQuestion(true); save(); });
   $('hint-button').addEventListener('click', () => { if (!writable() || !state.active || state.active.resolved || state.active.hinted) return; state.active.hinted = true; save(); renderQuestion(); $('hint-text').setAttribute('tabindex','-1'); $('hint-text').focus({preventScroll:true}); });
   $('question-photo').addEventListener('error', () => { $('image-error').hidden = false; });
@@ -252,7 +306,7 @@
   $('export-button').addEventListener('click', exportBackup); $('backup-before-import').addEventListener('click', exportBackup);
   $('csv-button').addEventListener('click', () => {
     const esc = x => `"${String(x ?? '').replaceAll('"','""')}"`;
-    const rows = [['시간','문제 종류','자동차','유형','정답','시도 횟수','힌트','처음 정답','경험치'], ...state.history.map(h => [h.at, h.kind === 'car' ? '자동차' : '시계', h.carId ? carById(h.carId).model : '', {dual:'차종·출시연도',model:'이름',series:'세대',year:'세대 출시연도',time:'시간'}[h.mode],h.answer,h.attempts,h.hinted?'예':'아니오',h.first?'예':'아니오',h.xp])];
+    const rows = [['시간','문제 종류','자동차','유형','정답','시도 횟수','힌트','처음 정답','경험치'], ...state.history.map(h => [h.at, h.kind === 'car' ? '자동차' : '시계', h.carId ? carById(h.carId).model : '', {'model-only':'일본 경차 차종',dual:'차종·출시연도',model:'이름',series:'세대',year:'세대 출시연도',time:'시간'}[h.mode],h.answer,h.attempts,h.hinted?'예':'아니오',h.first?'예':'아니오',h.xp])];
     download('부릉부릉-차고-학습기록.csv', '\ufeff' + rows.map(r => r.map(esc).join(',')).join('\r\n'), 'text/csv;charset=utf-8');
   });
   $('import-button').addEventListener('click', () => { if (!writable()) return; $('import-file').click(); });
@@ -272,7 +326,8 @@
     state = pendingImport; pendingImport = null; save(); close('import-dialog'); close('settings-dialog');
     if (playing) renderQuestion(true); else renderDashboard();
   });
-  window.addEventListener('storage', event => { if ((event.key === KEY || event.key === null) && event.newValue !== expected) conflict(); });
+  window.addEventListener('storage', event => { if (!isCloud&&(event.key === KEY || event.key === null) && event.newValue !== expected) conflict(); });
   renderDashboard(); if (loadWarning) warning(loadWarning);
+  if(isCloud)accountScreen();
   if (new URLSearchParams(location.search).has('manual')) show('help-dialog');
 })();

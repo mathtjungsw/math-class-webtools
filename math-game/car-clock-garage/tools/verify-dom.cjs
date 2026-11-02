@@ -33,7 +33,8 @@ function boot(storage = new Map()) {
   const answer=(correct=true)=>{
     const q=state().active;
     if(q.kind==='car') {
-      for(const [field,value] of [['model',q.modelAnswer],['year',correct?q.yearAnswer:q.yearChoices.find(y=>y!==q.yearAnswer)]]) {
+      const selections=q.requiresYear===false?[['model',correct?q.modelAnswer:q.choices.find(m=>m!==q.modelAnswer)]]:[['model',q.modelAnswer],['year',correct?q.yearAnswer:q.yearChoices.find(y=>y!==q.yearAnswer)]];
+      for(const [field,value] of selections) {
         const b=[...$('choices').querySelectorAll('button')].find(b=>b.dataset.field===field&&b.querySelector('.choice-text').textContent===value);
         b.click();
       }
@@ -52,12 +53,12 @@ function boot(storage = new Map()) {
   app.click('start-button');
   assert.equal(app.$('game').hidden,false);
   assert.equal(app.$('choices').querySelectorAll('[data-field="model"]').length,4);
-  assert.equal(app.$('choices').querySelectorAll('[data-field="year"]').length,4);
+  assert.equal(app.$('choices').querySelectorAll('[data-field="year"]').length,app.state().active.requiresYear===false?0:4);
   assert.equal(app.$('submit-answer').disabled,true);
   app.$('choices').querySelector('[data-field="model"]').click();
-  assert.equal(app.$('submit-answer').disabled,true);assert.equal(app.state().xp,0);
+  assert.equal(app.$('submit-answer').disabled,app.state().active.requiresYear!==false);assert.equal(app.state().xp,0);
   app.answer(false);
-  assert.match(app.$('feedback').textContent,/출시연도를 다시/);
+  assert.match(app.$('feedback').textContent,/다시/);
   assert.equal(app.state().xp,0);
   app.answer();
   assert.match(app.$('feedback').textContent,/정답이에요/);
@@ -87,11 +88,11 @@ function boot(storage = new Map()) {
   assert.equal(resumed.state().settings.difficulty,'dual');
   assert.equal(resumed.$('settings-dialog').open,false);
   resumed.answer();resumed.click('next-button');
-  assert.equal(resumed.state().active.mode,'dual');
-  assert.equal(resumed.$('choices').querySelectorAll('button').length,8);
+  assert.ok(['dual','model-only'].includes(resumed.state().active.mode));
+  assert.equal(resumed.$('choices').querySelectorAll('button').length,resumed.state().active.requiresYear===false?4:8);
   resumed.click('photo-source');
   assert.equal(resumed.$('credits-dialog').open,true);
-  assert.equal(resumed.$('credits-list').children.length,24);
+  assert.ok(resumed.$('credits-list').children.length>=24);
   assert.match(resumed.$('credits-list').textContent,/제조사 자료/);
   resumed.$('credits-dialog').close();
   // Complete questions until the first unlock; selecting the new car persists.
