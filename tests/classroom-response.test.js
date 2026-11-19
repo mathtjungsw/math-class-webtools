@@ -42,3 +42,9 @@ test("CSV는 한글과 쉼표를 안전하게 인용한다", () => {
   const result = M.aggregate([M.createPacket(activity, "쉼표, 포함", "별칭")]);
   assert.match(M.toCsv(result), /"쉼표, 포함"/);
 });
+
+test("수치 응답은 빈 칸과 실제 0을 구분한다", () => {
+  const activity = M.createActivity({ title: "수치", question: "값", type: "number" });
+  assert.throws(() => M.createPacket(activity, "   "), /수를 입력/);
+  assert.equal(M.createPacket(activity, "0").answer, 0);
+});

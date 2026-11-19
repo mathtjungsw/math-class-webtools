@@ -253,6 +253,27 @@ h1 em::after {
   stroke-width: 2;
 }
 
+.hero-shortcut {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-inline-start: .4rem;
+  padding: .55rem .85rem;
+  color: #154f47;
+  background: #e6f6f1;
+  border-radius: 12px;
+  font-weight: 750;
+}
+.hero-shortcut:hover { background: #d1ede5; }
+.tools-section :focus-visible, .hero a:focus-visible {
+  outline: 3px solid #176e9a;
+  outline-offset: 3px;
+}
+@media (max-width: 480px) {
+  .hero-copy .hero-cta { display: flex; width: fit-content; }
+  .hero-shortcut { margin: .6rem .35rem 0 0; }
+}
+
 .hero-stats {
   display: flex;
   gap: 32px;
@@ -530,6 +551,15 @@ h2 {
 }
 
 .catalog-controls label { display: grid; gap: 0.35rem; font-size: 0.8rem; font-weight: 800; }
+.filter-panel .catalog-controls { align-items:center; padding:.55rem 0 0; background:transparent; }
+.filter-panel .catalog-controls label { display:flex; align-items:center; gap:.6rem; }
+.catalog-result { color:#49576b; font-size:.85rem; white-space:nowrap; }
+.catalog-result strong { font-size:1.1rem; color:#155647; }
+.filter-status:has([data-filter-reset][hidden]) { display:none; }
+@media (max-width: 600px) {
+  .filter-panel .catalog-controls { flex-direction:row; flex-wrap:wrap; }
+  .filter-panel .catalog-controls select { min-width:0; width:auto; }
+}
 .catalog-controls select { min-width: 14rem; padding: 0.7rem 2rem 0.7rem 0.75rem; border: 1px solid rgba(17, 28, 53, 0.18); border-radius: 0.7rem; background: #fff; color: #111c35; }
 .catalog-controls a { color: #111c35; font-weight: 800; }
 .catalog-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.45rem 1rem; }

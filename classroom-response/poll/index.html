@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>실시간 선택형 투표 · 수학 수업</title>
+  <link rel="stylesheet" href="./poll.css">
+  <link rel="stylesheet" href="../../assets/class-activity.css">
+</head>
+<body>
+  <header><nav><a href="../">← 학급 응답</a><a href="../../">웹툴 모음</a></nav></header>
+  <main>
+    <h1>실시간 선택형 투표</h1>
+    <p id="intro">질문을 만들고 학생에게 참여 링크를 보내세요. Firebase에 질문·보기와 익명 참여자의 선택이 저장됩니다. 응답은 24시간 동안 받으며, 기록은 투표를 만든 브라우저에서 확인하고 삭제할 수 있습니다.</p>
+    <form id="create" hidden>
+      <label for="question">질문 <small>학생 이름 등 개인정보는 빼 주세요</small></label><input id="question" maxlength="200" required placeholder="예: 두 주사위 눈의 합으로 가장 자주 나올 수는?">
+      <label for="choices">보기 <small>한 줄에 하나씩, 2~6개</small></label><textarea id="choices" rows="4" required maxlength="500" placeholder="5&#10;6&#10;7&#10;8"></textarea>
+      <button>투표 열기</button>
+    </form>
+    <button hidden id="resume">내 투표 다시 열기</button>
+    <button hidden id="join">질문 보기</button>
+    <section id="teacher" hidden>
+      <h2 id="teacher-question"></h2>
+      <label for="share">학생 참여 링크</label><input readonly id="share"><button id="copy">링크 복사</button>
+      <h3>응답 분포 <output id="total" aria-live="polite"></output></h3><div id="bars"></div>
+      <button class="secondary" id="close">응답 마감</button>
+      <button class="secondary" id="erase">투표 기록 삭제</button>
+      <p><a href="./">새 투표 만들기</a> · 이 결과 화면을 북마크하면 다시 열 수 있습니다.</p>
+    </section>
+    <form hidden id="student"><fieldset><legend id="prompt"></legend><div id="answers"></div></fieldset><button>내 선택 제출</button></form>
+    <p id="status" role="status"></p>
+  </main>
+  <script type="module" src="./poll.js"></script>
+</body></html>

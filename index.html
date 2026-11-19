@@ -11,7 +11,7 @@
     <meta name="theme-color" content="#111c35" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23111c35'/%3E%3Cpath d='M16 44V20l16 12 16-12v24' fill='none' stroke='%235dd2b2' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="./assets/site.css?v=20260903-6" />
+    <link rel="stylesheet" href="./assets/site.css?v=20261120-1" />
   </head>
   <body>
     <a class="skip-link" href="#tools">웹툴 목록으로 건너뛰기</a>
@@ -53,21 +53,21 @@
         <div class="hero-copy">
           <p class="eyebrow"><span></span> 교실에서 바로 쓰는 수학 도구</p>
           <h1 id="page-title">
-            이해하는 순간을<br />
-            <em>직접 경험하게.</em>
+            수학 수업<br />
+            <em>웹툴 모음</em>
           </h1>
           <p class="hero-description">
-            설명만으로는 아쉬운 수학 개념을 학생들이 직접 움직이고, 실험하고,
-            발견할 수 있도록 만든 수업용 웹툴입니다.
+            그래프를 움직이고, 확률을 실험하고, 게임으로 문제를 풀어보세요.
           </p>
           <a class="hero-cta" href="#tools">
             웹툴 둘러보기
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 12 10 0m-4-4 4 4-4 4" /></svg>
           </a>
+          <a class="hero-shortcut" href="./classroom/">수업 보관함</a>
+          <a class="hero-shortcut" href="./classroom-response/">학급 응답</a>
           <dl class="hero-stats" aria-label="웹툴 현황">
             <div><dt data-total-tools>—</dt><dd>개의 웹툴</dd></div>
             <div><dt data-total-tags>—</dt><dd>개의 태그</dd></div>
-            <div><dt>LOCAL</dt><dd>로컬 우선 설계</dd></div>
           </dl>
         </div>
 
@@ -95,20 +95,12 @@
       <section class="tools-section" id="tools" aria-labelledby="tools-title">
         <div class="section-heading">
           <div>
-            <p class="eyebrow"><span></span> TOOL COLLECTION</p>
-            <h2 id="tools-title">오늘 수업에 필요한<br />도구를 골라보세요</h2>
+            <h2 id="tools-title">웹툴 찾기</h2>
           </div>
           <p>카드의 실행 조건 배지를 확인하고 수업 환경에 맞는 도구를 고르세요.</p>
         </div>
 
         <div class="filter-panel" aria-label="웹툴 태그 필터">
-          <div class="filter-panel__intro">
-            <div>
-              <strong>검색하고 태그로 골라보기</strong>
-              <p>검색어와 선택한 태그를 모두 만족하는 웹툴을 보여드려요.</p>
-            </div>
-            <button class="filter-reset" type="button" data-filter-reset hidden>검색·태그 초기화</button>
-          </div>
 
           <div class="tool-search">
             <label for="tool-search-input">웹툴 검색</label>
@@ -148,6 +140,8 @@
             </div>
           </div>
 
+          <details class="filter-more">
+            <summary>활동 형태 · 세부 주제 · 실행 조건 <span aria-hidden="true">+</span></summary>
           <div class="filter-group" data-filter-group="format">
             <span class="filter-group__label">활동 형태</span>
             <div class="filter-bar">
@@ -159,8 +153,6 @@
             </div>
           </div>
 
-          <details class="filter-more">
-            <summary>세부 주제 태그 보기 <span aria-hidden="true">+</span></summary>
             <div class="filter-group" data-filter-group="topic">
               <span class="filter-group__label">세부 주제</span>
               <div class="filter-bar">
@@ -181,7 +173,6 @@
                 <button class="filter-button" type="button" aria-pressed="false" data-tag-filter="inference">통계적 추론 <span></span></button>
               </div>
             </div>
-          </details>
 
           <div class="filter-group" data-filter-group="purpose">
             <span class="filter-group__label">용도</span>
@@ -203,6 +194,8 @@
             </div>
           </div>
 
+          </details>
+
           <div class="catalog-controls">
             <label>정렬
               <select data-tool-sort>
@@ -212,14 +205,14 @@
                 <option value="title">이름순</option>
               </select>
             </label>
-            <div class="catalog-links"><a href="./classroom/">★ 즐겨찾기·수업 보관함</a><a href="./classroom-response/">익명 응답 수집·집계 →</a></div>
+            <div class="catalog-result" role="status" aria-live="polite"><strong data-visible-count>—</strong>개의 웹툴</div>
           </div>
 
           <div class="filter-status" aria-live="polite">
             <div class="selected-tags" data-selected-tags>
               <span class="selected-tags__hint">원하는 태그를 여러 개 선택할 수 있어요.</span>
             </div>
-            <p role="status" aria-live="polite"><strong data-visible-count>—</strong>개의 웹툴</p>
+            <button class="filter-reset" type="button" data-filter-reset hidden>검색·태그 초기화</button>
           </div>
         </div>
 
@@ -2049,7 +2042,7 @@
     <script src="./assets/click-stats-config.js?v=20260714-1"></script>
     <script src="./assets/thumbnail-candidates.js?v=20260903-6"></script>
     <script src="./assets/tool-thumbnails.js?v=20260903-6"></script>
-    <script src="./assets/app.js?v=20261008-1"></script>
+    <script src="./assets/app.js?v=20261120-1"></script>
     <script>if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("./sw.js").catch(() => {});</script>
   </body>
 </html>

@@ -7,6 +7,7 @@
   <meta name="description" content="수학 웹툴을 교육과정과 수업 조건으로 찾고, 즐겨찾기·수업 순서·타이머·공유 프리셋을 관리하는 교사용 수업 보관함" />
   <title>수업 보관함 · 수학 수업 웹툴</title>
   <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="../assets/class-activity.css" />
 </head>
 <body>
   <a class="skip" href="#catalog">도구 목록으로 건너뛰기</a>
@@ -18,7 +19,7 @@
 
   <main>
     <section class="hero">
-      <div><p>CLASSROOM PLANNER</p><h1>오늘 수업의 흐름을<br />한곳에서 설계하세요.</h1></div>
+      <div><h1>수업 보관함</h1></div>
       <p>교육과정·수업 시간·난이도·모둠 형태·실행 조건으로 도구를 찾고, 순서대로 담아 타이머와 함께 진행합니다. 모든 보관함 자료는 현재 브라우저에 저장됩니다.</p>
     </section>
 
@@ -26,6 +27,7 @@
       <aside class="filters" aria-label="수업 조건">
         <h2>수업 조건</h2>
         <label>검색<input type="search" data-search placeholder="도구·개념 검색" /></label>
+        <details class="planner-conditions"><summary>학년·활동 등 상세 조건</summary>
         <label>학년·과정<select data-filter="grade"><option value="">전체</option><option value="중1">중학교 1학년</option><option value="중2">중학교 2학년</option><option value="중3">중학교 3학년</option><option value="고등 공통">고등 공통</option><option value="고등 선택">고등 선택</option><option value="공통">학년 공통</option></select></label>
         <label>학기<select data-filter="term"><option value="">전체</option><option value="1학기">1학기</option><option value="2학기">2학기</option></select></label>
         <label>과목<select data-filter="subject"><option value="">전체 과목</option></select></label>
@@ -36,6 +38,7 @@
         <label>실행 조건<select data-filter="runtime"><option value="">전체</option><option value="offline">오프라인 가능</option><option value="internet">인터넷 필요</option><option value="local-server">로컬 서버 필요</option><option value="windows">Windows 전용</option><option value="camera">카메라 사용</option></select></label>
         <button type="button" class="secondary" data-reset-filters>조건 초기화</button>
         <p class="small">시간·난이도·모둠 형태는 첫 수업 설계를 돕는 권장값이며, 저장할 때 활동별로 바꿀 수 있습니다.</p>
+        </details>
       </aside>
 
       <section id="catalog" class="catalog" aria-labelledby="catalog-title">

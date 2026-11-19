@@ -1,0 +1,23 @@
+.suite-shell .tab-scroll, .topic-scroll {
+  scroll-padding-inline: .75rem;
+  overscroll-behavior-x: contain;
+  scrollbar-color: #76a99c #edf5f2;
+}
+.chapter-nav button.active, .topic-list .topic.active, .tab-list .tab[aria-selected="true"] {
+  border-color: #19705f;
+  background: #dff6ee;
+  color: #103f36;
+  box-shadow: inset 0 -3px #19705f;
+}
+.chapter-nav button.active small, .topic-list .topic.active small { color:#305c50; }
+.tab-list .tab[aria-selected="true"] span, .topic-list .topic.active > span {
+  color: #fff;
+  background: #175d50;
+}
+.suite-shell button:focus-visible, .chapter-nav button:focus-visible {
+  outline: 3px solid #0b6eae;
+  outline-offset: -3px;
+}
+@media (pointer: coarse) {
+  body.focus-view :is(.tab-list .tab, .topic-list .topic, .workspace-head button) { min-height: 44px; }
+}

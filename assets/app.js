@@ -1190,8 +1190,8 @@ function updateTagFilters(updateHash = false) {
   if (searchClearButton) searchClearButton.hidden = !hasSearchQuery;
   renderSelectedTags();
 
-  const hasTopicTag = [...selectedTags].some((tag) => TAG_META[tag]?.group === "topic");
-  if (hasTopicTag) document.querySelector(".filter-more")?.setAttribute("open", "");
+  const advancedFilters = document.querySelector(".filter-more");
+  if (advancedFilters?.querySelector('[aria-pressed="true"]')) advancedFilters.open = true;
 
   if (updateHash) {
     const nextHash = selectedTags.size ? `tags=${[...selectedTags].join(",")}` : "tools";
