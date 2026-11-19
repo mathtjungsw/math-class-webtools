@@ -7,11 +7,12 @@
   <meta name="description" content="서버와 로그인 없이 익명 수업 응답 패킷을 만들고 교사 기기에서 선택·수치·서술 응답을 집계하는 로컬 웹툴" />
   <title>익명 학급 응답 수집기</title>
   <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="../assets/class-activity.css" />
 </head>
 <body>
   <header><a href="../">← 웹툴 모음</a><div><strong>익명 학급 응답 수집기</strong><span>서버 전송 없음 · 패킷으로 모아 집계</span></div><a href="../classroom/">수업 보관함</a></header>
   <main>
-    <section class="hero"><p>PRIVATE RESPONSE LAB</p><h1>학생 답은 가볍게,<br />수업 데이터는 교사 기기에만.</h1><p>교사가 활동 코드를 만들고 학생은 익명 응답 패킷을 생성합니다. 패킷을 교사 기기에 모으면 자동 집계됩니다. 이 도구는 실시간 서버나 계정을 사용하지 않습니다.</p></section>
+    <section class="hero"><h1>학급 응답 모으기</h1><p>활동 코드를 나눠주고 학생이 제출한 응답을 모아 선택 분포, 평균, 서술 답안을 확인하세요.</p><a class="poll-entry" href="./poll/">실시간 선택형 투표 열기 →</a></section>
     <nav class="tabs" aria-label="사용자 모드"><button class="active" data-tab="setup">1. 활동 만들기</button><button data-tab="student">2. 학생 응답</button><button data-tab="teacher">3. 교사 집계</button></nav>
 
     <section class="panel active" data-panel="setup">
@@ -39,7 +40,7 @@
       <div class="aggregate" data-aggregate-result hidden><div class="summary" data-summary></div><div class="chart" data-chart></div><div class="text-responses" data-text-responses></div><div class="button-row"><button data-export-csv>CSV 내보내기</button><button class="secondary" data-export-json>JSON 내보내기</button><button class="secondary" data-print>인쇄·PDF</button></div></div>
     </section>
   </main>
-  <footer>응답은 이 브라우저 안에서만 해석됩니다. 실시간 공동 수집이 필요하면 학교가 승인한 별도 플랫폼을 사용하세요.</footer>
+  <footer>활동 코드와 응답 패킷은 현재 기기에서 처리합니다.</footer>
   <script src="./model.js"></script><script src="./app.js"></script>
 </body>
 </html>

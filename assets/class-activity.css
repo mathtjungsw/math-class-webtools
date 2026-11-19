@@ -1,0 +1,30 @@
+.planner-conditions summary, .poll-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+  min-height: 44px;
+  padding: .45rem .85rem;
+  border: 1px solid #aed9cd;
+  border-radius: .65rem;
+  background: #e8f6f0;
+  color: #155647;
+  font-weight: 750;
+  cursor: pointer;
+  text-decoration: none;
+}
+.planner-conditions summary::after { content: "＋"; }
+.planner-conditions[open] summary::after { content: "−"; }
+.hero h1 { word-break: keep-all; }
+.hero:has(.poll-entry) { padding-block: clamp(1.75rem, 4vw, 3.25rem); }
+.hero:has(.poll-entry) > p { color: #48566c; max-width: 54ch; }
+.tabs { display: flex; flex-wrap: wrap; }
+.tabs button { flex: 1 1 auto; min-height: 44px; }
+:where(a, button, input, select, textarea, summary):focus-visible {
+  outline: 3px solid #0878a0;
+  outline-offset: 3px;
+}
+[hidden] { display: none !important; }
+@media (max-width: 720px) {
+  .hero:has(+ .planner-grid) { padding-block: 1rem; }
+  .filters .planner-conditions { margin-top: .5rem; }
+}
