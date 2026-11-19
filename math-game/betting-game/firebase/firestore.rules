@@ -1,0 +1,106 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function uid() { return request.auth.uid; }
+    function roomPath(roomId) {
+      return /databases/$(database)/documents/bettingRooms/$(roomId);
+    }
+    function isHost(roomId) {
+      return signedIn() && uid() in get(roomPath(roomId)).data.hosts;
+    }
+    function hostAfter(roomId) {
+      return signedIn() && uid() in getAfter(roomPath(roomId)).data.hosts;
+    }
+    function validSettings(settings, roomId) {
+      return settings is map &&
+        settings.keys().hasAll(['gameId', 'name', 'teamCount', 'roundCount', 'currentRound', 'status', 'epoch', 'createdAt']) &&
+        settings.keys().hasOnly(['gameId', 'name', 'teamCount', 'roundCount', 'currentRound', 'status', 'epoch', 'createdAt', 'updatedAt']) &&
+        settings.gameId == roomId && settings.name is string && settings.name.size() <= 40 &&
+        settings.teamCount is int && settings.teamCount >= 2 && settings.teamCount <= 20 &&
+        settings.roundCount is int && settings.roundCount >= 2 && settings.roundCount <= 20 &&
+        settings.currentRound is int && settings.currentRound >= 1 && settings.currentRound <= settings.roundCount &&
+        settings.status in ['created', 'playing', 'finished'] && settings.epoch is int && settings.epoch >= 1;
+    }
+    function validRoom(data, roomId) {
+      return data.keys().hasOnly(['settings', 'hosts', 'recoveryHash', 'recoveryProof', 'teamCodes', 'roundResults']) &&
+        validSettings(data.settings, roomId) && data.settings.updatedAt is int &&
+        data.hosts is list && data.hosts.size() > 0 && data.hosts.size() <= 32 &&
+        data.teamCodes is list && data.teamCodes.size() == data.settings.teamCount &&
+        data.roundResults is list && data.roundResults.size() <= data.settings.roundCount &&
+        data.recoveryHash is string && data.recoveryHash.matches('^[a-f0-9]{64}$');
+    }
+    function appendMe(before, after) {
+      return uid() in before ? after == before : after == before.concat([uid()]);
+    }
+    function recover() {
+      let next = request.resource.data;
+      return next.diff(resource.data).affectedKeys().hasOnly(['hosts', 'recoveryProof']) &&
+        next.recoveryProof == resource.data.recoveryHash && appendMe(resource.data.hosts, next.hosts);
+    }
+    function validSeat(data) {
+      return data.keys().hasOnly(['teamId', 'teamName', 'epoch', 'roundCount', 'members', 'usedNumbers', 'moves', 'scoreTotal', 'earned']) &&
+        data.teamId is int && data.teamId > 0 && data.teamId <= 20 &&
+        data.teamName is string && data.teamName.size() <= 20 &&
+        data.epoch is int && data.epoch >= 1 &&
+        data.roundCount is int && data.roundCount >= 2 && data.roundCount <= 20 &&
+        data.members is list && data.members.size() <= 32 &&
+        data.moves is list && data.usedNumbers is list && data.moves.size() == data.usedNumbers.size() &&
+        data.moves.size() <= data.roundCount && data.scoreTotal is int && data.scoreTotal >= 0 &&
+        data.earned is list && data.earned.size() <= data.roundCount;
+    }
+    function validMove(roomId, before, next) {
+      let live = get(/databases/$(database)/documents/bettingRooms/$(roomId)/views/game).data.settings;
+      let n = next.usedNumbers[before.usedNumbers.size()];
+      return live.status == 'playing' && live.epoch == before.epoch && live.currentRound == before.moves.size() + 1 &&
+        n is int && n >= 1 && n <= live.roundCount && !(n in before.usedNumbers) &&
+        next.usedNumbers == before.usedNumbers.concat([n]) &&
+        next.moves == before.moves.concat([{'submittedNumber': n, 'isRevealed': false}]);
+    }
+    function validSubmission(roomId) {
+      let before = resource.data;
+      let next = request.resource.data;
+      return uid() in before.members && next.diff(before).affectedKeys().hasOnly(['moves', 'usedNumbers']) &&
+        next.usedNumbers.size() == before.usedNumbers.size() + 1 && validMove(roomId, before, next);
+    }
+
+    match /bettingRooms/{roomId} {
+      // A nonexistent random ID may be checked for collision. An existing
+      // room is never readable without a host grant, and cannot be listed.
+      allow get: if signedIn() && (resource == null || uid() in resource.data.hosts);
+      allow create: if signedIn() && roomId.matches('^[A-HJ-NP-Z2-9]{10}$') &&
+        validRoom(request.resource.data, roomId) && request.resource.data.hosts == [uid()] &&
+        !('recoveryProof' in request.resource.data) &&
+        request.resource.data.settings.status == 'created' && request.resource.data.settings.epoch == 1 &&
+        request.resource.data.settings.currentRound == 1 && request.resource.data.roundResults == [];
+      allow update: if signedIn() && validRoom(request.resource.data, roomId) &&
+        ((uid() in resource.data.hosts &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['settings', 'teamCodes', 'roundResults'])) || recover());
+
+      match /views/game {
+        allow get: if signedIn();
+        allow create, update: if hostAfter(roomId) &&
+          request.resource.data.keys().hasOnly(['settings', 'ranking']) &&
+          validSettings(request.resource.data.settings, roomId) &&
+          request.resource.data.settings.diff(getAfter(roomPath(roomId)).data.settings).affectedKeys().hasOnly(['updatedAt']) &&
+          request.resource.data.ranking is list &&
+          (request.resource.data.settings.status == 'finished' ?
+            request.resource.data.ranking.size() <= 20 : request.resource.data.ranking == []);
+      }
+
+      match /seats/{teamCode} {
+        // The exact random team code is the invitation; collection scans
+        // are permitted only for the host. Joining only appends one's UID.
+        allow get: if signedIn() && (uid() in resource.data.members || isHost(roomId));
+        allow list: if isHost(roomId);
+        allow create: if teamCode.matches('^[0-9]{8}$') && hostAfter(roomId) &&
+          validSeat(request.resource.data) && request.resource.data.members == [];
+        allow update: if signedIn() && validSeat(request.resource.data) &&
+          ((request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members']) &&
+            appendMe(resource.data.members, request.resource.data.members)) ||
+            validSubmission(roomId) || isHost(roomId));
+        allow delete: if isHost(roomId);
+      }
+    }
+  }
+}

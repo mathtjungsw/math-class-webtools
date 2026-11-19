@@ -1,22 +1,79 @@
-const STORAGE_KEYS = {
-  admin: "bettingGame.admin.v1",
-  player: "bettingGame.player.v1",
-};
-
+const STORAGE_KEYS = { admin: "bettingGame.rooms.firebase.v1", player: "bettingGame.seat.firebase.v2" };
 const MIN_GAME_SIZE = 2;
 const MAX_GAME_SIZE = 20;
-
-const appState = {
-  mode: "home",
-  admin: null,
-  player: null,
-  selectedNumber: null,
-  commonJoinUrl: "",
-  pollTimer: null,
-  busy: false,
-};
-
+const ROOM_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const ROOM_ID = /^[A-HJ-NP-Z2-9]{10}$/;
+const appState = { mode: "home", admin: null, player: null, selectedNumber: null, commonJoinUrl: "", busy: false, session: null };
 const $ = (selector) => document.querySelector(selector);
+const localMemory = new Map();
+let sdk;
+
+function firebase() {
+  return sdk ||= import("./firebase-client.js?v=3").catch((error) => {
+    sdk = null;
+    throw new Error("Firebase 기능을 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.", { cause: error });
+  });
+}
+
+function readStorage(key) {
+  try { return localMemory.get(key) ?? JSON.parse(localStorage.getItem(key) || "null"); }
+  catch { return localMemory.get(key) ?? null; }
+}
+
+function saveStorage(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+    localMemory.delete(key);
+    return true;
+  } catch {
+    localMemory.set(key, value);
+    return false;
+  }
+}
+
+function recentRoomHistory() {
+  const entries = readStorage(STORAGE_KEYS.admin);
+  return Array.isArray(entries) ? entries.filter((entry) => ROOM_ID.test(entry?.roomId)) : [];
+}
+
+function rememberRoom(entry) {
+  const previous = recentRoomHistory();
+  const prior = previous.find((item) => item.roomId === entry.roomId);
+  return saveStorage(STORAGE_KEYS.admin, [{ ...prior, ...entry }, ...previous.filter((item) => item.roomId !== entry.roomId)].slice(0, 30));
+}
+
+function renderHistory() {
+  const rooms = recentRoomHistory();
+  $("#recentRooms").innerHTML = rooms.length ? rooms.map((entry) =>
+    `<li><button class="button secondary compact" type="button" data-room="${entry.roomId}">${entry.pending ? "다시 연결" : "이어하기"}</button><div><strong>${escapeHtml(entry.name || "배팅 게임")}</strong><small>${entry.roomId} · ${entry.pending ? "생성 확인 전" : `${Number(entry.teamCount)}팀 · ${Number(entry.roundCount)}라운드`}</small></div></li>`
+  ).join("") : '<li class="empty-state">이 브라우저에 저장된 게임이 없습니다.</li>';
+}
+
+function setRoute(mode, roomId) {
+  const url = new URL(window.location.href);
+  url.search = "";
+  if (mode !== "home") url.searchParams.set("mode", mode);
+  if (roomId) url.searchParams.set("game", roomId);
+  url.hash = "";
+  window.history.replaceState(null, "", url);
+}
+
+function buildCommonJoinUrl(roomId) {
+  const url = new URL(window.location.href);
+  url.search = "";
+  url.hash = "";
+  url.searchParams.set("mode", "player");
+  url.searchParams.set("game", roomId);
+  return url.toString();
+}
+
+function gameCredentials() {
+  const roomId = Array.from(crypto.getRandomValues(new Uint8Array(10)), (value) => ROOM_ALPHABET[value & 31]).join("");
+  const key = crypto.getRandomValues(new Uint8Array(24));
+  const recoveryKey = btoa(String.fromCharCode(...key)).replaceAll("+", "-").replaceAll("/", "_");
+  return { roomId, recoveryKey };
+}
+
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -25,45 +82,6 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
-}
-
-function readStorage(key) {
-  try {
-    return JSON.parse(localStorage.getItem(key) || "{}") || {};
-  } catch (_error) {
-    return {};
-  }
-}
-
-function writeStorage(key, value) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch (_error) {
-    // Private browsing can disable storage. The game still works for this tab.
-  }
-}
-
-function extractSpreadsheetId(value) {
-  const text = String(value || "").trim();
-  const urlMatch = text.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
-  if (urlMatch) return urlMatch[1];
-  if (/^[a-zA-Z0-9-_]{20,}$/.test(text)) return text;
-  return text;
-}
-
-function validateApiUrl(value) {
-  try {
-    const url = new URL(String(value || "").trim());
-    return url.protocol === "https:" && /script\.google\.com$/.test(url.hostname) && /\/(exec|dev)$/.test(url.pathname);
-  } catch (_error) {
-    return false;
-  }
-}
-
-function getAdminConnection() {
-  const apiUrl = $("#adminApiUrl").value.trim();
-  const spreadsheet = $("#adminSpreadsheet").value.trim();
-  return { apiUrl, spreadsheet, spreadsheetId: extractSpreadsheetId(spreadsheet) };
 }
 
 function getAdminGameSize() {
@@ -93,65 +111,6 @@ function createNumberRange(count) {
   return Array.from({ length: Number(count) }, (_, index) => index + 1);
 }
 
-function getPlayerConnection() {
-  const apiUrl = $("#playerApiUrl").value.trim();
-  const spreadsheet = $("#playerSpreadsheet").value.trim();
-  const teamCode = $("#playerTeamCode").value.trim();
-  return { apiUrl, spreadsheet, spreadsheetId: extractSpreadsheetId(spreadsheet), teamCode };
-}
-
-function assertConnection(connection, needsCode = false) {
-  if (!validateApiUrl(connection.apiUrl)) {
-    throw new Error("Apps Script 웹앱 URL을 확인해 주세요. 배포된 /exec 주소를 입력해야 합니다.");
-  }
-  if (!connection.spreadsheetId) {
-    throw new Error("구글 스프레드시트 주소 또는 게임 ID를 입력해 주세요.");
-  }
-  if (needsCode && !/^\d{4}$/.test(connection.teamCode)) {
-    throw new Error("참여 코드는 숫자 4자리로 입력해 주세요.");
-  }
-}
-
-function requestJsonp(apiUrl, action, params = {}, options = {}) {
-  return new Promise((resolve, reject) => {
-    const callbackName = `__bettingGame_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-    const query = new URLSearchParams({ action, callback: callbackName, _: Date.now().toString() });
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) query.set(key, String(value));
-    });
-
-    const script = document.createElement("script");
-    const separator = apiUrl.includes("?") ? "&" : "?";
-    script.src = `${apiUrl}${separator}${query.toString()}`;
-    script.async = true;
-
-    let settled = false;
-    const cleanup = () => {
-      clearTimeout(timer);
-      script.remove();
-      try { delete window[callbackName]; } catch (_error) { window[callbackName] = undefined; }
-    };
-    const fail = (message) => {
-      if (settled) return;
-      settled = true;
-      cleanup();
-      reject(new Error(message));
-    };
-
-    const timeoutMs = Number(options.timeoutMs) > 0 ? Number(options.timeoutMs) : 20000;
-    const timer = setTimeout(() => fail("서버 응답이 늦어지고 있습니다. 네트워크와 웹앱 배포 권한을 확인한 뒤 다시 시도해 주세요."), timeoutMs);
-    window[callbackName] = (response) => {
-      if (settled) return;
-      settled = true;
-      cleanup();
-      if (response && response.success) resolve(response.data);
-      else reject(new Error(response?.error || "요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요."));
-    };
-    script.onerror = () => fail("Apps Script에 연결할 수 없습니다. URL과 웹앱 액세스 권한을 확인해 주세요.");
-    document.head.appendChild(script);
-  });
-}
-
 function setLoading(active, text = "처리 중입니다…") {
   appState.busy = active;
   $("#loadingOverlay").hidden = !active;
@@ -172,74 +131,29 @@ function updateConnectionPill(connected) {
   pill.classList.toggle("connected", connected);
 }
 
-function stopPolling() {
-  if (appState.pollTimer) window.clearInterval(appState.pollTimer);
-  appState.pollTimer = null;
-}
-
-function startPolling(mode) {
-  stopPolling();
-  appState.pollTimer = window.setInterval(() => {
-    if (document.hidden || appState.busy || appState.mode !== mode) return;
-    if (mode === "admin" && appState.admin) loadAdminState({ silent: true });
-    if (mode === "player" && appState.player) loadPlayerState({ silent: true });
-  }, 5000);
-}
-
-function switchMode(mode) {
-  stopPolling();
-  appState.mode = mode;
-  $("#modeSelection").hidden = mode !== "home";
-  $("#adminScreen").hidden = mode !== "admin";
-  $("#playerScreen").hidden = mode !== "player";
-  updateConnectionPill(Boolean((mode === "admin" && appState.admin) || (mode === "player" && appState.player)));
-
-  if (mode === "admin") {
-    const saved = readStorage(STORAGE_KEYS.admin);
-    $("#adminApiUrl").value ||= saved.apiUrl || "";
-    $("#adminSpreadsheet").value ||= saved.spreadsheet || saved.spreadsheetId || "";
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  } else if (mode === "player") {
-    const saved = readStorage(STORAGE_KEYS.player);
-    $("#playerApiUrl").value ||= saved.apiUrl || "";
-    $("#playerSpreadsheet").value ||= saved.spreadsheet || saved.spreadsheetId || "";
-    $("#playerTeamCode").value ||= saved.teamCode || "";
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  } else {
-    updateConnectionPill(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+async function copyTextToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+    return;
   }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.select();
+  const copied = document.execCommand("copy");
+  textarea.remove();
+  if (!copied) throw new Error("클립보드 복사를 허용하지 않는 브라우저입니다.");
 }
 
-function saveLocalGameInfo(mode, connection, extra = {}) {
-  writeStorage(STORAGE_KEYS[mode], { ...connection, ...extra });
-}
-
-function loadLocalGameInfo(mode) {
-  return readStorage(STORAGE_KEYS[mode]);
-}
-
-function buildCommonJoinUrl(apiUrl, spreadsheetId) {
-  const url = new URL(window.location.href);
-  url.search = "";
-  url.hash = "";
-  url.searchParams.set("mode", "player");
-  url.searchParams.set("api", apiUrl);
-  url.searchParams.set("game", spreadsheetId);
-  return url.toString();
-}
 
 function renderCommonJoinQr(settings) {
   const panel = $("#commonQrPanel");
   const container = $("#commonQrCode");
-  const connection = getAdminConnection();
-  if (!validateApiUrl(connection.apiUrl) || !settings.spreadsheetId) {
-    panel.hidden = true;
-    appState.commonJoinUrl = "";
-    return;
-  }
-
-  const joinUrl = buildCommonJoinUrl(connection.apiUrl, settings.spreadsheetId);
+  const joinUrl = buildCommonJoinUrl(settings.gameId);
   appState.commonJoinUrl = joinUrl;
   panel.hidden = false;
   if (container.dataset.joinUrl === joinUrl) return;
@@ -260,6 +174,7 @@ function renderCommonJoinQr(settings) {
   });
 }
 
+
 async function copyCommonJoinLink() {
   if (!appState.commonJoinUrl) {
     showMessage("게임을 먼저 생성하거나 불러와 주세요.", "info");
@@ -273,153 +188,262 @@ async function copyCommonJoinLink() {
   }
 }
 
-function applySharedJoinParameters() {
-  const parameters = new URLSearchParams(window.location.search);
-  if (parameters.get("mode") !== "player") return false;
-  const apiUrl = parameters.get("api") || "";
-  const game = parameters.get("game") || "";
-  if (!validateApiUrl(apiUrl) || !game) return false;
-  $("#playerApiUrl").value = apiUrl;
-  $("#playerSpreadsheet").value = game;
-  $("#playerTeamCode").value = "";
-  $("#playerConnectionFields").hidden = true;
-  $("#qrJoinNotice").hidden = false;
-  switchMode("player");
-  window.setTimeout(() => $("#playerTeamCode").focus(), 0);
-  return true;
+function stopSession() {
+  const session = appState.session;
+  appState.session = null;
+  if (session) for (const unsubscribe of session.stops) unsubscribe();
+  updateConnectionPill(false);
 }
 
-function showManualConnectionFields() {
+function switchMode(mode, keepRoute = false) {
+  if (appState.busy) return;
+  stopSession();
+  appState.mode = mode;
+  appState.admin = appState.player = appState.selectedNumber = null;
+  appState.commonJoinUrl = "";
+  $("#adminSetupStatus").textContent = "게임 선택 전";
+  $("#adminSetupStatus").classList.remove("ready");
+  $("#adminRoundBadge").innerHTML = "<small>현재 라운드</small><strong>준비 중</strong>";
+  $("#playerRoundBadge").innerHTML = "<small>현재 라운드</small><strong>접속 전</strong>";
+  for (const id of ["teamCodesPanel", "adminGamePanel", "adminSummaryPanel", "playerGamePanel", "recoveryPanel"]) $(`#${id}`).hidden = true;
+  $("#playerJoinPanel").hidden = false;
+  const saved = readStorage(STORAGE_KEYS.player);
+  $("#playerRoomId").value = saved?.roomId || "";
+  $("#playerTeamCode").value = "";
+  $("#modeSelection").hidden = mode !== "home";
+  $("#adminScreen").hidden = mode !== "admin";
+  $("#playerScreen").hidden = mode !== "player";
   $("#playerConnectionFields").hidden = false;
   $("#qrJoinNotice").hidden = true;
-  $("#playerApiUrl").focus();
+  if (mode === "admin") renderHistory();
+  if (!keepRoute) setRoute(mode);
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-async function copyTextToClipboard(text) {
-  if (navigator.clipboard && window.isSecureContext) {
-    await navigator.clipboard.writeText(text);
-    return;
+function cleanError(error) {
+  const kind = String(error.code || "").split("/").at(-1);
+  if (["unavailable", "deadline-exceeded", "network-request-failed"].includes(kind)) {
+    return "서버 응답을 확인하지 못했습니다. 인터넷 연결과 게임의 최신 상태를 확인해 주세요.";
   }
-
-  const textarea = document.createElement("textarea");
-  textarea.value = text;
-  textarea.setAttribute("readonly", "");
-  textarea.style.position = "fixed";
-  textarea.style.opacity = "0";
-  document.body.appendChild(textarea);
-  textarea.select();
-  const copied = document.execCommand("copy");
-  textarea.remove();
-  if (!copied) throw new Error("클립보드 복사를 허용하지 않는 브라우저입니다.");
+  if (kind === "operation-not-allowed") return "Firebase에서 익명 로그인이 아직 활성화되지 않았습니다.";
+  if (kind === "permission-denied" && error.name === "FirebaseError") {
+    return "이 브라우저에 접근 권한이 없습니다. 관리자 복구 코드 또는 참가 팀 코드를 다시 입력해 주세요.";
+  }
+  if (kind === "internal" && error.message === "internal") return "Firebase 서버에 연결하지 못했습니다. 잠시 뒤 다시 시도해 주세요.";
+  return error.message || "요청을 처리하지 못했습니다.";
 }
 
-async function copyAppsScriptCode() {
-  const button = $("#copyAppsScriptButton");
-  const originalText = "코드 전체 복사";
+async function runBusy(message, work) {
+  if (appState.busy) return;
+  setLoading(true, message);
+  try { await work(); }
+  catch (error) { showMessage(cleanError(error), "error"); }
+  finally { setLoading(false); }
+}
+
+function beginSession(mode, roomId, extra = {}) {
+  stopSession();
+  const session = { mode, roomId, stops: new Set(), ...extra };
+  appState.session = session;
+  return session;
+}
+
+async function watch(session, view, update) {
+  const api = await firebase();
+  return new Promise((resolve, reject) => {
+    let ready = false;
+    let unsubscribe;
+    let missedUnsubscribe = false;
+    const cancel = () => {
+      clearTimeout(timer);
+      if (unsubscribe) unsubscribe();
+      else missedUnsubscribe = true;
+      if (!ready) reject(new Error("게임 연결이 종료되었습니다."));
+    };
+    const fail = (error) => {
+      clearTimeout(timer);
+      if (appState.session !== session) return;
+      if (!ready) {
+        reject(error);
+      } else {
+        stopSession();
+        if (session.mode === "player") {
+          appState.player = appState.selectedNumber = null;
+          saveStorage(STORAGE_KEYS.player, null);
+          $("#playerJoinPanel").hidden = false;
+          $("#playerGamePanel").hidden = true;
+          $("#playerTeamCode").focus();
+        } else {
+          appState.admin = null;
+          for (const id of ["teamCodesPanel", "adminGamePanel", "adminSummaryPanel", "recoveryPanel"]) $(`#${id}`).hidden = true;
+          $("#adminSetupStatus").textContent = "연결 끊김";
+        }
+        showMessage(cleanError(error), "error");
+      }
+    };
+    const timer = setTimeout(() => fail(new Error("서버 응답이 늦습니다. 연결을 확인하고 다시 열어 주세요.")), 15000);
+    session.stops.add(cancel);
+    api.watchView(session.roomId, view, (data, live) => {
+      if (appState.session !== session) return;
+      if (live && data) {
+        update(data);
+        if (!ready) {
+          clearTimeout(timer);
+          ready = true;
+          resolve();
+        }
+      }
+      session[`live:${view}`] = live;
+      updateConnectionPill(session.mode === "admin" ? live : session["live:game"] && session[`live:team-${session.seatId}`]);
+    }, fail).then((stop) => {
+      unsubscribe = stop;
+      if (missedUnsubscribe || appState.session !== session) stop();
+    }).catch(fail);
+  });
+}
+
+async function call(action, data) {
+  return (await firebase()).command(action, data);
+}
+
+async function openAdmin(roomId, recoveryKey, { forceRecovery = false } = {}) {
+  if (!ROOM_ID.test(roomId)) throw new Error("게임 코드를 확인해 주세요.");
+  const api = await firebase();
+  const attach = async () => {
+    const session = beginSession("admin", roomId, { recoveryKey });
+    appState.admin = null;
+    for (const id of ["teamCodesPanel", "adminGamePanel", "adminSummaryPanel", "recoveryPanel"]) $(`#${id}`).hidden = true;
+    await watch(session, "admin", (state) => {
+      appState.admin = state;
+      renderAdminBoard(state);
+    });
+  };
   try {
-    button.disabled = true;
-    button.textContent = "코드 불러오는 중…";
-    const response = await fetch(`./Code.gs?v=${Date.now()}`, { cache: "no-store" });
-    if (!response.ok) throw new Error("Apps Script 코드 파일을 불러오지 못했습니다.");
-    const code = await response.text();
-    if (!code.includes("function doGet") || !code.includes("function createGame")) {
-      throw new Error("코드 파일의 내용을 확인할 수 없습니다.");
+    if (forceRecovery) await api.command("recover", { roomId, recoveryKey });
+    try { await attach(); }
+    catch (error) {
+      if (forceRecovery || !recoveryKey || error.code !== "permission-denied") throw error;
+      await api.command("recover", { roomId, recoveryKey });
+      await attach();
     }
-    await copyTextToClipboard(code);
-    button.textContent = "복사 완료 ✓";
-    button.classList.add("copied");
-    showMessage("Apps Script 전체 코드를 복사했습니다. 편집기에 그대로 붙여넣으세요.", "success");
-    window.setTimeout(() => {
-      button.textContent = originalText;
-      button.classList.remove("copied");
-    }, 3500);
   } catch (error) {
-    button.textContent = originalText;
-    button.classList.remove("copied");
-    showMessage(error.message, "error");
-  } finally {
-    button.disabled = false;
+    if (appState.session?.roomId === roomId) stopSession();
+    throw error;
   }
+  const { settings } = appState.admin;
+  const stored = rememberRoom({ roomId, ...(recoveryKey ? { recoveryKey } : {}), name: settings.name,
+    teamCount: settings.teamCount, roundCount: settings.roundCount, pending: false });
+  syncAdminGameSize(settings, true);
+  renderHistory();
+  $("#recoveryPanel").hidden = !recoveryKey;
+  $("#activeRoomName").textContent = settings.name;
+  setRoute("admin", roomId);
+  if (!stored) showMessage("이 브라우저에 기록을 저장할 수 없습니다. 관리자 복구 코드를 따로 보관하세요.", "info");
 }
 
 async function createGame() {
+  await runBusy("새 게임을 만들고 있습니다…", async () => {
+    const size = getAdminGameSize();
+    const name = $("#adminGameName").value.trim() || "배팅 게임";
+    const draft = { ...gameCredentials(), ...size, name, pending: true };
+    // Save credentials before the request in case the network drops after commit.
+    rememberRoom(draft);
+    renderHistory();
+    await call("create", draft);
+    await openAdmin(draft.roomId, draft.recoveryKey);
+    showMessage("독립된 새 게임을 만들었습니다. 관리자 복구 코드를 따로 보관하세요.", "success");
+  });
+}
+
+async function resumeRoom(roomId) {
+  await runBusy("저장된 게임을 불러오고 있습니다…", async () => {
+    const entry = recentRoomHistory().find((room) => room.roomId === roomId);
+    if (entry?.pending) {
+      try { await call("create", entry); }
+      catch (error) { if (!["already-exists", "permission-denied"].includes(error.code)) throw error; }
+    }
+    await openAdmin(roomId, entry?.recoveryKey);
+    showMessage("저장된 라운드부터 이어서 진행합니다.", "success");
+  });
+}
+
+async function recoverRoom() {
+  await runBusy("관리자 복구 코드를 확인하고 있습니다…", async () => {
+    const input = $("#recoveryCode");
+    const match = input.value.trim().match(/^([A-HJ-NP-Z2-9]{10})\.([A-Za-z0-9_-]{32})$/);
+    if (!match) throw new Error("복사해 둔 관리자 복구 코드 전체를 입력해 주세요.");
+    await openAdmin(match[1], match[2], { forceRecovery: true });
+    input.value = "";
+    showMessage("이 PC에서 게임을 이어갈 수 있습니다.", "success");
+  });
+}
+
+async function copyRecoveryCode(roomId = appState.session?.roomId) {
+  const recoveryKey = recentRoomHistory().find((entry) => entry.roomId === roomId)?.recoveryKey
+    || (appState.session?.roomId === roomId ? appState.session.recoveryKey : null);
+  if (!roomId || !recoveryKey) return;
+  const code = `${roomId}.${recoveryKey}`;
   try {
-    const connection = getAdminConnection();
-    const gameSize = getAdminGameSize();
-    assertConnection(connection);
-    if (!window.confirm(`새 게임을 생성하면 ‘시트1’의 이전 제출·점수·참여 코드가 모두 삭제됩니다.\n\n${gameSize.teamCount}팀 · ${gameSize.roundCount}라운드로 처음부터 시작할까요?`)) return;
-    stopPolling();
-    setLoading(true, "이전 기록을 지우고 새 게임을 만들고 있습니다…");
-    const state = await requestJsonp(connection.apiUrl, "createGame", { spreadsheetUrl: connection.spreadsheet, ...gameSize });
-    appState.admin = state;
-    saveLocalGameInfo("admin", connection, { spreadsheetId: state.settings.spreadsheetId });
-    syncAdminGameSize(state.settings, true);
-    renderAdminBoard(state);
-    updateConnectionPill(true);
-    startPolling("admin");
-    showMessage(`${state.settings.teamCount}팀 · ${state.settings.roundCount}라운드 게임과 참여 코드를 만들었습니다.`, "success");
-  } catch (error) {
-    showMessage(error.message, "error");
-    if (appState.admin) startPolling("admin");
-  } finally {
-    setLoading(false);
+    await copyTextToClipboard(code);
+    showMessage("관리자 복구 코드를 복사했습니다. 학생에게 공유하지 마세요.", "success");
+  } catch {
+    window.prompt("관리자 복구 코드 — 학생에게 공유하지 마세요.", code);
   }
 }
 
-async function startGame() {
-  try {
-    const connection = getAdminConnection();
-    assertConnection(connection);
-    setLoading(true, "1라운드를 시작하고 있습니다…");
-    const state = await requestJsonp(connection.apiUrl, "startGame", { spreadsheetId: connection.spreadsheetId });
+async function loadAdminState() {
+  const session = appState.session;
+  if (!session || session.mode !== "admin") return;
+  await runBusy("최신 게임 상태를 확인하고 있습니다…", async () => {
+    const state = await (await firebase()).readView(session.roomId, "admin");
+    if (appState.session !== session || state.settings.updatedAt < (appState.admin?.settings.updatedAt || 0)) return;
     appState.admin = state;
     renderAdminBoard(state);
-    startPolling("admin");
-    showMessage("게임을 시작했습니다. 이제 팀이 숫자를 제출할 수 있습니다.", "success");
-  } catch (error) {
-    showMessage(error.message, "error");
-  } finally {
-    setLoading(false);
-  }
+    showMessage("최신 상태를 확인했습니다.", "success");
+  });
 }
 
-async function loadAdminState(options = {}) {
-  try {
-    const saved = loadLocalGameInfo("admin");
-    const connection = getAdminConnection();
-    if (!connection.spreadsheetId && saved.spreadsheetId) connection.spreadsheetId = saved.spreadsheetId;
-    assertConnection(connection);
-    if (!options.silent) setLoading(true, "스프레드시트와 동기화하고 있습니다…");
-    const state = await requestJsonp(connection.apiUrl, "getGameState", { spreadsheetId: connection.spreadsheetId });
-    appState.admin = state;
-    saveLocalGameInfo("admin", connection, { spreadsheetId: state.settings.spreadsheetId });
-    if (!options.silent) syncAdminGameSize(state.settings, true);
-    renderAdminBoard(state);
-    updateConnectionPill(true);
-    startPolling("admin");
-    if (!options.silent) showMessage("최신 상태를 불러왔습니다.", "success");
-  } catch (error) {
-    if (!options.silent) showMessage(error.message, "error");
-  } finally {
-    if (!options.silent) setLoading(false);
-  }
+async function adminAction(action, params = {}, message = "게임을 갱신하고 있습니다…", success) {
+  if (!appState.admin || !appState.session || appState.busy) return;
+  const { settings } = appState.admin;
+  await runBusy(message, async () => {
+    const data = await call(action, { roomId: settings.gameId, round: settings.currentRound, epoch: settings.epoch,
+      updatedAt: settings.updatedAt, ...params });
+    if (success) showMessage(typeof success === "function" ? success(data) : success, "success");
+  });
 }
 
-async function revealCell(round, teamId) {
+function startGame() {
+  return adminAction("start", {}, "1라운드를 시작하고 있습니다…", "게임을 시작했습니다.");
+}
+
+function revealCell(round, teamId) {
+  return adminAction("reveal", { round, teamId });
+}
+
+function autoSubmitFinalRound() {
   if (!appState.admin || appState.busy) return;
-  try {
-    const connection = getAdminConnection();
-    assertConnection(connection);
-    setLoading(true, "선택한 숫자를 공개하고 있습니다…");
-    const state = await requestJsonp(connection.apiUrl, "revealSubmission", { spreadsheetId: connection.spreadsheetId, round, teamId });
-    appState.admin = state;
-    renderAdminBoard(state);
-  } catch (error) {
-    showMessage(error.message, "error");
-  } finally {
-    setLoading(false);
-  }
+  const { settings, submissions } = appState.admin;
+  if (settings.status !== "playing" || settings.currentRound !== settings.roundCount) return;
+  if (submissions.filter((item) => item.round === settings.currentRound).length >= settings.teamCount) return;
+  if (!window.confirm("미제출 팀에 남은 마지막 숫자를 자동으로 제출할까요? 제출 후에는 바꿀 수 없습니다.")) return;
+  return adminAction("autoSubmitFinalRound", {}, "마지막 숫자를 제출하고 있습니다…",
+    ({ count }) => count ? `${count}개 팀의 마지막 숫자를 제출했습니다.` : "이미 모든 팀이 제출했습니다.");
 }
+
+function revealAllCurrentRound() {
+  return adminAction("revealAll", {}, "숫자를 공개하고 점수를 계산하고 있습니다…");
+}
+
+function nextRound() {
+  return adminAction("nextRound", {}, "다음 라운드로 이동하고 있습니다…");
+}
+
+function resetGame() {
+  if (!appState.admin || appState.busy || !window.confirm("현재 게임의 제출과 점수가 지워지고 새 팀 코드가 발급됩니다. 이 게임만 초기화할까요?")) return;
+  return adminAction("reset", {}, "현재 게임을 초기화하고 있습니다…", "게임을 초기화하고 새 팀 코드를 만들었습니다.");
+}
+
 
 async function adminSubmitNumber(round, teamId) {
   if (!appState.admin || appState.busy) return;
@@ -452,172 +476,8 @@ async function adminSubmitNumber(round, teamId) {
   }
   if (!window.confirm(`${team.teamName} 대신 ${number}을(를) 제출할까요? 제출 후에는 바꿀 수 없습니다.`)) return;
 
-  try {
-    const connection = getAdminConnection();
-    assertConnection(connection);
-    setLoading(true, `${team.teamName} 대신 ${number}을(를) 제출하고 있습니다…`);
-    const state = await requestJsonp(connection.apiUrl, "adminSubmitNumber", { spreadsheetId: connection.spreadsheetId, teamId, round, number });
-    appState.admin = state;
-    renderAdminBoard(state);
-    showMessage(`${team.teamName} 대신 ${number}을(를) 제출했습니다.`, "success");
-  } catch (error) {
-    showMessage(error.message, "error");
-  } finally {
-    setLoading(false);
-  }
-}
-
-async function autoSubmitFinalRound() {
-  if (!appState.admin || appState.busy) return;
-  const { settings, teams: receivedTeams = [], submissions = [] } = appState.admin;
-  const teams = receivedTeams.slice(0, Number(settings.teamCount) || receivedTeams.length);
-  if (settings.status !== "playing" || Number(settings.currentRound) !== Number(settings.roundCount)) {
-    showMessage("마지막 라운드에서만 자동 제출할 수 있습니다.", "info");
-    return;
-  }
-  const submittedTeamIds = new Set(submissions.filter((item) => Number(item.round) === Number(settings.currentRound)).map((item) => Number(item.teamId)));
-  const pendingTeams = teams.filter((team) => !submittedTeamIds.has(Number(team.teamId)));
-  if (!pendingTeams.length) {
-    showMessage("모든 팀이 이미 마지막 숫자를 제출했습니다.", "info");
-    return;
-  }
-  const planned = pendingTeams.map((team) => ({ team, remaining: (team.remainingNumbers || []).map(Number) }));
-  const invalidTeam = planned.find((item) => item.remaining.length !== 1);
-  if (invalidTeam) {
-    showMessage(`${invalidTeam.team.teamName}의 남은 숫자를 하나로 확정할 수 없습니다. 동기화 후 다시 확인해 주세요.`, "error");
-    return;
-  }
-  const preview = planned.map((item) => `${item.team.teamName}: ${item.remaining[0]}`).join("\n");
-  if (!window.confirm(`미제출 팀의 마지막 숫자를 자동으로 제출할까요?\n\n${preview}\n\n제출 후에는 바꿀 수 없습니다.`)) return;
-
-  try {
-    const connection = getAdminConnection();
-    assertConnection(connection);
-    setLoading(true, "마지막 라운드 숫자를 자동 제출하고 있습니다…");
-    let state;
-    try {
-      state = await requestJsonp(
-        connection.apiUrl,
-        "autoSubmitFinalRound",
-        { spreadsheetId: connection.spreadsheetId },
-        { timeoutMs: 45000 },
-      );
-    } catch (bulkError) {
-      // 요청 시간이 초과되어도 Apps Script에서는 저장이 계속될 수 있다.
-      // 최신 상태를 다시 읽고 실제로 미제출인 팀만 관리자 직접 입력으로 보완한다.
-      try {
-        state = await requestJsonp(
-          connection.apiUrl,
-          "getGameState",
-          { spreadsheetId: connection.spreadsheetId },
-          { timeoutMs: 30000 },
-        );
-      } catch (_refreshError) {
-        throw bulkError;
-      }
-
-      const hasSubmitted = (gameState, teamId) => (gameState.submissions || []).some(
-        (item) => Number(item.round) === Number(settings.currentRound) && Number(item.teamId) === Number(teamId),
-      );
-      const remainingPlans = planned.filter((item) => !hasSubmitted(state, item.team.teamId));
-
-      for (let index = 0; index < remainingPlans.length; index += 1) {
-        const item = remainingPlans[index];
-        if (hasSubmitted(state, item.team.teamId)) continue;
-        setLoading(true, `${item.team.teamName} 마지막 숫자 제출 중… (${index + 1}/${remainingPlans.length})`);
-        try {
-          state = await requestJsonp(
-            connection.apiUrl,
-            "adminSubmitNumber",
-            {
-              spreadsheetId: connection.spreadsheetId,
-              teamId: item.team.teamId,
-              round: settings.currentRound,
-              number: item.remaining[0],
-            },
-            { timeoutMs: 30000 },
-          );
-        } catch (teamError) {
-          // 동시에 참가자가 제출했거나 앞선 요청이 늦게 완료된 경우를 재확인한다.
-          const refreshed = await requestJsonp(
-            connection.apiUrl,
-            "getGameState",
-            { spreadsheetId: connection.spreadsheetId },
-            { timeoutMs: 30000 },
-          );
-          if (!hasSubmitted(refreshed, item.team.teamId)) throw teamError;
-          state = refreshed;
-        }
-      }
-    }
-    appState.admin = state;
-    renderAdminBoard(state);
-    showMessage(`${planned.length}개 팀의 마지막 숫자를 자동 제출했습니다.`, "success");
-  } catch (error) {
-    const message = String(error.message || "");
-    showMessage(
-      message.includes("지원하지 않는 요청")
-        ? "Apps Script 코드가 오래된 버전입니다. 관리자 화면에서 최신 코드를 다시 복사해 새 버전으로 배포해 주세요."
-        : message,
-      "error",
-    );
-  } finally {
-    setLoading(false);
-  }
-}
-
-async function revealAllCurrentRound() {
-  if (!appState.admin) return;
-  const { settings, submissions } = appState.admin;
-  const submittedCount = submissions.filter((item) => Number(item.round) === Number(settings.currentRound)).length;
-  if (submittedCount < settings.teamCount) {
-    showMessage(`아직 ${settings.teamCount - submittedCount}개 팀이 제출하지 않았습니다.`, "info");
-    return;
-  }
-  try {
-    const connection = getAdminConnection();
-    setLoading(true, "모든 숫자를 공개하고 점수를 계산합니다…");
-    const state = await requestJsonp(connection.apiUrl, "revealAllCurrentRound", { spreadsheetId: connection.spreadsheetId });
-    appState.admin = state;
-    renderAdminBoard(state);
-    showMessage("숫자를 모두 공개하고 라운드 결과를 계산했습니다.", "success");
-  } catch (error) {
-    showMessage(error.message, "error");
-  } finally {
-    setLoading(false);
-  }
-}
-
-async function nextRound() {
-  if (!appState.admin) return;
-  try {
-    const connection = getAdminConnection();
-    setLoading(true, "다음 라운드로 이동하고 있습니다…");
-    const state = await requestJsonp(connection.apiUrl, "nextRound", { spreadsheetId: connection.spreadsheetId });
-    appState.admin = state;
-    renderAdminBoard(state);
-    showMessage(state.settings.status === "finished" ? "게임이 끝났습니다. 최종 결과를 확인하세요!" : `${state.settings.currentRound}라운드를 시작합니다.`, "success");
-  } catch (error) {
-    showMessage(error.message, "error");
-  } finally {
-    setLoading(false);
-  }
-}
-
-async function resetGame() {
-  if (!appState.admin || !window.confirm("모든 제출과 점수가 지워지고 새 참여 코드가 만들어집니다. 정말 초기화할까요?")) return;
-  try {
-    const connection = getAdminConnection();
-    setLoading(true, "게임을 초기화하고 있습니다…");
-    const state = await requestJsonp(connection.apiUrl, "resetGame", { spreadsheetId: connection.spreadsheetId });
-    appState.admin = state;
-    renderAdminBoard(state);
-    showMessage("게임을 초기화하고 새 참여 코드를 만들었습니다.", "success");
-  } catch (error) {
-    showMessage(error.message, "error");
-  } finally {
-    setLoading(false);
-  }
+  return adminAction("adminSubmit", { round, teamId, number }, "관리자 대신 제출을 저장하고 있습니다…",
+    `${team.teamName} 대신 ${number}을(를) 제출했습니다.`);
 }
 
 function renderAdminBoard(state) {
@@ -686,7 +546,7 @@ function renderAdminBoard(state) {
   $("#submissionCount").textContent = `${currentSubmissions.length} / ${settings.teamCount}팀 제출`;
   $("#roundHint").textContent = isFinished ? "모든 라운드가 끝났습니다." : currentResult ? "결과 계산이 끝났습니다. 다음 라운드로 이동하세요." : currentSubmissions.length === settings.teamCount ? "모든 팀이 제출했습니다. 숫자를 공개하세요." : isFinalRound ? "자동 제출 버튼으로 각 팀의 마지막 숫자를 입력할 수 있습니다." : "미제출 팀은 게임판에서 직접 입력할 수 있습니다.";
   $("#revealAllButton").disabled = isFinished || Boolean(currentResult) || currentSubmissions.length < settings.teamCount;
-  $("#nextRoundButton").disabled = isFinished;
+  $("#nextRoundButton").disabled = isFinished || !currentResult;
   $("#nextRoundButton").textContent = Number(settings.currentRound) === Number(settings.roundCount) ? "최종 결과 보기 →" : "다음 라운드 →";
 
   $("#teamStatusList").innerHTML = teams.map((team) => `<div class="team-status-item"><strong>${escapeHtml(team.teamName)}</strong><div class="mini-numbers">${team.remainingNumbers.map((number) => `<span class="mini-number">${number}</span>`).join("") || '<span class="empty-state">모두 사용</span>'}</div><div class="score-box"><strong>${team.scoreTotal}</strong><small>점</small></div></div>`).join("");
@@ -702,43 +562,6 @@ function renderRoundResult(results = []) {
   container.innerHTML = [...results].reverse().map((result) => `<article class="result-item ${result.winnerTeamId ? "" : "no-winner"}"><strong>${result.round}라운드 · ${result.winnerTeamId ? `${escapeHtml(result.winnerTeamName)} ${result.winningNumber}점` : "획득 팀 없음"}</strong><p>${escapeHtml(result.resultText)}</p></article>`).join("");
 }
 
-async function joinGame() {
-  try {
-    const connection = getPlayerConnection();
-    assertConnection(connection, true);
-    setLoading(true, "팀 정보를 확인하고 있습니다…");
-    const state = await requestJsonp(connection.apiUrl, "joinGame", { spreadsheetId: connection.spreadsheetId, teamCode: connection.teamCode });
-    appState.player = state;
-    appState.selectedNumber = null;
-    saveLocalGameInfo("player", connection, { spreadsheetId: state.settings.spreadsheetId });
-    renderPlayerBoard(state);
-    $("#playerJoinPanel").hidden = true;
-    $("#playerGamePanel").hidden = false;
-    updateConnectionPill(true);
-    startPolling("player");
-    showMessage(`${state.team.teamName}으로 접속했습니다.`, "success");
-  } catch (error) {
-    showMessage(error.message, "error");
-  } finally {
-    setLoading(false);
-  }
-}
-
-async function loadPlayerState(options = {}) {
-  try {
-    const connection = getPlayerConnection();
-    assertConnection(connection, true);
-    if (!options.silent) setLoading(true, "게임 상태를 확인하고 있습니다…");
-    const state = await requestJsonp(connection.apiUrl, "getPlayerState", { spreadsheetId: connection.spreadsheetId, teamCode: connection.teamCode });
-    appState.player = state;
-    renderPlayerBoard(state);
-    updateConnectionPill(true);
-  } catch (error) {
-    if (!options.silent) showMessage(error.message, "error");
-  } finally {
-    if (!options.silent) setLoading(false);
-  }
-}
 
 function selectNumber(number) {
   if (!appState.player || appState.player.ownSubmission || appState.player.settings.status !== "playing") return;
@@ -747,28 +570,6 @@ function selectNumber(number) {
   renderPlayerBoard(appState.player);
 }
 
-async function submitNumber() {
-  if (!appState.player || !appState.selectedNumber) {
-    showMessage("먼저 제출할 숫자를 골라 주세요.", "info");
-    return;
-  }
-  const number = appState.selectedNumber;
-  if (!window.confirm(`${number}을(를) 제출할까요? 제출 후에는 바꿀 수 없습니다.`)) return;
-  try {
-    const connection = getPlayerConnection();
-    assertConnection(connection, true);
-    setLoading(true, `${number}을(를) 제출하고 있습니다…`);
-    const state = await requestJsonp(connection.apiUrl, "submitNumber", { spreadsheetId: connection.spreadsheetId, teamCode: connection.teamCode, round: appState.player.settings.currentRound, number });
-    appState.player = state;
-    appState.selectedNumber = null;
-    renderPlayerBoard(state);
-    showMessage("제출 완료! 관리자가 공개할 때까지 기다려 주세요.", "success");
-  } catch (error) {
-    showMessage(error.message, "error");
-  } finally {
-    setLoading(false);
-  }
-}
 
 function renderPlayerBoard(state) {
   const { settings, team, ownSubmission, ranking = [] } = state;
@@ -805,57 +606,114 @@ function renderRemainingNumbers(team, roundCount) {
 function renderFinalRanking(ranking, targetSelector) {
   const winners = ranking.filter((item) => Number(item.rank) === 1);
   const winnerText = winners.length > 1 ? `공동 우승 · ${winners.map((item) => item.teamName).join(", ")}` : `${winners[0]?.teamName || "-"} 우승!`;
-  $(targetSelector).innerHTML = `<div class="final-heading"><span class="trophy">🏆</span><h2>최종 결과</h2><p>${escapeHtml(winnerText)}</p></div><div class="ranking-list">${ranking.map((item) => `<article class="ranking-item ${Number(item.rank) === 1 ? "winner" : ""}"><span class="rank-number">${item.rank}위</span><div class="ranking-team"><strong>${escapeHtml(item.teamName)}</strong><small>획득 점수 ${item.earnedScores.length ? item.earnedScores.join(" · ") : "없음"}</small></div><span class="ranking-score">${item.scoreTotal}점</span></article>`).join("")}</div>`;
+  $(targetSelector).innerHTML = `<div class="final-heading"><span class="trophy">🏆</span><h2>최종 결과</h2><p>${escapeHtml(winnerText)}</p></div><div class="ranking-list">${ranking.map((item) => {
+    const scores = Array.isArray(item.earnedScores) ? item.earnedScores.join(" · ") : "";
+    return `<article class="ranking-item ${Number(item.rank) === 1 ? "winner" : ""}"><span class="rank-number">${escapeHtml(item.rank)}위</span><div class="ranking-team"><strong>${escapeHtml(item.teamName)}</strong><small>획득 점수 ${escapeHtml(scores || "없음")}</small></div><span class="ranking-score">${escapeHtml(item.scoreTotal)}점</span></article>`;
+  }).join("")}</div>`;
 }
 
-function calculateRankingClientSide(state) {
-  const teams = (state.teams || []).map((team) => ({ ...team }));
-  const compare = (a, b) => {
-    if (a.scoreTotal !== b.scoreTotal) return b.scoreTotal - a.scoreTotal;
-    const aPairs = (a.earnedScores || []).map((score, index) => ({ score: Number(score), round: Number(a.earnedRounds[index]) })).sort((x, y) => y.score - x.score);
-    const bPairs = (b.earnedScores || []).map((score, index) => ({ score: Number(score), round: Number(b.earnedRounds[index]) })).sort((x, y) => y.score - x.score);
-    for (let index = 0; index < Math.max(aPairs.length, bPairs.length); index += 1) {
-      const ap = aPairs[index] || { score: 0, round: 99 };
-      const bp = bPairs[index] || { score: 0, round: 99 };
-      if (ap.score !== bp.score) return bp.score - ap.score;
-      if (ap.round !== bp.round) return ap.round - bp.round;
-    }
-    return 0;
-  };
-  return teams.sort(compare);
+function combinePlayerState(session) {
+  if (!session.game || !session.seat || session.game.settings.epoch !== session.seat.epoch) return;
+  const { settings } = session.game;
+  const ranking = Array.isArray(session.game.ranking) ? session.game.ranking.filter((row) => row && typeof row === "object") : [];
+  const { team, lastSubmission } = session.seat;
+  const ownSubmission = lastSubmission?.round === settings.currentRound ? lastSubmission : null;
+  if (ownSubmission || appState.player?.settings.currentRound !== settings.currentRound) appState.selectedNumber = null;
+  appState.player = { settings, team, ownSubmission, ranking };
+  renderPlayerBoard(appState.player);
+}
+
+async function openPlayer(roomId, seatId) {
+  const session = beginSession("player", roomId, { seatId });
+  try {
+    await Promise.all([
+      watch(session, "game", (data) => { session.game = data; combinePlayerState(session); }),
+      watch(session, `team-${seatId}`, (data) => { session.seat = data; combinePlayerState(session); }),
+    ]);
+  } catch (error) {
+    if (appState.session === session) stopSession();
+    throw error;
+  }
+  if (appState.session !== session) throw new Error("참여 상태가 바뀌었습니다. 팀 코드로 다시 접속해 주세요.");
+  saveStorage(STORAGE_KEYS.player, { roomId, seatId });
+  $("#playerJoinPanel").hidden = true;
+  $("#playerGamePanel").hidden = false;
+  setRoute("player", roomId);
+}
+
+function joinGame() {
+  return runBusy("팀 정보를 확인하고 있습니다…", async () => {
+    const roomId = $("#playerRoomId").value.trim().toUpperCase();
+    const teamCode = $("#playerTeamCode").value.trim();
+    if (!ROOM_ID.test(roomId)) throw new Error("선생님이 알려준 10자리 게임 코드를 입력해 주세요.");
+    if (!/^\d{8}$/.test(teamCode)) throw new Error("팀 코드는 숫자 8자리입니다.");
+    const { seatId } = await call("join", { roomId, teamCode });
+    await openPlayer(roomId, seatId);
+    $("#playerTeamCode").value = "";
+    showMessage(`${appState.player.team.teamName}으로 접속했습니다.`, "success");
+  });
+}
+
+function submitNumber() {
+  if (!appState.player || appState.busy || !appState.selectedNumber) return;
+  const number = appState.selectedNumber;
+  const { team, settings } = appState.player;
+  if (!window.confirm(`${number}을(를) 제출할까요? 제출 후에는 바꿀 수 없습니다.`)) return;
+  return runBusy("선택한 숫자를 제출하고 있습니다…", async () => {
+    await call("submit", { roomId: settings.gameId, seatId: appState.session.seatId, teamId: team.teamId,
+      round: settings.currentRound, epoch: settings.epoch, number });
+    appState.selectedNumber = null;
+    if (appState.player) renderPlayerBoard(appState.player);
+    showMessage("제출했습니다. 관리자가 공개할 때까지 기다려 주세요.", "success");
+  });
+}
+
+function showManualConnectionFields() {
+  $("#playerConnectionFields").hidden = false;
+  $("#qrJoinNotice").hidden = true;
+  $("#playerRoomId").focus();
 }
 
 function leavePlayerGame() {
-  stopPolling();
-  appState.player = null;
-  appState.selectedNumber = null;
-  localStorage.removeItem(STORAGE_KEYS.player);
-  $("#playerJoinPanel").hidden = false;
-  $("#playerGamePanel").hidden = true;
-  $("#playerApiUrl").value = "";
-  $("#playerSpreadsheet").value = "";
-  $("#playerTeamCode").value = "";
-  $("#playerConnectionFields").hidden = false;
-  $("#qrJoinNotice").hidden = true;
-  const cleanUrl = new URL(window.location.href);
-  cleanUrl.search = "";
-  cleanUrl.hash = "";
-  window.history.replaceState({}, "", cleanUrl);
-  $("#playerRoundBadge").innerHTML = "<small>현재 라운드</small><strong>접속 전</strong>";
-  updateConnectionPill(false);
+  saveStorage(STORAGE_KEYS.player, null);
+  switchMode("player");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const admin = loadLocalGameInfo("admin");
-  const player = loadLocalGameInfo("player");
-  $("#adminApiUrl").value = admin.apiUrl || "";
-  $("#adminSpreadsheet").value = admin.spreadsheet || admin.spreadsheetId || "";
-  $("#playerApiUrl").value = player.apiUrl || "";
-  $("#playerSpreadsheet").value = player.spreadsheet || player.spreadsheetId || "";
-  $("#playerTeamCode").value = player.teamCode || "";
-  [$("#adminTeamCount"), $("#adminRoundCount")].forEach((input) => {
-    input.addEventListener("input", () => { input.dataset.dirty = "true"; });
+  for (const id of ["adminTeamCount", "adminRoundCount"]) {
+    $(`#${id}`).addEventListener("input", (event) => { event.target.dataset.dirty = "true"; });
+  }
+  $("#playerTeamCode").addEventListener("input", (event) => { event.target.value = event.target.value.replace(/\D/g, "").slice(0, 8); });
+  $("#playerTeamCode").addEventListener("keydown", (event) => { if (event.key === "Enter") joinGame(); });
+  $("#recoveryCode").addEventListener("keydown", (event) => { if (event.key === "Enter") recoverRoom(); });
+  $("#recentRooms").addEventListener("click", (event) => {
+    const room = event.target.closest("[data-room]");
+    if (room) resumeRoom(room.dataset.room);
   });
-  $("#playerTeamCode").addEventListener("input", (event) => { event.target.value = event.target.value.replace(/\D/g, "").slice(0, 4); });
-  applySharedJoinParameters();
+  window.addEventListener("storage", (event) => {
+    if (event.key === STORAGE_KEYS.admin && appState.mode === "admin") renderHistory();
+  });
+  const parameters = new URLSearchParams(window.location.search);
+  const mode = parameters.get("mode");
+  const roomId = parameters.get("game") || "";
+  if (mode === "admin") {
+    switchMode("admin", true);
+    if (ROOM_ID.test(roomId)) resumeRoom(roomId);
+  } else if (mode === "player") {
+    switchMode("player", true);
+    if (!ROOM_ID.test(roomId)) return;
+    $("#playerRoomId").value = roomId;
+    $("#playerConnectionFields").hidden = true;
+    $("#qrJoinNotice").hidden = false;
+    const seat = readStorage(STORAGE_KEYS.player);
+    if (seat?.roomId === roomId && typeof seat.seatId === "string" && /^\d{8}$/.test(seat.seatId)) {
+      runBusy("팀을 다시 연결하고 있습니다…", async () => {
+        try { await openPlayer(roomId, seat.seatId); }
+        catch (error) {
+          if (error.code === "permission-denied") saveStorage(STORAGE_KEYS.player, null);
+          throw error;
+        }
+      });
+    } else $("#playerTeamCode").focus();
+  }
 });

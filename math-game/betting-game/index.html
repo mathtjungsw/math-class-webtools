@@ -6,7 +6,7 @@
     <meta name="description" content="확률과 기대값을 비교해 합리적인 배팅 전략을 선택하는 수학 수업용 게임" />
     <meta name="theme-color" content="#155d52" />
     <title>배팅 게임 | 수학 수업 웹툴 모음</title>
-    <link rel="stylesheet" href="./style.css?v=6" />
+    <link rel="stylesheet" href="./style.css?v=8" />
   </head>
   <body>
     <header class="topbar">
@@ -59,19 +59,8 @@
         </div>
 
         <section class="panel setup-panel" aria-labelledby="adminSetupTitle">
-          <div class="panel-heading"><div><p class="step-label">STEP 1</p><h2 id="adminSetupTitle">게임 연결 및 생성</h2></div><span class="status-chip" id="adminSetupStatus">설정 필요</span></div>
-          <div class="script-copy-card">
-            <div class="script-copy-icon" aria-hidden="true">&lt;/&gt;</div>
-            <div class="script-copy-copy">
-              <strong>먼저 Apps Script 코드를 준비하세요</strong>
-              <p>아래 버튼으로 전체 코드를 복사한 뒤 Apps Script 편집기에 그대로 붙여넣으면 됩니다.</p>
-            </div>
-            <button id="copyAppsScriptButton" class="button copy-button" type="button" onclick="copyAppsScriptCode()">코드 전체 복사</button>
-          </div>
-          <div class="field-grid">
-            <label class="field"><span>Apps Script 웹앱 URL</span><input id="adminApiUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="url" /></label>
-            <label class="field"><span>구글 스프레드시트 주소</span><input id="adminSpreadsheet" type="text" placeholder="https://docs.google.com/spreadsheets/d/.../edit" /></label>
-          </div>
+          <div class="panel-heading"><div><p class="step-label">STEP 1</p><h2 id="adminSetupTitle">새 게임 만들기</h2></div><span class="status-chip" id="adminSetupStatus">게임 선택 전</span></div>
+          <label class="field"><span>게임 이름 (선택)</span><input id="adminGameName" type="text" maxlength="40" placeholder="예: 2학년 3반" /></label>
           <div class="game-size-grid" aria-label="게임 규모 설정">
             <label class="field game-size-field"><span>팀 수</span><input id="adminTeamCount" type="number" min="2" max="20" step="1" value="5" inputmode="numeric" /></label>
             <label class="field game-size-field"><span>라운드 수</span><input id="adminRoundCount" type="number" min="2" max="20" step="1" value="6" inputmode="numeric" /></label>
@@ -79,20 +68,35 @@
           </div>
           <div class="button-row">
             <button id="createGameButton" class="button primary" type="button" onclick="createGame()">게임 생성</button>
-            <button class="button secondary" type="button" onclick="loadAdminState()">기존 게임 불러오기</button>
           </div>
-          <p class="helper-text">복사한 코드를 저장·웹 앱으로 배포한 뒤 생성된 <code>/exec</code> URL을 입력하세요. 게임 생성 시 ‘시트1’ 게임 영역이 새로 만들어집니다.</p>
+          <p class="helper-text">새 게임에는 별도의 코드가 부여됩니다. 다른 PC에서 만든 게임이나 이전 게임에는 영향을 주지 않습니다.</p>
+          <div class="room-resume-grid">
+            <div>
+              <h3>이 브라우저의 최근 게임</h3>
+              <ul class="room-history" id="recentRooms"></ul>
+            </div>
+            <div>
+              <h3>관리자 복구 코드로 이어하기</h3>
+              <label class="field"><span>복사해 둔 관리자 복구 코드</span><input id="recoveryCode" type="password" autocomplete="off" spellcheck="false" maxlength="43" placeholder="관리자 복구 코드 전체" /></label>
+              <button class="button secondary compact" type="button" onclick="recoverRoom()">코드로 불러오기</button>
+            </div>
+          </div>
+          <div class="game-id-line recovery-line" id="recoveryPanel" hidden>
+            <strong id="activeRoomName"></strong>
+            <button class="button secondary compact" type="button" onclick="copyRecoveryCode()">관리자 복구 코드 복사</button>
+            <small>다른 PC에서 이어할 때 필요합니다. 학생에게 공유하지 마세요.</small>
+          </div>
         </section>
 
         <section id="teamCodesPanel" class="panel" hidden>
           <div class="panel-heading"><div><p class="step-label">STEP 2</p><h2>팀별 참여 코드</h2></div><button class="button compact primary" id="startGameButton" type="button" onclick="startGame()">게임 시작</button></div>
           <p class="panel-description">각 팀에 자기 코드만 알려주세요. 참여 코드는 이 게임에서만 사용합니다.</p>
-          <div class="game-id-line"><span>참여자용 게임 ID</span><code id="gameIdDisplay">-</code><small>스프레드시트 주소 대신 입력할 수 있어요.</small></div>
+          <div class="game-id-line"><span>참여자용 게임 코드</span><code id="gameIdDisplay">-</code><small>QR을 사용하지 않을 때 팀 코드와 함께 입력합니다.</small></div>
           <div id="commonQrPanel" class="common-qr-panel" hidden>
             <div class="common-qr-copy">
               <p class="step-label">COMMON JOIN QR</p>
               <h3>참여자 공통 접속 QR</h3>
-              <p>학생은 이 QR을 스캔한 뒤 자기 팀의 4자리 코드만 입력합니다. QR에는 팀 코드가 포함되지 않습니다.</p>
+              <p>학생은 이 QR을 스캔한 뒤 자기 팀의 8자리 코드만 입력합니다. QR에는 팀 코드나 관리자 복구 코드가 포함되지 않습니다.</p>
               <button class="button secondary compact" type="button" onclick="copyCommonJoinLink()">접속 링크 복사</button>
             </div>
             <div class="qr-code-frame" id="commonQrCode" aria-label="참여자 공통 접속 QR 코드"></div>
@@ -122,12 +126,10 @@
         <details class="panel manual-panel">
           <summary><span><small>처음 사용하시나요?</small><strong>관리자 사용 설명서</strong></span><span>펼쳐보기</span></summary>
           <div class="manual-content">
-            <article><b>1</b><div><h3>스프레드시트 준비</h3><p>새 구글 스프레드시트를 만들고 시트 이름을 <strong>시트1</strong>로 둡니다. 표는 직접 만들지 않아도 됩니다.</p></div></article>
-            <article><b>2</b><div><h3>Apps Script 붙여넣기</h3><p>스프레드시트에서 <strong>확장 프로그램 → Apps Script</strong>를 열고, 이 도구 폴더의 <code>Code.gs</code> 전체를 붙여넣어 저장합니다.</p></div></article>
-            <article><b>3</b><div><h3>웹앱 배포</h3><p><strong>배포 → 새 배포 → 웹 앱</strong>을 선택합니다. 실행 사용자는 ‘나’, 액세스 사용자는 수업 환경에 맞게 설정한 뒤 생성된 <code>/exec</code> URL을 복사합니다.</p></div></article>
-            <article><b>4</b><div><h3>게임 생성</h3><p><strong>게임 생성</strong>은 이전 제출·점수·참여 코드를 모두 지우고 처음부터 시작합니다. 기존 진행 상태를 이어갈 때만 <strong>기존 게임 불러오기</strong>를 사용합니다.</p></div></article>
-            <article><b>5</b><div><h3>라운드 운영</h3><p>접속이 어려운 팀은 <strong>직접 입력</strong>으로 대신 제출할 수 있습니다. 마지막 라운드에서는 <strong>마지막 라운드 자동 제출</strong>을 눌러 각 팀의 남은 숫자를 한 번에 제출합니다.</p></div></article>
-            <article><b>6</b><div><h3>문제 해결</h3><p>상태가 바뀌지 않으면 동기화를 누릅니다. 권한 오류는 웹앱 배포의 액세스 권한을, 연결 오류는 URL 끝이 <code>/exec</code>인지 확인합니다.</p></div></article>
+            <article><b>1</b><div><h3>게임 생성</h3><p>팀 수와 라운드 수를 정한 뒤 게임을 생성합니다. 다른 교실에서는 동시에 별도의 게임을 열 수 있습니다.</p></div></article>
+            <article><b>2</b><div><h3>학생 초대</h3><p>공통 QR 또는 게임 코드를 안내하고, 팀별 8자리 코드는 각 팀에만 전달합니다.</p></div></article>
+            <article><b>3</b><div><h3>라운드 운영</h3><p>접속이 어려운 팀은 게임판에서 대신 제출할 수 있습니다. 마지막 라운드에서는 미제출 팀의 남은 숫자를 한 번에 제출할 수 있습니다.</p></div></article>
+            <article><b>4</b><div><h3>이어서 진행</h3><p>이 브라우저에서는 최근 게임을 선택하세요. 다른 PC나 새 브라우저에서는 관리자 복구 코드 전체를 입력하면 됩니다.</p></div></article>
           </div>
         </details>
       </section>
@@ -141,14 +143,13 @@
         <section id="playerJoinPanel" class="panel setup-panel">
           <div class="panel-heading"><div><p class="step-label">TEAM LOGIN</p><h2>우리 팀으로 접속</h2></div></div>
           <div id="qrJoinNotice" class="qr-join-notice" hidden>
-            <div><strong>✓ 접속 정보가 자동으로 입력됐어요</strong><p>이제 선생님이 알려준 우리 팀의 4자리 코드만 입력하세요.</p></div>
+            <div><strong>✓ 게임 코드가 자동으로 입력됐어요</strong><p>이제 선생님이 알려준 우리 팀의 8자리 코드만 입력하세요.</p></div>
             <button class="text-button" type="button" onclick="showManualConnectionFields()">직접 입력</button>
           </div>
           <div id="playerConnectionFields" class="player-connection-fields">
-            <label class="field"><span>Apps Script 웹앱 URL</span><input id="playerApiUrl" type="url" placeholder="선생님이 알려준 웹앱 URL" autocomplete="url" /></label>
-            <label class="field"><span>스프레드시트 주소 또는 게임 ID</span><input id="playerSpreadsheet" type="text" placeholder="선생님이 알려준 주소 또는 ID" /></label>
+            <label class="field"><span>10자리 게임 코드</span><input id="playerRoomId" type="text" maxlength="10" placeholder="선생님이 알려준 게임 코드" spellcheck="false" autocapitalize="characters" autocomplete="off" /></label>
           </div>
-          <label class="field code-field player-code-field"><span>4자리 참여 코드</span><input id="playerTeamCode" type="text" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="0000" autocomplete="one-time-code" /></label>
+          <label class="field code-field player-code-field"><span>8자리 팀 코드</span><input id="playerTeamCode" type="text" inputmode="numeric" maxlength="8" pattern="[0-9]{8}" placeholder="00000000" autocomplete="off" /></label>
           <button id="joinGameButton" class="button primary full-button" type="button" onclick="joinGame()">팀으로 접속하기</button>
         </section>
 
@@ -170,6 +171,6 @@
     <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
     <div class="loading-overlay" id="loadingOverlay" hidden><div class="spinner"></div><strong id="loadingText">처리 중입니다…</strong></div>
     <script src="./vendor/qrcode.min.js"></script>
-    <script src="./app.js?v=7"></script>
+    <script src="./app.js?v=10"></script>
   </body>
 </html>

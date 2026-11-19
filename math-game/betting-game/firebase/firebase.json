@@ -1,0 +1,14 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "location": "nam5"
+  },
+  "auth": {
+    "providers": { "anonymous": true }
+  },
+  "emulators": {
+    "auth": { "host": "127.0.0.1", "port": 9398 },
+    "firestore": { "host": "127.0.0.1", "port": 8398 },
+    "ui": { "enabled": false }
+  }
+}
