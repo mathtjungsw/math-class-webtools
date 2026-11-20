@@ -4,7 +4,7 @@ import { getFirestore, connectFirestoreEmulator, doc, collection, getDocFromServ
   onSnapshot, onSnapshotsInSync, updateDoc, arrayUnion, runTransaction } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebase-config.js?v=3";
 import { ROOM_ID, TEAM_CODE, digest, newGame, applyAction, adminView, commonView, playerView, playerMove, requireGame,
-  seatRecord, roomRecord, hydrateGame } from "./game-core.js?v=1";
+  seatRecord, roomRecord, hydrateGame } from "./game-core.js?v=2";
 
 const local = ["localhost", "127.0.0.1", "[::1]"].includes(location.hostname);
 const config = local ? { projectId: "demo-betting-game", apiKey: "demo-betting-game", appId: "demo-betting-game" } : firebaseConfig;
@@ -43,7 +43,7 @@ const roomRef = (db, roomId) => {
 const publicRef = (room) => doc(room, "views", "game");
 const seatsRef = (room) => collection(room, "seats");
 const seatRef = (room, code) => {
-  requireGame(typeof code === "string" && TEAM_CODE.test(code), "팀 코드는 숫자 8자리입니다.", "invalid-argument");
+  requireGame(typeof code === "string" && TEAM_CODE.test(code), "팀 코드는 숫자 6자리입니다. 기존 게임의 8자리 코드도 사용할 수 있습니다.", "invalid-argument");
   return doc(seatsRef(room), code);
 };
 

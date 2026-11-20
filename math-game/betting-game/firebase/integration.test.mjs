@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { randomBytes, randomInt } from "node:crypto";
-import { digest, newGame, applyAction, roomRecord, seatRecord, commonView, adminView, hydrateGame, playerMove }
+import { TEAM_CODE, digest, newGame, applyAction, roomRecord, seatRecord, commonView, adminView, hydrateGame, playerMove }
   from "../game-core.js";
 
 // Tests can only reach the demo project on loopback.
@@ -54,11 +54,14 @@ const append = (path, field, uid) => ({ transform: { document: document(path), f
 ] }, currentDocument: { exists: true } });
 const now = () => Date.now();
 
-async function roomFor(teacher, name, teamCount = 3) {
+async function roomFor(teacher, name, teamCount = 3, legacy = false) {
   const roomId = newId();
   const recoveryKey = key();
   const recoveryHash = await digest(recoveryKey);
   const game = newGame({ roomId, name, teamCount, roundCount: 2, recoveryHash }, teacher.uid, now());
+  assert.equal(new Set(game.teams.map((team) => team.teamCode)).size, teamCount);
+  assert.ok(game.teams.every((team) => /^\d{6}$/.test(team.teamCode)));
+  if (legacy) game.teams.forEach((team) => { team.teamCode = String(team.teamId).padStart(8, "0"); });
   const room = `bettingRooms/${roomId}`;
   const shared = `${room}/views/game`;
   const seat = (code) => `${room}/seats/${code}`;
@@ -143,7 +146,22 @@ test("Spark rules enforce seats, protect room controls, and allow 20-team create
 
   const reset = (await moderate(hostB, b, "reset")).game;
   assert.equal(reset.teams.length, 20);
+  assert.ok(reset.teams.every((team) => /^\d{6}$/.test(team.teamCode) && !b.codes.includes(team.teamCode)));
   assert.equal((await snapshot(hostB, b)).settings.epoch, 2);
   check(await get(hostB, b.seat(b.codes[0])), 404);
   assert.equal((await snapshot(hostA, a)).settings.status, "finished");
+});
+
+test("six-digit join and eight-digit room compatibility, including leading zeros", { timeout: 30000 }, async () => {
+  const [teacher, student] = await Promise.all([signIn(), signIn()]);
+  const legacy = await roomFor(teacher, "기존 게임", 2, true);
+  assert.equal(legacy.codes[0], "00000001");
+  assert.ok(TEAM_CODE.test(legacy.codes[0]) && TEAM_CODE.test("000001"));
+  assert.ok(!TEAM_CODE.test("0000001"));
+  check(await commit(student, append(legacy.seat(legacy.codes[0]), "members", student.uid)));
+  assert.equal(unwrap(check(await get(student, legacy.seat(legacy.codes[0])))).teamId, 1);
+  const reset = (await moderate(teacher, legacy, "reset")).game;
+  assert.ok(reset.teams.every((team) => /^\d{6}$/.test(team.teamCode)));
+  check(await commit(student, append(legacy.seat(reset.teams[0].teamCode), "members", student.uid)));
+  assert.equal(unwrap(check(await get(student, legacy.seat(reset.teams[0].teamCode)))).teamId, 1);
 });

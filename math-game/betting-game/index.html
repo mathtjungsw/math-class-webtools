@@ -6,7 +6,7 @@
     <meta name="description" content="확률과 기대값을 비교해 합리적인 배팅 전략을 선택하는 수학 수업용 게임" />
     <meta name="theme-color" content="#155d52" />
     <title>배팅 게임 | 수학 수업 웹툴 모음</title>
-    <link rel="stylesheet" href="./style.css?v=8" />
+    <link rel="stylesheet" href="./style.css?v=9" />
   </head>
   <body>
     <header class="topbar">
@@ -96,7 +96,7 @@
             <div class="common-qr-copy">
               <p class="step-label">COMMON JOIN QR</p>
               <h3>참여자 공통 접속 QR</h3>
-              <p>학생은 이 QR을 스캔한 뒤 자기 팀의 8자리 코드만 입력합니다. QR에는 팀 코드나 관리자 복구 코드가 포함되지 않습니다.</p>
+              <p>학생은 이 QR을 스캔한 뒤 자기 팀의 코드만 입력합니다. QR에는 팀 코드나 관리자 복구 코드가 포함되지 않습니다.</p>
               <button class="button secondary compact" type="button" onclick="copyCommonJoinLink()">접속 링크 복사</button>
             </div>
             <div class="qr-code-frame" id="commonQrCode" aria-label="참여자 공통 접속 QR 코드"></div>
@@ -104,30 +104,44 @@
           <div class="team-code-grid" id="teamCodeGrid"></div>
         </section>
 
-        <section id="adminGamePanel" class="panel board-panel" hidden>
-          <div class="panel-heading board-heading">
-            <div><p class="step-label">LIVE BOARD</p><h2>라운드 게임판</h2></div>
-            <div class="button-row compact-row"><button class="button secondary compact" type="button" onclick="loadAdminState()">↻ 동기화</button><button class="button danger-ghost compact" type="button" onclick="resetGame()">게임 초기화</button></div>
-          </div>
-          <div class="progress-track" id="roundProgress" aria-label="라운드 진행 상황"></div>
-          <div class="table-scroll"><table class="game-board"><thead id="adminBoardHead"></thead><tbody id="adminBoardBody"></tbody></table></div>
-          <div class="legend"><span><i class="legend-dot admin-entry"></i>관리자 직접 입력</span><span><i class="legend-dot submitted"></i>제출 완료</span><span><i class="legend-dot revealed"></i>공개 완료</span><span><i class="legend-dot scored"></i>점수 획득</span></div>
-          <div class="action-bar">
-            <div><strong id="submissionCount">0팀 제출</strong><small id="roundHint">미제출 팀은 게임판에서 직접 입력할 수 있습니다.</small></div>
-            <div class="button-row"><button id="autoSubmitFinalRoundButton" class="button final-auto" type="button" onclick="autoSubmitFinalRound()" hidden>마지막 라운드 자동 제출</button><button id="revealAllButton" class="button accent" type="button" onclick="revealAllCurrentRound()">현재 라운드 전체 공개</button><button id="nextRoundButton" class="button primary" type="button" onclick="nextRound()">다음 라운드 →</button></div>
-          </div>
-        </section>
+        <div id="adminBoardLayout" class="board-layout" hidden>
+          <section id="adminGamePanel" class="panel board-panel" aria-labelledby="adminBoardTitle">
+            <div class="panel-heading board-heading">
+              <div><p class="step-label">LIVE BOARD</p><h2 id="adminBoardTitle">라운드 게임판</h2></div>
+              <div class="button-row compact-row board-tools">
+                <button id="boardFullscreenButton" class="button secondary compact board-fullscreen-button" type="button" aria-pressed="false" aria-controls="adminBoardLayout">
+                  <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H4v5m11-5h5v5m0 6v5h-5M4 15v5h5"/></svg>
+                  <span id="boardFullscreenLabel">전체화면</span>
+                </button>
+                <button class="button secondary compact board-setup-control" type="button" onclick="loadAdminState()">↻ 동기화</button>
+                <button class="button danger-ghost compact board-setup-control" type="button" onclick="resetGame()">게임 초기화</button>
+              </div>
+            </div>
+            <div class="progress-track" id="roundProgress" aria-label="라운드 진행 상황"></div>
+            <div class="table-scroll" role="region" aria-labelledby="adminBoardTitle" tabindex="0"><table class="game-board"><thead id="adminBoardHead"></thead><tbody id="adminBoardBody"></tbody></table></div>
+            <div class="legend"><span><i class="legend-dot admin-entry"></i>관리자 직접 입력</span><span><i class="legend-dot submitted"></i>제출 완료</span><span><i class="legend-dot revealed"></i>공개 완료</span><span><i class="legend-dot scored"></i>점수 획득</span></div>
+            <div class="action-bar">
+              <div><strong id="submissionCount">0팀 제출</strong><small id="roundHint">미제출 팀은 게임판에서 직접 입력할 수 있습니다.</small></div>
+              <div class="button-row"><button id="autoSubmitFinalRoundButton" class="button final-auto" type="button" onclick="autoSubmitFinalRound()" hidden>마지막 라운드 자동 제출</button><button id="revealAllButton" class="button accent" type="button" onclick="revealAllCurrentRound()">현재 라운드 전체 공개</button><button id="nextRoundButton" class="button primary" type="button" onclick="nextRound()">다음 라운드 →</button></div>
+            </div>
+          </section>
 
-        <section id="adminSummaryPanel" class="dashboard-grid" hidden>
-          <div class="panel"><div class="panel-heading"><h2>팀 현황</h2><span class="status-chip">실시간</span></div><div class="team-status-list" id="teamStatusList"></div></div>
-          <div class="panel"><div class="panel-heading"><h2>라운드 결과</h2></div><div class="result-list" id="roundResultList"><p class="empty-state">공개가 끝난 라운드의 결과가 여기에 나타납니다.</p></div></div>
-        </section>
+          <section class="panel team-status-panel" aria-labelledby="teamStatusTitle">
+            <div class="panel-heading"><h2 id="teamStatusTitle">팀 현황</h2><span class="status-chip">실시간</span></div>
+            <p class="team-status-description">팀별 남은 숫자 · 공개된 숫자 기준</p>
+            <div class="team-status-list" id="teamStatusList" tabindex="0" role="region" aria-labelledby="teamStatusTitle"></div>
+          </section>
+          <section class="panel round-results-panel" aria-labelledby="roundResultsTitle">
+            <div class="panel-heading"><h2 id="roundResultsTitle">라운드 결과</h2></div>
+            <div class="result-list" id="roundResultList"><p class="empty-state">공개가 끝난 라운드의 결과가 여기에 나타납니다.</p></div>
+          </section>
+        </div>
 
         <details class="panel manual-panel">
           <summary><span><small>처음 사용하시나요?</small><strong>관리자 사용 설명서</strong></span><span>펼쳐보기</span></summary>
           <div class="manual-content">
             <article><b>1</b><div><h3>게임 생성</h3><p>팀 수와 라운드 수를 정한 뒤 게임을 생성합니다. 다른 교실에서는 동시에 별도의 게임을 열 수 있습니다.</p></div></article>
-            <article><b>2</b><div><h3>학생 초대</h3><p>공통 QR 또는 게임 코드를 안내하고, 팀별 8자리 코드는 각 팀에만 전달합니다.</p></div></article>
+            <article><b>2</b><div><h3>학생 초대</h3><p>공통 QR 또는 게임 코드를 안내하고, 팀별 6자리 코드는 각 팀에만 전달합니다. 기존 게임의 8자리 코드는 그대로 사용할 수 있습니다.</p></div></article>
             <article><b>3</b><div><h3>라운드 운영</h3><p>접속이 어려운 팀은 게임판에서 대신 제출할 수 있습니다. 마지막 라운드에서는 미제출 팀의 남은 숫자를 한 번에 제출할 수 있습니다.</p></div></article>
             <article><b>4</b><div><h3>이어서 진행</h3><p>이 브라우저에서는 최근 게임을 선택하세요. 다른 PC나 새 브라우저에서는 관리자 복구 코드 전체를 입력하면 됩니다.</p></div></article>
           </div>
@@ -143,13 +157,14 @@
         <section id="playerJoinPanel" class="panel setup-panel">
           <div class="panel-heading"><div><p class="step-label">TEAM LOGIN</p><h2>우리 팀으로 접속</h2></div></div>
           <div id="qrJoinNotice" class="qr-join-notice" hidden>
-            <div><strong>✓ 게임 코드가 자동으로 입력됐어요</strong><p>이제 선생님이 알려준 우리 팀의 8자리 코드만 입력하세요.</p></div>
+            <div><strong>✓ 게임 코드가 자동으로 입력됐어요</strong><p>이제 선생님이 알려준 우리 팀의 코드만 입력하세요.</p></div>
             <button class="text-button" type="button" onclick="showManualConnectionFields()">직접 입력</button>
           </div>
           <div id="playerConnectionFields" class="player-connection-fields">
             <label class="field"><span>10자리 게임 코드</span><input id="playerRoomId" type="text" maxlength="10" placeholder="선생님이 알려준 게임 코드" spellcheck="false" autocapitalize="characters" autocomplete="off" /></label>
           </div>
-          <label class="field code-field player-code-field"><span>8자리 팀 코드</span><input id="playerTeamCode" type="text" inputmode="numeric" maxlength="8" pattern="[0-9]{8}" placeholder="00000000" autocomplete="off" /></label>
+          <label class="field code-field player-code-field"><span>6자리 팀 코드</span><input id="playerTeamCode" type="text" inputmode="numeric" maxlength="8" pattern="[0-9]{6}|[0-9]{8}" placeholder="000000" autocomplete="off" aria-describedby="teamCodeHelp" /></label>
+          <p id="teamCodeHelp" class="helper-text">기존 게임의 8자리 코드도 입력할 수 있어요.</p>
           <button id="joinGameButton" class="button primary full-button" type="button" onclick="joinGame()">팀으로 접속하기</button>
         </section>
 
@@ -171,6 +186,6 @@
     <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
     <div class="loading-overlay" id="loadingOverlay" hidden><div class="spinner"></div><strong id="loadingText">처리 중입니다…</strong></div>
     <script src="./vendor/qrcode.min.js"></script>
-    <script src="./app.js?v=10"></script>
+    <script src="./app.js?v=11"></script>
   </body>
 </html>

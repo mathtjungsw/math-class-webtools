@@ -93,7 +93,8 @@ service cloud.firestore {
         // are permitted only for the host. Joining only appends one's UID.
         allow get: if signedIn() && (uid() in resource.data.members || isHost(roomId));
         allow list: if isHost(roomId);
-        allow create: if teamCode.matches('^[0-9]{8}$') && hostAfter(roomId) &&
+        // Keep accepting eight digits for older rooms and cached copies of the app.
+        allow create: if teamCode.matches('^([0-9]{6}|[0-9]{8})$') && hostAfter(roomId) &&
           validSeat(request.resource.data) && request.resource.data.members == [];
         allow update: if signedIn() && validSeat(request.resource.data) &&
           ((request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members']) &&

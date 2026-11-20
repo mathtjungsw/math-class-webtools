@@ -1,6 +1,7 @@
 const ROOM_ID = /^[A-HJ-NP-Z2-9]{10}$/;
 const RECOVERY_KEY = /^[A-Za-z0-9_-]{32}$/;
-const TEAM_CODE = /^\d{8}$/;
+// Six digits for new rooms, eight retained for rooms created before the change.
+const TEAM_CODE = /^(?:\d{6}|\d{8})$/;
 
 class GameError extends Error {
   constructor(code, message) {
@@ -21,9 +22,10 @@ async function digest(key) {
 
 function randomTeamCode() {
   const buffer = new Uint32Array(1);
-  // Reject the uneven remainder so all eight-digit codes are equally likely.
-  do crypto.getRandomValues(buffer); while (buffer[0] >= 4200000000);
-  return String(buffer[0] % 100000000).padStart(8, "0");
+  const possibilities = 1_000_000;
+  const limit = Math.floor(2 ** 32 / possibilities) * possibilities;
+  do crypto.getRandomValues(buffer); while (buffer[0] >= limit);
+  return String(buffer[0] % possibilities).padStart(6, "0");
 }
 const range = (count) => Array.from({ length: count }, (_, index) => index + 1);
 const remaining = (game, team) => range(game.settings.roundCount).filter((n) => !team.usedNumbers.includes(n));

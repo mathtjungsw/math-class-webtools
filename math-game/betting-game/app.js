@@ -3,13 +3,16 @@ const MIN_GAME_SIZE = 2;
 const MAX_GAME_SIZE = 20;
 const ROOM_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const ROOM_ID = /^[A-HJ-NP-Z2-9]{10}$/;
+const TEAM_CODE = /^(?:\d{6}|\d{8})$/;
 const appState = { mode: "home", admin: null, player: null, selectedNumber: null, commonJoinUrl: "", busy: false, session: null };
 const $ = (selector) => document.querySelector(selector);
 const localMemory = new Map();
 let sdk;
+let nativeBoardFullscreen = false;
+let enteringBoardFullscreen = false;
 
 function firebase() {
-  return sdk ||= import("./firebase-client.js?v=3").catch((error) => {
+  return sdk ||= import("./firebase-client.js?v=4").catch((error) => {
     sdk = null;
     throw new Error("Firebase 기능을 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.", { cause: error });
   });
@@ -195,8 +198,45 @@ function stopSession() {
   updateConnectionPill(false);
 }
 
+function setBoardFullscreen(active) {
+  document.body.classList.toggle("board-fullscreen", active);
+  $("#boardFullscreenButton").setAttribute("aria-pressed", String(active));
+  $("#boardFullscreenLabel").textContent = active ? "전체화면 닫기" : "전체화면";
+}
+
+async function closeBoardFullscreen() {
+  if (!document.body.classList.contains("board-fullscreen")) return;
+  const wasNative = nativeBoardFullscreen;
+  nativeBoardFullscreen = false;
+  setBoardFullscreen(false);
+  if (wasNative && document.fullscreenElement === document.documentElement) {
+    try { await document.exitFullscreen(); } catch { /* The board layout is already restored. */ }
+  }
+}
+
+async function toggleBoardFullscreen() {
+  if (document.body.classList.contains("board-fullscreen")) return closeBoardFullscreen();
+  if (enteringBoardFullscreen || appState.mode !== "admin" || $("#adminBoardLayout").hidden) return;
+
+  // The same two-panel layout remains available where the browser blocks native fullscreen.
+  setBoardFullscreen(true);
+  const root = document.documentElement;
+  if (!root.requestFullscreen || document.fullscreenElement) return;
+  enteringBoardFullscreen = true;
+  try {
+    await root.requestFullscreen();
+    nativeBoardFullscreen = document.fullscreenElement === root;
+    if (nativeBoardFullscreen && !document.body.classList.contains("board-fullscreen")) {
+      await document.exitFullscreen();
+      nativeBoardFullscreen = false;
+    }
+  } catch { /* Keep the in-page full-window layout. */ }
+  finally { enteringBoardFullscreen = false; }
+}
+
 function switchMode(mode, keepRoute = false) {
   if (appState.busy) return;
+  void closeBoardFullscreen();
   stopSession();
   appState.mode = mode;
   appState.admin = appState.player = appState.selectedNumber = null;
@@ -205,7 +245,7 @@ function switchMode(mode, keepRoute = false) {
   $("#adminSetupStatus").classList.remove("ready");
   $("#adminRoundBadge").innerHTML = "<small>현재 라운드</small><strong>준비 중</strong>";
   $("#playerRoundBadge").innerHTML = "<small>현재 라운드</small><strong>접속 전</strong>";
-  for (const id of ["teamCodesPanel", "adminGamePanel", "adminSummaryPanel", "playerGamePanel", "recoveryPanel"]) $(`#${id}`).hidden = true;
+  for (const id of ["teamCodesPanel", "adminBoardLayout", "playerGamePanel", "recoveryPanel"]) $(`#${id}`).hidden = true;
   $("#playerJoinPanel").hidden = false;
   const saved = readStorage(STORAGE_KEYS.player);
   $("#playerRoomId").value = saved?.roomId || "";
@@ -275,7 +315,8 @@ async function watch(session, view, update) {
           $("#playerTeamCode").focus();
         } else {
           appState.admin = null;
-          for (const id of ["teamCodesPanel", "adminGamePanel", "adminSummaryPanel", "recoveryPanel"]) $(`#${id}`).hidden = true;
+          void closeBoardFullscreen();
+          for (const id of ["teamCodesPanel", "adminBoardLayout", "recoveryPanel"]) $(`#${id}`).hidden = true;
           $("#adminSetupStatus").textContent = "연결 끊김";
         }
         showMessage(cleanError(error), "error");
@@ -312,7 +353,8 @@ async function openAdmin(roomId, recoveryKey, { forceRecovery = false } = {}) {
   const attach = async () => {
     const session = beginSession("admin", roomId, { recoveryKey });
     appState.admin = null;
-    for (const id of ["teamCodesPanel", "adminGamePanel", "adminSummaryPanel", "recoveryPanel"]) $(`#${id}`).hidden = true;
+    void closeBoardFullscreen();
+    for (const id of ["teamCodesPanel", "adminBoardLayout", "recoveryPanel"]) $(`#${id}`).hidden = true;
     await watch(session, "admin", (state) => {
       appState.admin = state;
       renderAdminBoard(state);
@@ -489,8 +531,8 @@ function renderAdminBoard(state) {
   $("#adminSetupStatus").classList.add("ready");
   $("#adminRoundBadge").innerHTML = `<small>현재 라운드</small><strong>${isCreated ? "준비 중" : isFinished ? "종료" : `${settings.currentRound} / ${settings.roundCount}`}</strong>`;
   $("#teamCodesPanel").hidden = false;
-  $("#adminGamePanel").hidden = isCreated;
-  $("#adminSummaryPanel").hidden = isCreated;
+  $("#adminBoardLayout").hidden = isCreated;
+  if (isCreated) void closeBoardFullscreen();
   $("#startGameButton").hidden = !isCreated;
   $("#gameIdDisplay").textContent = settings.gameId;
   syncAdminGameSize(settings);
@@ -507,7 +549,7 @@ function renderAdminBoard(state) {
   }).join("");
 
   $("#adminBoardHead").innerHTML = `<tr><th scope="col">라운드</th>${teams.map((team) => `<th scope="col">${escapeHtml(team.teamName)}</th>`).join("")}</tr>`;
-  $(".game-board").style.minWidth = `${Math.max(760, 100 + teams.length * 104)}px`;
+  $(".game-board").style.setProperty("--team-columns", teams.length);
   const roundRows = Array.from({ length: settings.roundCount }, (_, index) => {
     const round = index + 1;
     const result = roundResults.find((item) => Number(item.round) === round);
@@ -646,7 +688,7 @@ function joinGame() {
     const roomId = $("#playerRoomId").value.trim().toUpperCase();
     const teamCode = $("#playerTeamCode").value.trim();
     if (!ROOM_ID.test(roomId)) throw new Error("선생님이 알려준 10자리 게임 코드를 입력해 주세요.");
-    if (!/^\d{8}$/.test(teamCode)) throw new Error("팀 코드는 숫자 8자리입니다.");
+    if (!TEAM_CODE.test(teamCode)) throw new Error("팀 코드는 숫자 6자리입니다. 기존 게임의 8자리 코드도 사용할 수 있습니다.");
     const { seatId } = await call("join", { roomId, teamCode });
     await openPlayer(roomId, seatId);
     $("#playerTeamCode").value = "";
@@ -680,6 +722,16 @@ function leavePlayerGame() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  $("#boardFullscreenButton").addEventListener("click", toggleBoardFullscreen);
+  document.addEventListener("fullscreenchange", () => {
+    if (nativeBoardFullscreen && document.fullscreenElement !== document.documentElement) {
+      nativeBoardFullscreen = false;
+      setBoardFullscreen(false);
+    }
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !document.fullscreenElement) void closeBoardFullscreen();
+  });
   for (const id of ["adminTeamCount", "adminRoundCount"]) {
     $(`#${id}`).addEventListener("input", (event) => { event.target.dataset.dirty = "true"; });
   }
@@ -706,7 +758,7 @@ document.addEventListener("DOMContentLoaded", () => {
     $("#playerConnectionFields").hidden = true;
     $("#qrJoinNotice").hidden = false;
     const seat = readStorage(STORAGE_KEYS.player);
-    if (seat?.roomId === roomId && typeof seat.seatId === "string" && /^\d{8}$/.test(seat.seatId)) {
+    if (seat?.roomId === roomId && typeof seat.seatId === "string" && TEAM_CODE.test(seat.seatId)) {
       runBusy("팀을 다시 연결하고 있습니다…", async () => {
         try { await openPlayer(roomId, seat.seatId); }
         catch (error) {
